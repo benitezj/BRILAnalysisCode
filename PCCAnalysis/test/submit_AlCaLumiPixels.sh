@@ -8,28 +8,28 @@ fi
 #get the absolute path
 inputdir=`readlink -f $inputdir`
 
-
+##what to do : create scripts, submit, check
 action=$2
-if [ "$action" == "" ]; then
-echo "invalid action"
-return
-fi
+
+## only a few runs
+TEST=0
 
 
-####define output directory
-eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB
+## aliases
+eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
+
 
 ###### where is the code:
 INSTALLATION=/afs/cern.ch/user/b/benitezj/scratch0/BRIL_PCC/CMSSW_10_1_0/src
 
 ### which script to run
-#script=lumi_producer_cfg.py
 script=lumi_alcaZB_cfg.py
+#script=lumi_alcaZB_noCorr_cfg.py
 
-##
-eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
-
-
+####define output directory
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB
+eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_noCorr
 
 ###batch submit
 submit(){
@@ -38,14 +38,15 @@ submit(){
     rm -f $inputdir/${run}.log
     $eos rm $eosoutdir/${run}.root
     $eos rm $eosoutdir/${run}.csv
-    bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh
-    
+    bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
 }
 
 
 
 ##### loop over the runs
+counter=0
 for f in `/bin/ls $inputdir | grep .txt `; do
+    if [ "$TEST" == "1" ] && [ "$counter" == "5" ]; then break; fi
 
     run=`echo $f | awk -F".txt" '{print $1}'`
     echo $run
@@ -103,5 +104,8 @@ for f in `/bin/ls $inputdir | grep .txt `; do
     fi
 
 
+    counter=`echo $counter | awk '{print $1+1}'`
 done
+
+echo "Total runs: $counter"
 
