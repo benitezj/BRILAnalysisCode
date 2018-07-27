@@ -5,16 +5,17 @@ import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("PCCLumiAnalyzer")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
 
 process.source = cms.Source(
     "PoolSource",fileNames = cms.untracked.vstring(
         #'file:/eos/cms/store/group/comm_luminosity/PCC/ForLumiSystematics/2017/5Feb2018/AlCaLumiPixels/PCC_AlCaLumiPixels_Run2017B_5kLS/180205_190216/0000/raw_corr_PCC_RD_1.root',
         #'file:/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputations/2017/5Feb2018/AlCaLumiPixels/PCC_AlCaLumiPixels_Run2017C_1kLS_NoZeroes/180207_184738/0000/rawPCC_297411_ZB_112.root',
- # 'file:./rawPCC_297411_ZB_112.root',
-# 'file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/Run316559/PCC_ZB.root'
-'file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/Run316559/PCC_ZB_Average.root'
-# 'file:/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputations/2017/5Feb2018/AlCaLumiPixels/PCC_AlCaLumiPixels_Run2017C_1kLS_NoZeroes/180207_184738/0000/rawPCC_297411_ZB_112.root'
+        # 'file:./rawPCC_297411_ZB_112.root',
+        # 'file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/Run316559/PCC_ZB.root'
+        #'file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/Run316559/PCC_ZB_Average.root'
+        # 'file:/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputations/2017/5Feb2018/AlCaLumiPixels/PCC_AlCaLumiPixels_Run2017C_1kLS_NoZeroes/180207_184738/0000/rawPCC_297411_ZB_112.root'
+        'file:./PCC_ZB.root'
         )                 
     )
 
