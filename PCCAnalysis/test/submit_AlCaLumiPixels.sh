@@ -52,11 +52,12 @@ submit(){
 ##### loop over the runs
 counter=0
 for f in `/bin/ls $inputdir | grep .txt `; do
-    if [ "$TEST" == "1" ] && [ "$counter" == "10" ]; then break; fi
+    #if [ "$TEST" == "1" ] && [ "$counter" == "10" ]; then break; fi
 
     run=`echo $f | awk -F".txt" '{print $1}'`
     echo $run
-    
+
+    if [ "$TEST" == "1" ] && [ "$run" != "316766" ]; then continue; fi    
     
     ###create the scripts
     if [ "$action" == "0" ]; then
@@ -130,7 +131,15 @@ for f in `/bin/ls $inputdir | grep .txt `; do
 
     ## produce the plots
     if [ "$action" == "5" ] ; then
-	root -b -q ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/plotPCCcsv.C\(\"$eosoutdir\",$run,\"$inputdir\"\)
+	
+	#create reference csv for comparison
+	# note brilcalc must be setup 
+	ref=HFET
+	/bin/rm -f $inputdir/${run}.$ref
+	brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
+
+	##run plotting macro
+	root -b -q ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/plotPCCcsv.C\(\"$eosoutdir\",$run,\"$inputdir\",\"$ref\"\)
     fi
 
     counter=`echo $counter | awk '{print $1+1}'`
