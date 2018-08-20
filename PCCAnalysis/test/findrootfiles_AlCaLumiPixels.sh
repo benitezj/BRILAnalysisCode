@@ -3,16 +3,19 @@
 
 #########################################
 ## * script to search for files of this form:
-##     /eos/cms/store/data/Run2018A/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/559/00000/3A1948E7-B85C-E811-BE2E-FA163E2965C4.root
+##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/559/00000/3A1948E7-B85C-E811-BE2E-FA163E2965C4.root
+##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/316/060/00000/1AAF584E-0956-E811-B8CF-FA163E73FFA8.root
 ## * this script takes no arguments
 ## * output are files with runnumber.txt with list of root files 
 #######################################
 
 
-##some global stuff
+##options
 eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
 specialRun=0  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set merges all including Express
-ZBorRdm=ZeroBias-PromptReco
+#ZBorRdm=ZeroBias-PromptReco
+ZBorRdm=AlCaPCCRandom-PromptReco
+
 
 
 ###################################

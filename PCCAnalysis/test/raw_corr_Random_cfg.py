@@ -3,24 +3,42 @@
 #Purpose: To investigate the AlCaPCCProducer input and output. 
 #########################
 import FWCore.ParameterSet.Config as cms
+import os
 
 process = cms.Process("corrRECO")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
+#process.source = cms.Source("PoolSource",
+#    fileNames = cms.untracked.vstring(
+#    #'file:/eos/cms/store/data/Run2017C/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/300/027/00000/C8332BFE-B176-E711-9463-02163E019C80.root',
+#    #'file:/eos/cms/store/data/Run2017C/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/300/043/00000/3AA17D8E-D676-E711-BED6-02163E01425A.root',
+#    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/B0DF435F-99A4-E711-8E6D-02163E01A45C.root',
+#    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/CE2A42FA-91A4-E711-9697-02163E019C72.root',
+#    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/DA0ECCCB-96A4-E711-ADA1-02163E01A214.root',
+#    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/E6B8ACA4-95A4-E711-9AA2-02163E014793.root',
+#     'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/316/060/00000/1AAF584E-0956-E811-B8CF-FA163E73FFA8.root' 
+#     #'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v3/000/316/944/00000/72BB039F-3466-E811-9576-FA163E33F375.root'
+#)    
+#)
+
+
+
+
+## read from file, environment variable must be set
+inputfile=os.getenv('INPUTFILE')
+if inputfile == '' : sys.exit('invalid INPUTFILE')
+print 'reading from input file: ', inputfile
+infile = open(inputfile,'r')
+inputlist=cms.untracked.vstring(infile.readlines())
+infile.close()
+
+print inputlist
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    #'file:/eos/cms/store/data/Run2017C/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/300/027/00000/C8332BFE-B176-E711-9463-02163E019C80.root',
-    #'file:/eos/cms/store/data/Run2017C/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/300/043/00000/3AA17D8E-D676-E711-BED6-02163E01425A.root',
-    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/B0DF435F-99A4-E711-8E6D-02163E01A45C.root',
-    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/CE2A42FA-91A4-E711-9697-02163E019C72.root',
-    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/DA0ECCCB-96A4-E711-ADA1-02163E01A214.root',
-    #'file:/eos/cms/store/data/Run2017E/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/303/832/00000/E6B8ACA4-95A4-E711-9AA2-02163E014793.root',
-     'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/316/060/00000/1AAF584E-0956-E811-B8CF-FA163E73FFA8.root' 
-     #'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v3/000/316/944/00000/72BB039F-3466-E811-9576-FA163E33F375.root'
+    fileNames =     inputlist
 )
-    
-)
+
+
 
 #Make sure that variables match in producer.cc and .h
 process.rawPCCProd = cms.EDProducer("RawPCCProducer",
@@ -73,7 +91,8 @@ process.PoolDBOutputService = cms.Service("PoolDBOutputService",
      ),
     loadBlobStreamer = cms.untracked.bool(False),
     timetype   = cms.untracked.string('lumiid')
-)
+    #timetype   = cms.untracked.string('runnumber')
+    )
 #From the end path, this is where we specify format for our output.
 process.out = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('PCC_RD.root'),
