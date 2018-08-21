@@ -15,26 +15,28 @@ action=$2
 TEST=0
 
 
-## aliases
+###################
+###### options
+###################
 eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
 
-##########################
-###### where is the code:
-#########################
-INSTALLATION=/afs/cern.ch/user/b/benitezj/scratch0/BRIL_PCC/CMSSW_10_1_0/src
+#INSTALLATION=/afs/cern.ch/user/b/benitezj/scratch0/BRIL_PCC/CMSSW_10_1_0/src
+INSTALLATION=${CMSSW_BASE}/src
 
-#######################
 ### which script to run
-######################
-script=lumi_alcaZB_cfg.py
-#script=lumi_alcaZB_noCorr_cfg.py
+jobtype=lumi  #options: corr, lumi, lumi_nocorr
 
-###########################
+## directory containing the corrections in case of jobtype=lumi jobs
+## set to "" to use FrontierConditions
+DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
+
+
 ###define output directory
-##########################
 #eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB
-eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias
 #eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_noCorr
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
+eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_19Aug
 
 
 ###lxbatch submit
@@ -42,11 +44,14 @@ submit(){
     local run=$1
 
     rm -f $inputdir/${run}.log
-    $eos rm $eosoutdir/${run}.root
-    $eos rm $eosoutdir/${run}.csv
+
+    $eos rm ${eosoutdir}/${run}.root
+    $eos rm ${eosoutdir}/${run}.db
+    $eos rm ${eosoutdir}/${run}.txt
+    $eos rm ${eosoutdir}/${run}.csv
+
     bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
 }
-
 
 
 ##### loop over the runs
@@ -66,15 +71,39 @@ for f in `/bin/ls $inputdir | grep .txt `; do
 	echo "eval \`scramv1 runtime -sh\` " >> $inputdir/${run}.sh
 	echo "cd \$TMPDIR  "   >> $inputdir/${run}.sh
 	echo "pwd  "   >> $inputdir/${run}.sh
+	if [ "$DBDIR" != "" ]; then
+	    echo "export DBFILE=${DBDIR}/${run}.db" >> $inputdir/${run}.sh
+	fi
 	echo "export INPUTFILE=${inputdir}/${run}.txt" >> $inputdir/${run}.sh
 	echo "env" >> $inputdir/${run}.sh
-	echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/${script} " >> $inputdir/${run}.sh
-	echo "${eos} cp PCC_ZB.root $eosoutdir/${run}.root " >> $inputdir/${run}.sh
-	#echo "${eos} cp rawPCC.csv  $eosoutdir/${run}.csv " >> $inputdir/${run}.sh
-	
-	##produce the csv in the same batch job
-	echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/pcc_LumiInfoRead_cfg.py " >> $inputdir/${run}.sh
-	echo "${eos} cp PCCLumiByBX.csv  $eosoutdir/${run}.csv " >> $inputdir/${run}.sh
+
+	######################
+	#### lumi calculation 
+	if [ "$jobtype" == "lumi" ]; then
+	    echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_cfg.py" >> $inputdir/${run}.sh
+	fi
+
+	if [ "$jobtype" == "lumi_nocorr" ]; then
+	    echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_noCorr_cfg.py " >> $inputdir/${run}.sh
+	fi
+
+	if [ "$jobtype" == "lumi" ] || [ "$jobtype" == "lumi_nocorr" ] ; then
+	    echo "${eos} cp PCC_ZB.root $eosoutdir/${run}.root " >> $inputdir/${run}.sh
+	    
+	    ##produce the csv in the same batch job
+	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/pcc_LumiInfoRead_cfg.py " >> $inputdir/${run}.sh
+	    echo "${eos} cp PCCLumiByBX.csv  $eosoutdir/${run}.csv " >> $inputdir/${run}.sh
+	fi
+
+	#####################
+	### corrections
+	if [ "$jobtype" == "corr" ] ; then
+	    echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/raw_corr_Random_cfg.py " >> $inputdir/${run}.sh
+	    echo "${eos} cp PCC_Corr.db $eosoutdir/${run}.db " >> $inputdir/${run}.sh
+	    echo "${eos} cp CorrectionHisto.root $eosoutdir/${run}.root " >> $inputdir/${run}.sh
+	fi
+
+
     fi
     
 
@@ -105,16 +134,29 @@ for f in `/bin/ls $inputdir | grep .txt `; do
 	    fail=1
 	fi
 	 
-	rootf=`$eos ls $eosoutdir/${run}.root | grep err `
-	if [ "$rootf" != "" ]; then
-	    echo "no root"
-	    fail=1
+	###### error check for lumi jobs
+	if [ "$jobtype" == "lumi" ] || [ "$jobtype" == "lumi_nocorr" ] ; then
+	    rootf=`$eos ls $eosoutdir/${run}.root | grep err `
+	    if [ "$rootf" != "" ]; then
+		echo "no root"
+		fail=1
+	    fi
+	    
+	    csvf=`$eos ls $eosoutdir/${run}.csv | grep err `
+	    if [ "$csvf" != "" ]; then
+		echo "no csv"
+		fail=1
+	    fi
 	fi
 
-	csvf=`$eos ls $eosoutdir/${run}.csv | grep err `
-	if [ "$csvf" != "" ]; then
-	    echo "no csv"
-	    fail=1
+
+	#### error check for corrections jobs
+	if [ "$jobtype" == "corr" ] ; then
+	    dbf=`$eos ls $eosoutdir/${run}.db | grep err `
+	    if [ "$dbf" != "" ]; then
+		echo "no db"
+		fail=1
+	    fi
 	fi
 	
 
@@ -129,7 +171,7 @@ for f in `/bin/ls $inputdir | grep .txt `; do
 
 
 
-    ## produce the plots
+    ## produce the plots for lumi jobs
     if [ "$action" == "5" ] ; then
 	
 	#create reference csv for comparison
@@ -141,6 +183,7 @@ for f in `/bin/ls $inputdir | grep .txt `; do
 	##run plotting macro
 	root -b -q ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/plotPCCcsv.C\(\"$eosoutdir\",$run,\"$inputdir\",\"$ref\"\)
     fi
+
 
     counter=`echo $counter | awk '{print $1+1}'`
 done
