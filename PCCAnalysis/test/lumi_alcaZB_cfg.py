@@ -11,24 +11,34 @@ process.path1 = cms.Path()
 
 
 #####Setup the conditions database
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-process.GlobalTag.globaltag = '101X_dataRun2_Prompt_v9'
-process.GlobalTag.DumpStat = cms.untracked.bool( True )
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+#process.GlobalTag.globaltag = '101X_dataRun2_Prompt_v9'
+#process.GlobalTag.DumpStat = cms.untracked.bool( True )
 
-##replace the Conditions database if DBFILE is set in enviroment
-dbfile=os.getenv('DBFILE')
-if dbfile != '' : 
-    print 'will override DB file: ', dbfile
-    process.load("CondCore.CondDB.CondDB_cfi")
-    #process.CondDB.connect = 'sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db'
-    process.CondDB.connect = 'sqlite_file:'+dbfile
-    process.GlobalTag = cms.ESSource("PoolDBESSource",
-                                     process.CondDB,                                                                                                  
-                                     DumpStat=cms.untracked.bool(True),                                                                                                
-                                     toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),                                                             
-                                                                tag = cms.string('TestCorrections')                                                                    
-                                                                )),)     
-    
+###replace the Conditions database if DBFILE is set in enviroment
+#dbfile=os.getenv('DBFILE')
+#if dbfile != '' : 
+#    print 'will override DB file: ', dbfile
+#    process.load("CondCore.CondDB.CondDB_cfi")
+#    #process.CondDB.connect = 'sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db'
+#    process.CondDB.connect = 'sqlite_file:'+dbfile
+#    process.GlobalTag = cms.ESSource("PoolDBESSource",
+#                                     process.CondDB,                                                                                                  
+#                                     DumpStat=cms.untracked.bool(True),                                                                                                
+#                                     toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),                                                             
+#                                                                tag = cms.string('TestCorrections'))),)    
+
+
+process.load("CondCore.CondDB.CondDB_cfi")
+process.PoolDBESSource = cms.ESSource("PoolDBESSource",
+    DumpStat=cms.untracked.bool(True),
+    toGet = cms.VPSet(cms.PSet(
+        record = cms.string('LumiCorrectionsRcd'),
+        tag = cms.string("TestCorrections")
+    )),
+    #connect = cms.string('sqlite_file:Global.db')
+    connect = cms.string('sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db')
+)
 
 
 ######################## 
