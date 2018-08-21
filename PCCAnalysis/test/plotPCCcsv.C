@@ -48,11 +48,23 @@ void getTotLumiFromCSV(TString inputfile){
 
 void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
 
-  ifstream myfile ((Path+"/"+Run+".csv").Data());
+  TString infile=Path+"/"+Run+".csv";
+  ifstream myfile (infile.Data());
   if (!myfile.is_open()){
     cout << "Unable to open file"; 
     return;
   }
+  cout<<"opened "<<infile<<std::endl;
+
+
+  TString runoutfile=outpath+"/runs.txt";
+  ofstream runfile(runoutfile.Data(),std::ofstream::app);
+  if (!runfile.is_open()){
+    cout << "Unable to open output run file"; 
+    return;
+  }
+  cout<<"opened "<<runoutfile<<std::endl;
+
 
   ///create histogram
   TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
@@ -71,6 +83,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
   double bxL[NBX];//lumi for bunch crossing in LS
   float maxL=0.;//find maximum totL 
   int maxLS=0;//find last LS with lumi
+  float totLRun=0.;
+  float totRefLRun=0.;
   while (std::getline(myfile, line)){
     //cout<<line;
 
@@ -96,9 +110,13 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
     std::stringstream totLiss(token);
     totLiss>>totL;
 
+    totLRun+=totL;
+
     HLumiLS.SetBinContent(ls,totL);
+
     HLumiLSRatio.SetBinContent(ls,MAXPCC*(totL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
-    
+    totRefLRun+=refLumi[ls];
+
     ///read lumi per BX
     for(int bx=0;bx<NBX;bx++)
       bxL[bx]=0.;
@@ -117,11 +135,20 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
     
     if(totL>maxL) maxL=totL;
     if(totL>10 && ls > maxLS) maxLS=ls;
-    //std::cout<<run<<" "<<ls<<" "<<totL<<" "<<totbxL<<std::endl;
+
+    //std::cout<<run<<" "<<ls<<" "<<totL<<" "<<refLumi[ls]<<std::endl;
   }
     
   myfile.close();
 
+  //std::cout<<run<<" "<<totLRun<<" "<<totRefLRun<<std::endl;
+
+  //write run info:
+  runfile<<Run<<" "<<totLRun<<std::endl;
+  runfile.close();
+
+ 
+  
 
   if(maxL<2) return; //don't create the graph for empty runs
 
