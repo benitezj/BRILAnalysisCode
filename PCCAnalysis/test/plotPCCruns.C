@@ -93,6 +93,7 @@ void plotPCCruns(TString Path,TString ref=""){
   int run=0;
   float totLRun=0.;
   int counter=0;
+  int counterRatio=0;
   int counterZero=0;
   int lastrun=0;
   while (std::getline(myfile, line)){
@@ -101,34 +102,37 @@ void plotPCCruns(TString Path,TString ref=""){
     iss>>run;
     iss>>totLRun;
     
-    LumiRun.SetPoint(counter,run-RUNOFFSET,totLRun);
+    LumiRun.SetPoint(counter++,run-RUNOFFSET,totLRun);
     if(run>lastrun) lastrun=run-RUNOFFSET;    
 
-    // get PIX state
-    bool BPIX=getPIXReadyState("BRILAnalysisCode/PCCAnalysis/test/BPIX_313175_320541.txt",run);
-    bool FPIX=getPIXReadyState("BRILAnalysisCode/PCCAnalysis/test/FPIX_313175_320541.txt",run);
-    cout<<run<<" "<<(totLRun>0)<<" : "<<BPIX<<" "<<FPIX<<endl;
+    // // get PIX state
+    //bool BPIX=getPIXReadyState("BRILAnalysisCode/PCCAnalysis/test/BPIX_313175_320541.txt",run);
+    //bool FPIX=getPIXReadyState("BRILAnalysisCode/PCCAnalysis/test/FPIX_313175_320541.txt",run);
+    //cout<<"PIX: "<<run<<" "<<(totLRun>0)<<" : "<<BPIX<<" "<<FPIX<<endl;
 
     // if(totLRun==0){
     //   cout<<run<<" "<<BPIX<<" "<<FPIX<<endl;
     // }
 
+    
     // graph to show runs with 0 lumi
-    if(totLRun==0){
+    if(totLRun<=PCCZEROLUMI){
       //if(totLRun==0 && BPIX && FPIX){
+      cout<<run<<endl;
       LumiRunZero.SetPoint(counterZero,run-RUNOFFSET,PCCZEROLUMI);
       counterZero++;
     }
     
+
     // Comparison to another luminometer
     if(ref.CompareTo("")!=0){
-      float totRefLRun=getRunRefLumi(Path+"/"+(long)run+"."+ref);
+      float totRefLRun = getRunRefLumi(Path+"/"+(long)run+"."+ref);
       if(totRefLRun>0)
-	LumiRunRatio.SetPoint(counter,run-RUNOFFSET,((MAXPCCRUN)*(totLRun/totRefLRun-PCCRUNLUMIRatioMin))/(PCCRUNLUMIRatioMax-PCCRUNLUMIRatioMin));
-      else LumiRunRatio.SetPoint(counter,run-RUNOFFSET,0.);
+	LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,((MAXPCCRUN)*(totLRun/totRefLRun-PCCRUNLUMIRatioMin))/(PCCRUNLUMIRatioMax-PCCRUNLUMIRatioMin));
+      else LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,0.);
     }
 
-    counter++;
+
   }
   
   

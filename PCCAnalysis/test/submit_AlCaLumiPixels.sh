@@ -7,6 +7,7 @@ return
 fi
 #get the absolute path
 inputdir=`readlink -f $inputdir`
+extdir=$1 #relative path
 
 ## what to do : create scripts, submit, check
 action=$2
@@ -28,15 +29,16 @@ jobtype=lumi  #options: corr, lumi, lumi_nocorr
 
 ## directory containing the corrections in case of jobtype=lumi jobs
 ## set to "" to use FrontierConditions
-DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
+DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/$extdir
 
 
 ###define output directory
-#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB
-#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias
-#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_noCorr
-#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
-eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_19Aug
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB/$extdir
+eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias/$extdir
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_noCorr/$extdir
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/$extdir  
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_19Aug/$extdir
+#eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_21Aug/$extdir
 
 
 ###lxbatch submit
@@ -52,6 +54,12 @@ submit(){
 
     bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
 }
+
+
+##clean up the runs file
+if [ "$action" == "5" ] ; then
+    rm -f $inputdir/runs.txt
+fi
 
 
 ##### loop over the runs
@@ -173,14 +181,14 @@ for f in `/bin/ls $inputdir | grep .txt `; do
 
     ## produce the plots for lumi jobs
     if [ "$action" == "5" ] ; then
-	
+
 	#create reference csv for comparison
 	# note brilcalc must be setup 
 	ref=HFET
 	/bin/rm -f $inputdir/${run}.$ref
 	brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
 
-	##run plotting macro
+	##run plotting macr
 	root -b -q ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/plotPCCcsv.C\(\"$eosoutdir\",$run,\"$inputdir\",\"$ref\"\)
     fi
 
