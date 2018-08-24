@@ -26,11 +26,12 @@ INSTALLATION=${CMSSW_BASE}/src
 
 ### which script to run
 jobtype=lumi  #options: corr, lumi, lumi_nocorr
+echo "job type: $jobtype"
 
 ## directory containing the corrections in case of jobtype=lumi jobs
 ## set to "" to use FrontierConditions
 DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/$extdir
-
+echo "corections: $DBDIR"
 
 ###define output directory
 #eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB/$extdir
@@ -40,6 +41,7 @@ eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias/$extdir
 #eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_19Aug/$extdir
 #eosoutdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_21Aug/$extdir
 
+echo "output: $eosoutdir"
 
 ###lxbatch submit
 submit(){
