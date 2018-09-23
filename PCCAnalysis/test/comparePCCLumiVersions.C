@@ -2,8 +2,8 @@
 
 float getRefLumi(TString file, unsigned int RUN){
   
-  ifstream myfile(file.Data());
-  if (!myfile.is_open()){
+  ifstream reffile(file.Data());
+  if (!reffile.is_open()){
     std::cout << "Unable to open ref lumi file: "<<file.Data()<<std::endl;
     return 0.;
   }
@@ -11,7 +11,7 @@ float getRefLumi(TString file, unsigned int RUN){
   std::string line;
   int run=0;
   float L=0.;
-  while (std::getline(myfile, line)){
+  while (std::getline(reffile, line)){
     std::stringstream iss(line);
     iss>>run>>L;
     if(run==RUN) return L;
@@ -27,11 +27,11 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
   TGraph LumiRatio;
   TGraph LumiGainedRuns;
   TGraph LumiLostRuns;
-  
 
-  ifstream myfile((newDir+"/runs.txt").Data());
+
+  ifstream myfile((newDir+"/runs.dat").Data());
   if (!myfile.is_open()){
-    std::cout << "Unable to open runs in "<<newDir<<std::endl;
+    std::cout << "Unable to open runs.dat in "<<newDir.Data()<<std::endl;
     return;
   }
 
@@ -51,11 +51,11 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
     if(run<firstrun) firstrun=run;
     if(run>lastrun) lastrun=run;
 
-    refLumi = getRefLumi(refDir+"/runs.txt",run);
+    refLumi = getRefLumi(refDir+"/runs.dat",run);
 
     if(refLumi>0.){
       if(newLumi/refLumi>2)
-	LumiRatio.SetPoint(counter++,run-RUNOFFSET,2);
+	LumiRatio.SetPoint(counter++,run-RUNOFFSET,1.1);
       else LumiRatio.SetPoint(counter++,run-RUNOFFSET,newLumi/refLumi);
     }else if(newLumi>0.) {
       LumiGainedRuns.SetPoint(counter2++,run-RUNOFFSET,1);
@@ -71,7 +71,7 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
   LumiFrame.GetYaxis()->SetTitle("new lumi / old lumi");
 
   //now loop over old run list and check if any where lost:
-  ifstream reffile((refDir+"/runs.txt").Data());
+  ifstream reffile((refDir+"/runs.dat").Data());
   if (!reffile.is_open()){
     std::cout << "Unable to open runs in "<<newDir<<std::endl;
     return;
@@ -80,11 +80,11 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
   while (std::getline(reffile,line)){
     std::stringstream iss(line);
     iss>>run>>refLumi;
-    newLumi = getRefLumi(newDir+"/runs.txt",run);
+    newLumi = getRefLumi(newDir+"/runs.dat",run);
 
     if(refLumi>0.&&newLumi<=0.){ 
       cout<<"Lost: "<<run<<endl;
-      LumiLostRuns.SetPoint(counter++,run-RUNOFFSET,0);
+      LumiLostRuns.SetPoint(counter++,run-RUNOFFSET,0.9);
     }
   }
   reffile.close();
@@ -96,7 +96,7 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
 
   //LumiRatio.GetYaxis()->SetRangeUser(PCCZEROLUMI,MAXPCCRUN);
 
-  LumiFrame.GetYaxis()->SetRangeUser(0,2);
+  LumiFrame.GetYaxis()->SetRangeUser(0.9,1.1);
   LumiFrame.GetXaxis()->SetRangeUser(firstrun,lastrun);
   LumiFrame.SetMarkerSize(0.1);
   LumiFrame.Draw("ap");

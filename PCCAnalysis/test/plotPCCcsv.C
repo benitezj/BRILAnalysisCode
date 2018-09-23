@@ -4,6 +4,8 @@
 #define NBX 3564
 #define NLS 3000
 #define MAXPCC 10e6
+//#define MAXPCC 5e3
+//#define MAXPCC 1.5e3
 float refLumi[NLS];
 float ratiomin=18;
 float ratiomax=22;
@@ -46,7 +48,7 @@ void getTotLumiFromCSV(TString inputfile){
 
 }
 
-void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
+void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
 
   TString infile=Path+"/"+Run+".csv";
   ifstream myfile (infile.Data());
@@ -56,8 +58,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
   }
   cout<<"opened "<<infile<<std::endl;
 
-
-  TString runoutfile=outpath+"/runs.txt";
+  
+  TString runoutfile=outpath+"/runs.dat";
   ofstream runfile(runoutfile.Data(),std::ofstream::app);
   if (!runfile.is_open()){
     cout << "Unable to open output run file"; 
@@ -73,7 +75,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
 
 
   ///read the reference lumi
-  getTotLumiFromCSV(outpath+"/"+Run+"."+ref);
+  if(ref.CompareTo("")!=0) getTotLumiFromCSV(outpath+"/"+Run+"."+ref);
   
 
   std::string line;
@@ -109,13 +111,17 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
     std::getline(iss,token, ',');
     std::stringstream totLiss(token);
     totLiss>>totL;
-
     totLRun+=totL;
+    
+    if(HLumiLS.GetBinContent(ls)>0)
+      cout<<run<<","<<ls<<"  duplicated"<<endl;
+    else HLumiLS.SetBinContent(ls,totL);
 
-    HLumiLS.SetBinContent(ls,totL);
 
-    HLumiLSRatio.SetBinContent(ls,MAXPCC*(totL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
-    totRefLRun+=refLumi[ls];
+    if(ref.CompareTo("")!=0){
+      HLumiLSRatio.SetBinContent(ls,MAXPCC*(totL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
+      totRefLRun+=refLumi[ls];
+    }
 
     ///read lumi per BX
     for(int bx=0;bx<NBX;bx++)
@@ -220,7 +226,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
   HLumiLSRatio.SetMarkerStyle(8);
   HLumiLSRatio.SetMarkerSize(0.5);
   HLumiLSRatio.SetMarkerColor(2);
-  HLumiLSRatio.Draw("histpsame");
+  if(ref.CompareTo("")!=0) HLumiLSRatio.Draw("histpsame");
 
   TGaxis *axis = new TGaxis(maxLS+50,0,maxLS+50,MAXPCC,ratiomin,ratiomax,510,"+L");
   axis->SetLineColor(kRed);
@@ -230,7 +236,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="HFET"){
   axis->SetTitleSize(0.08);
   axis->SetTitleOffset(0.6);
   axis->SetTitle(TString("PCC/")+ref);
-  axis->Draw();
+  if(ref.CompareTo("")!=0)axis->Draw();
 
   TLatex text;
   text.SetTextSize(0.13);

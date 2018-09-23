@@ -16,7 +16,7 @@ process.GlobalTag.DumpStat = cms.untracked.bool( True )
 
 ###replace the Conditions database if DBFILE is set in enviroment
 dbfile=os.getenv('DBFILE')
-if dbfile != '' : 
+if dbfile : 
     print 'will override DB file: ', dbfile
     process.load("CondCore.CondDB.CondDB_cfi")
     #process.CondDB.connect = 'sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db'
