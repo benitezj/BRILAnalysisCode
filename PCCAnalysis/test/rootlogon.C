@@ -82,7 +82,7 @@ void setHttStyle(){
   HttStyle->SetTitleFont  (42,"X");
   HttStyle->SetTitleFont  (42,"Y");
 
-  HttStyle->SetOptStat    (0);
+  //HttStyle->SetOptStat    (0);
 
   gROOT->SetStyle("Htt-Style");
 

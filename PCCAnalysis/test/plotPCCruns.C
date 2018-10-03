@@ -75,7 +75,7 @@ bool getPIXReadyState(TString inputfile, int RUN){
 
 void plotPCCruns(TString Path,TString ref=""){
   
-  TString infile=Path+"/runs.txt";
+  TString infile=Path+"/runs.dat";
   ifstream myfile(infile.Data());
   if (!myfile.is_open()){
     cout << "Unable to open file"; 

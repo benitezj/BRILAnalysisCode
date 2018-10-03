@@ -3,12 +3,22 @@
 #include <string>
 #define NBX 3564
 #define NLS 3000
-#define MAXPCC 10e6
-//#define MAXPCC 5e3
-//#define MAXPCC 1.5e3
+
+//#define SigmaPCC 5.8e6/(23*11245.6) 
+#define SigmaPCC 6.704e6/(23*11245.6) 
+
+//#define MAXPCC 10e6  // un-normalized
+#define MAXPCC 0.5e6 // normalized
+//#define MAXPCC 5e3 // un-normalized low mu
+//#define MAXPCC 300 // normalized low mu
+
 float refLumi[NLS];
-float ratiomin=18;
-float ratiomax=22;
+// float ratiomin=18;
+// float ratiomax=22;
+
+float ratiomin=0.8;
+float ratiomax=1.2;
+
 
 void getTotLumiFromCSV(TString inputfile){
 
@@ -68,6 +78,15 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
   cout<<"opened "<<runoutfile<<std::endl;
 
 
+  TString lsoutfile=outpath+"/ls.dat";
+  ofstream lsfile(lsoutfile.Data(),std::ofstream::app);
+  if (!lsfile.is_open()){
+    cout << "Unable to open output run file"; 
+    return;
+  }
+  cout<<"opened "<<lsoutfile<<std::endl;
+
+
   ///create histogram
   TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
   TH1F HLumiLS("HLumiLS","",NLS,0.5,NLS+0.5);
@@ -111,6 +130,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
     std::getline(iss,token, ',');
     std::stringstream totLiss(token);
     totLiss>>totL;
+    totL/=SigmaPCC;
+
     totLRun+=totL;
     
     if(HLumiLS.GetBinContent(ls)>0)
@@ -118,7 +139,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
     else HLumiLS.SetBinContent(ls,totL);
 
 
-    if(ref.CompareTo("")!=0){
+    if(ref.CompareTo("")!=0&&refLumi[ls]>0){
+      //cout<<ls<<" "<<totL<<" "<<refLumi[ls]<<" "<<totL/refLumi[ls]<<" "<<MAXPCC*(totL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin)<<endl;
       HLumiLSRatio.SetBinContent(ls,MAXPCC*(totL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
       totRefLRun+=refLumi[ls];
     }
@@ -135,7 +157,6 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
       totbxL+=bxL[bx];
 
       HLumiBXvsLS.SetBinContent(ls,bx+1,bxL[bx]);
-
     }
 
     
@@ -143,14 +164,17 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
     if(totL>10 && ls > maxLS) maxLS=ls;
 
     //std::cout<<run<<" "<<ls<<" "<<totL<<" "<<refLumi[ls]<<std::endl;
+    lsfile<<Run<<" "<<ls<<" "<<totL<<" "<<refLumi[ls]<<std::endl;
   }
     
   myfile.close();
 
   //std::cout<<run<<" "<<totLRun<<" "<<totRefLRun<<std::endl;
+  //close ls
+  lsfile.close();
 
-  //write run info:
-  runfile<<Run<<" "<<totLRun<<std::endl;
+  //write runs:
+  runfile<<Run<<" "<<totLRun<<" "<<totRefLRun<<std::endl;
   runfile.close();
 
  
@@ -163,11 +187,11 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
 
 
   HLumiBXvsLS.GetXaxis()->SetTitle("lumi section");
-  HLumiBXvsLS.GetYaxis()->SetTitle("bunch crossing");
+  HLumiBXvsLS.GetYaxis()->SetTitle("bcid");
   HLumiBXvsLS.GetZaxis()->SetTitle("PCC Lumi");
   
   HLumiLS.GetXaxis()->SetTitle("lumi section");
-  HLumiLS.GetYaxis()->SetTitle("PCC Lumi");
+  HLumiLS.GetYaxis()->SetTitle("PCC Lumi [1/#mub]");
 
   HLumiLSRatio.GetXaxis()->SetTitle("lumi section");
   HLumiLSRatio.GetYaxis()->SetTitle(TString("PCC/")+ref);
@@ -226,7 +250,12 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
   HLumiLSRatio.SetMarkerStyle(8);
   HLumiLSRatio.SetMarkerSize(0.5);
   HLumiLSRatio.SetMarkerColor(2);
-  if(ref.CompareTo("")!=0) HLumiLSRatio.Draw("histpsame");
+  if(ref.CompareTo("")!=0) 
+    HLumiLSRatio.Draw("histpsame");
+
+  TLine tline;
+  tline.SetLineColor(2);
+  tline.DrawLine(0,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin),maxLS+50,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin));
 
   TGaxis *axis = new TGaxis(maxLS+50,0,maxLS+50,MAXPCC,ratiomin,ratiomax,510,"+L");
   axis->SetLineColor(kRed);

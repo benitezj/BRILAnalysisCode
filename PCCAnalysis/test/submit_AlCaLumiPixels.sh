@@ -64,7 +64,8 @@ submit(){
 
 ##clean up the runs file
 if [ "$action" == "5" ] ; then
-    rm -f $inputdir/runs.txt
+    rm -f $inputdir/runs.dat
+    rm -f $inputdir/ls.dat
 fi
 
 
@@ -74,11 +75,13 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
     #if [ "$TEST" == "1" ] && [ "$counter" == "10" ]; then break; fi
 
     run=`echo $f | awk -F".txt" '{print $1}'`
-    echo $run
+    #echo $run
 
     ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ]; then continue; fi    
-    if [ "$TEST" == "1" ] && [ "$run" != "318982" ] && [ "$run" != "318983" ] && [ "$run" != "318984" ] ; then continue; fi    
-    
+    ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ] && [ "$run" != "318983" ] && [ "$run" != "318984" ] ; then continue; fi    
+    ##if [ "$TEST" == "1" ] && [ "$run" != "316766" ]; then continue; fi        
+    if [ "$TEST" == "1" ] && [ "$run" != "318983" ]; then continue; fi        
+
     ###create the scripts
     if [ "$action" == "0" ]; then
 	rm -f $inputdir/${run}.sh
@@ -192,10 +195,23 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 
 	# create reference csv for comparison
 	# note brilcalc must be setup 
-	ref="" # HFET
+	#ref=HFET
+	# ref=DT
+	#ref=PLTZERO
+	ref=normtag_BRIL
 	if [ "$ref" != "" ]; then
+
 	    /bin/rm -f $inputdir/${run}.$ref
-	    brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
+	    
+	    if [ "$ref" == "normtag_BRIL" ]; then
+		brilcalc lumi  --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run  --byls --output-style csv | grep ${run}: | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref 
+		##-i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-320065_13TeV_PromptReco_Collisions18_JSON.txt
+	    fi 
+
+	    if [ "$ref" != "normtag_BRIL" ]; then
+	    	brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep ${run}: | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
+	    fi
+	    
 	fi
 
         # run plotting macro

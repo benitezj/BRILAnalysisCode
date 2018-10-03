@@ -13,8 +13,8 @@
 ##options
 eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
 specialRun=0  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set merges all including Express
-#ZBorRdm=ZeroBias-PromptReco
-ZBorRdm=AlCaPCCRandom-PromptReco
+ZBorRdm=ZeroBias-PromptReco
+#ZBorRdm=AlCaPCCRandom-PromptReco
 
 
 
@@ -82,6 +82,7 @@ seachPeriod(){
 ######################################
 ### search all run periods:
 ######################################
-seachPeriod Run2018A
-seachPeriod Run2018B
-seachPeriod Run2018C
+#seachPeriod Run2018A
+#seachPeriod Run2018B
+#seachPeriod Run2018C
+seachPeriod Run2018D

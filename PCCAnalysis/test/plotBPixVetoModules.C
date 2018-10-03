@@ -54,6 +54,9 @@ void plotBPixVetoModules(string BPixMods="veto_master_VdM_ABCD_2018_newcuts_BPix
   std::string line;
   while (std::getline(myfile,line)){
     int module=atoi(line.c_str());
+    
+    if ( MD.find(module) == MD.end() ) continue;
+    
     int md=MD[module]>4?MD[module]-4:MD[module]-5;
     int ld=LD[module]>bins[LY[module]-1]?LD[module]-bins[LY[module]-1]:LD[module]-bins[LY[module]-1]-1;
     cout<<module<<" "<<LY[module]<<" "<<md<<" "<<ld<<endl;
@@ -97,6 +100,9 @@ void plotBPixVetoModules(string BPixMods="veto_master_VdM_ABCD_2018_newcuts_BPix
 
   while (std::getline(myfile_fpix,line)){
     int module=atoi(line.c_str());
+    
+    if( SD.find(module) == SD.end() ) continue;
+
     int di=(SD[module]==2?1:-1)*DI[module];
     int bl=BL[module]>28?BL[module]-28:BL[module]-29;
     cout<<module<<" "<<di<<" "<<bl<<" "<<PN[module]<<endl;
