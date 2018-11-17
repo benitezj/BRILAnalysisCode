@@ -12,7 +12,7 @@ process.path1 = cms.Path()
 #####Setup the conditions database
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.GlobalTag.globaltag = '101X_dataRun2_Prompt_v9'
-process.GlobalTag.DumpStat = cms.untracked.bool( True )
+process.GlobalTag.DumpStat = cms.untracked.bool( False )
 
 ###replace the Conditions database if DBFILE is set in enviroment
 dbfile=os.getenv('DBFILE')
@@ -23,9 +23,10 @@ if dbfile :
     process.CondDB.connect = 'sqlite_file:'+dbfile
     process.GlobalTag = cms.ESSource("PoolDBESSource",
                                      process.CondDB,                                                                                                  
-                                     DumpStat=cms.untracked.bool(True),                                                                                                
-                                     toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),                                                             
-                                                                tag = cms.string('TestCorrections'))),)    
+                                     DumpStat=cms.untracked.bool(True),
+                                     toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),
+                                                                tag = cms.string('TestCorrections'))),
+                                     )    
 
 
 #process.load("CondCore.CondDB.CondDB_cfi")
@@ -41,16 +42,11 @@ if dbfile :
 
 
 ######################## 
-## create PoolSource module
+## PoolSource module
 
-# setup the input files manually
 #inputlist=cms.untracked.vstring()
 #inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
-#inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/2C0D3126-3366-E811-991A-FA163EC01FA2.root')
-#inputlist.insert(-1,'file:/eos/cms//store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/316/060/00000/B8EF7674-0956-E811-81E0-FA163E29A824.root')
 
-
-### read from file, environment variable must be set
 inputfile=os.getenv('INPUTFILE')
 if inputfile == '' : sys.exit('invalid INPUTFILE')
 print 'reading from input file: ', inputfile
@@ -65,24 +61,25 @@ process.source = cms.Source("PoolSource",
 
 
 ##################
-#recoPixelClusterCounts_alcaPCCProducerZeroBias_alcaPCCZeroBias_RECO.obj
-#Make sure that variables match in producer.cc and .h
+# rawPCC producer
 process.rawPCCProd = cms.EDProducer("RawPCCProducer",
     RawPCCProducerParameters = cms.PSet(
         #Mod factor to count lumi and the string to specify output 
         inputPccLabel = cms.string("alcaPCCProducerZeroBias"),
         ProdInst = cms.string("alcaPCCZeroBias"),
+#        inputPccLabel = cms.string("alcaPCCProducerRandom"),
+#        ProdInst = cms.string("alcaPCCRandom"),
         outputProductName = cms.untracked.string("lumiInfo"), 
-        ApplyCorrections=cms.untracked.bool(True),  
+        ApplyCorrections=cms.untracked.bool(False),  
         saveCSVFile=cms.untracked.bool(True),
         modVeto=cms.vint32(),
         OutputValue = cms.untracked.string("Average"),
     )    
 ) 
+print 'RawPCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections
 
 
 ###### veto list  
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_2018_VdM.txt'
 vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
 print 'reading from veto file: ', vetofilename
 vetofile = open(vetofilename,'r')

@@ -14,7 +14,7 @@ std::map<long,int> BL;
 std::map<long,int> PN;
 
 
-void plotBPixVetoModules(string BPixMods="veto_master_VdM_ABCD_2018_newcuts_BPix.txt",string FPixMods="veto_master_VdM_ABCD_2018_newcuts_FPix.txt"){
+void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/test/rootlogon.C");
 
@@ -45,7 +45,7 @@ void plotBPixVetoModules(string BPixMods="veto_master_VdM_ABCD_2018_newcuts_BPix
     //B[l].SetMarkerStyle(8);
   }
 
-  ifstream myfile(BPixMods.c_str());
+  ifstream myfile(VetoList.c_str());
   if (!myfile.is_open()){
     std::cout << "Unable to open "<<endl;
     return;
@@ -92,7 +92,7 @@ void plotBPixVetoModules(string BPixMods="veto_master_VdM_ABCD_2018_newcuts_BPix
     //F[l].SetMarkerStyle(8);
   }
 
-  ifstream myfile_fpix(FPixMods.c_str());
+  ifstream myfile_fpix(VetoList.c_str());
   if (!myfile_fpix.is_open()){
     std::cout << "Unable to open "<<endl;
     return;

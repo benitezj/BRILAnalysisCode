@@ -47,6 +47,10 @@ private:
 
   std::string   csvfilename_;//
   std::ofstream csvfile;
+
+  std::string   errfilename_;//
+  std::ofstream errfile;
+
 };
 
 
@@ -57,7 +61,8 @@ PCCLumiAnalyzer::PCCLumiAnalyzer(const edm::ParameterSet& iConfig)
   :
   countLumi_(0), 
   run_(0),
-  csvfilename_("PCCLumiByBX.csv")
+  csvfilename_("PCCLumiByBX.csv"),
+  errfilename_("PCCLumiByBX.err")
 {
   //
   //read the config
@@ -109,6 +114,7 @@ PCCLumiAnalyzer::beginLuminosityBlock(const edm::LuminosityBlock& lumiSeg, const
   lumiSeg.getByToken(lumiInfoToken,PCCHandle);
   const LumiInfo& inLumiOb = *(PCCHandle.product());
   const std::vector<float> lumiByBX= inLumiOb.getInstLumiAllBX();
+  const std::vector<float> errByBX= inLumiOb.getErrorLumiAllBX();
 
   //
   //Open the output file
@@ -116,19 +122,25 @@ PCCLumiAnalyzer::beginLuminosityBlock(const edm::LuminosityBlock& lumiSeg, const
   csvfile.open(csvfilename_, std::ios_base::app);
   csvfile<<std::to_string(lumiSeg.run())<<",";
   csvfile<<std::to_string(lumiSeg.luminosityBlock())<<",";
-
-  //
   //fill the output file
-  //
   //std::cout<<countLumi_<<","<<run_<<","<<lumiSeg.luminosityBlock()<<","<<inLumiOb.getTotalInstLumi()<<","<<lumiByBX.size()<<std::endl;
   csvfile<<std::to_string(inLumiOb.getTotalInstLumi());
   for(unsigned int i=0;i<lumiByBX.size();i++)
-  //for(unsigned int i=0;i<10;i++)
     csvfile<<","<<std::to_string(lumiByBX[i]);
   csvfile<<std::endl;
-
-
   csvfile.close();
+
+
+  errfile.open(errfilename_, std::ios_base::app);
+  errfile<<std::to_string(lumiSeg.run())<<",";
+  errfile<<std::to_string(lumiSeg.luminosityBlock())<<",";
+  errfile<<std::to_string(0.);
+  for(unsigned int i=0;i<errByBX.size();i++)
+    errfile<<","<<std::to_string(errByBX[i]);
+  errfile<<std::endl;
+  errfile.close();
+
+
 }
 
 //define this as a plug-in

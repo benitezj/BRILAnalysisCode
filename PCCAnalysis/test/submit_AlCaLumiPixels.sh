@@ -26,26 +26,25 @@ eos=''
 INSTALLATION=${CMSSW_BASE}/src
 
 ### which script to run
-jobtype=lumi  #options: corr, lumi, lumi_nocorr
+jobtype=lumi  #options: corr, lumi
 echo "job type: $jobtype"
 
 ## directory containing the corrections in case of jobtype=lumi jobs
 ## set to "" to use FrontierConditions
 #DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
-echo "corections: $DBDIR"
+if [ "$DBDIR" != "" ]; then
+   echo "corections: $DBDIR"
+fi
 
 ###define output directory
-#outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaLumiPixels_ZB/$extdir
 #outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias/$extdir
-#outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_noCorr/$extdir
 #outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/$extdir  
-#outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_19Aug/$extdir
-#outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias_21Aug/$extdir
 
 outputdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/$extdir
-
+#outputdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/$extdir
 
 echo "output: $outputdir"
+
 
 ###lxbatch submit
 submit(){
@@ -62,7 +61,18 @@ submit(){
 }
 
 
-##clean up the runs file
+## copy the cfg
+if [ "$action" == "0" ]; then 
+    cfg=$3
+    if [ "$cfg" == "" ]; then
+	echo "No cfg provided\n"
+	exit;
+    fi
+
+    /bin/cp $cfg $inputdir/cfg.py
+fi
+
+## clean up the runs file
 if [ "$action" == "5" ] ; then
     rm -f $inputdir/runs.dat
     rm -f $inputdir/ls.dat
@@ -95,33 +105,30 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	echo "export INPUTFILE=${inputdir}/${run}.txt" >> $inputdir/${run}.sh
 	echo "env" >> $inputdir/${run}.sh
 
+
+	echo "cmsRun  ${inputdir}/cfg.py" >> $inputdir/${run}.sh
+
 	######################
 	#### lumi calculation 
-	if [ "$jobtype" == "lumi" ]; then 
+	#if [ "$jobtype" == "lumi" ]; then 
 	    #echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_cfg.py" >> $inputdir/${run}.sh
-            echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_2018Veto_cfg.py " >> $inputdir/${run}.sh
-	fi
+            #echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_2018Veto_cfg.py " >> $inputdir/${run}.sh
+	#fi
 
-	if [ "$jobtype" == "lumi_nocorr" ]; then
-	    echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_noCorr_cfg.py " >> $inputdir/${run}.sh
-	fi
-
-	if [ "$jobtype" == "lumi" ] || [ "$jobtype" == "lumi_nocorr" ] ; then
-	    #echo "${eos} cp PCC_ZB.root $outputdir/${run}.root " >> $inputdir/${run}.sh
-	    
+	if [ "$jobtype" == "lumi" ] ; then
 	    ##produce the csv in the same batch job
-	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/pcc_LumiInfoRead_cfg.py " >> $inputdir/${run}.sh
+	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/python/pcc_LumiInfoRead_cfg.py " >> $inputdir/${run}.sh
 	    echo "${eos} cp PCCLumiByBX.csv  $outputdir/${run}.csv " >> $inputdir/${run}.sh
+	    echo "${eos} cp PCCLumiByBX.err  $outputdir/${run}.err " >> $inputdir/${run}.sh
 	fi
 
 	#####################
 	### corrections
 	if [ "$jobtype" == "corr" ] ; then
-	    echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/raw_corr_Random_cfg.py " >> $inputdir/${run}.sh
+	    #echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/raw_corr_Random_cfg.py " >> $inputdir/${run}.sh
 	    echo "${eos} cp PCC_Corr.db $outputdir/${run}.db " >> $inputdir/${run}.sh
 	    echo "${eos} cp CorrectionHisto.root $outputdir/${run}.root " >> $inputdir/${run}.sh
 	fi
-
 
     fi
     
@@ -141,36 +148,43 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	    fail=1
 	fi
 	
-	success=`cat $inputdir/${run}.log | grep "Successfully completed."`
-	if [ "$success" == "" ]; then
-	    echo "no Success"
-	    fail=1
+	if [ "$fail" == "0" ]; then
+	    success=`cat $inputdir/${run}.log | grep "Successfully completed."`
+	    if [ "$success" == "" ]; then
+		echo "no Success"
+		fail=1
+	    fi
 	fi
 
-	fatal=`cat $inputdir/${run}.log | grep Fatal`
-	if [ "$fatal" != "" ]; then
-	    echo "Fatal"
+	if [ "$fail" == "0" ]; then
+	    fatal=`cat $inputdir/${run}.log | grep Fatal`
+	    if [ "$fatal" != "" ]; then
+		echo "Fatal"
 	    fail=1
+	    fi
 	fi
-	 
-	###### error check for lumi jobs
-	if [ "$jobtype" == "lumi" ] || [ "$jobtype" == "lumi_nocorr" ] ; then
-	    #rootf=`$eos ls $outputdir/${run}.root | grep err `
-	    #if [ "$rootf" != "" ]; then
-	    #	echo "no root"
-	    #	fail=1
-	    #fi
-	    
-	    #csvf=`$eos ls $outputdir/${run}.csv | grep err `
-	    if [  ! -f  $outputdir/${run}.csv ]; then
-		echo "no csv"
-		fail=1
+
+	
+	if [ "$fail" == "0" ]; then
+            ###### error check for lumi jobs
+	    if [ "$jobtype" == "lumi" ] ; then
+	       #rootf=`$eos ls $outputdir/${run}.root | grep err `
+	       #if [ "$rootf" != "" ]; then
+	       #	echo "no root"
+	       #	fail=1
+	       #fi
+		
+	        #csvf=`$eos ls $outputdir/${run}.csv | grep err `
+		if [  ! -f  $outputdir/${run}.csv ]; then
+		    echo "no csv"
+		    fail=1
+		fi
 	    fi
 	fi
 
 
 	#### error check for corrections jobs
-	if [ "$jobtype" == "corr" ] ; then
+	if [ "$jobtype" == "corr" ] && [ "$fail" == "0" ] ; then
 	    dbf=`$eos ls $outputdir/${run}.db | grep err `
 	    if [ "$dbf" != "" ]; then
 		echo "no db"
@@ -196,9 +210,10 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	# create reference csv for comparison
 	# note brilcalc must be setup 
 	#ref=HFET
-	# ref=DT
+	ref=HFOC
+	#ref=DT
 	#ref=PLTZERO
-	ref=normtag_BRIL
+	#ref=normtag_BRIL
 	if [ "$ref" != "" ]; then
 
 	    /bin/rm -f $inputdir/${run}.$ref
@@ -209,13 +224,14 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	    fi 
 
 	    if [ "$ref" != "normtag_BRIL" ]; then
-	    	brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep ${run}: | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
+	    	#brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep ${run}: | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
+		#brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+		brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
 	    fi
-	    
 	fi
 
         # run plotting macro
-	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/plotPCCcsv.C\(\"$outputdir\",$run,\"$inputdir\",\"$ref\"\)
+	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${inputdir}\",\"${ref}\"\)
 
     fi
 

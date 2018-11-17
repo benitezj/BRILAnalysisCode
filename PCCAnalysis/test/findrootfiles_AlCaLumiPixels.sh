@@ -5,9 +5,16 @@
 ## * script to search for files of this form:
 ##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/559/00000/3A1948E7-B85C-E811-BE2E-FA163E2965C4.root
 ##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/316/060/00000/1AAF584E-0956-E811-B8CF-FA163E73FFA8.root
+##     /eos/cms/store/data/Run2018D/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/323/513/00000
 ## * this script takes no arguments
 ## * output are files with runnumber.txt with list of root files 
 #######################################
+
+period=$1 #Run2018A
+
+##all run files are cleaned out
+mkdir ./$period
+rm -f ./$period/*.txt
 
 
 ##options
@@ -46,43 +53,27 @@ search(){
 ######################################
 ###search files for all streams in the run period
 ######################################
-seachPeriod(){
-
-    period=$1 #Run2018A
-    if [ "$period" == "" ]; then
+if [ "$period" == "" ]; then
 	echo "no run period specified."
 	return
-    fi
-    
-    ##all run files are cleaned out
-    mkdir ./$period
-    rm -f ./$period/*.txt
-    
-    
-    ### loop over the streams
-    for s in `${eos} ls /store/data/$period/ | grep AlCaLumiPixels`; do 
-	local idx=`echo $s  | awk -F"AlCaLumiPixels" '{print $2}'`
+fi
+
+### loop over the streams
+for s in `${eos} ls /store/data/$period/ | grep AlCaLumiPixels`; do 
+	idx=`echo $s  | awk -F"AlCaLumiPixels" '{print $2}'`
 
 	if [ "$specialRun" == "1" ] && [ "$idx" == "" ]; then
- 	# only process "AlCaLumiPixels[0-N]" 
+	# only process "AlCaLumiPixels[0-N]" 
 	    continue
 	fi
 
 	if [ "$specialRun" == "0" ] && [ "$idx" != "" ]; then
- 	# only process "AlCaLumiPixels"
+	# only process "AlCaLumiPixels"
 	    continue
 	fi
 
 	echo $s
 	search $period $s
-	
-    done    
-}
+done    
 
-######################################
-### search all run periods:
-######################################
-#seachPeriod Run2018A
-#seachPeriod Run2018B
-#seachPeriod Run2018C
-seachPeriod Run2018D
+
