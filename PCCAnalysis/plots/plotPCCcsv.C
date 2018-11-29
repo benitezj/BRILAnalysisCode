@@ -121,6 +121,8 @@ float getMaxLumi(TString inputfile){
 
 void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
 
+  bool perBXRatioPlots=0;
+
 
   ///Open the lumi csv file
   TString infile=Path+"/"+Run+".csv";
@@ -340,7 +342,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
 
   
   //// per BX ratio plots
-  if(ref.CompareTo("")!=0) {
+  if(perBXRatioPlots&&ref.CompareTo("")!=0) {
     TH2F*HLumiBXvsLS_ratio=(TH2F*)HLumiBXvsLS.Clone("HLumiBXvsLS_ratio");
     HLumiBXvsLS_ratio->Divide(&HRefLumiBXvsLS);
     

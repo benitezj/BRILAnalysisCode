@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 
-void plotPCCStability(TString inpath){
+void plotPCCStability(TString inpath, TString ref){
 
   ifstream myfile((inpath+"/ls.dat").Data());
   if (!myfile.is_open()){
@@ -13,8 +13,10 @@ void plotPCCStability(TString inpath){
 
 
   ///create histogram
-  TH1F HLumiLS("HLumiLS","",100,0.8,1.2);
+  TH1F HLumiLS("HLumiLS","",100,0.9,1.1);
 
+  TGraph LumiLS;
+  int counter=0;
 
   std::string line;
   int run=0;
@@ -30,6 +32,7 @@ void plotPCCStability(TString inpath){
     float ratio=0;
     if(totLRef>0){
       ratio=totL/totLRef;
+      LumiLS.SetPoint(counter++,counter,ratio);
     }
 
     HLumiLS.Fill(ratio);
@@ -38,26 +41,32 @@ void plotPCCStability(TString inpath){
   myfile.close();
 
 
-  gStyle->SetOptStat(111111);
-  
-  HLumiLS.GetYaxis()->SetTitle(" # of lumi sections ");
-  HLumiLS.GetXaxis()->SetTitle(" normtag_BRIL / PCC ");
 
   TCanvas C;
+  C.Clear();
+  gStyle->SetOptStat(111111);
+  gStyle->SetOptFit(1);
 
-  //HLumiLS.GetXaxis()->SetRangeUser(0,maxLS+50);
-  // HLumiLS.GetXaxis()->SetLabelSize(0.07);
-  // HLumiLS.GetXaxis()->SetTitleSize(0.1);
-  // HLumiLS.GetXaxis()->SetTitleOffset(0.6);
-  // HLumiLS.GetYaxis()->SetLabelSize(0.07);
-  // HLumiLS.GetYaxis()->SetTitleSize(0.08);
-  // HLumiLS.GetYaxis()->SetTitleOffset(0.6);
-  ///HLumiLS.GetYaxis()->SetRangeUser(0,MAXPCC);
+  HLumiLS.GetYaxis()->SetTitle(" # of lumi sections ");
+  HLumiLS.GetXaxis()->SetTitle(TString(" PCC / ")+ref);
   HLumiLS.SetMarkerStyle(8);
   HLumiLS.SetMarkerSize(0.5);
-  HLumiLS.Draw("hist");
-  
-  C.Print(inpath+"/PCCStabilityPerLS.png");
+
+  HLumiLS.Fit("gaus","","same",0.98,1.01);
+  //HLumiLS.Draw("hist");
+  C.Print(inpath+"/ls_ratio_histo.png");
+
+
+  C.Clear();
+  LumiLS.GetYaxis()->SetRangeUser(0.9,1.1);
+  LumiLS.SetMarkerStyle(8);
+  LumiLS.SetMarkerSize(0.5);
+  LumiLS.GetXaxis()->SetTitle("lumi section");
+  LumiLS.GetYaxis()->SetTitle(TString(" PCC / ")+ref);
+  LumiLS.Draw("ap");
+  C.Print(inpath+"/ls_ratio.png");
+
+
 
   gROOT->ProcessLine(".q");
 }

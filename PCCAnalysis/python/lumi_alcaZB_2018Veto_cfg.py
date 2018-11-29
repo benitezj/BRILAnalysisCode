@@ -1,7 +1,4 @@
 #########################
-#Author: Sam Higginbotham
-#Purpose: To investigate the AlCaPCCProducer input and output. 
-#########################
 import FWCore.ParameterSet.Config as cms
 import os
 
@@ -9,6 +6,31 @@ process = cms.Process("LumiInfo")
 process.path1 = cms.Path()
 
 
+
+
+######################## 
+## PoolSource module
+
+inputlist=cms.untracked.vstring()
+#inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
+#inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-02May2018-v1/70000/AA1D32AA-CE57-E811-B631-FA163E09BABD.root')
+#inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-02May2018-v1/30000/F451E0E9-C553-E811-8AB7-FA163E4D19DB.root')
+
+if len(inputlist) == 0 :
+    inputfile=os.getenv('INPUTFILE')
+    if inputfile == '' : sys.exit('invalid INPUTFILE')
+    print 'reading from input file: ', inputfile
+    infile = open(inputfile,'r')
+    inputlist=cms.untracked.vstring(infile.readlines())
+    infile.close()
+
+print inputlist
+process.source = cms.Source("PoolSource",
+    fileNames =     inputlist
+)
+
+
+#######################################
 #####Setup the conditions database
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.GlobalTag.globaltag = '101X_dataRun2_Prompt_v9'
@@ -22,11 +44,10 @@ if dbfile :
     #process.CondDB.connect = 'sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db'
     process.CondDB.connect = 'sqlite_file:'+dbfile
     process.GlobalTag = cms.ESSource("PoolDBESSource",
-                                     process.CondDB,                                                                                                  
+                                     process.CondDB,
                                      DumpStat=cms.untracked.bool(True),
                                      toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),
-                                                                tag = cms.string('TestCorrections'))),
-                                     )    
+                                                                tag = cms.string('TestCorrections'))),)    
 
 
 #process.load("CondCore.CondDB.CondDB_cfi")
@@ -41,23 +62,6 @@ if dbfile :
 #)
 
 
-######################## 
-## PoolSource module
-
-#inputlist=cms.untracked.vstring()
-#inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
-
-inputfile=os.getenv('INPUTFILE')
-if inputfile == '' : sys.exit('invalid INPUTFILE')
-print 'reading from input file: ', inputfile
-infile = open(inputfile,'r')
-inputlist=cms.untracked.vstring(infile.readlines())
-infile.close()
-
-print inputlist
-process.source = cms.Source("PoolSource",
-    fileNames =     inputlist
-)
 
 
 ##################
@@ -70,7 +74,7 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
 #        inputPccLabel = cms.string("alcaPCCProducerRandom"),
 #        ProdInst = cms.string("alcaPCCRandom"),
         outputProductName = cms.untracked.string("lumiInfo"), 
-        ApplyCorrections=cms.untracked.bool(False),  
+        ApplyCorrections=cms.untracked.bool(True),  
         saveCSVFile=cms.untracked.bool(True),
         modVeto=cms.vint32(),
         OutputValue = cms.untracked.string("Average"),

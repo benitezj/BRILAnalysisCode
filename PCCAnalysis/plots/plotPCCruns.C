@@ -2,10 +2,16 @@
 #include <fstream>
 #include <string>
 
-#define MAXPCCRUN 5e10
+//#define MAXPCCRUN 5e10
+//#define PCCZEROLUMI 1e3
+//#define PCCRUNLUMIRatioMin 18
+//#define PCCRUNLUMIRatioMax 22
+
+#define MAXPCCRUN 1e9
 #define PCCZEROLUMI 1e3
-#define PCCRUNLUMIRatioMin 18
-#define PCCRUNLUMIRatioMax 22
+#define PCCRUNLUMIRatioMin 0.9
+#define PCCRUNLUMIRatioMax 1.1
+
 long RUNOFFSET=315000;
 
 
@@ -88,6 +94,8 @@ void plotPCCruns(TString Path,TString ref=""){
   TGraph LumiRun;
   TGraph LumiRunZero;
   TGraph LumiRunRatio;
+  
+  TH1F HRatio("HRatio","",40,PCCRUNLUMIRatioMin,PCCRUNLUMIRatioMax);
 
   std::string line;
   int run=0;
@@ -101,7 +109,8 @@ void plotPCCruns(TString Path,TString ref=""){
 
     iss>>run;
     iss>>totLRun;
-    
+
+
     LumiRun.SetPoint(counter++,run-RUNOFFSET,totLRun);
     if(run>lastrun) lastrun=run-RUNOFFSET;    
 
@@ -126,10 +135,18 @@ void plotPCCruns(TString Path,TString ref=""){
 
     // Comparison to another luminometer
     if(ref.CompareTo("")!=0){
-      float totRefLRun = getRunRefLumi(Path+"/"+(long)run+"."+ref);
-      if(totRefLRun>0)
-	LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,((MAXPCCRUN)*(totLRun/totRefLRun-PCCRUNLUMIRatioMin))/(PCCRUNLUMIRatioMax-PCCRUNLUMIRatioMin));
-      else LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,0.);
+      // float totRefLRun = getRunRefLumi(Path+"/"+(long)run+"."+ref);
+      float totRefLRun=0.;
+      iss>>totRefLRun;
+      cout<<run<<" "<<totLRun<<" "<<totRefLRun<<endl;
+      if(totRefLRun>0){
+	//LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,((MAXPCCRUN)*(totLRun/totRefLRun-PCCRUNLUMIRatioMin))/(PCCRUNLUMIRatioMax-PCCRUNLUMIRatioMin));
+	LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,totLRun/totRefLRun);
+	HRatio.Fill(totLRun/totRefLRun);
+      }else{
+	LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,0.);
+	HRatio.Fill(0);
+      }
     }
 
 
@@ -142,8 +159,8 @@ void plotPCCruns(TString Path,TString ref=""){
     
 
   TCanvas C;
-  if(ref.CompareTo("")==0)
-    C.SetLogy(1);
+
+  C.SetLogy(1);
 
   //LumiRun.GetXaxis()->SetLabelSize(0.07);
   //LumiRun.GetXaxis()->SetTitleSize(0.1);
@@ -158,33 +175,51 @@ void plotPCCruns(TString Path,TString ref=""){
   LumiRun.Draw("ap");
 
   LumiRun.GetXaxis()->SetTitle(TString("run number ") + " - " + RUNOFFSET);
-  LumiRun.GetYaxis()->SetTitle("PCC Lumi");
+  LumiRun.GetYaxis()->SetTitle("PCC Lumi [1/#mub]");
 
   LumiRunZero.SetMarkerStyle(8);
   LumiRunZero.SetMarkerSize(0.5); 
   LumiRunZero.SetMarkerColor(4);
   LumiRunZero.Draw("psame");
-  
+  C.Print(Path+"/runs.png");
+
+
   if(ref.CompareTo("")!=0){
-    ///Note: logy must be set to 0 otherwise ratio values appear larger on plot
+    C.Clear();
+    C.SetLogy(0);
+
+    LumiRunRatio.Draw("ap");
+    LumiRunRatio.GetYaxis()->SetRangeUser(PCCRUNLUMIRatioMin,PCCRUNLUMIRatioMax);      
     LumiRunRatio.SetMarkerStyle(8);
     LumiRunRatio.SetMarkerSize(0.5); 
     LumiRunRatio.SetMarkerColor(2);
-    LumiRunRatio.Draw("psame");
+    LumiRunRatio.GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    LumiRunRatio.GetXaxis()->SetTitle(LumiRun.GetXaxis()->GetTitle());
+    LumiRunRatio.Draw("ap");
     
-    TGaxis *axis = new TGaxis(LumiRun.GetXaxis()->GetXmax(),PCCZEROLUMI,LumiRun.GetXaxis()->GetXmax(),MAXPCCRUN,PCCRUNLUMIRatioMin,PCCRUNLUMIRatioMax,510,"+L");
-    axis->SetLineColor(kRed);
-    axis->SetTextColor(kRed);
-    //axis->SetLabelSize(0.07);
-    axis->SetLabelColor(2);
-    //axis->SetTitleSize(0.08);
-    //axis->SetTitleOffset(0.6);
-    axis->SetTitle(TString("PCC / ")+ref);
-    axis->Draw();
+    // TGaxis *axis = new TGaxis(LumiRun.GetXaxis()->GetXmax(),PCCZEROLUMI,LumiRun.GetXaxis()->GetXmax(),MAXPCCRUN,PCCRUNLUMIRatioMin,PCCRUNLUMIRatioMax,510,"+L");
+    // axis->SetLineColor(kRed);
+    // axis->SetTextColor(kRed);
+    // //axis->SetLabelSize(0.07);
+    // axis->SetLabelColor(2);
+    // //axis->SetTitleSize(0.08);
+    // //axis->SetTitleOffset(0.6);
+    // axis->SetTitle(TString("PCC / ")+ref);
+    // axis->Draw();
+
+    C.Print(Path+"/runs_ratio.png");
+
+    gStyle->SetOptStat(111111);
+    C.Clear();
+    C.SetLogy(0);
+    HRatio.GetYaxis()->SetTitle("# of runs");
+    HRatio.GetXaxis()->SetTitle(LumiRunRatio.GetYaxis()->GetTitle());
+    HRatio.Draw("hist");
+    C.Print(Path+"/runs_ratio_hist.png");
+
+
   }
 
-
-  C.Print(Path+"/runs.png");
 
   gROOT->ProcessLine(".q");
 }

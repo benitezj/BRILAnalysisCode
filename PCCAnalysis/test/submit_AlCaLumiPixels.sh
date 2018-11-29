@@ -9,57 +9,68 @@ fi
 inputdir=`readlink -f $inputdir`
 extdir=$1 #relative path
 
-## what to do : create scripts, submit, check
+## what to do : 0=create scripts, 1=submit, 2=check
 action=$2
 
+
+###################
+##### options
+###################
 ## only a few runs
 TEST=0
 
-
-###################
-###### options
-###################
 #eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
 eos=''
 
-#INSTALLATION=/afs/cern.ch/user/b/benitezj/scratch0/BRIL_PCC/CMSSW_10_1_0/src
 INSTALLATION=${CMSSW_BASE}/src
 
-### which script to run
 jobtype=lumi  #options: corr, lumi
 echo "job type: $jobtype"
 
-## directory containing the corrections in case of jobtype=lumi jobs
+## in case of jobtype=lumi: directory containing the PCC corrections to be applied
 ## set to "" to use FrontierConditions
 #DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
+DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels011_AlCaPCCRandom_Nov22/Commissioning2018
 if [ "$DBDIR" != "" ]; then
    echo "corections: $DBDIR"
 fi
 
-###define output directory
+
+#########################################################################################
+########################################################################################
+### define output directory
 #outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/ZeroBias/$extdir
 #outputdir=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/$extdir  
-
-outputdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/$extdir
+#outputdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/$extdir
 #outputdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/$extdir
+baseoutdir=""
+if [ "$jobtype" == "lumi" ]; then
+baseoutdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias
+fi
 
+if [ $jobtype == "corr" ]; then
+baseoutdir=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom
+fi
+
+outputdir=$baseoutdir/$extdir
 echo "output: $outputdir"
 
 
-###lxbatch submit
+
+########################
+### lxbatch submit
 submit(){
     local run=$1
-
     rm -f $inputdir/${run}.log
-
     $eos rm ${outputdir}/${run}.root
     $eos rm ${outputdir}/${run}.db
     $eos rm ${outputdir}/${run}.txt
     $eos rm ${outputdir}/${run}.csv
-
     bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
 }
 
+## copy the proxy in case of xrootd access:
+/bin/cp /tmp/x509up_u55361 ${HOME}/
 
 ## copy the cfg
 if [ "$action" == "0" ]; then 
@@ -90,11 +101,12 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
     ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ]; then continue; fi    
     ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ] && [ "$run" != "318983" ] && [ "$run" != "318984" ] ; then continue; fi    
     ##if [ "$TEST" == "1" ] && [ "$run" != "316766" ]; then continue; fi        
-    if [ "$TEST" == "1" ] && [ "$run" != "318983" ]; then continue; fi        
+    if [ "$TEST" == "1" ] && [ "$run" != "325175" ]; then continue; fi        
 
     ###create the scripts
     if [ "$action" == "0" ]; then
 	rm -f $inputdir/${run}.sh
+	echo "export X509_USER_PROXY=${HOME}/x509up_u55361 " >> $inputdir/${run}.sh
 	echo "cd ${INSTALLATION} " >> $inputdir/${run}.sh
 	echo "eval \`scramv1 runtime -sh\` " >> $inputdir/${run}.sh
 	echo "cd \$TMPDIR  "   >> $inputdir/${run}.sh
@@ -105,27 +117,15 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	echo "export INPUTFILE=${inputdir}/${run}.txt" >> $inputdir/${run}.sh
 	echo "env" >> $inputdir/${run}.sh
 
-
 	echo "cmsRun  ${inputdir}/cfg.py" >> $inputdir/${run}.sh
 
-	######################
-	#### lumi calculation 
-	#if [ "$jobtype" == "lumi" ]; then 
-	    #echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_cfg.py" >> $inputdir/${run}.sh
-            #echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/lumi_alcaZB_2018Veto_cfg.py " >> $inputdir/${run}.sh
-	#fi
-
 	if [ "$jobtype" == "lumi" ] ; then
-	    ##produce the csv in the same batch job
 	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/python/pcc_LumiInfoRead_cfg.py " >> $inputdir/${run}.sh
 	    echo "${eos} cp PCCLumiByBX.csv  $outputdir/${run}.csv " >> $inputdir/${run}.sh
 	    echo "${eos} cp PCCLumiByBX.err  $outputdir/${run}.err " >> $inputdir/${run}.sh
 	fi
 
-	#####################
-	### corrections
 	if [ "$jobtype" == "corr" ] ; then
-	    #echo "cmsRun ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/raw_corr_Random_cfg.py " >> $inputdir/${run}.sh
 	    echo "${eos} cp PCC_Corr.db $outputdir/${run}.db " >> $inputdir/${run}.sh
 	    echo "${eos} cp CorrectionHisto.root $outputdir/${run}.root " >> $inputdir/${run}.sh
 	fi
@@ -219,14 +219,15 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	    /bin/rm -f $inputdir/${run}.$ref
 	    
 	    if [ "$ref" == "normtag_BRIL" ]; then
-		brilcalc lumi  --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run  --byls --output-style csv | grep ${run}: | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref 
+		#brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref 
+		brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
 		##-i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-320065_13TeV_PromptReco_Collisions18_JSON.txt
 	    fi 
 
 	    if [ "$ref" != "normtag_BRIL" ]; then
-	    	#brilcalc lumi -r $run  --byls --type $ref --output-style csv | grep ${run}: | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
-		#brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
-		brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
+	    	#brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
+		brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+		#brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
 	    fi
 	fi
 
