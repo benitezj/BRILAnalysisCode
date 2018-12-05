@@ -30,7 +30,7 @@ echo "job type: $jobtype"
 ## in case of jobtype=lumi: directory containing the PCC corrections to be applied
 ## set to "" to use FrontierConditions
 #DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
-DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels011_AlCaPCCRandom_Nov22/Commissioning2018
+#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels011_AlCaPCCRandom_Nov22/Commissioning2018
 if [ "$DBDIR" != "" ]; then
    echo "corections: $DBDIR"
 fi
@@ -101,7 +101,7 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
     ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ]; then continue; fi    
     ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ] && [ "$run" != "318983" ] && [ "$run" != "318984" ] ; then continue; fi    
     ##if [ "$TEST" == "1" ] && [ "$run" != "316766" ]; then continue; fi        
-    if [ "$TEST" == "1" ] && [ "$run" != "325175" ]; then continue; fi        
+    if [ "$TEST" == "1" ] && [ "$run" != "323700" ]; then continue; fi        
 
     ###create the scripts
     if [ "$action" == "0" ]; then
@@ -209,26 +209,26 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 
 	# create reference csv for comparison
 	# note brilcalc must be setup 
-	#ref=HFET
-	ref=HFOC
-	#ref=DT
-	#ref=PLTZERO
-	#ref=normtag_BRIL
+	ref=hfet
+#	ref=hfoc
+#	ref=dt
+#	ref=pltzero
+# ref=bcm1f
+#	ref=BRIL
 	if [ "$ref" != "" ]; then
 
 	    /bin/rm -f $inputdir/${run}.$ref
 	    
-	    if [ "$ref" == "normtag_BRIL" ]; then
-		#brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref 
-		brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
-		##-i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-320065_13TeV_PromptReco_Collisions18_JSON.txt
-	    fi 
+#	    if [ "$ref" == "normtag_BRIL" ]; then
+#		brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+#	    fi 
+#
+#	    if [ "$ref" != "normtag_BRIL" ]; then
+#		brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+#		#brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
+#	    fi
 
-	    if [ "$ref" != "normtag_BRIL" ]; then
-	    	#brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | awk -F"," '{split($1,r,":"); split($2,ls,":"); print r[1]","ls[1]","$7}' >> $inputdir/${run}.$ref
-		brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
-		#brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
-	    fi
+	    brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_${ref}.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
 	fi
 
         # run plotting macro
