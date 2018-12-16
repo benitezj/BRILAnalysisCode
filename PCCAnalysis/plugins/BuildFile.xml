@@ -20,3 +20,10 @@
   <flags   EDM_PLUGIN="1"/>
 </library>
 
+
+<library file="SiPixelQuality_PayloadInspector.cc" name="SiPixelQuality_PayloadInspector">
+  <use   name="CondCore/Utilities"/>
+  <use   name="CondCore/CondDB"/>
+  <use   name="CondFormats/Common"/>
+  <use   name="boost_python"/>
+</library>
