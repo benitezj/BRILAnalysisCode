@@ -28,15 +28,17 @@ void mergeFile(std::string file){
 
 
 void mergeModuleLists(){
-
+  
   mergeFile("/afs/cern.ch/user/b/benitezj/www/BRIL/BadModuleStudy/SiPixelQuality_byPCL_prompt_v1/ModuleVetoList.txt");
   mergeFile("/afs/cern.ch/user/b/benitezj/www/BRIL/BadModuleStudy/SiPixelQuality_byPCL_prompt_v2/ModuleVetoList.txt");
   mergeFile("/afs/cern.ch/user/b/benitezj/www/BRIL/BadModuleStudy/SiPixelQuality_byPCL_stuckTBM_v1/ModuleVetoList.txt");
-  
-  mergedlist.unique();
-  
-  cout<<mergedlist.size()<<endl;
 
+  ////check against Sam list
+  //mergeFile("BRILAnalysisCode/PCCAnalysis/test/mergedModuleList.txt");
+  //mergeFile("BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt");
+  
+  mergedlist.unique();  
+  cout<<mergedlist.size()<<endl;
   for (std::list<int>::iterator it=mergedlist.begin(); it!=mergedlist.end(); ++it)
     std::cout <<*it<<endl;
 
