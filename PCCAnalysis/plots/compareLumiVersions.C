@@ -1,6 +1,6 @@
 #include "globals.h"
 
-float getRefLumi(TString file, unsigned int RUN, unsigned in LS){
+float getRefLumi(TString file, unsigned int RUN, unsigned int LS){
   
   ifstream reffile(file.Data());
   if (!reffile.is_open()){
@@ -22,7 +22,7 @@ float getRefLumi(TString file, unsigned int RUN, unsigned in LS){
 }
 
 
-void comparePCCLumiVersions(TString refDir, TString newDir){
+void compareLumiVersions(TString refDir, TString newDir){
 
   TGraph LumiFrame;
   TGraph LumiRatio;
@@ -53,7 +53,7 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
     if(run<firstrun) firstrun=ls;
     if(run>lastrun) lastrun=ls;
 
-    refLumi = getRefLumi(refDir+"/ls.dat",run);
+    refLumi = getRefLumi(refDir+"/ls.dat",run,ls);
 
     if(refLumi>0.){
       if(newLumi/refLumi>2)
@@ -82,7 +82,7 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
   while (std::getline(reffile,line)){
     std::stringstream iss(line);
     iss>>run>>refLumi;
-    newLumi = getRefLumi(newDir+"/runs.dat",run);
+    newLumi = getRefLumi(newDir+"/runs.dat",run,ls);
 
     if(refLumi>0.&&newLumi<=0.){ 
       cout<<"Lost: "<<run<<endl;

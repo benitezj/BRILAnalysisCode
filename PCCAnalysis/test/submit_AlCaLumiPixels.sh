@@ -55,8 +55,6 @@ fi
 outputdir=$baseoutdir/$extdir
 echo "output: $outputdir"
 
-
-
 ########################
 ### lxbatch submit
 submit(){
@@ -81,6 +79,12 @@ if [ "$action" == "0" ]; then
     fi
 
     /bin/cp $cfg $inputdir/cfg.py
+
+
+    echo "mkdir -p $outputdir"
+    mkdir -p $outputdir
+    /bin/ls $outputdir
+
 fi
 
 ## clean up the runs file
@@ -209,10 +213,10 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 
 	# create reference csv for comparison
 	# note brilcalc must be setup 
-	ref=hfet
+#	ref=hfet
 #	ref=hfoc
 #	ref=dt
-#	ref=pltzero
+	ref=pltzero
 # ref=bcm1f
 #	ref=BRIL
 	if [ "$ref" != "" ]; then
