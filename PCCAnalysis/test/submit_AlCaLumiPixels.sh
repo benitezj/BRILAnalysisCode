@@ -214,9 +214,9 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	# create reference csv for comparison
 	# note brilcalc must be setup 
 #	ref=hfet
-#	ref=hfoc
+	ref=hfoc
 #	ref=dt
-	ref=pltzero
+#	ref=pltzero
 # ref=bcm1f
 #	ref=BRIL
 	if [ "$ref" != "" ]; then
@@ -232,7 +232,7 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 #		#brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
 #	    fi
 
-	    brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_${ref}.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+	    brilcalc lumi -c web --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_${ref}.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
 	fi
 
         # run plotting macro
