@@ -8,8 +8,7 @@ import time
 
 NBX = 3564
 
-
-sigma_pcc  = 11245.5/5910000*23.311
+#sigma_pcc  = 11245.5/5910000*23.311
 sigma_hfoc = 11245.5/797.5
 sigma_hfet = 11245.5/2431
 sigma_bcm = 11245.5/203.2
@@ -18,23 +17,24 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 
 
 ##########################
-####Fill 7358
-BXLIST = [9,10,11,534,535,536,748,749,750,751,752,753,754,755,756,757,758,759,760,761,1642,1643,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655]
-## mu scan:
+####Fill 7358 (mu scan)
 h5file = tables.open_file('/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
+BXLIST = [11,536,750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655]
 tmin=1540537800
 tmax=1540538550
-## vdm scan:
-# h5file = tables.open_file('/brildata/vdmdata18/7358_1810260724_1810260821.hd5','r')
-#tmin=1540541400
-#tmax=1540541900
-
 hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
-
+sigma_pcc  = 11245.5/5910000*23.311
 
 #############################
 #### Fill 7274
 #h5file = tables.open_file('/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
+#BXLIST = [62,63,64,65,66,67,68,69,70,71,117,118,119,120,121,122,123,124,125,126,196,197,198,199,200,201,202,203,204,205,251,252,253,254,255,256,257,258,259,260]
+#tmin=1539215350
+#tmax=1539215350+2000
+###hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
+#hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
+#sigma_pcc  = 11245.5/5910000
+
 
 print(h5file)
 
@@ -145,7 +145,7 @@ def getLUMIroot(time,idx,hist):
         if getattr(hist.pccminitree,'timeStamp')-(time-23) > 23: continue
         #for j in range(NBX):
         for j in BXLIST:
-            LUMI[j] = getattr(hist.pccminitree,'BXid_'+str(j))
+            LUMI[j] = getattr(hist.pccminitree,'BXid_'+str(j-1))
         return i,LUMI 
         #exit()
     return 0,LUMI 
@@ -193,34 +193,35 @@ for row in h5file.root.hfoclumi.iterrows():
     idx_plt_[13], PLT_13   = getLUMI(time[0],idx_plt_[13],h5file.root.pltlumizero_13)
     idx_plt_[14], PLT_14   = getLUMI(time[0],idx_plt_[14],h5file.root.pltlumizero_14)
     idx_plt_[15], PLT_15   = getLUMI(time[0],idx_plt_[15],h5file.root.pltlumizero_15)
-
+    
+    #print fill[0],run[0],ls[0],time[0],HFOC[BXLIST[0]-1]*sigma_hfoc
 
     ##loop over bx's
     #for i in range(0,NBX)
     for b in BXLIST:
-        bx[0]   = b+1 ## +1 to match definition in  cmswbm
-        pcc[0]  = PCC[b]*sigma_pcc
-        hfoc[0] = HFOC[b]*sigma_hfoc
-        hfet[0] = HFET[b]*sigma_hfet
-        bcm[0]  = BCM[b]*sigma_bcm
-        plt[0]  = PLT[b]*sigma_plt
+        bx[0]   = b 
+        pcc[0]  = PCC[b]*sigma_pcc  ## pcc index is already fixed above
+        hfoc[0] = HFOC[b-1]*sigma_hfoc
+        hfet[0] = HFET[b-1]*sigma_hfet
+        bcm[0]  = BCM[b-1]*sigma_bcm
+        plt[0]  = PLT[b-1]*sigma_plt
 
-        plt_0[0]  = PLT_0[b]*sigma_plt
-        plt_1[0]  = PLT_1[b]*sigma_plt
-        plt_2[0]  = PLT_2[b]*sigma_plt
-        plt_3[0]  = PLT_3[b]*sigma_plt
-        plt_4[0]  = PLT_4[b]*sigma_plt
-        plt_5[0]  = PLT_5[b]*sigma_plt
-        plt_6[0]  = PLT_6[b]*sigma_plt
-        plt_7[0]  = PLT_7[b]*sigma_plt
-        plt_8[0]  = PLT_8[b]*sigma_plt
-        plt_9[0]  = PLT_9[b]*sigma_plt
-        plt_10[0]  = PLT_10[b]*sigma_plt
-        plt_11[0]  = PLT_11[b]*sigma_plt
-        plt_12[0]  = PLT_12[b]*sigma_plt
-        plt_13[0]  = PLT_13[b]*sigma_plt
-        plt_14[0]  = PLT_14[b]*sigma_plt
-        plt_15[0]  = PLT_15[b]*sigma_plt
+        plt_0[0]  = PLT_0[b-1]*sigma_plt
+        plt_1[0]  = PLT_1[b-1]*sigma_plt
+        plt_2[0]  = PLT_2[b-1]*sigma_plt
+        plt_3[0]  = PLT_3[b-1]*sigma_plt
+        plt_4[0]  = PLT_4[b-1]*sigma_plt
+        plt_5[0]  = PLT_5[b-1]*sigma_plt
+        plt_6[0]  = PLT_6[b-1]*sigma_plt
+        plt_7[0]  = PLT_7[b-1]*sigma_plt
+        plt_8[0]  = PLT_8[b-1]*sigma_plt
+        plt_9[0]  = PLT_9[b-1]*sigma_plt
+        plt_10[0]  = PLT_10[b-1]*sigma_plt
+        plt_11[0]  = PLT_11[b-1]*sigma_plt
+        plt_12[0]  = PLT_12[b-1]*sigma_plt
+        plt_13[0]  = PLT_13[b-1]*sigma_plt
+        plt_14[0]  = PLT_14[b-1]*sigma_plt
+        plt_15[0]  = PLT_15[b-1]*sigma_plt
     
         tree.Fill() 
         #print fill[0],run[0],ls[0],time[0],bx[0],hfoc[0],pcc[0]
