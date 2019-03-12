@@ -3,27 +3,39 @@ std::map<TString,TString> DETName = {{"pcc","PCC"},{"hfoc","HFOC"},{"hfet","HFET
 
 #define NDET 5
 TString DETLIST[NDET] = {"hfoc","hfet","plt","bcm","pcc"};
-int detsel=3;
+int detsel=4;
 
 #define NPLT 16
 
-//////////////
-/// Fill 7358
-long tmin=1540537829;  long tmax=1540538520;   ////Mu scan
-//long tmin=1540541430;  long tmax=1540541830; ////Vdm Scan 
+  //////////////////
+  /////// Fill 7358
+  long FILL=7358;
+  long tmin=1540537829;  long tmax=1540538520; 
+  #define NTimeStep 6
+  long TimeStep[NTimeStep] = {1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+643};
+  #define BXSel 750
+  ////#define NBX 26
+  ////long BXLIST[NBX] = {11,536,750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655};
+  #define NTRAIN 2
+  int BXLeading[NTRAIN] = {750,1644};
+  #define NBXTrain 10
+  #define NBX (NTRAIN*NBXTrain)
+  long BXLIST[NBX];
 
-#define NTimeStep 6
-long TimeStep[NTimeStep] = {1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+643};
 
-#define NBX 26
-long BXLIST[NBX] = {11,536,750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655};
-//long BXLIST[NBX] = {750,751,752,753,754,755,756,757,758,759,760};
-//long BXLIST[NBX] = {1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654};
-//long BXLIST[NBXLead] = {750,1644};
-//long BXTrain[NBXTrain] = {751,752,753,754,755,756,757,758,759,760,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654};
-//long BXLIST[NBXTrain] = {760,1654};
-
-#define BXSel 750 //for detector comparisons vs time
+// //////////////
+// /// Fill 7274
+// long FILL=7274;
+// long tmin=1539215350;  long tmax=1539215350+2000;   
+// #define NTimeStep 14
+// long TimeStep[NTimeStep] = {1539215350+195,1539215350+271,1539215350+345,1539215350+421,1539215350+518,1539215350+614,1539215350+760,1539215350+999,1539215350+1144,1539215350+1241,1539215350+1340,1539215350+1415,1539215350+1490,1539215350+1564};
+// #define BXSel 62 
+// #define NTRAIN 16
+// //int BXLeading[NTRAIN] = {62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279};//,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366};
+// int BXLeading[NTRAIN] = {62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689};//,2878,3067};//,3256};
+// #define NBXTrain 10
+// #define NBX (NTRAIN*NBXTrain)
+// long BXLIST[NBX];
 
 
 /////////
@@ -33,7 +45,22 @@ TString timeref=TString("(time-")+tmin+")";
 TCanvas C;
 TChain tree("lumi");
 TH2F Time2D("Time2D","",200,0,tmax-tmin,200,0,20);
+TLine line;
 
+void setBXLIST(long fill=0){
+  if(fill==7358){
+    for(int i=0;i<NTRAIN;i++)
+      for(int j=0;j<NBXTrain;j++)
+	BXLIST[i*NBXTrain+j] = BXLeading[i] + j;
+  }
+  else if(fill==7274){
+    for(int i=0;i<NTRAIN;i++)
+      for(int j=0;j<NBXTrain;j++)
+	BXLIST[i*NBXTrain+j] = BXLeading[i] + j;
+  }
+  else cout<<"fill number not found"<<endl;
+  
+}
 
 void plot_lumi_vstime_perbx(){//for the reference detector
 
@@ -65,47 +92,46 @@ void plot_lumi_vstime_perbx(){//for the reference detector
   bx_leg.Draw();
   C.Print("plot_linearity.pdf");
 
+  /* /////Below separate into 4 graphs */
+  /* bx_leg.Clear(); */
+  /* C.Clear(); */
+  /* Time2D.Draw("hist"); */
+  /* for(long i=0;i<NBX/4;i++){ */
+  /*   Time2D_bx[i]->Draw("histpsame"); */
+  /*   bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp"); */
+  /* } */
+  /* bx_leg.Draw(); */
+  /* C.Print("plot_linearity.pdf"); */
 
-  /////Below separate into 4 graphs
-  bx_leg.Clear();
-  C.Clear();
-  Time2D.Draw("hist");
-  for(long i=0;i<NBX/4;i++){
-    Time2D_bx[i]->Draw("histpsame");
-    bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp");
-  }
-  bx_leg.Draw();
-  C.Print("plot_linearity.pdf");
+  /* bx_leg.Clear(); */
+  /* C.Clear(); */
+  /* Time2D.Draw("hist"); */
+  /* for(long i=NBX/4;i<NBX/2;i++){ */
+  /*   Time2D_bx[i]->Draw("histpsame"); */
+  /*   bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp"); */
+  /* } */
+  /* bx_leg.Draw(); */
+  /* C.Print("plot_linearity.pdf"); */
 
-  bx_leg.Clear();
-  C.Clear();
-  Time2D.Draw("hist");
-  for(long i=NBX/4;i<NBX/2;i++){
-    Time2D_bx[i]->Draw("histpsame");
-    bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp");
-  }
-  bx_leg.Draw();
-  C.Print("plot_linearity.pdf");
+  /* bx_leg.Clear(); */
+  /* C.Clear(); */
+  /* Time2D.Draw("hist"); */
+  /* for(long i=NBX/2;i<3*NBX/4;i++){ */
+  /*   Time2D_bx[i]->Draw("histpsame"); */
+  /*   bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp"); */
+  /* } */
+  /* bx_leg.Draw(); */
+  /* C.Print("plot_linearity.pdf"); */
 
-  bx_leg.Clear();
-  C.Clear();
-  Time2D.Draw("hist");
-  for(long i=NBX/2;i<3*NBX/4;i++){
-    Time2D_bx[i]->Draw("histpsame");
-    bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp");
-  }
-  bx_leg.Draw();
-  C.Print("plot_linearity.pdf");
-
-  bx_leg.Clear();
-  C.Clear();
-  Time2D.Draw("hist");
-  for(long i=3*NBX/4;i<NBX;i++){
-    Time2D_bx[i]->Draw("histpsame");
-    bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp");
-  }
-  bx_leg.Draw();
-  C.Print("plot_linearity.pdf");
+  /* bx_leg.Clear(); */
+  /* C.Clear(); */
+  /* Time2D.Draw("hist"); */
+  /* for(long i=3*NBX/4;i<NBX;i++){ */
+  /*   Time2D_bx[i]->Draw("histpsame"); */
+  /*   bx_leg.AddEntry(Time2D_bx[i],TString("bx=")+BXLIST[i],"lp"); */
+  /* } */
+  /* bx_leg.Draw(); */
+  /* C.Print("plot_linearity.pdf"); */
 
 }
 
@@ -302,11 +328,15 @@ void plot_det_linearity(TString CUTBX){
     FLinearityFit[i]->Draw("lsame");
 
     char text[100];
-    sprintf(text,"%s: (%.2f+/-%.2f) + (%.5f+/-%.5f)*x",
+//    sprintf(text,"%s: (%.2f+/-%.2f) + (%.5f+/-%.5f)*x",
+//	    DETName[DETLIST[i].Data()].Data(),
+//	    FLinearityFit[i]->GetParameter(0),FLinearityFit[i]->GetParError(0),
+//	    FLinearityFit[i]->GetParameter(1),FLinearityFit[i]->GetParError(1));
+
+    sprintf(text,"%s :  %.2f +/- %.2f",
 	    DETName[DETLIST[i].Data()].Data(),
-	    FLinearityFit[i]->GetParameter(0),FLinearityFit[i]->GetParError(0),
-	    FLinearityFit[i]->GetParameter(1),FLinearityFit[i]->GetParError(1));
-    linearity_leg.AddEntry(Linearity[i],text,"lp");
+	    100*FLinearityFit[i]->GetParameter(1),100*FLinearityFit[i]->GetParError(1));
+    linearity_leg.AddEntry(Linearity[i],TString(text)+" %","lp");
 
   }
   linearity_leg.Draw();
@@ -336,28 +366,39 @@ void plot_det_linearity_perbx(){
   TGraphErrors * G[NDET];
   int bxcount[NDET];
 
+  TH2F * HLinearityAvgTrain[NDET];
+
+  
   for(int i=0;i<NDET;i++){
+    
     G[i] = new TGraphErrors();
     G[i]->SetMarkerColor(i+1);
     G[i]->SetMarkerStyle(i+1);
     G[i]->SetLineColor(i+1);
     bxcount[i]=0;
-    for(int j=0;j<NBX;j++){
 
+    HLinearityAvgTrain[i] = new TH2F(TString("Linearity_det")+DETLIST[i],"",NBXTrain,0.5,NBXTrain+0.5,200,-0.02,0.02);
+    
+    for(int j=0;j<NBX;j++){     
       TString name=TString("Linearity_bx_det")+DETLIST[i]+"_bx"+BXLIST[j];
       Linearity[i][j] = new TH2F(name,"",100,0,20,200,0.5,1.5);      
       tree.Draw(TString("")+DETLIST[i]+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+Linearity[i][j]->GetName(),CUTTime+"&&bx=="+BXLIST[j]);
       FLinearityFit[i][j]=new TF1(name+"_fit","[0]+[1]*x",0,20);
       Linearity[i][j]->Fit(FLinearityFit[i][j],"Q","N",0,20);
-
       G[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(1));
       G[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(1));
-      bxcount[i]++;
+      bxcount[i]++;      
     }
+
+    for(int t=0;t<NTRAIN;t++)
+      for(int j=0;j<NBXTrain;j++)
+	HLinearityAvgTrain[i]->Fill(j+1,FLinearityFit[i][t*NBXTrain+j]->GetParameter(1));      
+    
   }
 
 
-  TLegend linearity_leg(0.60,0.17,0.82,0.35);
+  //TLegend linearity_leg(0.60,0.17,0.82,0.35);
+  TLegend linearity_leg(0.87,0.6,1.0,0.9);
   linearity_leg.SetLineColor(0);
   linearity_leg.SetLineWidth(0);
   linearity_leg.SetShadowColor(0);
@@ -365,8 +406,8 @@ void plot_det_linearity_perbx(){
   linearity_leg.SetFillStyle(0);
   
   TH1F HFrameLinearity("HFrameLinearity","",1,0,NBX+1);
-  HFrameLinearity.GetYaxis()->SetRangeUser(-0.015,0.015);
-  HFrameLinearity.GetYaxis()->SetTitle("slope");
+  HFrameLinearity.GetYaxis()->SetRangeUser(-0.02,0.02);
+  HFrameLinearity.GetYaxis()->SetTitle(TString(" slope relative to ")+DETName[DETLIST[detsel]]);
   HFrameLinearity.GetXaxis()->SetTitle("bcid");
 
   C.Clear();
@@ -374,11 +415,29 @@ void plot_det_linearity_perbx(){
   for(int i=0;i<NDET;i++){
     if(i==detsel) continue;
     G[i]->Draw("pesame");
-    linearity_leg.AddEntry(G[i],DETName[DETLIST[i]]+"/"+DETName[DETLIST[detsel]],"lp");
+    linearity_leg.AddEntry(G[i],DETName[DETLIST[i]],"lp");
   }
   linearity_leg.Draw();
   C.Print("plot_linearity.pdf");
 
+
+  TH1F HFrameLinearityAvg("HFrameLinearityAvg","",NBXTrain,0.5,NBXTrain+0.5);
+  HFrameLinearityAvg.GetYaxis()->SetRangeUser(-0.02,0.02);
+  HFrameLinearityAvg.GetYaxis()->SetTitle(TString(" slope relative to ")+DETName[DETLIST[detsel]]);
+  HFrameLinearityAvg.GetXaxis()->SetTitle("bcid");
+  C.Clear();
+  HFrameLinearityAvg.Draw();
+  for(int i=0;i<NDET;i++){
+    if(i==detsel) continue;
+    TProfile*P=HLinearityAvgTrain[i]->ProfileX();
+    P->SetLineColor(G[i]->GetLineColor());
+    P->SetLineWidth(3);
+    P->SetMarkerColor(G[i]->GetMarkerColor());
+    //P->GetYaxis()->SetRangeUser(HLinearityAvgTrain[i]->GetYaxis()->GetXmin(),HLinearityAvgTrain[i]->GetYaxis()->GetXmax());
+    P->Draw("pesame");
+  }
+  linearity_leg.Draw();
+  C.Print("plot_linearity.pdf");
 }
 
 
@@ -402,7 +461,11 @@ void plot_plt_linearity(TString CUTBX){
   HFrameLinearity.GetYaxis()->SetRangeUser(0.4,1.6);
   HFrameLinearity.GetYaxis()->SetTitle("ratio");
   HFrameLinearity.GetXaxis()->SetTitle(TString("")+DETName[DETLIST[detsel].Data()]+"  sbil");
-
+  HFrameLinearity.GetYaxis()->SetTitleSize(0.07);
+  HFrameLinearity.GetXaxis()->SetTitleSize(0.07);
+  HFrameLinearity.GetYaxis()->SetTitleOffset(0.8);
+  HFrameLinearity.GetXaxis()->SetTitleOffset(0.7);
+  
   TLegend linearity_leg(0.40,0.17,0.82,0.45);
   linearity_leg.SetLineColor(0);
   linearity_leg.SetLineWidth(0);
@@ -461,66 +524,124 @@ void plot_plt_chan_perbx(){
   ///per bx studies
   TH2F* LinearityBX[NPLT][NBX];
   TF1*  FLinearityFit[NPLT][NBX];
-  TGraphErrors * G[NPLT];
+  TGraphErrors * G0[NPLT];
+  TGraphErrors * G1[NPLT];
   int bxcount[NPLT];
 
   for(long i=0;i<NPLT;i++){
-    G[i] = new TGraphErrors();
-    //G[i]->SetMarkerColor(i+1);
-    //G[i]->SetMarkerStyle(i+1);
-    //G[i]->SetLineColor(i+1);
+    G0[i] = new TGraphErrors();
+    G1[i] = new TGraphErrors();
     bxcount[i]=0;
 
-    for(int j=0;j<NBX;j++){
-      TString name=TString("Linearity_plt")+i+"_bx"+BXLIST[j];
+
+    TString result_slope;
+    char result_txt[100];
+    
+    ///this algorithm averages the trains
+    for(int j=0;j<NBXTrain;j++){
+      TString cut=TString("(bx==")+BXLeading[0]+j;
+      for(int t=1;t<NTRAIN;t++){
+	cut=cut+"||bx=="+(BXLeading[t]+j);
+      }
+      cut+=")";
+
+      TString name=TString("Linearity_plt")+i+"_bx"+j;
+      //cout<<name<<endl;
       LinearityBX[i][j] = new TH2F(name,"",100,0,20,200,0.5,1.5);
       LinearityBX[i][j]->SetMarkerColor(j+1);
-      tree.Draw(TString("plt_")+i+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+LinearityBX[i][j]->GetName(),CUTTime+"&&bx=="+BXLIST[j]+"&&"+TString("abs(plt_")+i+"/"+DETLIST[detsel]+"-1)<0.7");
+      tree.Draw(TString("plt_")+i+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+LinearityBX[i][j]->GetName(),CUTTime+"&&"+cut);//+"&&"+TString("abs(plt_")+i+"/"+DETLIST[detsel]+"-1)<0.7");
 
-      if(LinearityBX[i][j]->Integral()>100){
-	FLinearityFit[i][j]=new TF1(name+"_fit","[0]+[1]*x",0,20);
-	FLinearityFit[i][j]->SetLineColor(2);
-	LinearityBX[i][j]->Fit(FLinearityFit[i][j],"Q","N",0,20);
+
+      /// this loops over all bcid's
+ //    for(int j=0;j<NBX;j++){
+ //      TString name=TString("Linearity_plt")+i+"_bx"+BXLIST[j];
+ //      cout<<name<<endl;
+ //      
+ //      LinearityBX[i][j] = new TH2F(name,"",100,0,20,200,0.5,1.5);
+ //      LinearityBX[i][j]->SetMarkerColor(j+1);
+ //      tree.Draw(TString("plt_")+i+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+LinearityBX[i][j]->GetName(),CUTTime+"&&bx=="+BXLIST[j]+"&&"+TString("abs(plt_")+i+"/"+DETLIST[detsel]+"-1)<0.7");
+
+      FLinearityFit[i][j]=new TF1(name+"_fit","[0]+[1]*x",0,20);
+      FLinearityFit[i][j]->SetLineColor(2);
       
-	G[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(1));
-	G[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(1));
+      if(LinearityBX[i][j]->Integral()>100){
+	LinearityBX[i][j]->Fit(FLinearityFit[i][j],"Q","N",0,20);
+	
+	G0[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(0));
+	G0[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(0));
+
+	G1[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(1));
+	G1[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(1));
+	
 	bxcount[i]++;
       }
+
+      
+      sprintf(result_txt,"%1.2f",100*FLinearityFit[i][j]->GetParameter(1));
+      if(j==0||j==4) result_slope += TString(result_txt)+"   ";
+
       
     }
+    cout<<result_slope<<endl;
+    
   }
 
-  TH1F HFrameLinearity("HFrameLinearity","",1,0,20);
-  HFrameLinearity.GetYaxis()->SetRangeUser(0.5,1.5);
-  HFrameLinearity.GetYaxis()->SetTitle("ratio");
-  HFrameLinearity.GetXaxis()->SetTitle(TString("")+DETName[DETLIST[detsel].Data()]+"  sbil");
-  C.Clear();
-  C.Divide(4,4);
-  for(long i=0;i<NPLT;i++){
-    C.cd(i+1);
-    HFrameLinearity.Draw("hist");
-    for(int j=0;j<NBX;j++){     
-      LinearityBX[i][j]->Draw("histpsame");
-    }
-  }
-  C.Print("plot_linearity.pdf");
+//  TH1F HFrameLinearity("HFrameLinearity","",1,0,20);
+//  HFrameLinearity.GetYaxis()->SetRangeUser(0.5,1.5);
+//  HFrameLinearity.GetYaxis()->SetTitle("ratio");
+//  HFrameLinearity.GetXaxis()->SetTitle(TString("")+DETName[DETLIST[detsel].Data()]+"  sbil");
+//  C.Clear();
+//  C.Divide(4,4);
+//  for(long i=0;i<NPLT;i++){
+//    C.cd(i+1);
+//    HFrameLinearity.Draw("hist");
+//    for(int j=0;j<NBX;j++){     
+//      LinearityBX[i][j]->Draw("histpsame");
+//    }
+//  }
+//  C.Print("plot_linearity.pdf");
 
 
-  TH1F HFrameLinearityGraph("HFrameLinearityGraph","",1,0,NBX+1);
+  TH1F HFrameLinearityGraph("HFrameLinearityGraph","",1,0,NBXTrain+1);
   HFrameLinearityGraph.GetYaxis()->SetRangeUser(-0.03,0.03);
   HFrameLinearityGraph.GetYaxis()->SetTitle("slope");
   HFrameLinearityGraph.GetXaxis()->SetTitle("bcid");
+  HFrameLinearityGraph.GetYaxis()->SetTitleSize(0.07);
+  HFrameLinearityGraph.GetXaxis()->SetTitleSize(0.07);
+  HFrameLinearityGraph.GetYaxis()->SetTitleOffset(0.8);
+  HFrameLinearityGraph.GetXaxis()->SetTitleOffset(0.7);
+ 
   C.Clear();
   C.Divide(4,4);
   for(long i=0;i<NPLT;i++){
     C.cd(i+1);
     HFrameLinearityGraph.Draw("hist");
-    G[i]->Draw("pesame");
+    G1[i]->SetMarkerColor(2);
+    G1[i]->SetLineColor(2);
+    G1[i]->SetMarkerStyle(20);
+    G1[i]->SetMarkerSize(0.5);
+    G1[i]->Draw("psame");
   }
   C.Print("plot_linearity.pdf");
 
 
-  
+  /* HFrameLinearityGraph.GetYaxis()->SetRangeUser(0.5,1.5); */
+  /* HFrameLinearityGraph.GetYaxis()->SetTitle("p0"); */
+  /* HFrameLinearityGraph.GetXaxis()->SetTitle("bcid"); */
+  /* C.Clear(); */
+  /* C.Divide(4,4); */
+  /* for(long i=0;i<NPLT;i++){ */
+  /*   C.cd(i+1); */
+  /*   HFrameLinearityGraph.Draw("hist"); */
+  /*   G0[i]->SetMarkerColor(2); */
+  /*   G0[i]->SetLineColor(2); */
+  /*   G0[i]->SetMarkerStyle(20); */
+  /*   G0[i]->SetMarkerSize(0.5); */
+  /*   G0[i]->Draw("psame"); */
+  /*   line.DrawLine(0,1,NBX+1,1); */
+  /* } */
+  /* C.Print("plot_linearity.pdf"); */
+
   
 }
 
@@ -530,7 +651,8 @@ void plot_linearity(){
   
   tree.Add("bril.root");  
 
-
+  setBXLIST(FILL);
+  
   CUTTime = TString("(")+tmin+"<time&&time<"+tmax+")";
   TString CUTTimeStep("(");
   for(long i=0;i<NTimeStep-1;i++)
@@ -553,11 +675,9 @@ void plot_linearity(){
   ////////   check the active bunches ////////////
   TH1F HBX("HBX","",3650,0.5,3650.5);
   HBX.GetYaxis()->SetTitle(TString("Total ")+DETLIST[detsel]+" lumi");
-  HBX.GetXaxis()->SetTitle("bunch id");
-
-  
+  HBX.GetXaxis()->SetTitle("bunch id");  
   C.Clear();
-  tree.Draw("bx>>HBX","","histpe");
+  tree.Draw("bx>>HBX",TString("")+DETLIST[detsel]+">0.1","histpe");
   TText label;
   label.SetTextSize(0.025);
   int nactivebx=0;
@@ -577,9 +697,9 @@ void plot_linearity(){
   //plot_det_ratio_vstime(CUTBX);
   
   ////// detector correlations
-  //plot_det_correlation(CUTBX);
+  // plot_det_correlation(CUTBX);
   plot_det_linearity(CUTBX);
-  plot_det_linearity_perbx();
+  //plot_det_linearity_perbx();
 
   /////PLT channels
   //plot_plt_linearity(CUTBX);
