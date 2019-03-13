@@ -25,23 +25,41 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 #hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
 #sigma_pcc  = 11245.5/5910000*23.311
 
+##############################
+##### Fill 7274
+#h5file = tables.open_file('/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
+##BXLIST = [62,63,64,65,66,67,68,69,70,71,117,118,119,120,121,122,123,124,125,126,196,197,198,199,200,201,202,203,204,205,251,252,253,254,255,256,257,258,259,260]
+#BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
+#NBXTrain = 10
+#BXLIST =  array( 'i', 53*NBXTrain*[ 0 ] )
+#for i in range(53):
+#    for j in range(NBXTrain):
+#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+#print BXLIST
+#tmin=1539215350
+#tmax=1539215350+2000
+####hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
+#hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
+#sigma_pcc  = 11245.5/5910000
+
+
+
 #############################
 #### Fill 7274
-h5file = tables.open_file('/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
-#BXLIST = [62,63,64,65,66,67,68,69,70,71,117,118,119,120,121,122,123,124,125,126,196,197,198,199,200,201,202,203,204,205,251,252,253,254,255,256,257,258,259,260]
-BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
-NBXTrain = 10
-BXLIST =  array( 'i', 53*NBXTrain*[ 0 ] )
-for i in range(53):
+h5file = tables.open_file('/brildata/vdmdata18/6847_1806261047_1806261133.hd5','r')
+BXLeading = [686,816,2591,2612,2633]
+NBXTrain = 1
+NTrain = 5
+BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
+for i in range(NTrain):
     for j in range(NBXTrain):
         BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
 print BXLIST
-tmin=1539215350
-tmax=1539215350+2000
-###hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
-hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
+tmin=1530010510
+tmax=1530010510+940
+#hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') 
+hist_pcc = open('./318675.csv','r')
 sigma_pcc  = 11245.5/5910000
-
 
 
 print(h5file)
@@ -126,7 +144,7 @@ idx_pcc  = 0
 
 
 def getLUMI(time,idx,hist):
-    #print time,idx,hist
+    #print time,idx,hist    
 
     if hist == None or idx>=len(hist) :
         return len(hist),array( 'f', NBX*[ 0. ] )
@@ -159,6 +177,27 @@ def getLUMIroot(time,idx,hist):
     return 0,LUMI 
 
 
+def getLUMIcsv(ls,idx,hist):
+    LUMI = array( 'f', NBX*[ 0. ] )
+    hist.seek(0)
+
+    for i in range(idx):
+        next(hist)
+
+    for line in hist:
+        idx+=1
+        lumi = line.split(',')
+        #print ls,lumi[0],lumi[1]
+        if int(lumi[1]) == int(ls):
+            #print "  hello"
+            for j in range(NBX):
+                LUMI[j] = float(lumi[j+2])
+                #print j,LUMI[j]
+            break
+        
+    return idx-1,LUMI 
+
+
 
 #exit()
 ##########################################
@@ -180,7 +219,9 @@ for row in h5file.root.hfoclumi.iterrows():
     time[0] = row['timestampsec']
     HFOC    = row['bxraw']
 
-    idx_pcc, PCC   = getLUMIroot(time[0],idx_pcc,hist_pcc)
+    #idx_pcc, PCC   = getLUMIroot(time[0],idx_pcc,hist_pcc)
+    idx_pcc, PCC   = getLUMIcsv(ls[0],idx_pcc,hist_pcc)
+
     idx_hfet, HFET = getLUMI(time[0],idx_hfet,h5file.root.hfetlumi)
     idx_bcm, BCM   = getLUMI(time[0],idx_bcm,h5file.root.bcm1flumi )
     idx_plt, PLT   = getLUMI(time[0],idx_plt,h5file.root.pltlumizero)
