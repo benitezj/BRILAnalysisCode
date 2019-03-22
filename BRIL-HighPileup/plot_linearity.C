@@ -77,10 +77,12 @@ void configFill(long fill=0){///set fill specific configurations
   
   //// define the time cuts to remove the step boundaries
   CUTTime = TString("(")+tmin+"<time&&time<"+tmax+")";
+  
   TString CUTTimeStep("(");
   for(long i=0;i<TimeStep.size()-1;i++)
-    CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[i])+")>24&&";
-  CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[TimeStep.size()-1])+")>24)";
+    CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[i])+")>23&&";
+  CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[TimeStep.size()-1])+")>23)";
+
   CUTTime = CUTTime + "&&" + CUTTimeStep;
   cout<<"Time selection: "<<CUTTime<<endl;  
 
@@ -97,7 +99,6 @@ void configFill(long fill=0){///set fill specific configurations
 }
 
 
-
 TH2F * getLinearityHisto(TString name, TString det, TString cut="1"){
   TH2F * H = new TH2F(name,"",200,0,20,200,0.5,1.5);
   tree.Draw(det+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+H->GetName(),CUTTime+"&&("+DETLIST[detsel]+">1)"+"&&"+cut);
@@ -106,6 +107,16 @@ TH2F * getLinearityHisto(TString name, TString det, TString cut="1"){
   H->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[DETLIST[detsel].Data()]);
   H->GetXaxis()->SetTitle(DETName[DETLIST[detsel].Data()]+"  sbil");
   return H;
+}
+
+TH2F * getLinearityHisto(TString name, TString det, std::vector<long> bxlist){
+  TString cut="(";
+  for(long i=0;i<bxlist.size();i++){
+    if(i!=0) cut+="||";
+    cut=cut+"bx=="+bxlist[i];
+  }
+  cut+=")"; 
+  return getLinearityHisto(name,det,cut);
 }
 
 TF1 * fitLinearity(TH2F* H){
