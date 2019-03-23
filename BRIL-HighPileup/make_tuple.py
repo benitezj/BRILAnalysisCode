@@ -42,47 +42,44 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 #hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
 #sigma_pcc  = 11245.5/5910000
 
-
-
-
-##############################
-##### Fill 6847
-#h5file = tables.open_file('/brildata/vdmdata18/6847_1806261047_1806261133.hd5','r')
-#BXLeading = [686,816,2591,2612,2633]
-#NBXTrain = 1
-#NTrain = 5
-#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#print BXLIST
-#tmin=1530010510
-#tmax=1530010510+940
-#hist_pcc = open('./318675.csv','r')
-#sigma_pcc  = 11245.5/5910000
-
 #############################
-#### Fill 6854
-h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
-BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
-NBXTrain = 10
-NTrain = 10
-BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
+#### Fill 6847
+h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5','r')
+BXLeading = [686,816,2591,2612,2633]
+NBXTrain = 1
+NTrain = 5
+BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
 for i in range(NTrain):
     for j in range(NBXTrain):
         BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-
-### high stats bcid's
-BXLIST[NTrain*NBXTrain]=1651
-BXLIST[NTrain*NBXTrain+1]=1678
-BXLIST[NTrain*NBXTrain+2]=2321
-BXLIST[NTrain*NBXTrain+3]=2355 
-
 print BXLIST
-tmin=1530139000
-tmax=tmin+1800
-hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817.csv','r')
+tmin=1530010510
+tmax=1530010510+940
+hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675.csv','r')
 sigma_pcc  = 11245.5/5910000
+
+##############################
+##### Fill 6854
+#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
+#BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
+#NBXTrain = 10
+#NTrain = 10
+#BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
+#for i in range(NTrain):
+#    for j in range(NBXTrain):
+#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+#
+#### high stats bcid's
+#BXLIST[NTrain*NBXTrain]=1651
+#BXLIST[NTrain*NBXTrain+1]=1678
+#BXLIST[NTrain*NBXTrain+2]=2321
+#BXLIST[NTrain*NBXTrain+3]=2355 
+#
+#print BXLIST
+#tmin=1530139000
+#tmax=tmin+1800
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817.csv','r')
+#sigma_pcc  = 11245.5/5910000
 
 
 
