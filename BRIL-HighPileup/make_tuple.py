@@ -63,7 +63,7 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 
 #############################
 #### Fill 6854
-h5file = tables.open_file('/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
+h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
 BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
 NBXTrain = 10
 NTrain = 10
@@ -81,7 +81,7 @@ BXLIST[NTrain*NBXTrain+3]=2355
 print BXLIST
 tmin=1530139000
 tmax=tmin+1800
-hist_pcc = open('./318817.csv','r')
+hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817.csv','r')
 sigma_pcc  = 11245.5/5910000
 
 
@@ -259,22 +259,22 @@ for row in h5file.root.hfoclumi.iterrows():
     idx_bcm, BCM   = getLUMI(time[0],idx_bcm,h5file.root.bcm1flumi )
     idx_plt, PLT   = getLUMI(time[0],idx_plt,h5file.root.pltlumizero)
     
-    idx_plt_[0], PLT_0   = getLUMI(time[0],idx_plt_[0],h5file.root.pltlumizero_0)
-    idx_plt_[1], PLT_1   = getLUMI(time[0],idx_plt_[1],h5file.root.pltlumizero_1)
-    idx_plt_[2], PLT_2   = getLUMI(time[0],idx_plt_[2],h5file.root.pltlumizero_2)
-    idx_plt_[3], PLT_3   = getLUMI(time[0],idx_plt_[3],h5file.root.pltlumizero_3)
-    idx_plt_[4], PLT_4   = getLUMI(time[0],idx_plt_[4],h5file.root.pltlumizero_4)
-    idx_plt_[5], PLT_5   = getLUMI(time[0],idx_plt_[5],h5file.root.pltlumizero_5)
-    idx_plt_[6], PLT_6   = getLUMI(time[0],idx_plt_[6],h5file.root.pltlumizero_6)
-    idx_plt_[7], PLT_7   = getLUMI(time[0],idx_plt_[7],h5file.root.pltlumizero_7)
-    idx_plt_[8], PLT_8   = getLUMI(time[0],idx_plt_[8],h5file.root.pltlumizero_8)
-    idx_plt_[9], PLT_9   = getLUMI(time[0],idx_plt_[9],h5file.root.pltlumizero_9)
-    idx_plt_[10], PLT_10   = getLUMI(time[0],idx_plt_[10],h5file.root.pltlumizero_10)
-    idx_plt_[11], PLT_11   = getLUMI(time[0],idx_plt_[11],h5file.root.pltlumizero_11)
-    idx_plt_[12], PLT_12   = getLUMI(time[0],idx_plt_[12],h5file.root.pltlumizero_12)
-    idx_plt_[13], PLT_13   = getLUMI(time[0],idx_plt_[13],h5file.root.pltlumizero_13)
-    idx_plt_[14], PLT_14   = getLUMI(time[0],idx_plt_[14],h5file.root.pltlumizero_14)
-    idx_plt_[15], PLT_15   = getLUMI(time[0],idx_plt_[15],h5file.root.pltlumizero_15)
+#    idx_plt_[0], PLT_0   = getLUMI(time[0],idx_plt_[0],h5file.root.pltlumizero_0)
+#    idx_plt_[1], PLT_1   = getLUMI(time[0],idx_plt_[1],h5file.root.pltlumizero_1)
+#    idx_plt_[2], PLT_2   = getLUMI(time[0],idx_plt_[2],h5file.root.pltlumizero_2)
+#    idx_plt_[3], PLT_3   = getLUMI(time[0],idx_plt_[3],h5file.root.pltlumizero_3)
+#    idx_plt_[4], PLT_4   = getLUMI(time[0],idx_plt_[4],h5file.root.pltlumizero_4)
+#    idx_plt_[5], PLT_5   = getLUMI(time[0],idx_plt_[5],h5file.root.pltlumizero_5)
+#    idx_plt_[6], PLT_6   = getLUMI(time[0],idx_plt_[6],h5file.root.pltlumizero_6)
+#    idx_plt_[7], PLT_7   = getLUMI(time[0],idx_plt_[7],h5file.root.pltlumizero_7)
+#    idx_plt_[8], PLT_8   = getLUMI(time[0],idx_plt_[8],h5file.root.pltlumizero_8)
+#    idx_plt_[9], PLT_9   = getLUMI(time[0],idx_plt_[9],h5file.root.pltlumizero_9)
+#    idx_plt_[10], PLT_10   = getLUMI(time[0],idx_plt_[10],h5file.root.pltlumizero_10)
+#    idx_plt_[11], PLT_11   = getLUMI(time[0],idx_plt_[11],h5file.root.pltlumizero_11)
+#    idx_plt_[12], PLT_12   = getLUMI(time[0],idx_plt_[12],h5file.root.pltlumizero_12)
+#    idx_plt_[13], PLT_13   = getLUMI(time[0],idx_plt_[13],h5file.root.pltlumizero_13)
+#    idx_plt_[14], PLT_14   = getLUMI(time[0],idx_plt_[14],h5file.root.pltlumizero_14)
+#    idx_plt_[15], PLT_15   = getLUMI(time[0],idx_plt_[15],h5file.root.pltlumizero_15)
     
     #print fill[0],run[0],ls[0],time[0],HFOC[BXLIST[0]-1]*sigma_hfoc
 
@@ -288,22 +288,22 @@ for row in h5file.root.hfoclumi.iterrows():
         bcm[0]  = BCM[b-1]*sigma_bcm
         plt[0]  = PLT[b-1]*sigma_plt
 
-        plt_0[0]  = PLT_0[b-1]*sigma_plt
-        plt_1[0]  = PLT_1[b-1]*sigma_plt
-        plt_2[0]  = PLT_2[b-1]*sigma_plt
-        plt_3[0]  = PLT_3[b-1]*sigma_plt
-        plt_4[0]  = PLT_4[b-1]*sigma_plt
-        plt_5[0]  = PLT_5[b-1]*sigma_plt
-        plt_6[0]  = PLT_6[b-1]*sigma_plt
-        plt_7[0]  = PLT_7[b-1]*sigma_plt
-        plt_8[0]  = PLT_8[b-1]*sigma_plt
-        plt_9[0]  = PLT_9[b-1]*sigma_plt
-        plt_10[0]  = PLT_10[b-1]*sigma_plt
-        plt_11[0]  = PLT_11[b-1]*sigma_plt
-        plt_12[0]  = PLT_12[b-1]*sigma_plt
-        plt_13[0]  = PLT_13[b-1]*sigma_plt
-        plt_14[0]  = PLT_14[b-1]*sigma_plt
-        plt_15[0]  = PLT_15[b-1]*sigma_plt
+#        plt_0[0]  = PLT_0[b-1]*sigma_plt
+#        plt_1[0]  = PLT_1[b-1]*sigma_plt
+#        plt_2[0]  = PLT_2[b-1]*sigma_plt
+#        plt_3[0]  = PLT_3[b-1]*sigma_plt
+#        plt_4[0]  = PLT_4[b-1]*sigma_plt
+#        plt_5[0]  = PLT_5[b-1]*sigma_plt
+#        plt_6[0]  = PLT_6[b-1]*sigma_plt
+#        plt_7[0]  = PLT_7[b-1]*sigma_plt
+#        plt_8[0]  = PLT_8[b-1]*sigma_plt
+#        plt_9[0]  = PLT_9[b-1]*sigma_plt
+#        plt_10[0]  = PLT_10[b-1]*sigma_plt
+#        plt_11[0]  = PLT_11[b-1]*sigma_plt
+#        plt_12[0]  = PLT_12[b-1]*sigma_plt
+#        plt_13[0]  = PLT_13[b-1]*sigma_plt
+#        plt_14[0]  = PLT_14[b-1]*sigma_plt
+#        plt_15[0]  = PLT_15[b-1]*sigma_plt
     
         tree.Fill() 
         #print fill[0],run[0],ls[0],time[0],bx[0],hfoc[0],pcc[0]

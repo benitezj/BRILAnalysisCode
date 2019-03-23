@@ -55,6 +55,8 @@ fi
 outputdir=$baseoutdir/$extdir
 echo "output: $outputdir"
 
+
+
 ########################
 ### lxbatch submit
 submit(){

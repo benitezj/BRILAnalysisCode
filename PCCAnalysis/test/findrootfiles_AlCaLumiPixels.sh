@@ -6,6 +6,7 @@
 ##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/559/00000/3A1948E7-B85C-E811-BE2E-FA163E2965C4.root
 ##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/316/060/00000/1AAF584E-0956-E811-B8CF-FA163E73FFA8.root
 ##     /eos/cms/store/data/Run2018D/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/323/513/00000
+#       /eos/cms/store/data/Run2018B/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/817/00000/3E2614B5-077C-E811-BFC1-FA163EA4131C.root
 ## * this script takes no arguments
 ## * output are files with runnumber.txt with list of root files 
 #######################################
@@ -25,12 +26,12 @@ echo $eospath
 
 ##options
 #eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
-eos=''
+eosls='/bin/ls'
 specialRun=1  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set merges all including Express
 
-#ZBorRdm=ZeroBias-PromptReco
+ZBorRdm=ZeroBias-PromptReco
 #ZBorRdm=AlCaPCCRandom-PromptReco
-ZBorRdm=AlCaPCCRandom-02May2018
+#ZBorRdm=AlCaPCCRandom-02May2018
 
 
 ##all run files are cleaned out
@@ -46,35 +47,34 @@ search(){
 
     local stream=$1
     local path=$eospath/$stream/ALCARECO
-
-    for v in `${eos} ls ${path} | grep ${ZBorRdm}`; do 
+    #echo "path: $path"
+    for v in `$eosls ${path} | grep ${ZBorRdm}`; do 
 	local pathv=$path/$v
-	#echo $pathv
-
-	for vN in `${eos} ls ${pathv}`; do
+	#echo "pathv: $pathv"
+	for vN in `$eosls ${pathv}`; do
 	    local path1=$pathv/$vN 
-	    #echo $path1
+	    #echo "path1: $path1"
+            for r1 in `$eosls ${path1}`; do 
+		local path2=$path1/$r1
+		#echo "path2: $path2"
+		for r2 in `$eosls ${path2}`; do 
+		    local path3=$path2/$r2/00000
+		    #echo "path3: $path3" 
 
-	    for r1 in `${eos} ls -d ${path1} | grep -v .`; do 
-		local path2=$r1
-		for r2 in `${eos} ls -d ${path2}`; do 
-		    #echo "$r2" 
-		    local path3=$r2/00000
-		    for f in `${eos} ls ${path3} | grep .root`; do 
- 	            ###files will be added to the run file
+		    for f in `$eosls ${path3} | grep .root`; do 
 			echo "file:$path3/$f" >> ./$period/$r1$r2.txt  
 		    done
+
 		done
 	    done
 
 
-	    for f in `${eos} ls ${path1} | grep .root`; do 
+	    for f in `$eosls ${path1} | grep .root`; do 
 		echo "file:$path1/$f" >> ./${period}/${ZBorRdm}.txt  
 	    done
 
 
 	done
-
     done
 }
 
