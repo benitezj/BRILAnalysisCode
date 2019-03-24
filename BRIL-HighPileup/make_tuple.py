@@ -14,36 +14,47 @@ sigma_hfet = 11245.5/2431
 sigma_bcm = 11245.5/203.2
 #sigma_plt = 11245.5/252.1  ##sigma from vdm
 sigma_plt = 11245.5/305  ##sigma from emmittance scan
-
+sigma_pcc  = 11245.5/5910000
 
 ##########################
 ####Fill 7358 (mu scan)
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
-#BXLIST = [11,536,750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655]
-#tmin=1540537800
-#tmax=1540538550
-#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
-#sigma_pcc  = 11245.5/5910000*23.311
-
- #############################
- #### Fill 7274
-h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
-#BXLIST = [62,63,64,65,66,67,68,69,70,71,117,118,119,120,121,122,123,124,125,126,196,197,198,199,200,201,202,203,204,205,251,252,253,254,255,256,257,258,259,260]
-#BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
-BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
-NBXTrain = 10
-NTrain = 16
-BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
+h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
+hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
+tmin=1540537800
+tmax=1540538550
+BXLeading = [750,1644]
+NBXTrain = 12
+NTrain = 2
+BXLIST =  array( 'i', (NTrain*NBXTrain+2)*[ 0 ] )
 for i in range(NTrain):
     for j in range(NBXTrain):
         BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+BXLIST[NTrain*NBXTrain]=11
+BXLIST[NTrain*NBXTrain+1]=536
 print BXLIST
-tmin=1539215350
-tmax=tmin+2000
-###hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
-#hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
-hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
-sigma_pcc  = 11245.5/5910000
+#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
+#sigma_pcc  = 11245.5/5910000*23.311
+
+
+# #############################
+# #### Fill 7274
+#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
+##BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
+#BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
+#NBXTrain = 10
+#NTrain = 16
+#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
+#for i in range(NTrain):
+#    for j in range(NBXTrain):
+#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+#print BXLIST
+#tmin=1539215350
+#tmax=tmin+2000
+####hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
+##hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
+
+
 
 # #############################
 # #### Fill 6847
@@ -59,7 +70,6 @@ sigma_pcc  = 11245.5/5910000
 #tmin=1530010510
 #tmax=1530010510+940
 #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675.csv','r')
-#sigma_pcc  = 11245.5/5910000
 
 ##############################
 ##### Fill 6854
@@ -82,7 +92,6 @@ sigma_pcc  = 11245.5/5910000
 #tmin=1530139000
 #tmax=tmin+1800
 #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817.csv','r')
-#sigma_pcc  = 11245.5/5910000
 
 
 
