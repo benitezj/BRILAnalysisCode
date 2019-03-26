@@ -14,12 +14,16 @@ sigma_hfet = 11245.5/2431
 sigma_bcm = 11245.5/203.2
 #sigma_plt = 11245.5/252.1  ##sigma from vdm
 sigma_plt = 11245.5/305  ##sigma from emmittance scan
-sigma_pcc  = 11245.5/5910000
+#sigma_pcc  = 11245.5/5910000*23.311  ##23.3 comes from Georgios for pccminitrees
+#sigma_pcc  = 11245.5/5910000
+sigma_pcc  = 11245.5/3140000
 
 ##########################
 ####Fill 7358 (mu scan)
 h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
-hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
+#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
+hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309_RunDModVeto_NoCorr.csv','r')
 tmin=1540537800
 tmax=1540538550
 BXLeading = [750,1644]
@@ -32,8 +36,6 @@ for i in range(NTrain):
 BXLIST[NTrain*NBXTrain]=11
 BXLIST[NTrain*NBXTrain+1]=536
 print BXLIST
-#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
-#sigma_pcc  = 11245.5/5910000*23.311
 
 
 # #############################
