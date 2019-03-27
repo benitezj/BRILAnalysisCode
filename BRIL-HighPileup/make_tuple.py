@@ -46,7 +46,7 @@ h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brild
 hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675_RunDModVeto_NoCorr.csv','r')
 BXLeading = [686,816,2591,2612,2633]
 NBXTrain = 1
-NTrain = 1
+NTrain = 5
 BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
 for i in range(NTrain):
     for j in range(NBXTrain):
@@ -248,21 +248,24 @@ def getLUMIcsv(ls,idx,hist):
 # Start the main loop
 #t0 = time.time()
 for row in h5file.root.hfoclumi.iterrows():
+
     #if row['lsnum'] != 22: continue
     #if row['timestampsec'] != 1540539309: continue
     #print str(row['fillnum']), str(row['runnum']), str(row['lsnum']), str(row['nbnum']), str(row['timestampsec']) # , str(row['bxraw'][0])
 
-    if row['timestampsec'] < tmin: continue
-    if row['timestampsec'] > tmax: continue
-    progress = int(100*(row['timestampsec']-tmin)/(tmax-tmin))
-    if progress%5 == 0: 
+    time[0] = row['timestampsec']
+
+    if time[0] < tmin: continue
+    if time[0] > tmax: continue
+
+    progress = int(100*(time[0]-tmin)/(tmax-tmin))
+    if progress % 10 == 0 : 
         print progress, 
         sys.stdout.flush()
 
     fill[0] = row['fillnum']
     run[0]  = row['runnum']
     ls[0]   = row['lsnum']
-    time[0] = row['timestampsec']
     HFOC    = row['bxraw']
 
     #idx_pcc, PCC   = getLUMIroot(time[0],idx_pcc,hist_pcc)
