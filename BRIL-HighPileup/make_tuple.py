@@ -18,24 +18,65 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 #sigma_pcc  = 11245.5/5910000
 sigma_pcc  = 11245.5/3140000
 
-##########################
-####Fill 7358 (mu scan)
-h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
-#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
-#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
-hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309_RunDModVeto_NoCorr.csv','r')
-tmin=1540537800
-tmax=1540538550
-BXLeading = [750,1644]
-NBXTrain = 12
-NTrain = 2
-BXLIST =  array( 'i', (NTrain*NBXTrain+2)*[ 0 ] )
+###########################
+#####Fill 7358 (mu scan)
+#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
+##hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
+##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309_RunDModVeto_NoCorr.csv','r')
+#tmin=1540537800
+#tmax=1540538550
+#BXLeading = [750,1644]
+#NBXTrain = 12
+#NTrain = 2
+#BXLIST =  array( 'i', (NTrain*NBXTrain+2)*[ 0 ] )
+#for i in range(NTrain):
+#    for j in range(NBXTrain):
+#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+#BXLIST[NTrain*NBXTrain]=11
+#BXLIST[NTrain*NBXTrain+1]=536
+#print BXLIST
+
+
+
+ #############################
+ #### Fill 6847
+h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5','r')
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675.csv','r')
+hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675_RunDModVeto_NoCorr.csv','r')
+BXLeading = [686,816,2591,2612,2633]
+NBXTrain = 1
+NTrain = 1
+BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
 for i in range(NTrain):
     for j in range(NBXTrain):
         BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-BXLIST[NTrain*NBXTrain]=11
-BXLIST[NTrain*NBXTrain+1]=536
 print BXLIST
+tmin=1530010510
+tmax=tmin+1940 #940
+
+
+##############################
+##### Fill 6854
+#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
+##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817.csv','r')
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817_RunDModVeto_NoCorr.csv','r')
+#BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
+#NBXTrain = 10
+#NTrain = 10
+#BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
+#for i in range(NTrain):
+#    for j in range(NBXTrain):
+#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+#
+#BXLIST[NTrain*NBXTrain]=1651
+#BXLIST[NTrain*NBXTrain+1]=1678
+#BXLIST[NTrain*NBXTrain+2]=2321
+#BXLIST[NTrain*NBXTrain+3]=3255 
+#print BXLIST
+#tmin=1530139000
+#tmax=tmin+1800
+
 
 
 # #############################
@@ -55,45 +96,6 @@ print BXLIST
 ####hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
 ##hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
 #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
-
-
-
-# #############################
-# #### Fill 6847
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5','r')
-#BXLeading = [686,816,2591,2612,2633]
-#NBXTrain = 1
-#NTrain = 5
-#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#print BXLIST
-#tmin=1530010510
-#tmax=1530010510+940
-#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675.csv','r')
-
-##############################
-##### Fill 6854
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
-#BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
-#NBXTrain = 10
-#NTrain = 10
-#BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-# 
-# ### high stats bcid's
-#BXLIST[NTrain*NBXTrain]=1651
-#BXLIST[NTrain*NBXTrain+1]=1678
-#BXLIST[NTrain*NBXTrain+2]=2321
-#BXLIST[NTrain*NBXTrain+3]=3255 
-#
-#print BXLIST
-#tmin=1530139000
-#tmax=tmin+1800
-#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817.csv','r')
 
 
 
@@ -252,8 +254,10 @@ for row in h5file.root.hfoclumi.iterrows():
 
     if row['timestampsec'] < tmin: continue
     if row['timestampsec'] > tmax: continue
-    print 100*(row['timestampsec']-tmin)/(tmax-tmin),
-    sys.stdout.flush()
+    progress = int(100*(row['timestampsec']-tmin)/(tmax-tmin))
+    if progress%5 == 0: 
+        print progress, 
+        sys.stdout.flush()
 
     fill[0] = row['fillnum']
     run[0]  = row['runnum']
