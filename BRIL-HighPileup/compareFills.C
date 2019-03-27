@@ -17,11 +17,12 @@ void compareFills(){
   TString det="pcc";
   
   std::vector<long> fills{6847,6854,7358};
+  
   std::vector<TH2F*> histos;
   std::vector<TF1*> fits;
   for(int i=0;i<fills.size();i++){
     configFill(fills[i]);
-    TH2F * H = getLinearityHisto(TString("H_fill")+i,det,BXLeading);
+    TH2F * H = getLinearityHisto(TString("H_fill")+i,det,BXSpecial);
     H->SetMarkerColor(i+1);
     H->SetLineColor(i+1);
     histos.push_back(H);
@@ -32,7 +33,7 @@ void compareFills(){
   C.Clear();
   for(int i=0;i<fills.size();i++){
     TH2F* H=histos[i];
-    H->GetYaxis()->SetRangeUser(0.9,1.1);
+    H->GetYaxis()->SetRangeUser(0.80,1.2);
     H->Draw(i==0?"histp":"histpsame");
     bx_leg.AddEntry(H,TString("FILL ")+fills[i],"flp");
   }
