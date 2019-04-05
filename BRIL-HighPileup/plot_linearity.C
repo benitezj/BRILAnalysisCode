@@ -3,7 +3,7 @@
 
 void plot_lumi_vstime_perbx(std::vector<long> bxlist){
 
-  TLegend bx_leg(0.87,0.2,1.0,0.9);
+  TLegend bx_leg(0.87,0.5,1.0,0.9);
   bx_leg.SetLineColor(0);
   bx_leg.SetLineStyle(0);
   bx_leg.SetShadowColor(0);
@@ -11,26 +11,29 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
   bx_leg.SetFillStyle(0);
  
 
-  Time2D->Scale(0);
-  Time2D->GetYaxis()->SetRangeUser(0,20);
-  Time2D->GetYaxis()->SetTitle("sbil");
-  Time2D->GetXaxis()->SetRangeUser(0,(tmax-tmin));
-  Time2D->GetXaxis()->SetTitle("time  [s]");
-
+  float max=0;
   C.Clear();
   C.Divide(1,2);
   for(long i=0;i<NDET;i++){
 
     TLegend * leg=(TLegend*) bx_leg.Clone();
-    TVirtualPad*p=C.cd(i+1);
+    TVirtualPad * p=C.cd(i+1);
     p->SetLeftMargin(0.1);
 
+    TH2F* Time2D_det = (TH2F*)Time2D->Clone(TString("Time2D_")+i);
+    Time2D_det->Scale(0);
+    Time2D_det->GetXaxis()->SetRangeUser(0,(tmax-tmin));
+    Time2D_det->GetXaxis()->SetTitle("time  [s]");
+    Time2D_det->GetYaxis()->SetRangeUser(0,FILL==7358?20:10);
+    Time2D_det->GetYaxis()->SetTitle(DETName[DETLIST[i]]+" sbil");
+    Time2D_det->GetYaxis()->SetTitleOffset(0.7);
+    Time2D_det->GetYaxis()->SetNdivisions(5);
+    Time2D_det->Draw("hist");
+    
     for(long b=0;b<bxlist.size();b++){
       int color = b+1;
 
       TH2F* Time2D_bx = (TH2F*)Time2D->Clone(TString("Time2D_")+i+"_b"+b);
-      Time2D_bx->GetYaxis()->SetTitle(DETName[DETLIST[i]]+" sbil");
-      Time2D_bx->GetYaxis()->SetTitleOffset(0.7);
       Time2D_bx->SetMarkerColor(color);
       Time2D_bx->SetLineColor(color);
 
@@ -38,14 +41,13 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
       TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";
       tree.Draw(DETLIST[i]+":"+timeref+">>"+Time2D_bx->GetName(),cut.Data(),"histpsame");
       leg->AddEntry(Time2D_bx,TString("")+bxlist[b],"lp");
-
     }
-
+    
     line.SetLineStyle(2);
     line.SetLineColor(3);
     for(long i=0;i<TimeStep.size()-1;i++)
       if(tmin<TimeStep[i]&&TimeStep[i]<tmax)
-    	line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,10);
+    	//line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,Time2D->GetYaxis()->GetXmax());
     
     leg->Draw();
   }
@@ -304,6 +306,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       FLinearityFit[i][j]->Draw("lsame");
     }
     C.Print("plot_linearity.pdf");
+    C.Print(TString("plot_det_linearity_perbx_")+DETLIST[i]+".gif"); 
   }
   
   
@@ -319,35 +322,34 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   linearity_leg.SetFillStyle(0);
   
   TH1F HFrameLinearity("HFrameLinearity","",1,0,bxlist.size()+1);
-
+  HFrameLinearity.GetXaxis()->SetTitle("bcid");
   
   HFrameLinearity.GetYaxis()->SetRangeUser(-0.02,0.02);
-  HFrameLinearity.GetYaxis()->SetTitle(TString(" slope relative to ")+DETName[DETLIST[detsel]]);
-  HFrameLinearity.GetXaxis()->SetTitle("bcid");
   C.Clear();
   for(int i=0;i<NDET;i++){
     if(i==detsel) continue;
-    HFrameLinearity.SetTitle(DETName[DETLIST[i]]);
+    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" slope relative to "+DETName[DETLIST[detsel]]);
     HFrameLinearity.Draw();
+    line.SetLineStyle(1); line.SetLineColor(1);
     Gp1[i]->Draw("pesame");
-    //line.DrawLine(0,1,HFrameLinearity.GetXaxis()->GetXmax(),1);
+    line.DrawLine(HFrameLinearity.GetXaxis()->GetXmin(),0,HFrameLinearity.GetXaxis()->GetXmax(),0);
   }
   C.Print("plot_linearity.pdf");
-  C.Print("plot_det_linearity_perbx.gif"); 
+  C.Print("plot_det_linearity_perbx_slope.gif"); 
 
   
   HFrameLinearity.GetYaxis()->SetRangeUser(0.95,1.05);
-  HFrameLinearity.GetYaxis()->SetTitle(TString(" y-intercept relative to ")+DETName[DETLIST[detsel]]);
-  HFrameLinearity.GetXaxis()->SetTitle("bcid");
   C.Clear();
   for(int i=0;i<NDET;i++){
     if(i==detsel) continue;
-    HFrameLinearity.SetTitle(DETName[DETLIST[i]]);
+    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / " + DETName[DETLIST[detsel]] +" y-intercept");
     HFrameLinearity.Draw();
     Gp0[i]->Draw("pesame");
+    line.SetLineStyle(1); line.SetLineColor(1);
     line.DrawLine(0,1,HFrameLinearity.GetXaxis()->GetXmax(),1);
   }
   C.Print("plot_linearity.pdf");
+  C.Print("plot_det_linearity_perbx_y0.gif"); 
 
   
 }

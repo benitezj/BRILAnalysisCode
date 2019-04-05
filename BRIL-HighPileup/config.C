@@ -7,8 +7,8 @@ TString DETLIST[NDET] = {"hfoc","pcc"};//"hfet","plt","bcm",
 int detsel=0;
 #define NPLT 16
 #define NBX 3564
-
 #define NLS 500
+
 
 long FILL;
 std::vector<long> BXLIST;
@@ -129,16 +129,12 @@ void configFill(long fill=0){///set fill specific configurations
   cout<<"BX selection: "<<CUTBX<<endl;
 
 
-
-
-
-  
 }
 
 
 TH2F * getLinearityHisto(TString name, TString det, TString cut="1"){
   TH2F * H = new TH2F(name,"",200,0,20,200,0.5,1.5);
-  tree.Draw(det+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+H->GetName(),CUTTime+"&&("+DETLIST[detsel]+">1)"+"&&"+cut);
+  tree.Draw(det+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+H->GetName(),CUTTime+"&&("+DETLIST[detsel]+">1.5)"+"&&"+cut);
   H->SetLineColor(DETColor[det.Data()]);
   H->SetMarkerColor(DETColor[det.Data()]);  
   H->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[DETLIST[detsel].Data()]);
@@ -161,18 +157,18 @@ TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlis
 
   TH2F HDet("HDet","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HDet.Sumw2();
-  tree.Draw("ls:bx>>HDet",TString("(")+CUTLumis+")*"+det);
+  tree.Draw("ls:bx>>HDet",TString("(")+CUTLumis+"&&("+DETLIST[detsel]+">1.5)"+")*"+det);
   TH2F HNDet("HNDet","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HNDet.Sumw2();
-  tree.Draw("ls:bx>>HNDet",CUTLumis);//CUTTime);
+  tree.Draw("ls:bx>>HNDet",CUTLumis+"&&("+DETLIST[detsel]+">1.5)");
 
   
   TH2F HRef("HRef","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HRef.Sumw2();
-  tree.Draw("ls:bx>>HRef",TString("(")+CUTLumis+")*"+DETLIST[detsel]);//there is no cut on time here to avoid loosing HFOC data, lumi sections are already selected in the numerator detector
+  tree.Draw("ls:bx>>HRef",TString("(")+CUTLumis+"&&("+DETLIST[detsel]+">1.5)"+")*"+DETLIST[detsel]);
   TH2F HNRef("HNRef","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HNRef.Sumw2();
-  tree.Draw("ls:bx>>HNRef",CUTLumis);
+  tree.Draw("ls:bx>>HNRef",CUTLumis+"&&("+DETLIST[detsel]+">1.5)");
 
   
   HDet.Divide(&HNDet);//average the points
@@ -181,12 +177,12 @@ TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlis
   HRatio->Divide(&HRef);
 
   //TGraphErrors HLinearity; //("HLinearity","",200,0,20,200,0.5,1.5);
-  TH2F * HLinearity = new TH2F(name,"",200,0,20,200,0.5,1.5);
+  TH2F * HLinearity = new TH2F(name,"",400,0,20,200,0.5,1.5);
 
   //int counter=0;
   for(int l=1;l<=NLS;l++)
     for(int b=0;b<bxlist.size();b++){
-      if(HRef.GetBinContent(bxlist[b],l)>=1.&&HRatio->GetBinContent(bxlist[b],l)>0.1){
+      if(HRatio->GetBinContent(bxlist[b],l)>0.1){
 	//HLinearity.SetPoint(counter++,HRef.GetBinContent(bxlist[b],l),HRatio->GetBinContent(bxlist[b],l));
 	HLinearity->Fill(HRef.GetBinContent(bxlist[b],l),HRatio->GetBinContent(bxlist[b],l));
       }

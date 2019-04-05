@@ -51,7 +51,7 @@ void compareFills(){
   C.Clear();
   for(int i=0;i<fills.size();i++){
     TH2F* H=histos[i];
-    H->RebinX(10);
+    H->RebinX(40);
     TProfile *P = H->ProfileX(TString(H->GetName())+"_pfx",1,-1,"");
     P->GetYaxis()->SetRangeUser(rmin,rmax);
     P->GetYaxis()->SetTitle(H->GetYaxis()->GetTitle());
@@ -76,7 +76,7 @@ void compareFills(){
     cout<<i<<" "<<profiles[0]->GetBinCenter(i)<<" "<<ratio<<" "<<err<<endl;
     if(ratio>0){
       GCompatibility.SetPoint(points,profiles[0]->GetBinCenter(i),ratio);
-      GCompatibility.SetPointError(points,0,err);
+      GCompatibility.SetPointError(points,profiles[0]->GetBinWidth(i)/2,err);
       points++;
     }
   }
