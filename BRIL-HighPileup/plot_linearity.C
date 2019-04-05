@@ -38,7 +38,8 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
       Time2D_bx->SetLineColor(color);
 
       //TString cut = CUTTime+TString("&&(bx==")+bxlist[b]+")";
-      TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";
+      //TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";
+      TString cut = TString("(bx==")+bxlist[b]+")";
       tree.Draw(DETLIST[i]+":"+timeref+">>"+Time2D_bx->GetName(),cut.Data(),"histpsame");
       leg->AddEntry(Time2D_bx,TString("")+bxlist[b],"lp");
     }
@@ -47,7 +48,7 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
     line.SetLineColor(3);
     for(long i=0;i<TimeStep.size()-1;i++)
       if(tmin<TimeStep[i]&&TimeStep[i]<tmax)
-    	//line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,Time2D->GetYaxis()->GetXmax());
+    	line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
     
     leg->Draw();
   }
@@ -280,6 +281,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       Linearity[i][j] = getLinearityHistoAvgLS(name,DETLIST[i],std::vector<long>{bxlist[j]});
       
       FLinearityFit[i][j] = fitLinearity(Linearity[i][j]);
+      
       Gp1[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(1));
       Gp1[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(1));
 
@@ -301,12 +303,16 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
     int bxcounter=0; 
     for(int j=0;j<bxlist.size();j++){     
       C.cd(++bxcounter);
-      Linearity[i][j]->GetYaxis()->SetRangeUser(0.8,1.2);
+      Linearity[i][j]->GetYaxis()->SetRangeUser(0.9,1.1);
       Linearity[i][j]->Draw("histp");
+      FLinearityFit[i][j]->SetLineColor(2);
       FLinearityFit[i][j]->Draw("lsame");
+      labeltext.SetTextSize(0.1);
+      labeltext.DrawTextNDC(0.3,0.8,TString("bcid ")+bxlist[j]);
     }
     C.Print("plot_linearity.pdf");
-    C.Print(TString("plot_det_linearity_perbx_")+DETLIST[i]+".gif"); 
+    C.Print(TString("plot_det_linearity_perbx_")+DETLIST[i]+".gif");
+
   }
   
   
@@ -324,11 +330,11 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   TH1F HFrameLinearity("HFrameLinearity","",1,0,bxlist.size()+1);
   HFrameLinearity.GetXaxis()->SetTitle("bcid");
   
-  HFrameLinearity.GetYaxis()->SetRangeUser(-0.02,0.02);
+  HFrameLinearity.GetYaxis()->SetRangeUser(-0.015,0.015);
   C.Clear();
   for(int i=0;i<NDET;i++){
     if(i==detsel) continue;
-    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" slope relative to "+DETName[DETLIST[detsel]]);
+    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / "+DETName[DETLIST[detsel]] + "  slope ");
     HFrameLinearity.Draw();
     line.SetLineStyle(1); line.SetLineColor(1);
     Gp1[i]->Draw("pesame");
@@ -342,7 +348,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   C.Clear();
   for(int i=0;i<NDET;i++){
     if(i==detsel) continue;
-    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / " + DETName[DETLIST[detsel]] +" y-intercept");
+    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / "+DETName[DETLIST[detsel]] + "  y-intercept ");
     HFrameLinearity.Draw();
     Gp0[i]->Draw("pesame");
     line.SetLineStyle(1); line.SetLineColor(1);
@@ -600,8 +606,8 @@ void plot_linearity(long fill=7358){
   cout<<endl;
   
   ////// show each bcid vs time
-  plot_lumi_vstime_perbx(BXSpecial);
-  //plot_lumi_vstime_perbx(BXSel);
+  //plot_lumi_vstime_perbx(BXSpecial);
+  plot_lumi_vstime_perbx(BXSel);
 
   ////// Detectors vs time
   //plot_det_vstime(); //selected bcid's

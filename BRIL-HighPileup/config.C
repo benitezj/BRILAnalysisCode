@@ -35,11 +35,12 @@ void configFill(long fill=0){///set fill specific configurations
   FILL=fill;
  
   if(FILL==6847){
-    tree.Add("bril_6847_RunDModVeto_NoCorr.root");
+    //tree.Add("bril_6847_RunDModVeto_NoCorr.root");
+    tree.Add("bril_6847_RunDModVeto.root");
     tmin = 1530010610 ;
-    //tmax = tmin + 400 ;
+    tmax = tmin + 400 ;
     //tmax = tmin + 790 ;
-    tmax = tmin + 1770;
+    //tmax = tmin + 1770;
     BXSel = std::vector<long>{686};
     NBXTrain = 1;
     BXLeading = std::vector<long>{686,816,2591,2612,2633};
@@ -69,7 +70,8 @@ void configFill(long fill=0){///set fill specific configurations
     TimeStep = std::vector<long>{tmin+195,tmin+271,tmin+345,tmin+421,tmin+518,tmin+614,tmin+760,tmin+999,tmin+1144,tmin+1241,tmin+1340,tmin+1415,tmin+1490,tmin+1564};
   }
   if(FILL==7358){
-    tree.Add("bril_7358_RunDModVeto_NoCorr.root");
+    //tree.Add("bril_7358_RunDModVeto_NoCorr.root");
+    tree.Add("bril_7358_RunDModVeto.root");
     tmin = 1540537829;
     tmax = tmin + 690;
     BXSel = std::vector<long>{750};

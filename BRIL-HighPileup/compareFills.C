@@ -99,6 +99,7 @@ void compareFills(){
   labeltext.DrawTextNDC(0.3,0.2,txt);
 
   C.Print("compareFills.pdf");
+  C.Print("compareFills_compatibility.gif");
   
   C.Print("compareFills.pdf]");
   gROOT->ProcessLine(".q");
