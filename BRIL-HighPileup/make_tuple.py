@@ -17,6 +17,8 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 #sigma_pcc  = 11245.5/5910000*23.311  ##23.3 comes from Georgios for pccminitrees
 #sigma_pcc  = 11245.5/5910000
 sigma_pcc  = 11245.5/3140000
+sigma_pccB  = 11245.5/(3140000*0.501)
+sigma_pccF  = 11245.5/(3140000*0.499)
 
  ##########################
  ####Fill 7358 (mu scan)
@@ -313,8 +315,8 @@ for row in h5file.root.hfoclumi.iterrows():
     for b in BXLIST:
         bx[0]   = b 
         pcc[0]  = PCC[b-1]*sigma_pcc 
-        pccb[0]  = PCCB[b-1]*sigma_pcc 
-        pccf[0]  = PCCF[b-1]*sigma_pcc 
+        pccb[0]  = PCCB[b-1]*sigma_pccB 
+        pccf[0]  = PCCF[b-1]*sigma_pccF
         hfoc[0] = HFOC[b-1]*sigma_hfoc
         hfet[0] = HFET[b-1]*sigma_hfet
         bcm[0]  = BCM[b-1]*sigma_bcm
