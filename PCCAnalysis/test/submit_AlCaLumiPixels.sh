@@ -66,7 +66,8 @@ submit(){
     $eos rm ${outputdir}/${run}.db
     $eos rm ${outputdir}/${run}.txt
     $eos rm ${outputdir}/${run}.csv
-    bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
+    #bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
+    condor_submit $inputdir/${run}.sub 
 }
 
 ## copy the proxy in case of xrootd access:
@@ -112,6 +113,8 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
     ###create the scripts
     if [ "$action" == "0" ]; then
 	rm -f $inputdir/${run}.sh
+	rm -f $inputdir/${run}.sub
+
 	echo "export X509_USER_PROXY=${HOME}/x509up_u55361 " >> $inputdir/${run}.sh
 	echo "cd ${INSTALLATION} " >> $inputdir/${run}.sh
 	echo "eval \`scramv1 runtime -sh\` " >> $inputdir/${run}.sh
@@ -135,6 +138,17 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	    echo "${eos} cp PCC_Corr.db $outputdir/${run}.db " >> $inputdir/${run}.sh
 	    echo "${eos} cp CorrectionHisto.root $outputdir/${run}.root " >> $inputdir/${run}.sh
 	fi
+
+
+	##create condor jdl
+	echo "Universe   = vanilla" >>  $inputdir/${run}.sub
+	echo "+JobFlavour = \"longlunch\" " >> $inputdir/${run}.sub
+	echo "Executable = /bin/bash" >> $inputdir/${run}.sub 
+	echo "Arguments  = ${inputdir}/${run}.sh" >> $inputdir/${run}.sub 
+	echo "Log        = ${inputdir}/${run}.log" >> $inputdir/${run}.sub 
+	echo "Output     = ${inputdir}/${run}.log" >> $inputdir/${run}.sub 
+	echo "Error      = ${inputdir}/${run}.log" >> $inputdir/${run}.sub 
+	echo "Queue  " >> $inputdir/${run}.sub 
 
     fi
     

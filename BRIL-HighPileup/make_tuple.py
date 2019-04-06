@@ -24,8 +24,10 @@ h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brild
  #hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
  #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
  #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309_RunDModVeto_NoCorr.csv','r')
-hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv','r')
-#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto/325309.csv','r')
+#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv','r')
+hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto/325309.csv','r')
+hist_pccB = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Bpix/325309.csv','r')
+hist_pccF = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Bpix/325309.csv','r')
 tmin=1540537800
 tmax=1540538550
 BXLeading = [750,1644]
@@ -132,6 +134,11 @@ tree.Branch( 'bx', bx, 'bx/I' )
 pcc = array( 'f', [ 0. ] )
 tree.Branch( 'pcc', pcc, 'pcc/F' )
 
+pccb = array( 'f', [ 0. ] )
+tree.Branch( 'pccb', pccb, 'pccb/F' )
+pccf = array( 'f', [ 0. ] )
+tree.Branch( 'pccf', pccf, 'pccf/F' )
+
 hfoc = array( 'f', [ 0. ] )
 tree.Branch( 'hfoc', hfoc, 'hfoc/F' )
 
@@ -185,6 +192,8 @@ idx_bcm  = 0
 idx_plt  = 0
 idx_plt_ = NPLT*[ 0 ] 
 idx_pcc  = 0
+idx_pccb  = 0
+idx_pccf  = 0
 
 
 def getLUMI(time,idx,hist):
@@ -273,6 +282,8 @@ for row in h5file.root.hfoclumi.iterrows():
 
     #idx_pcc, PCC   = getLUMIroot(time[0],idx_pcc,hist_pcc)
     idx_pcc, PCC   = getLUMIcsv(ls[0],idx_pcc,hist_pcc)
+    idx_pccb, PCCB   = getLUMIcsv(ls[0],idx_pcc,hist_pccB)
+    idx_pccf, PCCF   = getLUMIcsv(ls[0],idx_pcc,hist_pccF)
 
     idx_hfet, HFET = getLUMI(time[0],idx_hfet,h5file.root.hfetlumi)
     idx_bcm, BCM   = getLUMI(time[0],idx_bcm,h5file.root.bcm1flumi )
@@ -302,6 +313,8 @@ for row in h5file.root.hfoclumi.iterrows():
     for b in BXLIST:
         bx[0]   = b 
         pcc[0]  = PCC[b-1]*sigma_pcc 
+        pccb[0]  = PCCB[b-1]*sigma_pcc 
+        pccf[0]  = PCCF[b-1]*sigma_pcc 
         hfoc[0] = HFOC[b-1]*sigma_hfoc
         hfet[0] = HFET[b-1]*sigma_hfet
         bcm[0]  = BCM[b-1]*sigma_bcm
