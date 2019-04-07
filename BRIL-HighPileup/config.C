@@ -1,10 +1,11 @@
 
 ////////////
-std::map<TString,TString> DETName = {{"hfoc","HFOC"},{"hfet","HFET"},{"plt","PLTZERO"},{"bcm","BCM1F"},{"pcc","PCC"}};
-std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4},{"pcc",6}};//note color should be set with +1
+std::map<TString,TString> DETName = {{"hfoc","HFOC"},{"hfet","HFET"},{"plt","PLTZERO"},{"bcm","BCM1F"},{"pcc","PCC"},{"pccb","PCC_B"},{"pccf","PCC_F"}};
+std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4},{"pcc",6},{"pccb",6},{"pccf",6}};//note color should be set with +1
 #define NDET 2
 TString DETLIST[NDET] = {"hfoc","pcc"};//"hfet","plt","bcm",
-int detsel=0;
+//int detsel=0;
+TString detsel("hfoc");
 #define NPLT 16
 #define NBX 3564
 #define NLS 500
@@ -38,9 +39,9 @@ void configFill(long fill=0){///set fill specific configurations
     //tree.Add("bril_6847_RunDModVeto_NoCorr.root");
     tree.Add("bril_6847_RunDModVeto.root");
     tmin = 1530010610 ;
-    tmax = tmin + 400 ;
-    //tmax = tmin + 790 ;
-    //tmax = tmin + 1770;
+    //tmax = tmin + 400 ;//half a scan
+    //tmax = tmin + 790 ;//one scan
+    tmax = tmin + 1770;//both scans
     BXSel = std::vector<long>{686};
     NBXTrain = 1;
     BXLeading = std::vector<long>{686,816,2591,2612,2633};
@@ -49,14 +50,15 @@ void configFill(long fill=0){///set fill specific configurations
     BXSpecial = std::vector<long>{686,816,2591,2612,2633};//high stats bunches
   }
   if(FILL==6854){
-    tree.Add("bril_6854_RunDModVeto_NoCorr.root");
-    tmin = 1530139020 ;
-    tmax = tmin + 770 ;
+    tree.Add("bril_6854_normal.root");
+    //tree.Add("bril_6854_RunDModVeto_NoCorr.root");
+    tmin = 1530139061 ;//1530139020 ;
+    tmax = tmin + 700 ;
     BXSel = std::vector<long>{1631};
     NBXTrain = 10;
-    //BXLeading = std::vector<long>{62,149,443,1043,1337,1631,1937,2231,2831,312};
-    BXLeading = std::vector<long>{1631};
-    TimeStep = std::vector<long>{tmin+41,tmin+102,tmin+153,tmin+205,tmin+255,tmin+307,tmin+358,tmin+410,tmin+461,tmin+514,tmin+565,tmin+617,tmin+668,tmin+720};
+    BXLeading = std::vector<long>{62,149,443,1043,1337,1631,1937,2231,2831,312};
+    //BXLeading = std::vector<long>{1631};
+    TimeStep = std::vector<long>{tmin+61,tmin+112,tmin+164,tmin+214,tmin+266,tmin+317,tmin+369,tmin+420,tmin+473,tmin+524,tmin+576,tmin+627,tmin+679};
     //BXSpecial = std::vector<long>{1631,1651,1678,2321,2355};//high stats bunches
     BXSpecial = std::vector<long>{1631};//high stats leading bunches
   }
@@ -65,7 +67,7 @@ void configFill(long fill=0){///set fill specific configurations
     tmin = 1539215350;
     tmax = tmin + 2000;
     BXSel = std::vector<long>{62};
-    NBXTrain = 10;
+    NBXTrain = 20;
     BXLeading = std::vector<long>{62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689};
     TimeStep = std::vector<long>{tmin+195,tmin+271,tmin+345,tmin+421,tmin+518,tmin+614,tmin+760,tmin+999,tmin+1144,tmin+1241,tmin+1340,tmin+1415,tmin+1490,tmin+1564};
   }
@@ -77,8 +79,8 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = std::vector<long>{750};
     NBXTrain = 10 ;
     BXLeading = std::vector<long>{750,1644};
-    TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
     BXSpecial = std::vector<long>{11,536,750,1644};//leading/solo bunches
+    TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
   }
 
   
@@ -86,11 +88,14 @@ void configFill(long fill=0){///set fill specific configurations
   timeref=TString("(time-")+tmin+")";
     
   Time2D=new TH2F(TString("Time2D")+FILL,"",600,0,tmax-tmin,800,0,20);
-  
-  for(int i=0;i<BXLeading.size();i++)
-    for(int j=0;j<NBXTrain;j++)
-      BXLIST.push_back(BXLeading[i] + j);
 
+  cout<<"BX list : ";
+  for(int i=0;i<BXLeading.size();i++)
+    for(int j=0;j<NBXTrain;j++){
+      BXLIST.push_back(BXLeading[i] + j);
+      cout<<", "<<BXLeading[i] + j;
+    }
+  cout<<endl;
   
   //// define the time cuts to remove the step boundaries
   CUTTime = TString("(")+tmin+"<time&&time<"+tmax+")";
@@ -136,11 +141,11 @@ void configFill(long fill=0){///set fill specific configurations
 
 TH2F * getLinearityHisto(TString name, TString det, TString cut="1"){
   TH2F * H = new TH2F(name,"",200,0,20,200,0.5,1.5);
-  tree.Draw(det+"/"+DETLIST[detsel]+":"+DETLIST[detsel]+">>"+H->GetName(),CUTTime+"&&("+DETLIST[detsel]+">1.5)"+"&&"+cut);
+  tree.Draw(det+"/"+detsel+":"+detsel+">>"+H->GetName(),CUTTime+"&&("+detsel+">1.5)"+"&&"+cut);
   H->SetLineColor(DETColor[det.Data()]);
   H->SetMarkerColor(DETColor[det.Data()]);  
-  H->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[DETLIST[detsel].Data()]);
-  H->GetXaxis()->SetTitle(DETName[DETLIST[detsel].Data()]+"  sbil");
+  H->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[detsel.Data()]);
+  H->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
   return H;
 }
 
@@ -159,50 +164,68 @@ TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlis
 
   TH2F HDet("HDet","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HDet.Sumw2();
-  tree.Draw("ls:bx>>HDet",TString("(")+CUTLumis+"&&("+DETLIST[detsel]+">1.5)"+")*"+det);
+  tree.Draw("ls:bx>>HDet",TString("(")+CUTLumis+"&&("+detsel+">1.5)"+")*"+det);
   TH2F HNDet("HNDet","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HNDet.Sumw2();
-  tree.Draw("ls:bx>>HNDet",CUTLumis+"&&("+DETLIST[detsel]+">1.5)");
+  tree.Draw("ls:bx>>HNDet",CUTLumis+"&&("+detsel+">1.5)");
 
   
   TH2F HRef("HRef","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HRef.Sumw2();
-  tree.Draw("ls:bx>>HRef",TString("(")+CUTLumis+"&&("+DETLIST[detsel]+">1.5)"+")*"+DETLIST[detsel]);
+  tree.Draw("ls:bx>>HRef",TString("(")+CUTLumis+"&&("+detsel+">1.5)"+")*"+detsel);
   TH2F HNRef("HNRef","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HNRef.Sumw2();
-  tree.Draw("ls:bx>>HNRef",CUTLumis+"&&("+DETLIST[detsel]+">1.5)");
+  tree.Draw("ls:bx>>HNRef",CUTLumis+"&&("+detsel+">1.5)");
 
   
   HDet.Divide(&HNDet);//average the points
   HRef.Divide(&HNRef);
+
   TH2F* HRatio = (TH2F*)HDet.Clone("HRatio");//calculate detector ratio
   HRatio->Divide(&HRef);
 
-  //TGraphErrors HLinearity; //("HLinearity","",200,0,20,200,0.5,1.5);
   TH2F * HLinearity = new TH2F(name,"",400,0,20,200,0.5,1.5);
-
-  //int counter=0;
   for(int l=1;l<=NLS;l++)
     for(int b=0;b<bxlist.size();b++){
       if(HRatio->GetBinContent(bxlist[b],l)>0.1){
-	//HLinearity.SetPoint(counter++,HRef.GetBinContent(bxlist[b],l),HRatio->GetBinContent(bxlist[b],l));
 	HLinearity->Fill(HRef.GetBinContent(bxlist[b],l),HRatio->GetBinContent(bxlist[b],l));
       }
     }
   delete HRatio;
 
-  HLinearity->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[DETLIST[detsel].Data()]);
-  HLinearity->GetXaxis()->SetTitle(DETName[DETLIST[detsel].Data()]+"  sbil");
+  HLinearity->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[detsel.Data()]);
+  HLinearity->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
   return HLinearity;
 }
   
 
-TF1 * fitLinearity(TH2F* H){
+TF1 * fitLinearity(TH2F* H, float low=0, float high=20){
   if(H==NULL) return 0;  
-  TF1 * F = new TF1(TString(H->GetName())+"_Fit","[0]+[1]*x",0,20);
+  TF1 * F = new TF1(TString(H->GetName())+"_Fit","[0]+[1]*x",low,high);
   F->SetLineColor(H->GetLineColor());
   F->SetMarkerColor(H->GetMarkerColor());
-  H->Fit(F,"Q","N",0,20);
+  H->Fit(F,"Q","N",low,high);
   return F;
 }
 
+
+
+void printActiveBunches(){
+
+  TH1F HBX("HBX","",3650,0.5,3650.5);
+  HBX.GetYaxis()->SetTitle(TString("Total ")+detsel+" lumi");
+  HBX.GetXaxis()->SetTitle("bunch id");  
+  tree.Draw("bx>>HBX",TString("")+detsel+">0.1");
+
+  int nactivebx=0;
+  cout<<"active bcids: ";
+  for(int i=1;i<=HBX.GetNbinsX();i++){
+    if(HBX.GetBinContent(i)>0){
+      //label.DrawTextNDC(0.87,1.0-nactivebx*0.01,(TString("")+i).Data());
+      nactivebx++;
+      cout<<","<<(TString("")+i).Data();
+    }
+  }
+  cout<<endl;
+
+}
