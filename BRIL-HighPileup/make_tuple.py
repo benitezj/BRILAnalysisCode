@@ -61,46 +61,42 @@ sigma_pccF  = sigma_pcc/0.499
 #tmax=tmin+1940 #940
 
 
- #############################
- #### Fill 6854
-h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
-hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv','r')
- #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817_RunDModVeto_NoCorr.csv','r')
-hist_pccB = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv','r')
-hist_pccF = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv','r')
-BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
-NBXTrain = 10
-NTrain = 10
-BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
-for i in range(NTrain):
-    for j in range(NBXTrain):
-        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-BXLIST[NTrain*NBXTrain]=1651
-BXLIST[NTrain*NBXTrain+1]=1678
-BXLIST[NTrain*NBXTrain+2]=2321
-BXLIST[NTrain*NBXTrain+3]=3255 
-tmin=1530139000
-tmax=tmin+1800
-
-
-
 # #############################
-# #### Fill 7274
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
-##BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
-#BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
+# #### Fill 6854
+#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
+#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv','r')
+##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817_RunDModVeto_NoCorr.csv','r')
+#BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
 #NBXTrain = 10
-#NTrain = 16
-#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
+#NTrain = 10
+#BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
 #for i in range(NTrain):
 #    for j in range(NBXTrain):
 #        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#tmin=1539215350
-#tmax=tmin+2000
-####hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/fromBrilcalc_delivered.root') #file from Yusuf but has wrong scaling
-##hist_pcc = TFile.Open( './fromBrilcalc_delivered.root') #file from Georgios email March 4, 1pm
-#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
+#BXLIST[NTrain*NBXTrain]=1651
+#BXLIST[NTrain*NBXTrain+1]=1678
+#BXLIST[NTrain*NBXTrain+2]=2321
+#BXLIST[NTrain*NBXTrain+3]=3255 
+#tmin=1530139000
+#tmax=tmin+1800
 
+
+
+  #############################
+  #### Fill 7274
+h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
+#BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
+BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
+NBXTrain = 20
+NTrain = 16
+BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
+for i in range(NTrain):
+    for j in range(NBXTrain):
+        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+tmin=1539215350
+tmax=tmin+2000
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
+hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv','r')
 
 
 ##############################
@@ -281,8 +277,8 @@ for row in h5file.root.hfoclumi.iterrows():
 
     #idx_pcc, PCC   = getLUMIroot(time[0],idx_pcc,hist_pcc)
     idx_pcc, PCC   = getLUMIcsv(ls[0],idx_pcc,hist_pcc)
-    idx_pccb, PCCB   = getLUMIcsv(ls[0],idx_pcc,hist_pccB)
-    idx_pccf, PCCF   = getLUMIcsv(ls[0],idx_pcc,hist_pccF)
+    #idx_pccb, PCCB   = getLUMIcsv(ls[0],idx_pcc,hist_pccB)
+    #idx_pccf, PCCF   = getLUMIcsv(ls[0],idx_pcc,hist_pccF)
 
     idx_hfet, HFET = getLUMI(time[0],idx_hfet,h5file.root.hfetlumi)
     idx_bcm, BCM   = getLUMI(time[0],idx_bcm,h5file.root.bcm1flumi )
@@ -312,8 +308,8 @@ for row in h5file.root.hfoclumi.iterrows():
     for b in BXLIST:
         bx[0]   = b 
         pcc[0]  = PCC[b-1]*sigma_pcc 
-        pccb[0]  = PCCB[b-1]*sigma_pccB 
-        pccf[0]  = PCCF[b-1]*sigma_pccF
+        #pccb[0]  = PCCB[b-1]*sigma_pccB 
+        #pccf[0]  = PCCF[b-1]*sigma_pccF
         hfoc[0] = HFOC[b-1]*sigma_hfoc
         hfet[0] = HFET[b-1]*sigma_hfet
         bcm[0]  = BCM[b-1]*sigma_bcm
