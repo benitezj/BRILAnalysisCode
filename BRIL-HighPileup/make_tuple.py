@@ -15,10 +15,10 @@ sigma_bcm = 11245.5/203.2
 #sigma_plt = 11245.5/252.1  ##sigma from vdm
 sigma_plt = 11245.5/305  ##sigma from emmittance scan
 #sigma_pcc  = 11245.5/5910000*23.311  ##23.3 comes from Georgios for pccminitrees
-#sigma_pcc  = 11245.5/5910000
-sigma_pcc  = 11245.5/3140000
-sigma_pccB  = 11245.5/(3140000*0.501)
-sigma_pccF  = 11245.5/(3140000*0.499)
+sigma_pcc  = 11245.5/5910000
+#sigma_pcc  = 11245.5/3140000
+sigma_pccB  = sigma_pcc/0.501
+sigma_pccF  = sigma_pcc/0.499
 
 
  ##########################
