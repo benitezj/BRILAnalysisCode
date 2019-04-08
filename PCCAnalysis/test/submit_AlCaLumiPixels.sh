@@ -13,14 +13,13 @@ extdir=$1 #relative path
 action=$2
 
 
+normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags
+
 ###################
 ##### options
 ###################
 ## only a few runs
 TEST=0
-
-#eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
-eos=''
 
 INSTALLATION=${CMSSW_BASE}/src
 
@@ -62,10 +61,10 @@ echo "output: $outputdir"
 submit(){
     local run=$1
     rm -f $inputdir/${run}.log
-    $eos rm ${outputdir}/${run}.root
-    $eos rm ${outputdir}/${run}.db
-    $eos rm ${outputdir}/${run}.txt
-    $eos rm ${outputdir}/${run}.csv
+    rm -f ${outputdir}/${run}.root
+    rm -f ${outputdir}/${run}.db
+    rm -f ${outputdir}/${run}.txt
+    rm -f ${outputdir}/${run}.csv
     #bsub -q 1nd -o $inputdir/${run}.log -J $run < $inputdir/${run}.sh    
     condor_submit $inputdir/${run}.sub 
 }
@@ -94,6 +93,7 @@ fi
 if [ "$action" == "5" ] ; then
     rm -f $inputdir/runs.dat
     rm -f $inputdir/ls.dat
+    rm -f $inputdir/slope.dat
 fi
 
 
@@ -130,13 +130,13 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 
 	if [ "$jobtype" == "lumi" ] ; then
 	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/python/pcc_LumiInfoRead_cfg.py " >> $inputdir/${run}.sh
-	    echo "${eos} cp PCCLumiByBX.csv  $outputdir/${run}.csv " >> $inputdir/${run}.sh
-	    echo "${eos} cp PCCLumiByBX.err  $outputdir/${run}.err " >> $inputdir/${run}.sh
+	    echo "cp PCCLumiByBX.csv  $outputdir/${run}.csv " >> $inputdir/${run}.sh
+	    echo "cp PCCLumiByBX.err  $outputdir/${run}.err " >> $inputdir/${run}.sh
 	fi
 
 	if [ "$jobtype" == "corr" ] ; then
-	    echo "${eos} cp PCC_Corr.db $outputdir/${run}.db " >> $inputdir/${run}.sh
-	    echo "${eos} cp CorrectionHisto.root $outputdir/${run}.root " >> $inputdir/${run}.sh
+	    echo "cp PCC_Corr.db $outputdir/${run}.db " >> $inputdir/${run}.sh
+	    echo "cp CorrectionHisto.root $outputdir/${run}.root " >> $inputdir/${run}.sh
 	fi
 
 
@@ -188,13 +188,6 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	if [ "$fail" == "0" ]; then
             ###### error check for lumi jobs
 	    if [ "$jobtype" == "lumi" ] ; then
-	       #rootf=`$eos ls $outputdir/${run}.root | grep err `
-	       #if [ "$rootf" != "" ]; then
-	       #	echo "no root"
-	       #	fail=1
-	       #fi
-		
-	        #csvf=`$eos ls $outputdir/${run}.csv | grep err `
 		if [  ! -f  $outputdir/${run}.csv ]; then
 		    echo "no csv"
 		    fail=1
@@ -205,7 +198,7 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 
 	#### error check for corrections jobs
 	if [ "$jobtype" == "corr" ] && [ "$fail" == "0" ] ; then
-	    dbf=`$eos ls $outputdir/${run}.db | grep err `
+	    dbf=`/bin/ls $outputdir/${run}.db | grep err `
 	    if [ "$dbf" != "" ]; then
 		echo "no db"
 		fail=1
@@ -240,15 +233,15 @@ for f in `/bin/ls $inputdir | grep .txt | grep -v "~" `; do
 	    /bin/rm -f $inputdir/${run}.$ref
 	    
 #	    if [ "$ref" == "normtag_BRIL" ]; then
-#		brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+#		brilcalc lumi --normtag ${normtagdir}/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
 #	    fi 
-#
 #	    if [ "$ref" != "normtag_BRIL" ]; then
 #		brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
 #		#brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $inputdir/${run}.$ref
 #	    fi
 
-	    brilcalc lumi -c web --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_${ref}.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+	    #brilcalc lumi -c web --normtag ${normtagdir}/normtag_${ref}.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $inputdir/${run}.$ref
+	    brilcalc lumi -c web --normtag ${normtagdir}/normtag_${ref}.json -r $run --xing --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' >> $inputdir/${run}.$ref
 	fi
 
         # run plotting macro
