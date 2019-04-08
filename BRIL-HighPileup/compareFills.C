@@ -23,6 +23,8 @@ void compareFills(){
    
   std::vector<TH2F*> histos;
   std::vector<TF1*> fits;
+  std::vector<TF1*> fitsl;
+  std::vector<TF1*> fitsh;
   for(int i=0;i<fills.size();i++){
     configFill(fills[i]);
     //TH2F * H = getLinearityHisto(TString("H_fill")+i,det,BXSpecial);
@@ -32,6 +34,8 @@ void compareFills(){
     H->SetLineColor(i+1);
     histos.push_back(H);
     fits.push_back(fitLinearity(H));
+    fitsl.push_back(fitLinearity(H,2,8));
+    fitsh.push_back(fitLinearity(H,8,16));
   }
 
 
@@ -56,10 +60,33 @@ void compareFills(){
     P->GetYaxis()->SetRangeUser(rmin,rmax);
     P->GetYaxis()->SetTitle(H->GetYaxis()->GetTitle());
     P->Draw(i==0?"histpe":"histpesame");
-    fits[i]->Draw("lsame");
+    //fits[i]->Draw("lsame");
+    fitsl[i]->Draw("lsame");
+    fitsh[i]->Draw("lsame");
+
     //bx_leg.AddEntry(H,TString("FILL ")+fills[i],"flp");
-    profiles.push_back(P);
+    profiles.push_back(P);    
   }
+
+  char txt[100];
+  labeltext.SetTextSize(0.035);
+  
+  sprintf(txt,"fit results: ");
+  labeltext.SetTextColor(1);
+  labeltext.DrawTextNDC(0.24,0.36,txt);
+  
+  sprintf(txt,"slope 1 = %.2f +/- %.2f %%",100*fitsl[0]->GetParameter(1),100*fitsl[0]->GetParError(1));
+  labeltext.SetTextColor(fitsl[0]->GetLineColor());
+  labeltext.DrawTextNDC(0.24,0.32,txt);
+
+  sprintf(txt,"slope 1 = %.2f +/- %.2f %%",100*fitsl[1]->GetParameter(1),100*fitsl[1]->GetParError(1));
+  labeltext.SetTextColor(fitsl[1]->GetLineColor());
+  labeltext.DrawTextNDC(0.24,0.26,txt);
+
+  sprintf(txt,"slope 2 = %.2f +/- %.2f %%",100*fitsh[1]->GetParameter(1),100*fitsh[1]->GetParError(1));
+  labeltext.SetTextColor(fitsl[1]->GetLineColor());
+  labeltext.DrawTextNDC(0.24,0.20,txt);
+
   bx_leg.Draw();
   C.Print("compareFills.pdf");
   C.Print("compareFills_profile.gif");
@@ -93,7 +120,7 @@ void compareFills(){
 
   line.DrawLine(GCompatibility.GetXaxis()->GetXmin(),1,GCompatibility.GetXaxis()->GetXmax(),1);
   
-  char txt[100];
+  //char txt[100];
   sprintf(txt,"y=%.3f +/- %.3f,    chi2 = %.1f,   p-value = %.4f ",fcomp.GetParameter(0),fcomp.GetParError(0),fcomp.GetChisquare(), TMath::Prob(fcomp.GetChisquare(),fcomp.GetNDF()));
   labeltext.SetTextSize(0.035);
   labeltext.DrawTextNDC(0.3,0.2,txt);

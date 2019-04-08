@@ -16,7 +16,7 @@ std::map<long,int> PN;
 
 void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/test/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
   //BPIX
   ifstream cfile_bpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix.txt");
@@ -51,6 +51,9 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     return;
   }
 
+  
+  int BCountN[4]={0,0,0,0};
+  int BCountP[4]={0,0,0,0};
   std::string line;
   while (std::getline(myfile,line)){
     int module=atoi(line.c_str());
@@ -62,6 +65,8 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     cout<<module<<" "<<LY[module]<<" "<<md<<" "<<ld<<endl;
 
     B[LY[module]-1].Fill(md,ld);
+    if(md<0)BCountN[LY[module]-1]++;
+    if(md>0)BCountP[LY[module]-1]++;
   }
 
 
@@ -98,6 +103,8 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     return;
   }
 
+  int FCountN[2]={0,0};
+  int FCountP[2]={0,0};
   while (std::getline(myfile_fpix,line)){
     int module=atoi(line.c_str());
     
@@ -108,12 +115,15 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     cout<<module<<" "<<di<<" "<<bl<<" "<<PN[module]<<endl;
 
     F[PN[module]-1].Fill(di,bl);
+    if(di<0)FCountN[PN[module]-1]++;
+    if(di>0)FCountP[PN[module]-1]++;
   }
   
 
   TCanvas C;
   for(long l=0;l<4;l++){
     C.Clear();
+    B[l].SetTitle(TString("BPIX Layer ")+l);
     B[l].Draw("col");
     C.Print(TString("VetoMap_Layer")+(l+1)+".png");
   }
@@ -121,8 +131,20 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
 
   for(long l=0;l<2;l++){
     C.Clear();
+    F[l].SetTitle(TString("FPIX ")+l);
     F[l].Draw("col");
     C.Print(TString("VetoMap_FPIX")+(l+1)+".png");
   }
 
+
+
+  ///summary of counts
+  cout<<"BPIX 0 : "<<BCountN[0]<<" , "<<BCountP[0]<<endl;
+  cout<<"BPIX 1 : "<<BCountN[1]<<" , "<<BCountP[1]<<endl;
+  cout<<"BPIX 2 : "<<BCountN[2]<<" , "<<BCountP[2]<<endl;
+  cout<<"BPIX 3 : "<<BCountN[3]<<" , "<<BCountP[3]<<endl;
+
+  cout<<"FPIX 0 : "<<FCountN[0]<<" , "<<FCountP[0]<<endl;
+  cout<<"FPIX 1 : "<<FCountN[1]<<" , "<<FCountP[1]<<endl;
+  
 }
