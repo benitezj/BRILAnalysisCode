@@ -8,6 +8,7 @@
 //#define SigmaPCC 5.8e6/(23.31*11245.6) // old veto list
 //#define SigmaPCC 6.704e6/(23.31*11245.6) // new veto list, but with double counting pixels
 #define SigmaPCC 5.91e6/(23.31*11245.6) // new veto list, Georgios fixed pixel double counting
+//#define SigmaPCC 3.14e6/(23.31*11245.6) // for second part of RunD 
 
 
 //#define MAXPCC 10e6  // un-normalized
@@ -18,8 +19,8 @@
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
 
-float ratiomin=0.8;
-float ratiomax=1.2;
+float ratiomin=0.9;
+float ratiomax=1.1;
 
 
 void getRefLumi(TString inputfile){
@@ -69,7 +70,7 @@ void getRefLumi(TString inputfile){
     iss>>tmp>>tmp;
     for(int j=0;j<NBX;j++){
       iss>>tmp>>tmp>>lumiBX;
-      HRefLumiBXvsLS.SetBinContent(ls,j+1,lumiBX);
+      HRefLumiBXvsLS.SetBinContent(ls,j+1,lumiBX/23.31);
     }
 
 
@@ -121,7 +122,9 @@ float getMaxLumi(TString inputfile){
 
 void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
 
-  bool perBXRatioPlots=0;
+  bool perBXRatioPlots=1;
+
+  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
 
   ///Open the lumi csv file
@@ -221,7 +224,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
       std::getline(iss,token, ',');
       std::stringstream bxLiss(token);
       bxLiss>>bxL;
-      bxL/=SigmaPCC;
+      bxL/=(SigmaPCC*23.31);
       HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
       HLumiBX.AddBinContent(bx+1,bxL);
     }
@@ -281,7 +284,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
   HLumiBXvsLS.GetZaxis()->SetTitleSize(0.06);
   HLumiBXvsLS.GetZaxis()->SetTitleOffset(0.7);
   HLumiBXvsLS.Draw("colz");
-
+  //HRefLumiBXvsLS.Draw("colz");
 
   ////// Lumi vs ls 
   TPad can_2("can_2", "can_2",0.0, 0.0, 1.0, 0.4);
@@ -343,56 +346,107 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
   
   //// per BX ratio plots
   if(perBXRatioPlots&&ref.CompareTo("")!=0) {
+
     TH2F*HLumiBXvsLS_ratio=(TH2F*)HLumiBXvsLS.Clone("HLumiBXvsLS_ratio");
     HLumiBXvsLS_ratio->Divide(&HRefLumiBXvsLS);
     
-    TGraph G;
+    TGraphErrors G;
     int counterG=0;
-    TF1 P1("P1","[0]+[1]*x",0,500);
+    TF1 P1("P1","[0]+[1]*x",0,20);
+    P1.SetLineColor(2);
+
+    TH2F HRatio("HRatio","",100,0,10,100,0.9,1.1);
+    TH1F HR(TString("HR"),"",100,0,10);
+    TH1F HN(TString("HN"),"",100,0,10);
 
     bool firstplot=0;
-    
-    C.Clear();
+    float sbil=0.;
+    float ratio=0.;
+
+    //C.Clear();
     for(int j=0;j<NBX;j++){
       float maxl=0.;
-      float lumi=0.;
-      
-      TH1F*HR=new TH1F(TString("HR")+(long)j,"",50,0,500);
-      TH1F*HN=new TH1F(TString("HN")+(long)j,"",50,0,500);
+      HR.Reset();
+      HN.Reset();
       
       for(int l=1;l<NLS;l++){
-	lumi=HLumiBXvsLS.GetBinContent(l,j+1);
-	if(lumi>maxl) maxl=lumi;
-	HR->Fill(lumi,HLumiBXvsLS_ratio->GetBinContent(l,j+1));
-	HN->Fill(lumi,1);
+	sbil=HRefLumiBXvsLS.GetBinContent(l,j+1);
+	ratio=HLumiBXvsLS_ratio->GetBinContent(l,j+1);
+	if(sbil<1.5) continue;
+	if(ratio>1.05) continue;
+	if(ratio<0.95) continue;
+	//HRatio.Fill(sbil,ratio);
+	HR.Fill(sbil,ratio);
+	HN.Fill(sbil,1);
+	if(sbil>maxl) maxl=sbil;
       }
       
-      if(maxl>1){
-	HR->Divide(HN);
-	if(!firstplot){ 
-	  HR->GetYaxis()->SetRangeUser(ratiomin,ratiomax);
-	  HR->GetYaxis()->SetTitle(TString("PCC / ")+ref);
-	  HR->GetXaxis()->SetTitle("lumi/LS/bx [1/#mub]");
-	  HR->Draw("histp");
-	  firstplot=1;
-	} else HR->Draw("histpsame");
-	
-	HR->Fit(&P1);
-	G.SetPoint(counterG,counterG+1,P1.GetParameter(1));
-	counterG++;
-      }
-    }
-    C.Print(outpath+"/"+(long)Run+"_perBX.png");
+      HR.Divide(&HN);
 
+      for(int b=1;b<=HR.GetNbinsX();b++)
+	HRatio.Fill(HR.GetBinCenter(b),HR.GetBinContent(b));
+
+      // if(maxl>1){
+      // 	HR->Divide(HN);
+      // 	if(!firstplot){ 
+      // 	  HR->GetYaxis()->SetRangeUser(ratiomin,ratiomax);
+      // 	  HR->GetYaxis()->SetTitle(TString("PCC / ")+ref);
+      // 	  HR->GetXaxis()->SetTitle(ref+" sbil");
+      // 	  HR->Draw("histp");
+      // 	  firstplot=1;
+      // 	} else HR->Draw("histpsame");
+	//HR->Fit(&P1,"Q","",0,20);
+	//G.SetPoint(counterG,j,P1.GetParameter(1));
+	//G.SetPointError(counterG,0,P1.GetParError(1));
+	//counterG++;
+      //}
+
+     
+    }
+    
+    C.Clear();
+    HRatio.GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    HRatio.GetXaxis()->SetTitle(ref+" sbil");
+    HRatio.SetMarkerStyle(8);
+    HRatio.SetMarkerSize(0.4);
+    HRatio.Fit(&P1,"Q","",0,20);
+    HRatio.Draw("histp");
+    P1.Draw("lsame");
+    char text[100];
+    sprintf(text,"slope = %.2f +/- %.2f %%",100*P1.GetParameter(1),100*P1.GetParError(1));
+    TText labeltext;
+    labeltext.DrawTextNDC(0.4,0.2, TString(text));
+    C.Print(outpath+"/"+(long)Run+"_linearity.png");    
 
     C.Clear();
-    C.SetLeftMargin(0.15);
-    G.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
-    G.GetYaxis()->SetRangeUser(-0.0005,0.0005);
-    G.GetXaxis()->SetTitle("bcid");
-    G.SetMarkerStyle(8);
-    G.Draw("ap");
-    C.Print(outpath+"/"+(long)Run+"_perBXslopes.png");
+    TProfile*P=HRatio.ProfileX("HRatioProf");
+    P->GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    P->GetYaxis()->SetRangeUser(ratiomin,ratiomax);
+    P->Draw("pe");
+    P1.Draw("lsame");
+    labeltext.DrawTextNDC(0.4,0.2, TString(text));
+    C.Print(outpath+"/"+(long)Run+"_linearityProf.png");    
+
+
+    // C.Clear();
+    // C.SetLeftMargin(0.15);
+    // G.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    // G.GetYaxis()->SetRangeUser(-0.03,0.03);
+    // G.GetXaxis()->SetTitle("bcid");
+    // G.SetMarkerStyle(8);
+    // G.Draw("ap");
+    // C.Print(outpath+"/"+(long)Run+"_perBXslopes.png");
+
+
+    ///create output file for slopes
+    TString slopeoutfile=outpath+"/slope.dat";
+    ofstream slopefile(slopeoutfile.Data(),std::ofstream::app);
+    if (!slopefile.is_open()){
+      cout << "Unable to open output slope.data file"; 
+      return;
+    }
+    slopefile<<Run<<" "<<P1.GetParameter(1)<<" "<<P1.GetParError(1)<<endl;
+    
 
   }
 
