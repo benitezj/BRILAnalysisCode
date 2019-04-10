@@ -57,19 +57,18 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = std::vector<long>{1631};
     NBXTrain = 10;
     BXLeading = std::vector<long>{62,149,443,1043,1337,1631,1937,2231,2831,312};
-    //BXLeading = std::vector<long>{1631};
     TimeStep = std::vector<long>{tmin+61,tmin+112,tmin+164,tmin+214,tmin+266,tmin+317,tmin+369,tmin+420,tmin+473,tmin+524,tmin+576,tmin+627,tmin+679};
-    //BXSpecial = std::vector<long>{1631,1651,1678,2321,2355};//high stats bunches
-    BXSpecial = std::vector<long>{1631};//high stats leading bunches
+    BXSpecial = std::vector<long>{1631,1651,1678,2321,2355};//high stats bunches
+    //BXSpecial = std::vector<long>{1631};//high stats leading bunch
   }
   if(FILL==7274){
     tree.Add("bril_7274.root");
-    tmin = 1539215350;
-    tmax = tmin + 2000;
+    tmin = 1539215450;
+    tmax = tmin + 1600;
     BXSel = std::vector<long>{62};
     NBXTrain = 20;
     BXLeading = std::vector<long>{62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689};
-    TimeStep = std::vector<long>{tmin+195,tmin+271,tmin+345,tmin+421,tmin+518,tmin+614,tmin+760,tmin+999,tmin+1144,tmin+1241,tmin+1340,tmin+1415,tmin+1490,tmin+1564};
+    TimeStep = std::vector<long>{tmin+95,tmin+171,tmin+245,tmin+321,tmin+418,tmin+514,tmin+660,tmin+899,tmin+1044,tmin+1141,tmin+1240,tmin+1315,tmin+1390,tmin+1464};
   }
   if(FILL==7358){
     //tree.Add("bril_7358_RunDModVeto_NoCorr.root");
