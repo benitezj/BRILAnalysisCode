@@ -2,7 +2,7 @@
 
 import sys
 import tables
-from ROOT import *
+from ROOT import TFile, TTree
 from array import array
 import time
 
@@ -15,33 +15,32 @@ sigma_bcm = 11245.5/203.2
 #sigma_plt = 11245.5/252.1  ##sigma from vdm
 sigma_plt = 11245.5/305  ##sigma from emmittance scan
 #sigma_pcc  = 11245.5/5910000*23.311  ##23.3 comes from Georgios for pccminitrees
-sigma_pcc  = 11245.5/5910000
-#sigma_pcc  = 11245.5/3140000
+#sigma_pcc  = 11245.5/5910000
+sigma_pcc  = 11245.5/3140000
 sigma_pccB  = sigma_pcc/0.501
 sigma_pccF  = sigma_pcc/0.499
-
-
- ##########################
-# ####Fill 7358 (mu scan)
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5','r')
-# #hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
-# #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
-# #hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309_RunDModVeto_NoCorr.csv','r')
-##hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv','r')
-#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto/325309.csv','r')
 #hist_pccB = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Bpix/325309.csv','r')
 #hist_pccF = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Fpix/325309.csv','r')
-#tmin=1540537800
-#tmax=1540538550
-#BXLeading = [750,1644]
-#NBXTrain = 12
-#NTrain = 2
-#BXLIST =  array( 'i', (NTrain*NBXTrain+2)*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#BXLIST[NTrain*NBXTrain]=11
-#BXLIST[NTrain*NBXTrain+1]=536
+
+
+##########################
+####Fill 7358 (mu scan)
+h5file = tables.open_file('7358_1810260704_1810260726.hd5','r')
+#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
+#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
+#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv','r')
+hist_pcc = open('325309.csv','r')
+tmin=1540537800
+tmax=1540538550
+BXLeading = [750,1644]
+NBXTrain = 12
+NTrain = 2
+BXLIST =  array( 'i', (NTrain*NBXTrain+2)*[ 0 ] )
+for i in range(NTrain):
+    for j in range(NBXTrain):
+        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+BXLIST[NTrain*NBXTrain]=11
+BXLIST[NTrain*NBXTrain+1]=536
 
 
 # #############################
@@ -82,26 +81,26 @@ sigma_pccF  = sigma_pcc/0.499
 
 
 
-  #############################
-  #### Fill 7274
-h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
-#BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
-BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
-NBXTrain = 20
-NTrain = 16
-BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
-for i in range(NTrain):
-    for j in range(NBXTrain):
-        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-tmin=1539215350
-tmax=tmin+2000
-#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
-hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv','r')
+#  #############################
+#  #### Fill 7274
+#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
+##BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
+#BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
+#NBXTrain = 20
+#NTrain = 16
+#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
+#for i in range(NTrain):
+#    for j in range(NBXTrain):
+#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
+#tmin=1539215350
+#tmax=tmin+2000
+##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
+#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv','r')
 
 
 ##############################
 
-print BXLIST
+print(BXLIST)
 
 print(h5file)
 
@@ -267,7 +266,7 @@ for row in h5file.root.hfoclumi.iterrows():
 
     progress = int(100*(time[0]-tmin)/(tmax-tmin))
     if progress % 10 == 0 : 
-        print progress, 
+        print(progress) 
         sys.stdout.flush()
 
     fill[0] = row['fillnum']
