@@ -24,15 +24,15 @@ void plot_linearity(long fill=7358){
   ////// Detector correlations
   //plot_det_correlation(CUTBX);
 
-  //plot_det_linearity(BXLIST);
+  plot_det_linearity(BXLIST);
   //plot_det_linearity(BXLeading);
   //plot_det_linearity(BXSpecial);
 
   //plot_det_linearity_perbx(BXSpecial);
   //plot_det_linearity_perbx(BXLeading);
-  //plot_det_linearity_perbx(BXLIST);
+  plot_det_linearity_perbx(BXLIST);
 
-  plot_det_linearity_pertrain();
+  //plot_det_linearity_pertrain();
 
  
   /////  PLT channels

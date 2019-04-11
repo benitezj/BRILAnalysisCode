@@ -8,6 +8,8 @@ import time
 
 NBX = 3564
 
+TEST = 0
+
 #sigma_pcc  = 11245.5/5910000*23.311
 sigma_hfoc = 11245.5/797.5
 sigma_hfet = 11245.5/2431
@@ -25,11 +27,12 @@ sigma_pccF  = sigma_pcc/0.499
 
 ##########################
 ####Fill 7358 (mu scan)
+FILL = 7358
+RUN = 325309
 h5file = tables.open_file('7358_1810260704_1810260726.hd5','r')
-#hist_pcc = TFile.Open( '/nfshome0/benitezj/vdmframework_final/VdmFramework/merged_7358.root')
-#hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/325309.csv','r')
-#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv','r')
 hist_pcc = open('325309.csv','r')
+resid_hfoc_corr = 'Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
+sigma_hfoc = sigma_hfoc / 0.987  ### HF radiation correction
 tmin=1540537800
 tmax=1540538550
 BXLeading = [750,1644]
@@ -180,6 +183,24 @@ plt_15 = array( 'f', [ 0. ] )
 tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
 
 
+################
+## residual corrections
+resid_hfoc_corr_nls = 20
+hist_hfoc_corr = {} 
+file_hfoc_corr = TFile.Open(resid_hfoc_corr)
+for l in range(int(1000/resid_hfoc_corr_nls)):
+    hist = getattr(file_hfoc_corr,'After_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL),None)
+    if hist != None :
+        hist_hfoc_corr[l] = hist.Clone('hist_hfoc_corr'+str(l))
+        hist_hfoc_corr[l].Divide(getattr(file_hfoc_corr,'Before_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL)))
+        print(hist_hfoc_corr[l])
+                               
+#print(hist_hfoc_corr[0])
+#print(hist_hfoc_corr[0].GetBinContent(751))
+##print('corr = ',corr_hfoc.Before_Corr_325310_LS41_LS60_Fill7358.GetBinContent(751))
+
+
+
 #################################
 idx_hfet  = 0
 idx_bcm  = 0
@@ -266,8 +287,12 @@ for row in h5file.root.hfoclumi.iterrows():
 
     progress = int(100*(time[0]-tmin)/(tmax-tmin))
     if progress % 10 == 0 : 
-        print(progress) 
+        print(progress,)
         sys.stdout.flush()
+    
+    if TEST == 1 and progress == 1 :
+        break
+    
 
     fill[0] = row['fillnum']
     run[0]  = row['runnum']
@@ -299,17 +324,22 @@ for row in h5file.root.hfoclumi.iterrows():
 #    idx_plt_[13], PLT_13   = getLUMI(time[0],idx_plt_[13],h5file.root.pltlumizero_13)
 #    idx_plt_[14], PLT_14   = getLUMI(time[0],idx_plt_[14],h5file.root.pltlumizero_14)
 #    idx_plt_[15], PLT_15   = getLUMI(time[0],idx_plt_[15],h5file.root.pltlumizero_15)
-    
-    #print fill[0],run[0],ls[0],time[0],HFOC[BXLIST[0]-1]*sigma_hfoc
+
+    #print(fill[0],run[0],ls[0],time[0]) #hist_hfoc_corr[int((ls[0]-1)/resid_hfoc_corr_nls)])
 
     ##loop over bx's
     #for i in range(0,NBX)
     for b in BXLIST:
-        bx[0]   = b 
+        bx[0]   = b
+
+        if int((ls[0]-1)/resid_hfoc_corr_nls) in hist_hfoc_corr :
+            hfoc[0] = HFOC[b-1]*sigma_hfoc*hist_hfoc_corr[int((ls[0]-1)/resid_hfoc_corr_nls)].GetBinContent(b+1)
+        else :
+            hfoc[0] = HFOC[b-1]*sigma_hfoc
+            
         pcc[0]  = PCC[b-1]*sigma_pcc 
         #pccb[0]  = PCCB[b-1]*sigma_pccB 
         #pccf[0]  = PCCF[b-1]*sigma_pccF
-        hfoc[0] = HFOC[b-1]*sigma_hfoc
         hfet[0] = HFET[b-1]*sigma_hfet
         bcm[0]  = BCM[b-1]*sigma_bcm
         plt[0]  = PLT[b-1]*sigma_plt

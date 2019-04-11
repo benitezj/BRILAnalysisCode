@@ -60,9 +60,9 @@ void compareFills(){
     P->GetYaxis()->SetRangeUser(rmin,rmax);
     P->GetYaxis()->SetTitle(H->GetYaxis()->GetTitle());
     P->Draw(i==0?"histpe":"histpesame");
-    //fits[i]->Draw("lsame");
-    fitsl[i]->Draw("lsame");
-    fitsh[i]->Draw("lsame");
+    fits[i]->Draw("lsame");
+    //fitsl[i]->Draw("lsame");
+    //fitsh[i]->Draw("lsame");
 
     //bx_leg.AddEntry(H,TString("FILL ")+fills[i],"flp");
     profiles.push_back(P);    
@@ -75,17 +75,21 @@ void compareFills(){
   labeltext.SetTextColor(1);
   labeltext.DrawTextNDC(0.24,0.36,txt);
   
-  sprintf(txt,"slope 1 = %.2f +/- %.2f %%",100*fitsl[0]->GetParameter(1),100*fitsl[0]->GetParError(1));
+  sprintf(txt,"slope  = %.2f +/- %.2f %%",100*fits[0]->GetParameter(1),100*fits[0]->GetParError(1));
   labeltext.SetTextColor(fitsl[0]->GetLineColor());
   labeltext.DrawTextNDC(0.24,0.32,txt);
 
-  sprintf(txt,"slope 1 = %.2f +/- %.2f %%",100*fitsl[1]->GetParameter(1),100*fitsl[1]->GetParError(1));
-  labeltext.SetTextColor(fitsl[1]->GetLineColor());
+  sprintf(txt,"slope  = %.2f +/- %.2f %%",100*fits[1]->GetParameter(1),100*fits[1]->GetParError(1));
+  labeltext.SetTextColor(fits[1]->GetLineColor());
   labeltext.DrawTextNDC(0.24,0.26,txt);
+  
+  /* sprintf(txt,"slope 1 = %.2f +/- %.2f %%",100*fitsl[1]->GetParameter(1),100*fitsl[1]->GetParError(1)); */
+  /* labeltext.SetTextColor(fitsl[1]->GetLineColor()); */
+  /* labeltext.DrawTextNDC(0.24,0.26,txt); */
 
-  sprintf(txt,"slope 2 = %.2f +/- %.2f %%",100*fitsh[1]->GetParameter(1),100*fitsh[1]->GetParError(1));
-  labeltext.SetTextColor(fitsl[1]->GetLineColor());
-  labeltext.DrawTextNDC(0.24,0.20,txt);
+  /* sprintf(txt,"slope 2 = %.2f +/- %.2f %%",100*fitsh[1]->GetParameter(1),100*fitsh[1]->GetParError(1)); */
+  /* labeltext.SetTextColor(fitsl[1]->GetLineColor()); */
+  /* labeltext.DrawTextNDC(0.24,0.20,txt); */
 
   bx_leg.Draw();
   C.Print("compareFills.pdf");
