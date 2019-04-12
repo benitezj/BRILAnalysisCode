@@ -5,6 +5,7 @@ import tables
 from ROOT import TFile, TTree
 from array import array
 import time
+import copy
 
 TEST = 1
 FILL = 7358
@@ -126,11 +127,12 @@ def fillBXList():
 ################
 ## residual corrections
 def fillHFOCResidualCorr():
+    global hist_hfoc_corr
     file_hfoc_corr = TFile.Open(resid_hfoc_corr)
     for l in range(int(1000/resid_hfoc_corr_nls)):
         hist = getattr(file_hfoc_corr,'After_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL),None)
         if hist != None :
-            hist_hfoc_corr[l] = hist.Clone('hist_hfoc_corr'+str(l))
+            hist_hfoc_corr[l] = copy.copy(hist) #('hist_hfoc_corr'+str(l))
             hist_hfoc_corr[l].Divide(getattr(file_hfoc_corr,'Before_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL)))
             print(hist_hfoc_corr[l])
                                
@@ -269,12 +271,16 @@ tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
 ##########################################
 # Start the main loop
 configFILL(FILL)
+
 h5file = tables.open_file(hd5input,'r')
 print(h5file)
+
 hist_pcc = open(pccinput,'r')
 print(hist_pcc)
+
 fillBXList()
 print(BXLIST)
+
 fillHFOCResidualCorr()
 
 
