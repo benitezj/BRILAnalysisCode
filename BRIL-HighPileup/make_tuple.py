@@ -7,8 +7,8 @@ from array import array
 import time
 import copy
 
-TEST = 1
-FILL = 7358
+TEST = 0
+FILL = 6847
 
 
 ######################
