@@ -6,11 +6,25 @@ from ROOT import TFile, TTree
 from array import array
 import time
 
+TEST = 1
+FILL = 7358
+
+
+######################
+## default params
+
 NBX = 3564
+RUN = 0
+hd5input = ''
+pccinput = ''
+resid_hfoc_corr = ''
+tmin=0
+tmax=0
+BXList = {}
+BXLeading = {}
+NBXTrain = 0
+BXExtra = {}
 
-TEST = 0
-
-#sigma_pcc  = 11245.5/5910000*23.311
 sigma_hfoc = 11245.5/797.5
 sigma_hfet = 11245.5/2431
 sigma_bcm = 11245.5/203.2
@@ -24,181 +38,102 @@ sigma_pccF  = sigma_pcc/0.499
 #hist_pccB = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Bpix/325309.csv','r')
 #hist_pccF = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Fpix/325309.csv','r')
 
-
-##########################
-####Fill 7358 (mu scan)
-FILL = 7358
-RUN = 325309
-h5file = tables.open_file('7358_1810260704_1810260726.hd5','r')
-hist_pcc = open('325309.csv','r')
-resid_hfoc_corr = 'Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
-sigma_hfoc = sigma_hfoc / 0.987  ### HF radiation correction
-tmin=1540537800
-tmax=1540538550
-BXLeading = [750,1644]
-NBXTrain = 12
-NTrain = 2
-BXLIST =  array( 'i', (NTrain*NBXTrain+2)*[ 0 ] )
-for i in range(NTrain):
-    for j in range(NBXTrain):
-        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-BXLIST[NTrain*NBXTrain]=11
-BXLIST[NTrain*NBXTrain+1]=536
-
-
-# #############################
-# #### Fill 6847
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5','r')
-##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675.csv','r')
-##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318675_RunDModVeto_NoCorr.csv','r')
-#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318675.csv','r')
-#BXLeading = [686,816,2591,2612,2633]
-#NBXTrain = 1
-#NTrain = 5
-#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#tmin=1530010510
-#tmax=tmin+1940 #940
-
-
-# #############################
-# #### Fill 6854
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5','r')
-#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv','r')
-##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/318817_RunDModVeto_NoCorr.csv','r')
-#BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
-#NBXTrain = 10
-#NTrain = 10
-#BXLIST =  array( 'i', (NTrain*NBXTrain + 4)*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#BXLIST[NTrain*NBXTrain]=1651
-#BXLIST[NTrain*NBXTrain+1]=1678
-#BXLIST[NTrain*NBXTrain+2]=2321
-#BXLIST[NTrain*NBXTrain+3]=3255 
-#tmin=1530139000
-#tmax=tmin+1800
-
-
-
-#  #############################
-#  #### Fill 7274
-#h5file = tables.open_file('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5','r')
-##BXLeading = [62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366]
-#BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
-#NBXTrain = 20
-#NTrain = 16
-#BXLIST =  array( 'i', NTrain*NBXTrain*[ 0 ] )
-#for i in range(NTrain):
-#    for j in range(NBXTrain):
-#        BXLIST[i*NBXTrain+j] = BXLeading[i] + j 
-#tmin=1539215350
-#tmax=tmin+2000
-##hist_pcc = open('/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/324418.csv','r')
-#hist_pcc = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv','r')
-
-
-##############################
-
-print(BXLIST)
-
-print(h5file)
-
-
-# create TTree
-outFile = TFile( 'bril.root', 'recreate' )
-tree = TTree( 'lumi', 'tree with detector lumi' ) 
-
-fill = array( 'i', [ 0 ] )
-tree.Branch( 'fill', fill, 'fill/I' )
-
-run = array( 'i', [ 0 ] )
-tree.Branch( 'run', run, 'run/I' )
-
-ls = array( 'i', [ 0 ] )
-tree.Branch( 'ls', ls, 'ls/I' )
-
-time = array( 'i', [ 0 ] )
-tree.Branch( 'time', time, 'time/I' )
-
-bx = array( 'i', [ 0 ] )
-tree.Branch( 'bx', bx, 'bx/I' )
-
-
-pcc = array( 'f', [ 0. ] )
-tree.Branch( 'pcc', pcc, 'pcc/F' )
-
-pccb = array( 'f', [ 0. ] )
-tree.Branch( 'pccb', pccb, 'pccb/F' )
-pccf = array( 'f', [ 0. ] )
-tree.Branch( 'pccf', pccf, 'pccf/F' )
-
-hfoc = array( 'f', [ 0. ] )
-tree.Branch( 'hfoc', hfoc, 'hfoc/F' )
-
-hfet = array( 'f', [ 0. ] )
-tree.Branch( 'hfet', hfet, 'hfet/F' )
-
-bcm = array( 'f', [ 0. ] )
-tree.Branch( 'bcm', bcm, 'bcm/F' )
-
-plt = array( 'f', [ 0. ] )
-tree.Branch( 'plt', plt, 'plt/F' )
+resid_hfoc_corr_nls = 20
+hist_hfoc_corr = {} 
 
 NPLT=16
-plt_0 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_0', plt_0, 'plt_0/F' )
-plt_1 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_1', plt_1, 'plt_1/F' )
-plt_2 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_2', plt_2, 'plt_2/F' )
-plt_3 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_3', plt_3, 'plt_3/F' )
-plt_4 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_4', plt_4, 'plt_4/F' )
-plt_5 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_5', plt_5, 'plt_5/F' )
-plt_6 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_6', plt_6, 'plt_6/F' )
-plt_7 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_7', plt_7, 'plt_7/F' )
-plt_8 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_8', plt_8, 'plt_8/F' )
-plt_9 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_9', plt_9, 'plt_9/F' )
-plt_10 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_10', plt_10, 'plt_10/F' )
-plt_11 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_11', plt_11, 'plt_11/F' )
-plt_12 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_12', plt_12, 'plt_12/F' )
-plt_13 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_13', plt_13, 'plt_13/F' )
-plt_14 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_14', plt_14, 'plt_14/F' )
-plt_15 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
+
+
+################################
+def configFILL(fill):
+    global RUN
+    global hd5input
+    global pccinput
+    global resid_hfoc_corr
+    global tmin
+    global tmax
+    global sigma_hfoc
+    global sigma_hfet
+    global sigma_bcm
+    global sigma_plt
+    global sigma_pcc
+    global BXLeading
+    global NBXTrain
+    global BXExtra
+
+    if fill==7358 :
+        RUN = 325309
+        hd5input = '7358_1810260704_1810260726.hd5'
+        pccinput = '325309.csv'
+        resid_hfoc_corr = 'Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
+        sigma_hfoc = sigma_hfoc / 0.987  ### HF radiation correction
+        tmin=1540537800
+        tmax=1540538550
+        BXLeading = [750,1644]
+        NBXTrain = 12
+        BXExtra = [11,536]
+
+    if fill==6847 :
+        RUN = 318675
+        hd5input = '/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5'
+        pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318675.csv'
+        BXLeading = [686,816,2591,2612,2633]
+        NBXTrain = 1
+        tmin=1530010510
+        tmax=tmin+1940 
+        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6847.root'
+
+    if fill==6854:
+        hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5'
+        pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv'
+        sigma_pcc  = 11245.5/5910000
+        BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
+        NBXTrain = 10
+        BXExtra = [1651,1678,2321,3255]
+        tmin=1530139000
+        tmax=tmin+1800
+        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6854.root'
+
+
+    if fill==7274:
+        hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5'
+        BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
+        NBXTrain = 20
+        tmin=1539215350
+        tmax=tmin+2000
+        inputpcc='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv'
+        sigma_pcc  = 11245.5/5910000
+        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_7274.root'
+
+
+
+
+
+########################
+## bcid list
+def fillBXList():
+    global BXLIST
+    BXLIST =  array( 'i', (len(BXLeading)*NBXTrain+len(BXExtra))*[ 0 ] )
+    for i in range(len(BXLeading)):
+        for j in range(NBXTrain):
+            BXLIST[i*NBXTrain+j] = BXLeading[i] + j
+            
+    for i in range(len(BXExtra)):
+        BXLIST[len(BXLeading)*NBXTrain + i] = BXExtra[i] 
+                
 
 
 ################
 ## residual corrections
-resid_hfoc_corr_nls = 20
-hist_hfoc_corr = {} 
-file_hfoc_corr = TFile.Open(resid_hfoc_corr)
-for l in range(int(1000/resid_hfoc_corr_nls)):
-    hist = getattr(file_hfoc_corr,'After_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL),None)
-    if hist != None :
-        hist_hfoc_corr[l] = hist.Clone('hist_hfoc_corr'+str(l))
-        hist_hfoc_corr[l].Divide(getattr(file_hfoc_corr,'Before_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL)))
-        print(hist_hfoc_corr[l])
+def fillHFOCResidualCorr():
+    file_hfoc_corr = TFile.Open(resid_hfoc_corr)
+    for l in range(int(1000/resid_hfoc_corr_nls)):
+        hist = getattr(file_hfoc_corr,'After_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL),None)
+        if hist != None :
+            hist_hfoc_corr[l] = hist.Clone('hist_hfoc_corr'+str(l))
+            hist_hfoc_corr[l].Divide(getattr(file_hfoc_corr,'Before_Corr_'+str(RUN)+'_LS'+str(l*resid_hfoc_corr_nls+1)+'_LS'+str((l+1)*resid_hfoc_corr_nls)+'_Fill'+str(FILL)))
+            print(hist_hfoc_corr[l])
                                
-#print(hist_hfoc_corr[0])
-#print(hist_hfoc_corr[0].GetBinContent(751))
-##print('corr = ',corr_hfoc.Before_Corr_325310_LS41_LS60_Fill7358.GetBinContent(751))
-
 
 
 #################################
@@ -209,7 +144,6 @@ idx_plt_ = NPLT*[ 0 ]
 idx_pcc  = 0
 idx_pccb  = 0
 idx_pccf  = 0
-
 
 def getLUMI(time,idx,hist):
     #print time,idx,hist    
@@ -227,7 +161,6 @@ def getLUMI(time,idx,hist):
         return r,hist[r]['bxraw']
     
     return len(hist),array( 'f', NBX*[ 0. ] )
-
 
 
 def getLUMIroot(time,idx,hist):
@@ -268,12 +201,84 @@ def getLUMIcsv(ls,idx,hist):
 
 
 
+##############################
+# create TTree
+outFile = TFile( 'bril.root', 'recreate' )
+tree = TTree( 'lumi', 'tree with detector lumi' ) 
+fill = array( 'i', [ 0 ] )
+tree.Branch( 'fill', fill, 'fill/I' )
+run = array( 'i', [ 0 ] )
+tree.Branch( 'run', run, 'run/I' )
+ls = array( 'i', [ 0 ] )
+tree.Branch( 'ls', ls, 'ls/I' )
+time = array( 'i', [ 0 ] )
+tree.Branch( 'time', time, 'time/I' )
+bx = array( 'i', [ 0 ] )
+tree.Branch( 'bx', bx, 'bx/I' )
+pcc = array( 'f', [ 0. ] )
+tree.Branch( 'pcc', pcc, 'pcc/F' )
+pccb = array( 'f', [ 0. ] )
+tree.Branch( 'pccb', pccb, 'pccb/F' )
+pccf = array( 'f', [ 0. ] )
+tree.Branch( 'pccf', pccf, 'pccf/F' )
+hfoc = array( 'f', [ 0. ] )
+tree.Branch( 'hfoc', hfoc, 'hfoc/F' )
+hfet = array( 'f', [ 0. ] )
+tree.Branch( 'hfet', hfet, 'hfet/F' )
+bcm = array( 'f', [ 0. ] )
+tree.Branch( 'bcm', bcm, 'bcm/F' )
+plt = array( 'f', [ 0. ] )
+tree.Branch( 'plt', plt, 'plt/F' )
+
+plt_0 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_0', plt_0, 'plt_0/F' )
+plt_1 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_1', plt_1, 'plt_1/F' )
+plt_2 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_2', plt_2, 'plt_2/F' )
+plt_3 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_3', plt_3, 'plt_3/F' )
+plt_4 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_4', plt_4, 'plt_4/F' )
+plt_5 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_5', plt_5, 'plt_5/F' )
+plt_6 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_6', plt_6, 'plt_6/F' )
+plt_7 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_7', plt_7, 'plt_7/F' )
+plt_8 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_8', plt_8, 'plt_8/F' )
+plt_9 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_9', plt_9, 'plt_9/F' )
+plt_10 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_10', plt_10, 'plt_10/F' )
+plt_11 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_11', plt_11, 'plt_11/F' )
+plt_12 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_12', plt_12, 'plt_12/F' )
+plt_13 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_13', plt_13, 'plt_13/F' )
+plt_14 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_14', plt_14, 'plt_14/F' )
+plt_15 = array( 'f', [ 0. ] )
+tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
 
 
-#exit()
+
+
 ##########################################
 # Start the main loop
-#t0 = time.time()
+configFILL(FILL)
+h5file = tables.open_file(hd5input,'r')
+print(h5file)
+hist_pcc = open(pccinput,'r')
+print(hist_pcc)
+fillBXList()
+print(BXLIST)
+fillHFOCResidualCorr()
+
+
+
 for row in h5file.root.hfoclumi.iterrows():
 
     #if row['lsnum'] != 22: continue
@@ -367,5 +372,3 @@ for row in h5file.root.hfoclumi.iterrows():
 outFile.Write()
 outFile.Close()
 
-#t1 = time.time()
-#print "run time = (t1-t0) seconds"
