@@ -88,7 +88,6 @@ def configFILL(fill):
         RUN = 318817
         hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5'
         pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318817.csv'
-        sigma_pcc  = 11245.5/5910000
         BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
         NBXTrain = 10
         BXExtra = [1651,1678,2321,3255]
