@@ -8,7 +8,7 @@ import time
 import copy
 
 TEST = 0
-FILL = 6847
+FILL = 6854
 
 
 ######################
@@ -85,8 +85,9 @@ def configFILL(fill):
         resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6847.root'
 
     if fill==6854:
+        RUN = 318817
         hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5'
-        pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B/318817.csv'
+        pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318817.csv'
         sigma_pcc  = 11245.5/5910000
         BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
         NBXTrain = 10
@@ -95,18 +96,16 @@ def configFILL(fill):
         tmax=tmin+1800
         resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6854.root'
 
-
     if fill==7274:
+        RUN = 324418
         hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5'
+        pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv'
+        sigma_pcc  = 11245.5/5910000
         BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
-        NBXTrain = 20
+        NBXTrain = 10
         tmin=1539215350
         tmax=tmin+2000
-        inputpcc='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv'
-        sigma_pcc  = 11245.5/5910000
         resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_7274.root'
-
-
 
 
 
