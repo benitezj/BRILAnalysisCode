@@ -19,8 +19,8 @@
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
 
-float ratiomin=0.9;
-float ratiomax=1.1;
+float ratiomin=0.8;
+float ratiomax=1.2;
 
 
 void getRefLumi(TString inputfile){
@@ -120,9 +120,7 @@ float getMaxLumi(TString inputfile){
 }
 
 
-void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
-
-  bool perBXRatioPlots=1;
+void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool perBXRatioPlots=0){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
@@ -169,7 +167,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
 
 
   ///read the reference lumi
-  if(ref.CompareTo("")!=0) getRefLumi(outpath+"/"+Run+"."+ref);
+  if(ref.CompareTo("")!=0) getRefLumi(Path+"/"+Run+"."+ref);
   
 
   std::string line;
@@ -352,7 +350,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
     
     TGraphErrors G;
     int counterG=0;
-    TF1 P1("P1","[0]+[1]*x",0,20);
+    float fitmin=3.5,fitmax=7.5;
+    TF1 P1("P1","[0]+[1]*x",fitmin,fitmax);
     P1.SetLineColor(2);
 
     TH2F HRatio("HRatio","",100,0,10,100,0.9,1.1);
@@ -409,14 +408,14 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref=""){
     HRatio.GetXaxis()->SetTitle(ref+" sbil");
     HRatio.SetMarkerStyle(8);
     HRatio.SetMarkerSize(0.4);
-    HRatio.Fit(&P1,"Q","",0,20);
+    HRatio.Fit(&P1,"Q","",fitmin,fitmax);
     HRatio.Draw("histp");
     P1.Draw("lsame");
     char text[100];
     sprintf(text,"slope = %.2f +/- %.2f %%",100*P1.GetParameter(1),100*P1.GetParError(1));
     TText labeltext;
     labeltext.DrawTextNDC(0.4,0.2, TString(text));
-    C.Print(outpath+"/"+(long)Run+"_linearity.png");    
+    //C.Print(outpath+"/"+(long)Run+"_linearity.png");    
 
     C.Clear();
     TProfile*P=HRatio.ProfileX("HRatioProf");

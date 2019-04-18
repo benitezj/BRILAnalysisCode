@@ -8,7 +8,7 @@ import time
 import copy
 
 TEST = 0
-FILL = 7358
+FILL = 6854
 
 
 ######################
@@ -80,7 +80,7 @@ def configFILL(fill):
         resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6854.root'
         BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
         NBXTrain = 10
-        BXExtra = [1651,1678,2321,3255]
+        BXExtra = [1651,1678,2321,2355]
         tmin=1530139000
         tmax=tmin+1800
 
