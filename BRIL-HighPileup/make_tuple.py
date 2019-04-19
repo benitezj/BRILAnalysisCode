@@ -216,66 +216,100 @@ def getLUMIcsv(ls,idx,hist):
 
 ##############################
 # create TTree
-outFile = TFile( 'bril.root', 'recreate' )
-tree = TTree( 'lumi', 'tree with detector lumi' ) 
+
+outFile = None
+tree = None
 fill = array( 'i', [ 0 ] )
-tree.Branch( 'fill', fill, 'fill/I' )
 run = array( 'i', [ 0 ] )
-tree.Branch( 'run', run, 'run/I' )
 ls = array( 'i', [ 0 ] )
-tree.Branch( 'ls', ls, 'ls/I' )
 time = array( 'i', [ 0 ] )
-tree.Branch( 'time', time, 'time/I' )
 bx = array( 'i', [ 0 ] )
-tree.Branch( 'bx', bx, 'bx/I' )
 pcc = array( 'f', [ 0. ] )
-tree.Branch( 'pcc', pcc, 'pcc/F' )
 pccb = array( 'f', [ 0. ] )
-tree.Branch( 'pccb', pccb, 'pccb/F' )
 pccf = array( 'f', [ 0. ] )
-tree.Branch( 'pccf', pccf, 'pccf/F' )
 hfoc = array( 'f', [ 0. ] )
-tree.Branch( 'hfoc', hfoc, 'hfoc/F' )
 hfet = array( 'f', [ 0. ] )
-tree.Branch( 'hfet', hfet, 'hfet/F' )
 bcm = array( 'f', [ 0. ] )
-tree.Branch( 'bcm', bcm, 'bcm/F' )
 plt = array( 'f', [ 0. ] )
-tree.Branch( 'plt', plt, 'plt/F' )
-
 plt_0 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_0', plt_0, 'plt_0/F' )
 plt_1 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_1', plt_1, 'plt_1/F' )
 plt_2 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_2', plt_2, 'plt_2/F' )
 plt_3 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_3', plt_3, 'plt_3/F' )
 plt_4 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_4', plt_4, 'plt_4/F' )
 plt_5 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_5', plt_5, 'plt_5/F' )
 plt_6 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_6', plt_6, 'plt_6/F' )
 plt_7 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_7', plt_7, 'plt_7/F' )
 plt_8 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_8', plt_8, 'plt_8/F' )
 plt_9 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_9', plt_9, 'plt_9/F' )
 plt_10 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_10', plt_10, 'plt_10/F' )
 plt_11 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_11', plt_11, 'plt_11/F' )
 plt_12 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_12', plt_12, 'plt_12/F' )
 plt_13 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_13', plt_13, 'plt_13/F' )
 plt_14 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_14', plt_14, 'plt_14/F' )
 plt_15 = array( 'f', [ 0. ] )
-tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
 
+
+def createOutput():
+    global outFile
+    global tree
+    global run
+    global ls
+    global time
+    global bx
+    global pcc
+    global pccb
+    global pccf
+    global hfoc
+    global hfet
+    global bcm
+    global plt
+    global plt_0
+    global plt_1
+    global plt_2
+    global plt_3
+    global plt_4
+    global plt_5
+    global plt_6
+    global plt_7
+    global plt_8
+    global plt_9
+    global plt_10
+    global plt_11
+    global plt_12
+    global plt_13
+    global plt_14
+    global plt_15 
+
+    outFile = TFile( 'bril.root', 'recreate' )
+    tree = TTree( 'lumi', 'tree with detector lumi' ) 
+    tree.Branch( 'fill', fill, 'fill/I' )
+    tree.Branch( 'run', run, 'run/I' )
+    tree.Branch( 'ls', ls, 'ls/I' )
+    tree.Branch( 'time', time, 'time/I' )
+    tree.Branch( 'bx', bx, 'bx/I' )
+    tree.Branch( 'pcc', pcc, 'pcc/F' )
+    tree.Branch( 'pccb', pccb, 'pccb/F' )
+    tree.Branch( 'pccf', pccf, 'pccf/F' )
+    tree.Branch( 'hfoc', hfoc, 'hfoc/F' )
+    tree.Branch( 'hfet', hfet, 'hfet/F' )
+    tree.Branch( 'bcm', bcm, 'bcm/F' )
+    tree.Branch( 'plt', plt, 'plt/F' )
+    tree.Branch( 'plt_0', plt_0, 'plt_0/F' )
+    tree.Branch( 'plt_1', plt_1, 'plt_1/F' )
+    tree.Branch( 'plt_2', plt_2, 'plt_2/F' )
+    tree.Branch( 'plt_3', plt_3, 'plt_3/F' )
+    tree.Branch( 'plt_4', plt_4, 'plt_4/F' )
+    tree.Branch( 'plt_5', plt_5, 'plt_5/F' )
+    tree.Branch( 'plt_6', plt_6, 'plt_6/F' )
+    tree.Branch( 'plt_7', plt_7, 'plt_7/F' )
+    tree.Branch( 'plt_8', plt_8, 'plt_8/F' )
+    tree.Branch( 'plt_9', plt_9, 'plt_9/F' )
+    tree.Branch( 'plt_10', plt_10, 'plt_10/F' )
+    tree.Branch( 'plt_11', plt_11, 'plt_11/F' )
+    tree.Branch( 'plt_12', plt_12, 'plt_12/F' )
+    tree.Branch( 'plt_13', plt_13, 'plt_13/F' )
+    tree.Branch( 'plt_14', plt_14, 'plt_14/F' )
+    tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
 
 
 
@@ -293,8 +327,10 @@ fillBXList()
 print(BXLIST)
 
 fillHFOCResidualCorr()
+#print(hist_hfoc_corr)
 
-
+createOutput()
+#outFile.Print()
 
 for row in h5file.root.hfoclumi.iterrows():
 
@@ -312,7 +348,7 @@ for row in h5file.root.hfoclumi.iterrows():
         print(progress),
         sys.stdout.flush()
     
-    if TEST != None and progress == 1 :
+    if TEST != None and progress == 10 :
         break
     
 
@@ -387,5 +423,6 @@ for row in h5file.root.hfoclumi.iterrows():
         #print fill[0],run[0],ls[0],time[0],bx[0],hfoc[0],pcc[0]
 
 outFile.Write()
+outFile.Print()
 outFile.Close()
 
