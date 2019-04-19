@@ -7,8 +7,15 @@ from array import array
 import time
 import copy
 
-TEST = 0
-FILL = 6854
+FILL = 0
+if len(sys.argv)>1:
+    FILL = int(sys.argv[1])
+
+TEST = None
+if len(sys.argv)>2:
+    TEST = 1
+
+print("fill:",FILL)
 
 
 ######################
@@ -36,8 +43,6 @@ sigma_plt = 11245.5/305  ##sigma from emmittance scan
 sigma_pcc  = 11245.5/3140000
 sigma_pccB  = sigma_pcc/0.501
 sigma_pccF  = sigma_pcc/0.499
-#hist_pccB = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Bpix/325309.csv','r')
-#hist_pccF = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Fpix/325309.csv','r')
 
 resid_hfoc_corr_nls = 20
 hist_hfoc_corr = {} 
@@ -46,7 +51,8 @@ NPLT=16
 
 
 ################################
-def configFILL(fill):
+def configFILL():
+    global FILL
     global RUN
     global hd5input
     global pccinput
@@ -63,28 +69,28 @@ def configFILL(fill):
     global BXExtra
 
 
-    if fill==6847 :
+    if FILL == 6847 :
         RUN = 318675
         hd5input = '/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5'
         pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318675.csv'
-        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6847.root'
+        #pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto_NoCorr/318675.csv'
+        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fill_6847.root'
         BXLeading = [686,816,2591,2612,2633]
         NBXTrain = 1
         tmin=1530010510
         tmax=tmin+1940 
-
-    if fill==6854:
+    elif FILL == 6854 :
         RUN = 318817
         hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6854_1806272231_1806272311.hd5'
         pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318817.csv'
+        #pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto_NoCorr/318817.csv'
         resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6854.root'
         BXLeading = [62,149,443,1043,1337,1631,1937,2231,2831,3125]
         NBXTrain = 10
         BXExtra = [1651,1678,2321,3255]
         tmin=1530139000
         tmax=tmin+1800
-
-    if fill==7274:
+    elif FILL == 7274:
         RUN = 324418
         hd5input='/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7274_1810102346_1810110021.hd5'
         pccinput='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018D/324418.csv'
@@ -95,20 +101,23 @@ def configFILL(fill):
         NBXTrain = 10
         tmin=1539215350
         tmax=tmin+2000
-
-    if fill==7358 :
+    elif FILL == 7358 :
         RUN = 325309
         hd5input = '7358_1810260704_1810260726.hd5'
         pccinput = '325309.csv'
         #pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv'
-        #resid_hfoc_corr = 'Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
+        resid_hfoc_corr = 'Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
         sigma_hfoc = sigma_hfoc / 0.987  ### HF radiation correction
         tmin=1540537800
         tmax=1540538550
         BXLeading = [750,1644]
         NBXTrain = 12
         BXExtra = [11,536]
-
+        #hist_pccB = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Bpix/325309.csv','r')
+        #hist_pccF = open('/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_Fpix/325309.csv','r')
+    else : 
+        print('Unknown fill ',FILL)
+        exit()
 
 ########################
 ## bcid list
@@ -271,7 +280,7 @@ tree.Branch( 'plt_15', plt_15, 'plt_15/F' )
 
 ##########################################
 # Start the main loop
-configFILL(FILL)
+configFILL()
 
 h5file = tables.open_file(hd5input,'r')
 print(h5file)
@@ -302,7 +311,7 @@ for row in h5file.root.hfoclumi.iterrows():
         print(progress,)
         sys.stdout.flush()
     
-    if TEST == 1 and progress == 1 :
+    if TEST != None and progress == 1 :
         break
     
 
