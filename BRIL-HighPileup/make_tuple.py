@@ -100,8 +100,8 @@ def configFILL():
         sigma_hfoc = sigma_hfoc / 0.988  ### HF radiation correction
         BXLeading = [62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689]
         NBXTrain = 10
-        tmin=1539215350
-        tmax=tmin+2000
+        tmin=1539215450
+        tmax=tmin+1600
     elif FILL == 7358 :
         RUN = 325309
         hd5input = '7358_1810260704_1810260726.hd5'
@@ -309,7 +309,7 @@ for row in h5file.root.hfoclumi.iterrows():
 
     progress = int(100*(time[0]-tmin)/(tmax-tmin))
     if progress % 10 == 0 : 
-        print(progress,)
+        print(progress),
         sys.stdout.flush()
     
     if TEST != None and progress == 1 :
