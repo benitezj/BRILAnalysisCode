@@ -55,6 +55,7 @@ void configFill(long fill=0){///set fill specific configurations
   
   if(FILL==6847){
     tree.Add("bril_6847_RunDModVeto.root");
+    //tree.Add("bril_6847_RunDModVeto_NoCorr.root");
     tmin = 1530010610 ;
     //tmax = tmin + 400 ;//half a scan
     //tmax = tmin + 790 ;//one scan
@@ -67,9 +68,10 @@ void configFill(long fill=0){///set fill specific configurations
   }
   if(FILL==6854){
     tree.Add("bril_6854_RunDModVeto.root");
+    //tree.Add("bril_6854_RunDModVeto_NoCorr.root");
     tmin = 1530139061 ; 
     tmax = tmin + 1650 ;
-    TimeStep = std::vector<long>{tmin+61,tmin+112,tmin+164,tmin+214,tmin+266,tmin+317,tmin+369,tmin+420,tmin+473,tmin+524,tmin+576,tmin+627,tmin+679,tmin+734,tmin+900,tmin+954,tmin+1005,tmin+1057,tmin+1108,tmin+1159,tmin+1210,tmin+1261,tmin+1315,tmin+1366,tmin+1417,tmin+1469,tmin+1521,tmin+1572,tmin+1624};
+    TimeStep = std::vector<long>{tmin+61,tmin+112,tmin+164,tmin+214,tmin+266,tmin+317,tmin+369,tmin+420,tmin+473,tmin+524,tmin+576,tmin+627,tmin+679,tmin+734,tmin+780,tmin+826,tmin+872,tmin+900,tmin+954,tmin+1005,tmin+1057,tmin+1108,tmin+1159,tmin+1210,tmin+1261,tmin+1315,tmin+1366,tmin+1417,tmin+1469,tmin+1521,tmin+1572,tmin+1624};
     BXSel = std::vector<long>{1631};
 
     //NBXTrain = 10;
@@ -79,10 +81,10 @@ void configFill(long fill=0){///set fill specific configurations
     BXLeading = std::vector<long>{1631};//not avaialable for PCC
 
     BXSpecial = std::vector<long>{1631};      // high stats leading bunches
-    BXSpecialTrain = std::vector<long>{1651}; //,1678,2321,3255}; //high stats train bunches
+    BXSpecialTrain = std::vector<long>{1651,1678,2321,3255}; //high stats train bunches
   }
   if(FILL==7274){
-    tree.Add("bril_7274.root");
+    tree.Add("bril_7274_RunDModVeto.root");
     tmin = 1539215450;
     tmax = tmin + 1600;
     TimeStep = std::vector<long>{tmin+95,tmin+171,tmin+245,tmin+321,tmin+418,tmin+514,tmin+660,tmin+899,tmin+1044,tmin+1141,tmin+1240,tmin+1315,tmin+1390,tmin+1464};

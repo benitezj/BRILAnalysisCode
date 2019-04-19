@@ -47,7 +47,7 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
     line.SetLineStyle(2);
     line.SetLineColor(3);
     for(long i=0;i<TimeStep.size();i++){
-      //line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
+      line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
     }
     leg->Draw();
   }
@@ -343,10 +343,14 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
 
   }
 
+  
+  labeltext.SetTextSize(0.08);
+  labeltext.SetTextColor(2);
 
   ///show the individual bcids
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
+    
     C.Clear();
     C.Divide(2,3);
     int bxcounter=0; 
@@ -358,6 +362,14 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       FLinearityFit[i][j]->Draw("lsame");
       labeltext.SetTextSize(0.1);
       labeltext.DrawTextNDC(0.3,0.8,TString("bcid ")+bxlist[j]);
+
+
+      char text[100];
+      sprintf(text,"y-intercept = %.2f+/-%.2f",FLinearityFit[i][j]->GetParameter(0),FLinearityFit[i][j]->GetParError(0));
+      labeltext.DrawTextNDC(0.3,0.3,text);
+      sprintf(text,"slope = %.2f+/-%.2f %%",100*FLinearityFit[i][j]->GetParameter(1),100*FLinearityFit[i][j]->GetParError(1));
+      labeltext.DrawTextNDC(0.3,0.2,text);
+
     }
     C.Print("plot_linearity.pdf");
     C.Print(TString("plot_det_linearity_perbx.gif"));
