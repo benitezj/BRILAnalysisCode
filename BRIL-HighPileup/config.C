@@ -81,7 +81,7 @@ void configFill(long fill=0){///set fill specific configurations
     BXLeading = std::vector<long>{1631};//not avaialable for PCC
 
     BXSpecial = std::vector<long>{1631};      // high stats leading bunches
-    BXSpecialTrain = std::vector<long>{1651,1678,2321,3255}; //high stats train bunches
+    BXSpecialTrain = std::vector<long>{1631,1651,1678,2321,3255}; //high stats train bunches
   }
   if(FILL==7274){
     tree.Add("bril_7274_RunDModVeto.root");
@@ -91,6 +91,10 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = std::vector<long>{62};
     NBXTrain = 10;
     BXLeading = std::vector<long>{62,196,385,574,767,901,1090,1279,1468,1661,1795,1984,2173,2362,2555,2689};
+    for(int i=0;i<BXLeading.size();i++){
+      BXSpecial.push_back(BXLeading[i]);
+      BXSpecialTrain.push_back(BXLeading[i]+NBXTrain-1);
+    }
   }
   if(FILL==7358){
     tree.Add("bril_7358_RunDModVeto.root");
@@ -104,7 +108,8 @@ void configFill(long fill=0){///set fill specific configurations
     BXLeading = std::vector<long>{750,1644};
     BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
     //BXSpecialTrain = std::vector<long>{751, 752, 753, 754, 755, 756, 757, 758, 759, 1645, 1646, 1647, 1648, 1649, 1650, 1651, 1652, 1653}; //high stats train bunches
-    BXSpecialTrain = std::vector<long>{756,757, 758, 759,  1650, 1651, 1652, 1653}; //high stats train bunches
+    //BXSpecialTrain = std::vector<long>{756,757, 758, 759,  1650, 1651, 1652, 1653}; //high stats train bunches
+    BXSpecialTrain = std::vector<long>{759, 1653}; //high stats train bunches
   }
 
 

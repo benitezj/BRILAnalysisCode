@@ -16,7 +16,8 @@ void compareFills(){
   
   TString det="pcc";
   
-  std::vector<long> fills{7358,6854,6847};
+  std::vector<long> fills{7358,6854,6847,7274};
+  std::vector<long> colors{1,2,4,7};
   
 
 
@@ -35,20 +36,20 @@ void compareFills(){
   for(int i=0;i<fills.size();i++){
     configFill(fills[i]);
     
-    TH2F* H=getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecial);
+    TH2F* H=getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecialTrain);
     H->GetYaxis()->SetTitle(DETName[det.Data()] + "/" + DETName[detsel.Data()]);
-    H->SetMarkerColor(i+1);
+    H->SetMarkerColor(colors[i]);
     H->SetMarkerSize(0.6);
-    H->SetLineColor(i+1);
+    H->SetLineColor(colors[i]);
     histos.push_back(H);
     fits.push_back(fitLinearity(H));
 
     get_bx_corrections(det);  
-    H = getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecial);
+    H = getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecialTrain);
     H->GetYaxis()->SetTitle(DETName[det.Data()] + "/" + DETName[detsel.Data()]);
-    H->SetMarkerColor(i+1);
+    H->SetMarkerColor(colors[i]);
     H->SetMarkerSize(0.6);
-    H->SetLineColor(i+1);
+    H->SetLineColor(colors[i]);
     histos_corr.push_back(H);
     fits_corr.push_back(fitLinearity(H));
   }
@@ -145,7 +146,7 @@ void compareFills(){
 
 
   ////////////////////////////////
-  ///Compatability test
+  // per fill correction
   
   for(long i=1;i<fills.size();i++){
 
@@ -153,14 +154,16 @@ void compareFills(){
     int points=0;
     for(int b=0;b<profiles_corr[0]->GetNbinsX();b++){
       float ratio=0;
-      if(profiles_corr[0]->GetBinContent(b)>0)
-	ratio= profiles_corr[i]->GetBinContent(b)/profiles_corr[0]->GetBinContent(b);
-      float err=sqrt(pow(profiles_corr[0]->GetBinError(b),2) + pow(profiles_corr[i]->GetBinError(b),2));
-      if(ratio>0){
-	GCompatibility.SetPoint(points,profiles_corr[0]->GetBinCenter(b),ratio);
-	GCompatibility.SetPointError(points,profiles_corr[0]->GetBinWidth(b)/2,err);
-	points++;
-      }
+
+      if(profiles_corr[0]->GetBinContent(b)<=0) continue;
+      
+      GCompatibility.SetPoint(points,profiles_corr[0]->GetBinCenter(b),
+			      profiles_corr[i]->GetBinContent(b)/profiles_corr[0]->GetBinContent(b));
+
+      GCompatibility.SetPointError(points,profiles_corr[0]->GetBinWidth(b)/2,
+				   sqrt(pow(profiles_corr[0]->GetBinError(b),2) + pow(profiles_corr[i]->GetBinError(b),2)));
+      points++;
+      
     }
 
   
@@ -170,7 +173,6 @@ void compareFills(){
     GCompatibility.GetYaxis()->SetTitle(TString("Fill ")+fills[i]+" / Fill "+fills[0]);
 
     TF1 fcomp("fcomp","[0]",0,20);
-    fcomp.SetLineColor(3);
     GCompatibility.Fit(&fcomp,"","",0,20);
     GCompatibility.Draw("ape");
     line.DrawLine(GCompatibility.GetXaxis()->GetXmin(),1,GCompatibility.GetXaxis()->GetXmax(),1);
@@ -199,8 +201,8 @@ void compareFills(){
   }
 
   TF1*FComb=fitLinearity(P);
-  FComb->SetLineColor(2);
-  labeltext.SetTextColor(2);
+  FComb->SetLineColor(1);
+  labeltext.SetTextColor(1);
   
   C.Clear();
   P->GetYaxis()->SetRangeUser(rmin,rmax);

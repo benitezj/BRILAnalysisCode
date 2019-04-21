@@ -47,7 +47,7 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
     line.SetLineStyle(2);
     line.SetLineColor(3);
     for(long i=0;i<TimeStep.size();i++){
-      line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
+      //line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
     }
     leg->Draw();
   }
