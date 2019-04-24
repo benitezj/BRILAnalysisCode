@@ -12,12 +12,12 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
  
 
   float max=0;
-  C.Clear();
-  C.Divide(1,2);
+  C->Clear();
+  C->Divide(1,2);
   for(long i=0;i<NDET;i++){
 
     TLegend * leg=(TLegend*) bx_leg.Clone();
-    TVirtualPad * p=C.cd(i+1);
+    TVirtualPad * p=C->cd(i+1);
     p->SetLeftMargin(0.1);
 
     TH2F* Time2D_det = (TH2F*)Time2D->Clone(TString("Time2D_")+i);
@@ -40,7 +40,7 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
       //TString cut = CUTTime+TString("&&(bx==")+bxlist[b]+")";
       TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";
       //TString cut = TString("(bx==")+bxlist[b]+")";
-      tree.Draw(DETLIST[i]+":"+timeref+">>"+Time2D_bx->GetName(),cut.Data(),"histpsame");
+      tree->Draw(DETLIST[i]+":"+timeref+">>"+Time2D_bx->GetName(),cut.Data(),"histpsame");
       leg->AddEntry(Time2D_bx,TString("")+bxlist[b],"lp");
     }
     
@@ -49,10 +49,10 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
     for(long i=0;i<TimeStep.size();i++){
       //line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
     }
-    leg->Draw();
+    //leg->Draw();
   }
-  C.Print("plot_linearity.pdf");
-  C.Print("plot_lumi_vstime_perbx.gif"); 
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_lumi_vstime_perbx.gif"); 
   
 }
 
@@ -61,19 +61,20 @@ void plot_det_vstime(){
 
   ///draw each detector separately including all bcid's
   TH2F * Det[NDET];
-  C.Clear();
-  C.Divide(1,2);
+  C->Clear();
+  C->Divide(1,2);
   for(long i=0;i<NDET;i++){
-    C.cd(i+1);
+    C->cd(i+1);
     TString name=TString("Det_vs_time_")+i;
     Det[i] = (TH2F*)Time2D->Clone(name); 
     Det[i]->GetYaxis()->SetTitle(DETName[DETLIST[i].Data()] + "  sbil");
     Det[i]->GetXaxis()->SetTitle("time [s]");
     Det[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
     Det[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
-    tree.Draw(DETLIST[i]+":"+timeref+">>"+Det[i]->GetName(),CUTTime+"&&"+CUTBX);//
+    tree->Draw(DETLIST[i]+":"+timeref+">>"+Det[i]->GetName(),CUTTime+"&&"+CUTBX);//
   }
-  C.Print("plot_linearity.pdf");
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_linearity_det_vstime.gif");
 
 
   
@@ -94,7 +95,7 @@ void plot_det_vstime(){
 //   Det[i]->SetLineColor(i+1);
 //   
 //   det_leg.AddEntry(Det[i],DETName[DETLIST[i].Data()],"pl");
-//   tree.Draw(DETLIST[i]+":"+timeref+">>"+Det[i]->GetName(),CUTTime+"&&"+"bx=="+BXSel);//
+//   tree->Draw(DETLIST[i]+":"+timeref+">>"+Det[i]->GetName(),CUTTime+"&&"+"bx=="+BXSel);//
 // }
 //
 // Time2D->Scale(0);
@@ -102,12 +103,12 @@ void plot_det_vstime(){
 // Time2D->GetXaxis()->SetRangeUser(0,(tmax-tmin));
 // Time2D->GetYaxis()->SetTitle(TString("sbil ,  bcid=")+BXSel);
 // Time2D->GetXaxis()->SetTitle("time  [s]");
-// C.Clear();
+// C->Clear();
 // Time2D->Draw("hist");
 // for(long i=0;i<NDET;i++)
 //   Det[i]->Draw("histplsame");
 // det_leg.Draw();
-// C.Print("plot_linearity.pdf");
+// C->Print(OUTPATH+"/plot_linearity.pdf");
 
 
 
@@ -140,20 +141,21 @@ void plot_det_ratio_vstime(TString CUTBX){
     
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     ratio_leg.AddEntry(Ratio[i],title,"pl");
-    tree.Draw(ratio+":"+timeref+">>"+name,CUTTime+"&&"+CUTBX);
+    tree->Draw(ratio+":"+timeref+">>"+name,CUTTime+"&&"+CUTBX);
   }
 
 
   int counter=0;
-  C.Clear();
-  //C.Divide(2,2);
+  C->Clear();
+  //C->Divide(2,2);
   for(long i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
-    //C.cd(++counter);
+    //C->cd(++counter);
     Ratio[i]->Draw("histp");
   }
   //ratio_leg.Draw();
-  C.Print("plot_linearity.pdf");
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_linearity_det_ratio_vstime");
 
 }
 
@@ -166,7 +168,7 @@ void plot_det_correlation(TString CUTBX){
     Correlation[i] = new TH2F(name,"",100,0.1,20,100,0.1,20);
     Correlation[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
     Correlation[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
-    tree.Draw(TString("")+DETLIST[i]+":"+detsel+">>"+Correlation[i]->GetName(),CUTTime+"&&"+CUTBX+"&&"+detsel+">1.0");
+    tree->Draw(TString("")+DETLIST[i]+":"+detsel+">>"+Correlation[i]->GetName(),CUTTime+"&&"+CUTBX+"&&"+detsel+">1.0");
     FCorrFit[i] = fitLinearity(Correlation[i]);
   }
   
@@ -185,11 +187,11 @@ void plot_det_correlation(TString CUTBX){
 
   labeltext.SetTextSize(0.045);
   int counter=0; 
-  C.Clear();
-  //C.Divide(2,2);
+  C->Clear();
+  //C->Divide(2,2);
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0)continue;
-    //C.cd(++counter);
+    //C->cd(++counter);
     //HFrame.Draw("hist");
     Correlation[i]->GetYaxis()->SetRangeUser(0,20);
     Correlation[i]->GetYaxis()->SetTitle(DETName[DETLIST[i].Data()]+" sbil");
@@ -204,7 +206,8 @@ void plot_det_correlation(TString CUTBX){
     labeltext.DrawTextNDC(0.3,0.2,text);
   }
   //correlation_leg.Draw();
-  C.Print("plot_linearity.pdf");
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_linearity_det_correlation.gif");
  	     
 }
 
@@ -225,7 +228,7 @@ void plot_det_linearity(std::vector<long> bxlist){
 
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0)continue;
-    C.Clear();    
+    C->Clear();    
     Linearity[i]->GetYaxis()->SetRangeUser(0.9,1.1);
     Linearity[i]->Draw("p");
     FLinearityFit[i]->Draw("lsame");
@@ -234,8 +237,8 @@ void plot_det_linearity(std::vector<long> bxlist){
     sprintf(text,"slope = %.2f +/- %.2f",
 	    100*FLinearityFit[i]->GetParameter(1),100*FLinearityFit[i]->GetParError(1));
     labeltext.DrawTextNDC(0.4,0.2, TString(text) + " %");
-    C.Print("plot_linearity.pdf");
-    C.Print("plot_det_linearity.gif"); 
+    //C->Print(OUTPATH+"/plot_linearity.pdf");
+    C->Print(OUTPATH+"/plot_det_linearity.gif"); 
   }
 
 
@@ -268,7 +271,7 @@ void plot_linearity_compare(std::vector<long> bxlist1, std::vector<long> bxlist2
 
     if(DETLIST[i].CompareTo(detsel)==0)continue;
 
-    C.Clear();    
+    C->Clear();    
     Linearity1[i]->GetYaxis()->SetRangeUser(0.9,1.1);
     Linearity1[i]->Draw("p");
     FLinearityFit1[i]->Draw("lsame");
@@ -287,8 +290,8 @@ void plot_linearity_compare(std::vector<long> bxlist1, std::vector<long> bxlist2
     labeltext.DrawTextNDC(0.3,0.20, TString(text));
 
     
-    C.Print("plot_linearity.pdf");
-    C.Print("plot_det_linearity_compare.gif"); 
+    //C->Print(OUTPATH+"/plot_linearity.pdf");
+    C->Print(OUTPATH+"/plot_det_linearity_compare.gif"); 
 
   }
 
@@ -351,11 +354,11 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     
-    C.Clear();
-    C.Divide(2,3);
+    C->Clear();
+    C->Divide(2,3);
     int bxcounter=0; 
     for(int j=0;j<bxlist.size();j++){     
-      C.cd(++bxcounter);
+      C->cd(++bxcounter);
       Linearity[i][j]->GetYaxis()->SetRangeUser(0.9,1.1);
       Linearity[i][j]->Draw("histp");
       FLinearityFit[i][j]->SetLineColor(2);
@@ -371,8 +374,8 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       labeltext.DrawTextNDC(0.3,0.2,text);
 
     }
-    C.Print("plot_linearity.pdf");
-    C.Print(TString("plot_det_linearity_perbx.gif"));
+    //C->Print(OUTPATH+"/plot_linearity.pdf");
+    C->Print(OUTPATH+"/plot_det_linearity_perbx.gif");
 
   }
   
@@ -392,7 +395,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   HFrameLinearity.GetXaxis()->SetTitle("bcid");
   
   HFrameLinearity.GetYaxis()->SetRangeUser(-0.010,0.010);
-  C.Clear();
+  C->Clear();
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / "+DETName[detsel] + "  slope ");
@@ -401,12 +404,12 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
     Gp1[i]->Draw("pesame");
     line.DrawLine(HFrameLinearity.GetXaxis()->GetXmin(),0,HFrameLinearity.GetXaxis()->GetXmax(),0);
   }
-  C.Print("plot_linearity.pdf");
-  C.Print("plot_det_linearity_perbx_slope.gif"); 
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_det_linearity_perbx_slope.gif"); 
 
   
   HFrameLinearity.GetYaxis()->SetRangeUser(0.95,1.05);
-  C.Clear();
+  C->Clear();
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / "+DETName[detsel] + "  y-intercept ");
@@ -415,8 +418,8 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
     line.SetLineStyle(1); line.SetLineColor(1);
     line.DrawLine(0,1,HFrameLinearity.GetXaxis()->GetXmax(),1);
   }
-  C.Print("plot_linearity.pdf");
-  C.Print("plot_det_linearity_perbx_y0.gif"); 
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_det_linearity_perbx_y0.gif"); 
 
   
 }
@@ -428,6 +431,7 @@ void plot_det_linearity_pertrain(){
   TH2F * Linearity[NDET][NBXTrain];
   TF1 *  FLinearityFit[NDET][NBXTrain];
   TGraphErrors * Gp1[NDET];
+  TGraphErrors * Gp0[NDET];
   int bxcount[NDET];
   
   for(int i=0;i<NDET;i++){
@@ -437,44 +441,69 @@ void plot_det_linearity_pertrain(){
     Gp1[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
     Gp1[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
     Gp1[i]->SetMarkerStyle(1);
+
+    Gp0[i] = new TGraphErrors();
+    Gp0[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
+    Gp0[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
+    Gp0[i]->SetMarkerStyle(1);
+
     bxcount[i]=0;
 
-    for(int j=0;j<NBXTrain;j++){
-      
+    C->Clear();
+    C->Divide(3,3);
+
+    for(long j=0;j<NBXTrain;j++){
+      C->cd(j+1);
+
+      //make list of bcids to average
       std::vector<long> bxlist;
       for(int t=1;t<BXLeading.size();t++)
 	bxlist.push_back(BXLeading[t]+j);
       
       TString name=TString("Linearity_bx_det")+DETLIST[i]+"_bx"+j;
       //Linearity[i][j] = getLinearityHisto(name,DETLIST[i],bxlist);
-      Linearity[i][j] = getLinearityHistoAvgLS(name,DETLIST[i],bxlist);
-
+      Linearity[i][j] = getLinearityHistoAvgLS(name,DETLIST[i],bxlist);      
       FLinearityFit[i][j] = fitLinearity(Linearity[i][j]);
+
       Gp1[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(1));
       Gp1[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(1));
+      Gp0[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(0));
+      Gp0[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(0));
       bxcount[i]++;      
 
 
-      //C.Clear();
       //Linearity[i][j]->Draw("histp");
-      //C.Print("plot_linearity.pdf");
-      
+      TProfile*P=Linearity[i][j]->ProfileX(TString(Linearity[i][j]->GetName())+"_profX");
+      P->GetYaxis()->SetRangeUser(0.9,1.1);
+      P->RebinX(10);
+      P->Draw("histpe");
+      FLinearityFit[i][j]->Draw("lsame");
+
     }
+    C->Print(OUTPATH+"/plot_linearity_pertrain_perbx.gif");
   }
 
 
   
   TH1F HFrameLinearity("HFrameLinearity","",1,0,NBXTrain+1);
-  HFrameLinearity.GetYaxis()->SetRangeUser(-0.01,0.01);
   HFrameLinearity.GetXaxis()->SetTitle("bcid");
   for(int i=0;i<NDET;i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
-    C.Clear();
-    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]] + " slope relative to "+DETName[detsel]);
+    C->Clear();
+    HFrameLinearity.GetYaxis()->SetRangeUser(-0.01,0.01);
+    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]] + " / "+DETName[detsel] + " slope");
     HFrameLinearity.Draw();
     Gp1[i]->Draw("pesame");
-    C.Print("plot_linearity.pdf");
-    C.Print("plot_linearity_pertrain.gif");
+    //C->Print(OUTPATH+"/plot_linearity.pdf");
+    C->Print(OUTPATH+"/plot_linearity_pertrain_slope.gif");
+
+    C->Clear();
+    HFrameLinearity.GetYaxis()->SetRangeUser(0.9,1.1);
+    HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]] + " / "+DETName[detsel] + "  y-intercept");
+    HFrameLinearity.Draw();
+    Gp0[i]->Draw("pesame");
+    //C->Print(OUTPATH+"/plot_linearity.pdf");
+    C->Print(OUTPATH+"/plot_linearity_pertrain_y0.gif");
   }
 
 
@@ -486,7 +515,7 @@ void plot_plt_linearity(TString CUTBX){
   ///////////// Draw detector ratios vs sbil
   TH2F* Linearity[NPLT];
   TF1* FLinearityFit[NPLT];
-  for(int i=0;i<NPLT;i++){
+  for(long i=0;i<NPLT;i++){
     TString name=TString("Linearity_plt_")+i;
     Linearity[i] = getLinearityHisto(name,TString("plt_")+i,CUTBX);
     if(Linearity[i]->Integral()>10)
@@ -514,10 +543,10 @@ void plot_plt_linearity(TString CUTBX){
   int npts=0;
   
   TText label;
-  C.Clear();
-  C.Divide(4,4);
+  C->Clear();
+  C->Divide(4,4);
   for(long i=0;i<NPLT;i++){
-    C.cd(i+1);
+    C->cd(i+1);
     if(Linearity[i]->Integral()<10) continue;
 
     HFrameLinearity.Draw("hist");   
@@ -538,17 +567,19 @@ void plot_plt_linearity(TString CUTBX){
     npts++;
     
   }
-  C.Print("plot_linearity.pdf");
+  //C->Print(OUTPATH+"/plot_linearity.pdf")
+  C->Print(OUTPATH+"/plot_linearity_plt.gif");
 
 
-  C.Clear();
+  C->Clear();
   HPLTSlope.SetMarkerStyle(8);
   HPLTSlope.SetMarkerSize(1.3);
   HPLTSlope.GetYaxis()->SetTitle("slope");
   HPLTSlope.GetXaxis()->SetTitle("PLT channel");
   HPLTSlope.GetYaxis()->SetRangeUser(-0.02,0.02);
   HPLTSlope.Draw("ape");
-  C.Print("plot_linearity.pdf");
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_linearity_plt_slope");
 
 }
   
@@ -569,10 +600,10 @@ void plot_plt_chan_perbx(){
     char result_txt[100];
     
     ///this algorithm averages the trains
-    for(int j=0;j<NBXTrain;j++){
+    for(long j=0;j<NBXTrain;j++){
 
       TString cutbx=TString("(bx==")+BXLeading[0]+j;
-      for(int t=1;t<BXLeading.size();t++){
+      for(long t=1;t<BXLeading.size();t++){
 	cutbx=cutbx+"||bx=="+(BXLeading[t]+j);
       }
       cutbx+=")";
@@ -610,10 +641,10 @@ void plot_plt_chan_perbx(){
   HFrameLinearityGraph.GetYaxis()->SetTitleOffset(0.8);
   HFrameLinearityGraph.GetXaxis()->SetTitleOffset(0.7);
  
-  C.Clear();
-  C.Divide(4,4);
+  C->Clear();
+  C->Divide(4,4);
   for(long i=0;i<NPLT;i++){
-    C.cd(i+1);
+    C->cd(i+1);
     HFrameLinearityGraph.Draw("hist");
     G1[i]->SetMarkerColor(2);
     G1[i]->SetLineColor(2);
@@ -621,7 +652,8 @@ void plot_plt_chan_perbx(){
     G1[i]->SetMarkerSize(0.5);
     G1[i]->Draw("psame");
   }
-  C.Print("plot_linearity.pdf");
+  //C->Print(OUTPATH+"/plot_linearity.pdf");
+  C->Print(OUTPATH+"/plot_linearity_plt_perchan.gif");
 
 
   

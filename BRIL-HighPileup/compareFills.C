@@ -3,10 +3,9 @@
 
 
 void compareFills(){
+  gROOT->ProcessLine(".x BRILAnalysisCode/BRIL-HighPileup/rootlogon.C");
+  C=new TCanvas();
 
-
-  C.Print("compareFills.pdf[");
-    
   TLegend bx_leg(0.6,0.2,.82,0.4);
   bx_leg.SetLineColor(0);
   bx_leg.SetLineStyle(0);
@@ -16,10 +15,9 @@ void compareFills(){
   
   TString det="pcc";
   
-  std::vector<long> fills{7358,6854,6847,7274};
-  std::vector<long> colors{1,2,4,7};
+  std::vector<long> fills{7358,7274,6854,6847};
+  std::vector<long> colors{1,2,4,6};
   
-
 
   float rmin=0.9;
   float rmax=1.1;
@@ -33,10 +31,10 @@ void compareFills(){
   std::vector<TH2F*> histos_corr;
   std::vector<TF1*> fits_corr;
   
-  for(int i=0;i<fills.size();i++){
+  for(long i=0;i<fills.size();i++){
     configFill(fills[i]);
     
-    TH2F* H=getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecialTrain);
+    TH2F* H=getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecial);
     H->GetYaxis()->SetTitle(DETName[det.Data()] + "/" + DETName[detsel.Data()]);
     H->SetMarkerColor(colors[i]);
     H->SetMarkerSize(0.6);
@@ -45,7 +43,7 @@ void compareFills(){
     fits.push_back(fitLinearity(H));
 
     get_bx_corrections(det);  
-    H = getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecialTrain);
+    H = getLinearityHistoAvgLS(TString("H_fill")+i,det,BXSpecial);
     H->GetYaxis()->SetTitle(DETName[det.Data()] + "/" + DETName[detsel.Data()]);
     H->SetMarkerColor(colors[i]);
     H->SetMarkerSize(0.6);
@@ -56,7 +54,7 @@ void compareFills(){
 
 
   ///plot the scatter distributions
-  C.Clear();
+  C->Clear();
   for(int i=0;i<fills.size();i++){
     TH2F* H=histos[i];
     if(H->Integral()==0) continue;
@@ -65,23 +63,17 @@ void compareFills(){
     bx_leg.AddEntry(H,TString("FILL ")+fills[i],"flp");
   }
   bx_leg.Draw();
-  C.Print("compareFills.pdf");
-  C.Print("compareFills.gif");
+  C->Print(OUTPATH+"/compareFills.gif");
 
-  
-
-  ///////////Plot the profiles and fits
-  C.Clear();
+  C->Clear();
   char txt[100]; 
   labeltext.SetTextSize(0.035); 
 
-
-  sprintf(txt,"fit results: ");
   labeltext.SetTextColor(1);
   labeltext.DrawTextNDC(0.24,0.36,txt);
 
   std::vector<TProfile*> profiles;
-  for(int i=0;i<fills.size();i++){
+  for(long i=0;i<fills.size();i++){
     TProfile *P = histos[i]->ProfileX(TString(histos[i]->GetName())+"_pfx",1,-1,"");
     profiles.push_back(P);
     P->RebinX(REBIN);
@@ -97,34 +89,31 @@ void compareFills(){
     labeltext.DrawTextNDC(0.24,0.32-i*0.05,txt);
   }
   bx_leg.Draw(); 
-  C.Print("compareFills.pdf");
-  C.Print("compareFills_profile.gif");
+  C->Print(OUTPATH+"/compareFills_profile.gif");
 
 
 
 
 
   ////////////////
-  /// with scale offset corrections
-  C.Clear();
-  for(int i=0;i<fills.size();i++){
+  /// with per bcid scale offset corrections
+  C->Clear();
+  for(long i=0;i<fills.size();i++){
     TH2F* H=histos_corr[i];
     if(H->Integral()==0) continue;
     H->GetYaxis()->SetRangeUser(rmin,rmax);
     H->Draw(i==0?"histp":"histpsame"); 
   }
   bx_leg.Draw();
-  C.Print("compareFills.pdf");
-  C.Print("compareFills_corr.gif");
+  C->Print(OUTPATH+"/compareFills_corr.gif");
 
   
-  C.Clear();
-  sprintf(txt,"fit results: ");
+  C->Clear();
   labeltext.SetTextColor(1);
   labeltext.DrawTextNDC(0.24,0.36,txt);
 
   std::vector<TProfile*> profiles_corr;
-  for(int i=0;i<fills.size();i++){
+  for(long i=0;i<fills.size();i++){
     TProfile *P = histos_corr[i]->ProfileX(TString(histos_corr[i]->GetName())+"_pfx",1,-1,"");
     profiles_corr.push_back(P);
     P->RebinX(REBIN);
@@ -140,22 +129,21 @@ void compareFills(){
     labeltext.DrawTextNDC(0.24,0.32-i*0.05,txt);
   }
   bx_leg.Draw(); 
-  C.Print("compareFills.pdf");
-  C.Print("compareFills_profile_corr.gif");
+  C->Print(OUTPATH+"/compareFills_profile_corr_perbx.gif");
 
 
 
   ////////////////////////////////
   // per fill correction
-  
-  for(long i=1;i<fills.size();i++){
+  for(long i=0;i<fills.size();i++){
 
     TGraphErrors GCompatibility;
     int points=0;
-    for(int b=0;b<profiles_corr[0]->GetNbinsX();b++){
+    for(int b=1;b <= profiles_corr[0]->GetNbinsX();b++){
       float ratio=0;
-
-      if(profiles_corr[0]->GetBinContent(b)<=0) continue;
+      
+      if(fabs(profiles_corr[0]->GetBinContent(b)-1)>0.5
+	 ||fabs(profiles_corr[i]->GetBinContent(b)-1)>0.5 ) continue;
       
       GCompatibility.SetPoint(points,profiles_corr[0]->GetBinCenter(b),
 			      profiles_corr[i]->GetBinContent(b)/profiles_corr[0]->GetBinContent(b));
@@ -166,23 +154,24 @@ void compareFills(){
       
     }
 
-  
-    C.Clear();
-    GCompatibility.GetYaxis()->SetRangeUser(0.95,1.05);
-    GCompatibility.GetXaxis()->SetTitle(histos[0]->GetXaxis()->GetTitle());
-    GCompatibility.GetYaxis()->SetTitle(TString("Fill ")+fills[i]+" / Fill "+fills[0]);
+
 
     TF1 fcomp("fcomp","[0]",0,20);
     GCompatibility.Fit(&fcomp,"","",0,20);
-    GCompatibility.Draw("ape");
-    line.DrawLine(GCompatibility.GetXaxis()->GetXmin(),1,GCompatibility.GetXaxis()->GetXmax(),1);
+    
+    GCompatibility.GetYaxis()->SetRangeUser(0.95,1.05);
+    GCompatibility.GetXaxis()->SetTitle(histos[0]->GetXaxis()->GetTitle());
+    GCompatibility.GetYaxis()->SetTitle(TString("Fill ")+fills[i]+" / Fill "+fills[0]);
   
+    C->Clear();
+    GCompatibility.Draw("ape");
+    fcomp.Draw("lsame");
+
     sprintf(txt,"y=%.3f +/- %.3f,    chi2 = %.1f,   p-value = %.4f ",fcomp.GetParameter(0),fcomp.GetParError(0),fcomp.GetChisquare(), TMath::Prob(fcomp.GetChisquare(),fcomp.GetNDF()));
     labeltext.SetTextSize(0.035);
     labeltext.DrawTextNDC(0.3,0.2,txt);
 
-    C.Print("compareFills.pdf");
-    C.Print(TString("compareFills_compatibility_fill")+fills[i]+".gif");
+    C->Print(OUTPATH+TString("compareFills_compatibility_fill")+fills[i]+".gif");
   
     ///apply corrections
     profiles_corr[i]->Scale(1./fcomp.GetParameter(0)); 
@@ -194,28 +183,28 @@ void compareFills(){
   
   ///////////////////////////////////
   TProfile * P = (TProfile*) profiles_corr[0]->Clone("PComb");
-  
   for(int i=1;i<fills.size();i++){
     if(histos_corr[i]->Integral()==0) continue; 
     P->Add(profiles_corr[i]);
   }
-
   TF1*FComb=fitLinearity(P);
   FComb->SetLineColor(1);
+
   labeltext.SetTextColor(1);
   
-  C.Clear();
-  P->GetYaxis()->SetRangeUser(rmin,rmax);
-  P->Draw("histpe");
-  FComb->Draw("lsame");
-  sprintf(txt,"slope  = %.2f +/- %.2f %%",100*FComb->GetParameter(1),100*FComb->GetParError(1));
-  labeltext.SetTextColor(FComb->GetLineColor());
-  labeltext.DrawTextNDC(0.24,0.32,txt);
-  C.Print("compareFills.pdf");
+  // C->Clear();
+  // P->GetYaxis()->SetRangeUser(rmin,rmax);
+  // P->Draw("histpe");
+  // FComb->Draw("lsame");
+  // sprintf(txt,"slope  = %.2f +/- %.2f %%",100*FComb->GetParameter(1),100*FComb->GetParError(1));
+  // labeltext.SetTextColor(FComb->GetLineColor());
+  // labeltext.DrawTextNDC(0.24,0.32,txt);
+  // //C->Print(OUTPATH+"/compareFills.pdf");
+  // C->Print(OUTPATH+"/compareFills_combined_fills_corr.gif");
 
 
-  C.Clear();
-  for(int i=0;i<fills.size();i++){
+  C->Clear();
+  for(long i=0;i<fills.size();i++){
     if(histos_corr[i]->Integral()==0) continue;
     profiles_corr[i]->Draw(i==0?"histpe":"histpesame");
   }
@@ -225,12 +214,9 @@ void compareFills(){
   FComb->Draw("lsame");
   sprintf(txt,"slope  = %.2f +/- %.2f %%",100*FComb->GetParameter(1),100*FComb->GetParError(1));
   labeltext.DrawTextNDC(0.24,0.32,txt);
-  C.Print("compareFills.pdf");
-  C.Print("compareFills_combined_profile_corr.gif");
+  C->Print(OUTPATH+"/compareFills_profile_corr_perfill.gif");
 
 
   
-  C.Print("compareFills.pdf]");
   gROOT->ProcessLine(".q");
-
 }

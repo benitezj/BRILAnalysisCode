@@ -74,7 +74,7 @@ def configFILL():
         hd5input = '/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/6847_1806261047_1806261133.hd5'
         pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto/318675.csv'
         #pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018B_RunDModVeto_NoCorr/318675.csv'
-        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fill_6847.root'
+        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_6847.root'
         BXLeading = [686,816,2591,2612,2633]
         NBXTrain = 1
         tmin=1530010510
@@ -104,10 +104,10 @@ def configFILL():
         tmax=tmin+1600
     elif FILL == 7358 :
         RUN = 325309
-        hd5input = '7358_1810260704_1810260726.hd5'
-        pccinput = '325309.csv'
+        hd5input = '/afs/cern.ch/user/b/benitezj/output/public/BRIL/brildata/vdmdata18/7358_1810260704_1810260726.hd5'
+        pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto/325309.csv'
         #pccinput = '/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/ZeroBias/AlCaLumiPixels0-N_ZeroBias-PromptReco_23Mar2019/Run2018E_RunDModVeto_NoCorr/325309.csv'
-        resid_hfoc_corr = 'Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
+        resid_hfoc_corr = '/afs/cern.ch/user/j/jingyu/public/LUMI/for_Jose/Overall_Correction_HFOC_2018_bt_corr_fills_7358.root'
         sigma_hfoc = sigma_hfoc / 0.987  ### HF radiation correction
         tmin=1540537800
         tmax=1540538550

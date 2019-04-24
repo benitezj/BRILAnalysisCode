@@ -1,93 +1,91 @@
-void setHttStyle(){
-  TStyle * HttStyle = new TStyle("Htt-Style","The Perfect Style for Plots ;-)");
+void rootlogon(){
+ 
+  //TStyle * Style = new TStyle("Style","The Perfect Style for Plots ;-)");
 
   // Canvas
-  HttStyle->SetCanvasColor     (0);
-  HttStyle->SetCanvasBorderSize(10);
-  HttStyle->SetCanvasBorderMode(0);
-  // HttStyle->SetCanvasDefH      (700);
-  // HttStyle->SetCanvasDefW      (700);
-  // HttStyle->SetCanvasDefX      (100);
-  // HttStyle->SetCanvasDefY      (100);
+  gStyle->SetCanvasColor     (0);
+  gStyle->SetCanvasBorderSize(10);
+  gStyle->SetCanvasBorderMode(0);
+  // gStyle->SetCanvasDefH      (700);
+  // gStyle->SetCanvasDefW      (700);
+  // gStyle->SetCanvasDefX      (100);
+  // gStyle->SetCanvasDefY      (100);
 
   // color palette for 2D temperature plots
-  HttStyle->SetPalette(1,0);
+  gStyle->SetPalette(1,0);
   
   // Pads
-  HttStyle->SetPadColor       (0);
-  HttStyle->SetPadBorderSize  (10);
-  HttStyle->SetPadBorderMode  (0);
-  HttStyle->SetPadBottomMargin(0.15);
-  HttStyle->SetPadTopMargin   (0.08);
-  HttStyle->SetPadLeftMargin  (0.20);
-  //HttStyle->SetPadRightMargin (0.05);
-  HttStyle->SetPadRightMargin (0.15);
-  HttStyle->SetPadGridX       (0);
-  HttStyle->SetPadGridY       (0);
-  HttStyle->SetPadTickX       (1);
-  HttStyle->SetPadTickY       (1);
+  gStyle->SetPadColor       (0);
+  gStyle->SetPadBorderSize  (10);
+  gStyle->SetPadBorderMode  (0);
+  gStyle->SetPadBottomMargin(0.15);
+  gStyle->SetPadTopMargin   (0.05);
+  gStyle->SetPadLeftMargin  (0.15);
+  gStyle->SetPadRightMargin (0.05);
+  gStyle->SetPadGridX       (0);
+  gStyle->SetPadGridY       (0);
+  gStyle->SetPadTickX       (1);
+  gStyle->SetPadTickY       (1);
 
   // Frames
-  HttStyle->SetLineWidth(3);
-  HttStyle->SetFrameFillStyle ( 0);
-  HttStyle->SetFrameFillColor ( 0);
-  HttStyle->SetFrameLineColor ( 1);
-  HttStyle->SetFrameLineStyle ( 0);
-  HttStyle->SetFrameLineWidth ( 2);
-  HttStyle->SetFrameBorderSize(10);
-  HttStyle->SetFrameBorderMode( 0);
+  gStyle->SetLineWidth(3);
+  gStyle->SetFrameFillStyle ( 0);
+  gStyle->SetFrameFillColor ( 0);
+  gStyle->SetFrameLineColor ( 1);
+  gStyle->SetFrameLineStyle( 0);
+  gStyle->SetFrameLineWidth ( 2);
+  gStyle->SetFrameBorderSize(10);
+  gStyle->SetFrameBorderMode( 0);
 
   ////// Histograms
-  //  HttStyle->SetHistFillColor(2);
-  //  HttStyle->SetHistFillStyle(0);
-  HttStyle->SetHistLineColor(1);
-  HttStyle->SetHistLineStyle(0);
-  HttStyle->SetHistLineWidth(1);
-  HttStyle->SetNdivisions(6);
+  //  gStyle->SetHistFillColor(2);
+  //  gStyle->SetHistFillStyle(0);
+  gStyle->SetHistLineColor(1);
+  gStyle->SetHistLineStyle(0);
+  gStyle->SetHistLineWidth(1);
+  gStyle->SetNdivisions(6);
 
   // Functions
-  HttStyle->SetFuncColor(1);
-  HttStyle->SetFuncStyle(0);
-  HttStyle->SetFuncWidth(2);
+  gStyle->SetFuncColor(1);
+  gStyle->SetFuncStyle(0);
+  gStyle->SetFuncWidth(2);
 
   // Various
-  HttStyle->SetMarkerStyle(8);
-  HttStyle->SetMarkerColor(kBlack);
-  HttStyle->SetMarkerSize (0.3);
+  gStyle->SetMarkerStyle(8);
+  gStyle->SetMarkerColor(kBlack);
+  gStyle->SetMarkerSize (0.3);
 
-  HttStyle->SetTitleBorderSize(0);
-  HttStyle->SetTitleFillColor (0);
-  HttStyle->SetTitleX         (0.2);
+  gStyle->SetTitleBorderSize(0);
+  gStyle->SetTitleFillColor (0);
+  gStyle->SetTitleX         (0.2);
 
-  HttStyle->SetTitleSize  (0.055,"X");
-  HttStyle->SetTitleOffset(1.200,"X");
-  HttStyle->SetLabelOffset(0.005,"X");
-  HttStyle->SetLabelSize  (0.050,"X");
-  HttStyle->SetLabelFont  (42   ,"X");
+  gStyle->SetTitleSize  (0.055,"X");
+  gStyle->SetTitleOffset(1.400,"X");
+  gStyle->SetLabelOffset(0.005,"X");
+  gStyle->SetLabelSize  (0.050,"X");
+  gStyle->SetLabelFont  (42   ,"X");
 
-  HttStyle->SetStripDecimals(kFALSE);
-  HttStyle->SetLineStyleString(11,"20 10");
+  gStyle->SetStripDecimals(kFALSE);
+  gStyle->SetLineStyleString(11,"20 10");
 
-  HttStyle->SetTitleSize  (0.055,"Y");
-  HttStyle->SetTitleOffset(1.600,"Y");
-  HttStyle->SetLabelOffset(0.010,"Y");
-  HttStyle->SetLabelSize  (0.050,"Y");
-  HttStyle->SetLabelFont  (42   ,"Y");
+  gStyle->SetTitleSize  (0.055,"Y");
+  gStyle->SetTitleOffset(1.400,"Y");
+  gStyle->SetLabelOffset(0.010,"Y");
+  gStyle->SetLabelSize  (0.050,"Y");
+  gStyle->SetLabelFont  (42   ,"Y");
 
-  HttStyle->SetTextSize   (0.055);
-  HttStyle->SetTextFont   (42);
+  gStyle->SetTextSize   (0.055);
+  gStyle->SetTextFont   (42);
 
-  HttStyle->SetStatFont   (42);
-  HttStyle->SetTitleFont  (42);
-  HttStyle->SetTitleFont  (42,"X");
-  HttStyle->SetTitleFont  (42,"Y");
+  gStyle->SetStatFont   (42);
+  gStyle->SetTitleFont  (42);
+  gStyle->SetTitleFont  (42,"X");
+  gStyle->SetTitleFont  (42,"Y");
 
-  HttStyle->SetOptStat    (0);
+  gStyle->SetOptStat    (0);
 
-  gROOT->SetStyle("Htt-Style");
+  //gROOT->SetStyle("Style");
 
-}
-void rootlogon(){
-  setHttStyle();
+
   std::cout<<"done style"<<std::endl;
 }
