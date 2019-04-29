@@ -1,15 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
-#define NLS 3000
-float Lmin=0;
-float Lmax=2;
-float scale=(1e30/23.31)/1e34; //brilcalc lumi/lumisection [1/microbarn], 1 barn = 10^-24 cm^2,  y value will be in unites of 1e34
+#include "globals.h"
 
 std::vector<std::string> dets={"hfoc","pcc","bcm1f","ramses","pltzero","hfet"};
 std::vector<std::string> detnames={"HFOC","PCC","BCM","RAMSES","PLT","HFET"};
-std::vector<int> colors={0,9,46,4,3,6};
+std::vector<int> colors={0,2,46,4,3,6};
 
 
 TH1F * readDetector(TString Path, long RUN, TString det){
@@ -44,11 +40,7 @@ TH1F * readDetector(TString Path, long RUN, TString det){
       hstart=h;
       dcounter++;
     }
-
-    // G.SetPoint(counter,dcounter*24*3600+h*3600+m*60+s,L*scale);
-    // counter++;
-
-    H->SetBinContent(ls,L*scale);
+    H->SetBinContent(ls,L*InstLumiScale);
 
   }
     
@@ -59,7 +51,7 @@ TH1F * readDetector(TString Path, long RUN, TString det){
 }
 
 
-void plotLinearityPerInstLuminosity(TString Path, long RUN, long FILL,long year){
+void plotLHCFill_Linearity(TString Path, long RUN, long FILL,long year){
   //provide: path, fill number, fill starting date
   
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
@@ -68,7 +60,6 @@ void plotLinearityPerInstLuminosity(TString Path, long RUN, long FILL,long year)
   std::vector<TGraph*> ratio;
   for(int i=0;i<dets.size();i++){
     lumi.push_back(readDetector(Path,RUN,dets[i]));
-
 
     TGraph * g=new TGraph();
     int counter=0;
@@ -86,11 +77,11 @@ void plotLinearityPerInstLuminosity(TString Path, long RUN, long FILL,long year)
   ///////////////////////////////////////////////////
   TCanvas C("C","",800,600);
 
-  ratio[0]->GetXaxis()->SetTitle("Inst. Luminosity [E34 cm^{-2}s^{-1}]");
+  ratio[0]->GetXaxis()->SetTitle(InstLumiAxisTitle.Data());
   ratio[0]->GetXaxis()->SetLabelSize(0.04);
   ratio[0]->GetXaxis()->SetTitleSize(0.05);
   ratio[0]->GetXaxis()->SetTitleOffset(0.9);
-  ratio[0]->GetXaxis()->SetRangeUser(Lmin,Lmax);
+  ratio[0]->GetXaxis()->SetRangeUser(0,2);
   ratio[0]->GetYaxis()->SetTitle("Inst. Luminosity Ratio");
   ratio[0]->GetYaxis()->SetLabelSize(0.04);
   ratio[0]->GetYaxis()->SetTitleSize(0.05);
@@ -119,18 +110,12 @@ void plotLinearityPerInstLuminosity(TString Path, long RUN, long FILL,long year)
   
 
   leg.Draw();
+  drawLumiTitle(FILL);
+  drawCMSPrelim(year);
 
-  TLatex text;
-  text.SetTextColor(1);
-  text.SetTextSize(0.05);
-  text.DrawLatexNDC(0.25,0.85,TString("#font[62]{CMS} #font[52]{Preliminary ")+year+"}");
-  text.SetTextColor(4);
-  text.SetTextSize(0.045);
-  text.DrawLatexNDC(0.25,0.94,TString("CMS Offline Luminosity, LHC Fill ")+(long)FILL+", #sqrt{s} = 13 TeV");
- 
-  C.Print(TString("linearity_")+FILL+".png");
-  C.Print(TString("linearity_")+FILL+".pdf");
-
+  C.Print(Path+"/linearity_"+FILL+".png");
+  C.Print(Path+"/linearity_"+FILL+".pdf");
+  
   gROOT->ProcessLine(".q");
 }
 
