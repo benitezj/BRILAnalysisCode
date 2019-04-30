@@ -3,7 +3,7 @@
 
 
 void compareFills(){
-  gROOT->ProcessLine(".x BRILAnalysisCode/BRIL-HighPileup/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   C=new TCanvas();
 
   TLegend bx_leg(0.6,0.2,.82,0.4);

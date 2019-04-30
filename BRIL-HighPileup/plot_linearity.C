@@ -3,7 +3,7 @@
 
 void plot_linearity(long fill=7358){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/BRIL-HighPileup/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
  
   configFill(fill);
    
@@ -32,10 +32,9 @@ void plot_linearity(long fill=7358){
   
   //get_bx_corrections("pcc");
 
-  //plot_det_linearity_perbx(BXLeading);  
+  plot_det_linearity_perbx(BXLeading);  
   //plot_det_linearity_perbx(BXLIST);
-  
-  plot_det_linearity_perbx(BXSpecial);
+  //plot_det_linearity_perbx(BXSpecial);
   //plot_det_linearity_perbx(BXSpecialTrain);
   
   //plot_det_linearity_pertrain();

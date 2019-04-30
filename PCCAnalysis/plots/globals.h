@@ -13,7 +13,7 @@ long RUNOFFSET=315000;
 float InstLumiScale=(1e30/23.31)/1e34; //brilcalc lumi/lumisection [1/microbarn], 1 barn = 10^-24 cm^2,  y value will be in unites of 1e34
 
 ////CMS plot labels
-TString InstLumiAxisTitle("Inst. Luminosity [ E34 #scale[1.0]{cm}^{-2} s^{-1} ]");
+TString InstLumiAxisTitle("Inst. Luminosity [ E34#scale[1.0]{cm}^{-2} s^{-1} ]");
 
 void drawLumiTitle(long FILL){
   TLatex text;

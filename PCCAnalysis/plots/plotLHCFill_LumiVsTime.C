@@ -34,7 +34,7 @@ void plotLHCFill_LumiVsTime(TString Path,long RUN){
 
     ///ling format: 324293 7270 2347 2347 10/09/18 14 04 56 STABLE BEAMS 6500 89792.454689641 66744.437627449 10.8 HFOC
 
-    iss>>run>>FILL>>ls>>ls>>date>>h>>m>>s>>tmp>>tmp>>tmp>>tmp>>L;
+    iss>>run>>FILL>>ls>>ls>>date>>h>>m>>s>>tmp>>tmp>>tmp>>L;
 
     if(dcounter==-1||h<hstart){
       hstart=h;

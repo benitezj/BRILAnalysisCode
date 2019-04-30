@@ -3,9 +3,9 @@
 #include <string>
 #include "globals.h"
 
-std::vector<std::string> dets={"hfoc","pcc","bcm1f","ramses","pltzero","hfet"};
-std::vector<std::string> detnames={"HFOC","PCC","BCM","RAMSES","PLT","HFET"};
-std::vector<int> colors={0,2,46,4,3,6};
+std::vector<std::string> dets={"hfoc","ramses","pltzero","hfet","pcc"};
+std::vector<std::string> detnames={"HFOC","RAMSES","PLT","HFET","PCC"};
+std::vector<int> colors={0,4,3,6,2};
 
 
 TH1F * readDetector(TString Path, long RUN, TString det){
@@ -35,7 +35,7 @@ TH1F * readDetector(TString Path, long RUN, TString det){
 
     ///line format: 324293 7270 2347 2347 10/09/18 14 04 56 STABLE BEAMS 6500 89792.454689641 66744.437627449 10.8 HFOC
 
-    iss>>run>>fill>>ls>>ls>>date>>h>>m>>s>>tmp>>tmp>>tmp>>tmp>>L;
+    iss>>run>>fill>>ls>>ls>>date>>h>>m>>s>>tmp>>tmp>>tmp>>L;
     if(hstart==-1||h<hstart){
       hstart=h;
       dcounter++;
@@ -63,14 +63,31 @@ void plotLHCFill_Linearity(TString Path, long RUN, long FILL,long year){
 
     TGraph * g=new TGraph();
     int counter=0;
+    float Avg=0.;
+    int AvgCount=0;
+    float AvgX=0.;
     for(int b=1;b<NLS;b++){
-      g->SetPoint(counter,lumi[0]->GetBinContent(b),lumi[i]->GetBinContent(b)/lumi[0]->GetBinContent(b));
+      if(lumi[0]->GetBinContent(b)<0.4)continue;
+      if(fabs(lumi[i]->GetBinContent(b)/lumi[0]->GetBinContent(b) - 1)>0.05) continue;
+
+      AvgX += lumi[0]->GetBinContent(b);
+      Avg += lumi[i]->GetBinContent(b)/lumi[0]->GetBinContent(b);
+      AvgCount++;
+      if(AvgCount<30)continue;
+
+      g->SetPoint(counter,AvgX/AvgCount,Avg/AvgCount); //lumi[i]->GetBinContent(b)/lumi[0]->GetBinContent(b));
       counter++;
+      AvgX=0.;
+      Avg=0.;
+      AvgCount=0;
     }
+
+    g->SetMarkerSize(1.2);
     g->SetMarkerColor(colors[i]);
     g->SetLineColor(colors[i]);
     ratio.push_back(g);
   }
+
   
   /////////////////////////////////////////////////////
   ///   make the plot

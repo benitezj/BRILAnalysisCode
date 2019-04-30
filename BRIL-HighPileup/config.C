@@ -8,8 +8,8 @@ TString OUTPATH("/afs/cern.ch/user/b/benitezj/www/BRIL/HighPULinearity");
 ////////////
 std::map<TString,TString> DETName = {{"hfoc","HFOC"},{"hfet","HFET"},{"plt","PLTZERO"},{"bcm","BCM1F"},{"pcc","PCC"},{"pccb","PCC_B"},{"pccf","PCC_F"}};
 std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4},{"pcc",6},{"pccb",6},{"pccf",6}};//note color should be set with +1
-#define NDET 2
-TString DETLIST[NDET] = {"hfoc","pcc"};//"hfet","plt","bcm",
+#define NDET 5
+TString DETLIST[NDET] = {"hfoc","hfet","plt","bcm","pcc"};
 TString detsel("hfoc");
 #define NPLT 16
 #define NBX 3564
@@ -68,7 +68,7 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = std::vector<long>{686};
     NBXTrain = 1;
     BXLeading = std::vector<long>{686,816,2591,2612,2633};
-    //BXSpecial = BXLeading;
+    ///BXSpecial = BXLeading;
   }
   if(FILL==6854){
     tree->Add(INPATH+"/bril_6854_RunDModVeto.root");
@@ -111,9 +111,9 @@ void configFill(long fill=0){///set fill specific configurations
     NBXTrain = 10 ;
     BXLeading = std::vector<long>{750,1644};
     //BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
-    //BXSpecial = std::vector<long>{751, 752, 753, 754, 755, 756, 757, 758, 759, 1645, 1646, 1647, 1648, 1649, 1650, 1651, 1652, 1653}; //train bx's
-    //BXSpecial = std::vector<long>{756,757, 758, 759,  1650, 1651, 1652, 1653}; //last 4 bx's
-    BXSpecial = std::vector<long>{759, 1653}; //last bx 
+    BXSpecial = std::vector<long>{751,752,753,754,755,756,757,758,759,760,761,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //train bx's
+    //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
+    //BXSpecial = std::vector<long>{761, 1655}; //last bx 
   }
 
 
