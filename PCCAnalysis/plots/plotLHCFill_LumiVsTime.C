@@ -3,6 +3,9 @@
 #include <string>
 #include "globals.h"
 
+std::set<int> badls={65,66,67,68,69,70,71,72,73,74,75,76,77,78,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,436,437,438,439,440,954,955,956,957,958,959,1179,1180,1181,1183,1206,1207,1208,1209,1421,1422,2320,2321,2322,2323,2324,2325,2326,2327,2328,2329,2330,2331,2332,2333,2347};
+
+
 void plotLHCFill_LumiVsTime(TString Path,long RUN){
   //provide: path, fill number, fill starting date
  
@@ -35,6 +38,8 @@ void plotLHCFill_LumiVsTime(TString Path,long RUN){
     ///ling format: 324293 7270 2347 2347 10/09/18 14 04 56 STABLE BEAMS 6500 89792.454689641 66744.437627449 10.8 HFOC
 
     iss>>run>>FILL>>ls>>ls>>date>>h>>m>>s>>tmp>>tmp>>tmp>>L;
+
+    //if (badls.find(ls) != badls.end()) continue;
 
     if(dcounter==-1||h<hstart){
       hstart=h;

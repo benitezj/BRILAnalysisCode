@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "globals.h"
+//#include "globals.h"
+#include "plotLHCFill_LumiVsTime.C"
 
 std::vector<std::string> dets={"hfoc","ramses","pltzero","hfet","pcc"};
 std::vector<std::string> detnames={"HFOC","RAMSES","PLT","HFET","PCC"};
@@ -36,6 +37,11 @@ TH1F * readDetector(TString Path, long RUN, TString det){
     ///line format: 324293 7270 2347 2347 10/09/18 14 04 56 STABLE BEAMS 6500 89792.454689641 66744.437627449 10.8 HFOC
 
     iss>>run>>fill>>ls>>ls>>date>>h>>m>>s>>tmp>>tmp>>tmp>>L;
+
+    ////remove bad ls
+    if (badls.find(ls) != badls.end()) continue;
+    
+
     if(hstart==-1||h<hstart){
       hstart=h;
       dcounter++;
@@ -56,6 +62,7 @@ void plotLHCFill_Linearity(TString Path, long RUN, long FILL,long year){
   
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
+
   std::vector<TH1F*> lumi;
   std::vector<TGraph*> ratio;
   for(int i=0;i<dets.size();i++){
@@ -73,7 +80,7 @@ void plotLHCFill_Linearity(TString Path, long RUN, long FILL,long year){
       AvgX += lumi[0]->GetBinContent(b);
       Avg += lumi[i]->GetBinContent(b)/lumi[0]->GetBinContent(b);
       AvgCount++;
-      if(AvgCount<30)continue;
+      if(AvgCount<40)continue;
 
       g->SetPoint(counter,AvgX/AvgCount,Avg/AvgCount); //lumi[i]->GetBinContent(b)/lumi[0]->GetBinContent(b));
       counter++;
@@ -102,8 +109,8 @@ void plotLHCFill_Linearity(TString Path, long RUN, long FILL,long year){
   ratio[0]->GetYaxis()->SetTitle("Inst. Luminosity Ratio");
   ratio[0]->GetYaxis()->SetLabelSize(0.04);
   ratio[0]->GetYaxis()->SetTitleSize(0.05);
-  ratio[0]->GetYaxis()->SetTitleOffset(1.0);
-  ratio[0]->GetYaxis()->SetRangeUser(0.94,1.06);
+  ratio[0]->GetYaxis()->SetTitleOffset(1.1);
+  ratio[0]->GetYaxis()->SetRangeUser(0.975,1.025);
   ratio[0]->SetMarkerStyle(0);
   ratio[0]->SetMarkerSize(0.0);
   ratio[0]->Draw("ap");
@@ -112,6 +119,7 @@ void plotLHCFill_Linearity(TString Path, long RUN, long FILL,long year){
   TLegend leg(0.65,0.65,.92,0.88);
   leg.SetLineColor(0);
   leg.SetLineStyle(0);
+  leg.SetBorderSize(0);
   leg.SetShadowColor(0);
   leg.SetFillColor(0);
   leg.SetFillStyle(0);
