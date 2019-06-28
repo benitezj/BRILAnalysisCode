@@ -12,7 +12,6 @@ extdir=$1 #relative path
 ## what to do : 0=create scripts, 1=submit, 2=check
 action=$2
 
-
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags
 
 ###################
@@ -26,7 +25,7 @@ INSTALLATION=${CMSSW_BASE}/src
 ### options:
 #corr= PCC corrections from Random triggers
 #lumi= lumi from ZeroBias 
-jobtype=lumi
+jobtype=corr
 echo "job type: $jobtype"
 
 ## in case of jobtype=lumi: directory containing the PCC corrections to be applied
@@ -34,6 +33,7 @@ echo "job type: $jobtype"
 #DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels011_AlCaPCCRandom_Nov22/Commissioning2018
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E
+#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E_10LS_F3P2
 if [ "$DBDIR" != "" ]; then
    echo "corections: $DBDIR"
 fi
@@ -113,7 +113,9 @@ for f in `/bin/ls $submitdir | grep .txt | grep -v "~" `; do
     ##if [ "$TEST" == "1" ] && [ "$run" != "318982" ] && [ "$run" != "318983" ] && [ "$run" != "318984" ] ; then continue; fi    
     ##if [ "$TEST" == "1" ] && [ "$run" != "316766" ]; then continue; fi        
     ##if [ "$TEST" == "1" ] && [ "$run" != "323700" ]; then continue; fi        
-    if [ "$TEST" == "1" ] && [ "$run" != "323696" ]; then continue; fi        
+    ##if [ "$TEST" == "1" ] && [ "$run" != "323696" ]; then continue; fi        
+    if [ "$TEST" == "1" ] && [ "$run" != "324293" ]; then continue; fi        
+    ##if [ "$TEST" == "1" ] && [ "$run" != "324418" ]; then continue; fi        
 
     ###create the scripts
     if [ "$action" == "0" ]; then

@@ -6,11 +6,12 @@
 std::vector<long> veto;
 
 
-void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt", int BF=0, int LY=0){
+void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt", int BF=0, int LY=0, int PN=-1){
 
   ///// Parameters:
   //BF: BPIX=0 ,  FPIX=1
   //LY: Layer for BPIX (0,1,2,3) or Disk for FPIX (1,2,3) 
+  //PN: Panel # for FPIX only (1,2)
 
   //open the new veto list:
   std::ofstream o("veto.txt");
@@ -62,7 +63,7 @@ void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_B
     std::stringstream iss(cline_fpix);
     long module,sd,di,bl,pn;
     iss>>module>>sd>>di>>bl>>pn;
-    if(!(BF==1 && LY==di)
+    if(!(BF==1 && LY==di && (PN==pn||PN==-1))
        && std::find(veto.begin(),veto.end(),module) == veto.end()
        )
       o<<module<<std::endl;

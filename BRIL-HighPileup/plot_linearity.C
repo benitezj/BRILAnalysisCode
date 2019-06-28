@@ -13,7 +13,7 @@ void plot_linearity(long fill=7358){
   //C->Print(OUTPATH+"/plot_linearity.pdf[");
 
   ////// show each bcid vs time
-  plot_lumi_vstime_perbx(BXSel);
+  //plot_lumi_vstime_perbx(BXSel);
 
   ////// Detectors vs time
   //plot_det_vstime(); //selected bcid's
@@ -32,9 +32,9 @@ void plot_linearity(long fill=7358){
   
   //get_bx_corrections("pcc");
 
-  plot_det_linearity_perbx(BXLeading);  
+  //plot_det_linearity_perbx(BXLeading);  
   //plot_det_linearity_perbx(BXLIST);
-  //plot_det_linearity_perbx(BXSpecial);
+  plot_det_linearity_perbx(BXSpecial);
   //plot_det_linearity_perbx(BXSpecialTrain);
   
   //plot_det_linearity_pertrain();

@@ -1,37 +1,34 @@
 #include "config.C"
 
-
 void plot_lumi_vstime_perbx(std::vector<long> bxlist){
 
-  TLegend bx_leg(0.87,0.5,1.0,0.9);
+  TLegend bx_leg(0.75,0.9-DETLIST.size()*0.05,0.93,0.9);
   bx_leg.SetLineColor(0);
   bx_leg.SetLineStyle(0);
   bx_leg.SetShadowColor(0);
   bx_leg.SetFillColor(0);
   bx_leg.SetFillStyle(0);
- 
+  bx_leg.SetBorderSize(0);
 
   float max=0;
   C->Clear();
-  C->Divide(1,2);
-  for(long i=0;i<NDET;i++){
+  //C->Divide(1,2);
 
-    TLegend * leg=(TLegend*) bx_leg.Clone();
-    TVirtualPad * p=C->cd(i+1);
-    p->SetLeftMargin(0.1);
+  TH2F* Time2D_det = (TH2F*)Time2D->Clone(TString("Time2D_"));
+  Time2D_det->Scale(0);
+  Time2D_det->GetXaxis()->SetTitle("time  [s]");
+  Time2D_det->GetYaxis()->SetRangeUser(0,FILL==7358?20:10);
+  //Time2D_det->GetYaxis()->SetTitle(DETName[DETLIST[i]]+" sbil");
+  Time2D_det->GetYaxis()->SetTitle(" sbil");
+  Time2D_det->GetYaxis()->SetTitleOffset(0.7);
+  Time2D_det->GetYaxis()->SetNdivisions(5);
+  Time2D_det->Draw("hist");
 
-    TH2F* Time2D_det = (TH2F*)Time2D->Clone(TString("Time2D_")+i);
-    Time2D_det->Scale(0);
-    Time2D_det->GetXaxis()->SetRangeUser(0,(tmax-tmin));
-    Time2D_det->GetXaxis()->SetTitle("time  [s]");
-    Time2D_det->GetYaxis()->SetRangeUser(0,FILL==7358?20:10);
-    Time2D_det->GetYaxis()->SetTitle(DETName[DETLIST[i]]+" sbil");
-    Time2D_det->GetYaxis()->SetTitleOffset(0.7);
-    Time2D_det->GetYaxis()->SetNdivisions(5);
-    Time2D_det->Draw("hist");
-    
+  int counter=0;
+  for(long i=0;i<DETLIST.size();i++){
+
     for(long b=0;b<bxlist.size();b++){
-      int color = b+1;
+      int color = counter+1;
 
       TH2F* Time2D_bx = (TH2F*)Time2D->Clone(TString("Time2D_")+i+"_b"+b);
       Time2D_bx->SetMarkerColor(color);
@@ -41,7 +38,9 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
       TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";
       //TString cut = TString("(bx==")+bxlist[b]+")";
       tree->Draw(DETLIST[i]+":"+timeref+">>"+Time2D_bx->GetName(),cut.Data(),"histpsame");
-      leg->AddEntry(Time2D_bx,TString("")+bxlist[b],"lp");
+      bx_leg.AddEntry(Time2D_bx,TString("")+DETName[DETLIST[i]]+",bx="+bxlist[b],"lp");
+      
+      counter++;
     }
     
     line.SetLineStyle(2);
@@ -51,6 +50,8 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
     }
     //leg->Draw();
   }
+  C->Update();
+  bx_leg.Draw();
   //C->Print(OUTPATH+"/plot_linearity.pdf");
   C->Print(OUTPATH+"/plot_lumi_vstime_perbx.gif"); 
   
@@ -63,7 +64,7 @@ void plot_det_vstime(){
   TH2F * Det[NDET];
   C->Clear();
   C->Divide(1,2);
-  for(long i=0;i<NDET;i++){
+  for(long i=0;i<DETLIST.size();i++){
     C->cd(i+1);
     TString name=TString("Det_vs_time_")+i;
     Det[i] = (TH2F*)Time2D->Clone(name); 
@@ -127,7 +128,7 @@ void plot_det_ratio_vstime(TString CUTBX){
   ratio_leg.SetShadowColor(0);
   ratio_leg.SetFillColor(0);
   ratio_leg.SetFillStyle(0);
-  for(long i=0;i<NDET;i++){
+  for(long i=0;i<DETLIST.size();i++){
 
     TString ratio=DETLIST[i]+"/"+detsel;
     TString name=TString("Ratio_vs_time_")+i;
@@ -148,7 +149,7 @@ void plot_det_ratio_vstime(TString CUTBX){
   int counter=0;
   C->Clear();
   //C->Divide(2,2);
-  for(long i=0;i<NDET;i++){
+  for(long i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     //C->cd(++counter);
     Ratio[i]->Draw("histp");
@@ -163,7 +164,7 @@ void plot_det_correlation(TString CUTBX){
   
   TH2F* Correlation[NDET];
   TF1* FCorrFit[NDET];
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     TString name=TString("Correlation_")+DETLIST[i];
     Correlation[i] = new TH2F(name,"",100,0.1,20,100,0.1,20);
     Correlation[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
@@ -189,7 +190,7 @@ void plot_det_correlation(TString CUTBX){
   int counter=0; 
   C->Clear();
   //C->Divide(2,2);
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0)continue;
     //C->cd(++counter);
     //HFrame.Draw("hist");
@@ -218,7 +219,7 @@ void plot_det_linearity(std::vector<long> bxlist){
   TH2F* Linearity[NDET];
   TF1* FLinearityFit[NDET];
   
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     TString name=TString("Linearity_det_")+DETLIST[i];
     //Linearity[i] = getLinearityHisto(name,DETLIST[i],bxlist);
     Linearity[i] = getLinearityHistoAvgLS(name,DETLIST[i],bxlist);
@@ -226,7 +227,7 @@ void plot_det_linearity(std::vector<long> bxlist){
   }
   
 
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0)continue;
     C->Clear();    
     Linearity[i]->GetYaxis()->SetRangeUser(0.9,1.1);
@@ -238,7 +239,7 @@ void plot_det_linearity(std::vector<long> bxlist){
 	    100*FLinearityFit[i]->GetParameter(1),100*FLinearityFit[i]->GetParError(1));
     labeltext.DrawTextNDC(0.4,0.2, TString(text) + " %");
     //C->Print(OUTPATH+"/plot_linearity.pdf");
-    C->Print(OUTPATH+"/plot_det_linearity.gif"); 
+    C->Print(OUTPATH+"/plot_det_linearity_"+DETLIST[i]+".gif"); 
   }
 
 
@@ -254,7 +255,7 @@ void plot_linearity_compare(std::vector<long> bxlist1, std::vector<long> bxlist2
   TH2F* Linearity2[NDET];
   TF1* FLinearityFit2[NDET];
 
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     TString name=TString("Linearity_det_")+DETLIST[i];
 
     Linearity1[i] = getLinearityHistoAvgLS(name+"1",DETLIST[i],bxlist1);
@@ -267,7 +268,7 @@ void plot_linearity_compare(std::vector<long> bxlist1, std::vector<long> bxlist2
   
   char text[100];
   labeltext.SetTextSize(0.035);
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
 
     if(DETLIST[i].CompareTo(detsel)==0)continue;
 
@@ -311,7 +312,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   TGraphErrors * Gp0[NDET];
   int bxcount[NDET];
   
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     Gp1[i] = new TGraphErrors();
     Gp1[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
@@ -340,6 +341,9 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       Gp0[i]->SetPoint(bxcount[i],bxcount[i]+1,FLinearityFit[i][j]->GetParameter(0));
       Gp0[i]->SetPointError(bxcount[i],0,FLinearityFit[i][j]->GetParError(0));
 
+      cout<<DETLIST[i]<<" "<<bxlist[j]<<" "
+	  <<FLinearityFit[i][j]->GetParameter(0)<<" "<<FLinearityFit[i][j]->GetParError(0)<<" "
+	  <<FLinearityFit[i][j]->GetParameter(1)<<" "<<FLinearityFit[i][j]->GetParError(1)<<endl;
 
       bxcount[i]++;      
     }
@@ -351,13 +355,14 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   labeltext.SetTextColor(2);
 
   ///show the individual bcids
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     
     C->Clear();
     C->Divide(2,3);
     int bxcounter=0; 
     for(int j=0;j<bxlist.size();j++){     
+      if(bxcounter>=6)continue;
       C->cd(++bxcounter);
       Linearity[i][j]->GetYaxis()->SetRangeUser(0.9,1.1);
       Linearity[i][j]->Draw("histp");
@@ -395,7 +400,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   HFrameLinearity.GetXaxis()->SetTitle("bcid");
   
   HFrameLinearity.GetYaxis()->SetRangeUser(-0.020,0.020);
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     C->Clear();
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / "+DETName[detsel] + "  slope ");
@@ -408,7 +413,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
 
   
   HFrameLinearity.GetYaxis()->SetRangeUser(0.95,1.05);
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     C->Clear();
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     HFrameLinearity.GetYaxis()->SetTitle(DETName[DETLIST[i]]+" / "+DETName[detsel] + "  y-intercept ");
@@ -433,7 +438,7 @@ void plot_det_linearity_pertrain(){
   TGraphErrors * Gp0[NDET];
   int bxcount[NDET];
   
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     
     Gp1[i] = new TGraphErrors();
@@ -486,7 +491,7 @@ void plot_det_linearity_pertrain(){
   
   TH1F HFrameLinearity("HFrameLinearity","",1,0,NBXTrain+1);
   HFrameLinearity.GetXaxis()->SetTitle("bcid");
-  for(int i=0;i<NDET;i++){
+  for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     C->Clear();
     HFrameLinearity.GetYaxis()->SetRangeUser(-0.02,0.02);

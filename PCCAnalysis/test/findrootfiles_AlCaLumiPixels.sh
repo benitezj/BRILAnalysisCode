@@ -24,15 +24,16 @@ fi
 eospath=/eos/cms/store/data/$period
 echo $eospath
 
-##options
+################
+#### options ###
 #eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
 eosls='/bin/ls'
-specialRun=1  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set merges all including Express
+specialRun=0  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set merges all including Express
 
-ZBorRdm=ZeroBias-PromptReco
+#ZBorRdm=ZeroBias-PromptReco
 #ZBorRdm=AlCaPCCRandom-PromptReco
 #ZBorRdm=AlCaPCCRandom-02May2018
-
+ZBorRdm=AlCaPCCRandom-17Nov2017
 
 ##all run files are cleaned out
 rm -rf ./$period
@@ -54,17 +55,16 @@ search(){
 	for vN in `$eosls ${pathv}`; do
 	    local path1=$pathv/$vN 
 	    #echo "path1: $path1"
-            for r1 in `$eosls ${path1}`; do 
+            for r1 in `$eosls ${path1} | grep -v .root`; do
 		local path2=$path1/$r1
 		#echo "path2: $path2"
 		for r2 in `$eosls ${path2}`; do 
+		    ### for PromptReco need to go further
 		    local path3=$path2/$r2/00000
 		    #echo "path3: $path3" 
-
 		    for f in `$eosls ${path3} | grep .root`; do 
 			echo "file:$path3/$f" >> ./$period/$r1$r2.txt  
 		    done
-
 		done
 	    done
 
@@ -72,7 +72,6 @@ search(){
 	    for f in `$eosls ${path1} | grep .root`; do 
 		echo "file:$path1/$f" >> ./${period}/${ZBorRdm}.txt  
 	    done
-
 
 	done
     done

@@ -7,8 +7,15 @@
 
 //#define SigmaPCC 5.8e6/(23.31*11245.6) // old veto list
 //#define SigmaPCC 6.704e6/(23.31*11245.6) // new veto list, but with double counting pixels
-#define SigmaPCC 5.91e6/(23.31*11245.6) // new veto list, Georgios fixed pixel double counting
-//#define SigmaPCC 3.14e6/(23.31*11245.6) // for second part of RunD 
+//#define SigmaPCC 5.91e6/(23.31*11245.6) // new veto list, Georgios fixed pixel double counting
+#define SigmaPCC 3.14e6/(23.31*11245.6) // for second part of RunD 
+
+//#define SigmaPCC 0.0117935*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B1
+//#define SigmaPCC 0.20715*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B2
+//#define SigmaPCC 0.280174*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B3
+//#define SigmaPCC 0.093988*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk1 Panel1
+//#define SigmaPCC 0.118907*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk2 Panel1
+//#define SigmaPCC 0.119082*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk3 Panel1
 
 
 //#define MAXPCC 10e6  // un-normalized
@@ -19,8 +26,8 @@
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
 
-float ratiomin=0.8;
-float ratiomax=1.2;
+float ratiomin=0.85;
+float ratiomax=1.15;
 
 
 void getRefLumi(TString inputfile){
@@ -345,77 +352,89 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
   //// per BX ratio plots
   if(perBXRatioPlots&&ref.CompareTo("")!=0) {
 
+    int nLSmerge=100;
+    HRefLumiBXvsLS.RebinX(nLSmerge); HRefLumiBXvsLS.Scale(1./nLSmerge);
+    HLumiBXvsLS.RebinX(nLSmerge); HLumiBXvsLS.Scale(1./nLSmerge);
+
     TH2F*HLumiBXvsLS_ratio=(TH2F*)HLumiBXvsLS.Clone("HLumiBXvsLS_ratio");
     HLumiBXvsLS_ratio->Divide(&HRefLumiBXvsLS);
     
     TGraphErrors G;
     int counterG=0;
-    float fitmin=3.5,fitmax=7.5;
+    float fitmin=2,fitmax=7.5;
     TF1 P1("P1","[0]+[1]*x",fitmin,fitmax);
     P1.SetLineColor(2);
 
-    TH2F HRatio("HRatio","",100,0,10,100,0.9,1.1);
+    TH2F HRatio("HRatio","",100,0,10,100,ratiomin,ratiomax);
     TH1F HR(TString("HR"),"",100,0,10);
     TH1F HN(TString("HN"),"",100,0,10);
+
+    int nLSavg=20;
+    TH1F HSlope(TString("HSlope"),"",nLSavg,0.5,nLSavg+0.5);
+    TH1F HSlopeN(TString("HSlopeN"),"",nLSavg,0.5,nLSavg+0.5);
+
 
     bool firstplot=0;
     float sbil=0.;
     float ratio=0.;
+    
+    int javg=0;
 
-    //C.Clear();
     for(int j=0;j<NBX;j++){
-      float maxl=0.;
+      //if(j!=63) continue;
+      
+      if(j==63)//||j==197||j==386||j==575||j==768||j==902||j==1091||j==1280||j==1469||j==1662||j==1796||j==1985||j==2174||j==2363||j==2556||j==2690||j==2879||j==3068||j==3257)
+	javg=0;//reset the bcid index for averaging trains
+      javg++;
+      
       HR.Reset();
       HN.Reset();
       
-      for(int l=1;l<NLS;l++){
+      for(int l=1;l<HRefLumiBXvsLS.GetXaxis()->GetNbins();l++){
 	sbil=HRefLumiBXvsLS.GetBinContent(l,j+1);
 	ratio=HLumiBXvsLS_ratio->GetBinContent(l,j+1);
 	if(sbil<1.5) continue;
-	if(ratio>1.05) continue;
-	if(ratio<0.95) continue;
-	//HRatio.Fill(sbil,ratio);
+	if(ratio<ratiomin) continue;//remove outliers
+	if(ratio>ratiomax) continue;
 	HR.Fill(sbil,ratio);
 	HN.Fill(sbil,1);
-	if(sbil>maxl) maxl=sbil;
       }
-      
       HR.Divide(&HN);
+      //cout<<j+1<<" "<<HN.Integral()<<endl;
 
+      if(HN.Integral()>1){
+	HR.Fit(&P1,"Q","",0,20);
+	G.SetPoint(counterG,j,P1.GetParameter(1));
+	//G.SetPointError(counterG,0,P1.GetParError(1));
+	counterG++;
+
+	HSlope.Fill(javg,P1.GetParameter(1));
+	HSlopeN.Fill(javg,1);
+      }
+
+      //fill the integrated histogram
       for(int b=1;b<=HR.GetNbinsX();b++)
 	HRatio.Fill(HR.GetBinCenter(b),HR.GetBinContent(b));
-
-      // if(maxl>1){
-      // 	HR->Divide(HN);
-      // 	if(!firstplot){ 
-      // 	  HR->GetYaxis()->SetRangeUser(ratiomin,ratiomax);
-      // 	  HR->GetYaxis()->SetTitle(TString("PCC / ")+ref);
-      // 	  HR->GetXaxis()->SetTitle(ref+" sbil");
-      // 	  HR->Draw("histp");
-      // 	  firstplot=1;
-      // 	} else HR->Draw("histpsame");
-	//HR->Fit(&P1,"Q","",0,20);
-	//G.SetPoint(counterG,j,P1.GetParameter(1));
-	//G.SetPointError(counterG,0,P1.GetParError(1));
-	//counterG++;
-      //}
-
      
     }
     
+    
+
     C.Clear();
     HRatio.GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    HRatio.GetYaxis()->SetRangeUser(ratiomin,ratiomax);
     HRatio.GetXaxis()->SetTitle(ref+" sbil");
-    HRatio.SetMarkerStyle(8);
-    HRatio.SetMarkerSize(0.4);
+    //HRatio.SetMarkerStyle(8);
+    //HRatio.SetMarkerSize(0.4);
     HRatio.Fit(&P1,"Q","",fitmin,fitmax);
     HRatio.Draw("histp");
     P1.Draw("lsame");
     char text[100];
     sprintf(text,"slope = %.2f +/- %.2f %%",100*P1.GetParameter(1),100*P1.GetParError(1));
     TText labeltext;
+    labeltext.SetTextColor(2);
     labeltext.DrawTextNDC(0.4,0.2, TString(text));
-    //C.Print(outpath+"/"+(long)Run+"_linearity.png");    
+    C.Print(outpath+"/"+(long)Run+"_linearity.png");    
 
     C.Clear();
     TProfile*P=HRatio.ProfileX("HRatioProf");
@@ -427,15 +446,23 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     C.Print(outpath+"/"+(long)Run+"_linearityProf.png");    
 
 
-    // C.Clear();
-    // C.SetLeftMargin(0.15);
-    // G.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
-    // G.GetYaxis()->SetRangeUser(-0.03,0.03);
-    // G.GetXaxis()->SetTitle("bcid");
-    // G.SetMarkerStyle(8);
-    // G.Draw("ap");
-    // C.Print(outpath+"/"+(long)Run+"_perBXslopes.png");
+    C.Clear();
+    C.SetLeftMargin(0.15);
+    G.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    G.GetYaxis()->SetRangeUser(-0.02,0.02);
+    G.GetXaxis()->SetTitle("bcid");
+    G.SetMarkerStyle(8);
+    G.Draw("ap");
+    C.Print(outpath+"/"+(long)Run+"_perBXslopes.png");
 
+    C.Clear();
+    HSlope.Divide(&HSlopeN);
+    HSlope.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    HSlope.GetYaxis()->SetRangeUser(-0.02,0.02);
+    HSlope.GetXaxis()->SetTitle("bcid");
+    HSlope.Draw("histp");
+    C.Print(outpath+"/"+(long)Run+"_perBXslopesAvg.png");
+     
 
     ///create output file for slopes
     TString slopeoutfile=outpath+"/slope.dat";

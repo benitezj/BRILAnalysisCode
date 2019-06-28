@@ -6,11 +6,22 @@ TString OUTPATH("/afs/cern.ch/user/b/benitezj/www/BRIL/HighPULinearity");
 
 
 ////////////
-std::map<TString,TString> DETName = {{"hfoc","HFOC"},{"hfet","HFET"},{"plt","PLTZERO"},{"bcm","BCM1F"},{"pcc","PCC"},{"pccb","PCC_B"},{"pccf","PCC_F"}};
-std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4},{"pcc",6},{"pccb",6},{"pccf",6}};//note color should be set with +1
-#define NDET 5
-TString DETLIST[NDET] = {"hfoc","hfet","plt","bcm","pcc"};
-TString detsel("hfoc");
+std::map<TString,TString> DETName = {{"hfoc","HFOC"},{"hfet","HFET"},{"plt","PLTZERO"},{"bcm","BCM1F"}
+				     ,{"pcc","PCC"},{"pccb","PCC_B"},{"pccf","PCC_F"}
+				     ,{"pccB1","PCC_B1"},{"pccB2","PCC_B2"},{"pccB3","PCC_B3"}
+				     ,{"pccF1p1","PCC_F1P1"},{"pccF2p1","PCC_F2P1"},{"pccF3p1","PCC_F3P1"}
+				     ,{"pccF1p2","PCC_F1P2"},{"pccF2p2","PCC_F2P2"},{"pccF3p2","PCC_F3P2"}
+};
+std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4}
+				  ,{"pcc",6},{"pccB",6},{"pccF",6}
+				  ,{"pccB1",6},{"pccB2",6},{"pccB3",6}
+				  ,{"pccF1p1",6},{"pccF2p1",6},{"pccF3p1",6}
+				  ,{"pccF1p2",6},{"pccF2p2",6},{"pccF3p2",6}
+};//note color should be set with +1
+
+#define NDET 20
+std::vector<TString> DETLIST;
+TString detsel("pccB3");
 #define NPLT 16
 #define NBX 3564
 #define NLS 500
@@ -47,6 +58,23 @@ void configFill(long fill=0){///set fill specific configurations
 
   cout<<"Beging Fill "<<FILL<<" configuration"<<endl;
 
+  DETLIST.clear();
+  //DETLIST.push_back("hfoc");
+  //DETLIST.push_back("hfet");
+  //DETLIST.push_back("plt");
+  //DETLIST.push_back("bcm");
+  //DETLIST.push_back("pcc");
+  //DETLIST.push_back("pccB");
+  //DETLIST.push_back("pccF");
+  DETLIST.push_back("pccB1");
+  DETLIST.push_back("pccB2");
+  DETLIST.push_back("pccB3");
+  DETLIST.push_back("pccF1p1");
+  DETLIST.push_back("pccF2p1");
+  DETLIST.push_back("pccF3p1");
+  DETLIST.push_back("pccF1p2");
+  DETLIST.push_back("pccF2p2");
+  DETLIST.push_back("pccF3p2");
 
   BXLIST.clear();
   BXLeading.clear();
@@ -101,11 +129,12 @@ void configFill(long fill=0){///set fill specific configurations
     }
   }
   if(FILL==7358){
-    tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
+    tree->Add(INPATH+"/bril.root");
+    //tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoCorr.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoHFCorr.root");
     tmin = 1540537829;
-    tmax = tmin + 690;
+    tmax = tmin + 680;
     TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
     BXSel = std::vector<long>{750};
     NBXTrain = 10 ;
@@ -115,7 +144,6 @@ void configFill(long fill=0){///set fill specific configurations
     //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
     //BXSpecial = std::vector<long>{761, 1655}; //last bx 
   }
-
 
 
   ////////////////////////////
@@ -152,7 +180,7 @@ void configFill(long fill=0){///set fill specific configurations
   //// General
   timeref=TString("(time-")+tmin+")";
     
-  Time2D=new TH2F(TString("Time2D")+FILL,"",600,0,tmax-tmin,800,0,20);
+  Time2D=new TH2F(TString("Time2D")+FILL,"",600,0,1.4*(tmax-tmin),800,0,20);
 
   
   //// define the time cuts to remove the step boundaries
