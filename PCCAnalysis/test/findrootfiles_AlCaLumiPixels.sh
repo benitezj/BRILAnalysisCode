@@ -33,7 +33,9 @@ specialRun=0  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set me
 #ZBorRdm=ZeroBias-PromptReco
 #ZBorRdm=AlCaPCCRandom-PromptReco
 #ZBorRdm=AlCaPCCRandom-02May2018
-ZBorRdm=AlCaPCCRandom-17Nov2017
+#ZBorRdm=AlCaPCCRandom-17Nov2017
+ZBorRdm=AlCaPCCZeroBias-17Nov2017
+
 
 ##all run files are cleaned out
 rm -rf ./$period

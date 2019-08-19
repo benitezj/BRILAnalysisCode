@@ -25,7 +25,7 @@ INSTALLATION=${CMSSW_BASE}/src
 ### options:
 #corr= PCC corrections from Random triggers
 #lumi= lumi from ZeroBias 
-jobtype=corr
+jobtype=lumi
 echo "job type: $jobtype"
 
 ## in case of jobtype=lumi: directory containing the PCC corrections to be applied
@@ -34,6 +34,7 @@ echo "job type: $jobtype"
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels011_AlCaPCCRandom_Nov22/Commissioning2018
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E_10LS_F3P2
+#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G
 if [ "$DBDIR" != "" ]; then
    echo "corections: $DBDIR"
 fi
@@ -150,6 +151,7 @@ for f in `/bin/ls $submitdir | grep .txt | grep -v "~" `; do
 	##create condor jdl
 	echo "Universe   = vanilla" >>  $submitdir/${run}.sub
 	echo "+JobFlavour = \"workday\" " >> $submitdir/${run}.sub
+#	echo "+JobFlavour = \"testmatch\" " >> $submitdir/${run}.sub
 	echo "Executable = /bin/bash" >> $submitdir/${run}.sub 
 	echo "Arguments  = ${submitdir}/${run}.sh" >> $submitdir/${run}.sub 
 	echo "Log        = ${submitdir}/${run}.log" >> $submitdir/${run}.sub 

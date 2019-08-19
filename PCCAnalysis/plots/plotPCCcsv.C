@@ -373,18 +373,18 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     TH1F HSlope(TString("HSlope"),"",nLSavg,0.5,nLSavg+0.5);
     TH1F HSlopeN(TString("HSlopeN"),"",nLSavg,0.5,nLSavg+0.5);
 
+    TGraphErrors GRvsL;
+    int counterGRvsL=0;
 
-    bool firstplot=0;
     float sbil=0.;
     float ratio=0.;
     
     int javg=0;
 
     for(int j=0;j<NBX;j++){
-      //if(j!=63) continue;
+      if(j!=63) continue;
       
-      if(j==63)//||j==197||j==386||j==575||j==768||j==902||j==1091||j==1280||j==1469||j==1662||j==1796||j==1985||j==2174||j==2363||j==2556||j==2690||j==2879||j==3068||j==3257)
-	javg=0;//reset the bcid index for averaging trains
+      //if(j==63)//||j==197||j==386||j==575||j==768||j==902||j==1091||j==1280||j==1469||j==1662||j==1796||j==1985||j==2174||j==2363||j==2556||j==2690||j==2879||j==3068||j==3257) javg=0;//reset the bcid index for averaging trains
       javg++;
       
       HR.Reset();
@@ -398,6 +398,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
 	if(ratio>ratiomax) continue;
 	HR.Fill(sbil,ratio);
 	HN.Fill(sbil,1);
+
+	GRvsL.SetPoint(++counterGRvsL,l,ratio);
       }
       HR.Divide(&HN);
       //cout<<j+1<<" "<<HN.Integral()<<endl;
@@ -412,12 +414,23 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
 	HSlopeN.Fill(javg,1);
       }
 
-      //fill the integrated histogram
+      //fill the bx integrated histogram
       for(int b=1;b<=HR.GetNbinsX();b++)
 	HRatio.Fill(HR.GetBinCenter(b),HR.GetBinContent(b));
      
     }
     
+
+    C.Clear();
+    //C.SetLeftMargin(0.15);
+    GRvsL.GetYaxis()->SetRangeUser(0.85,1.15);
+    GRvsL.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    GRvsL.GetXaxis()->SetTitle("lumi section");
+    GRvsL.SetMarkerStyle(8);
+    GRvsL.SetMarkerSize(0.4);
+    GRvsL.Draw("ap");
+    C.Print(outpath+"/"+(long)Run+"_sbilVsLS.png");
+
     
 
     C.Clear();
@@ -430,7 +443,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     HRatio.Draw("histp");
     P1.Draw("lsame");
     char text[100];
-    sprintf(text,"slope = %.2f +/- %.2f %%",100*P1.GetParameter(1),100*P1.GetParError(1));
+    sprintf(text,"slope = %.4f +/- %.4f ",P1.GetParameter(1),P1.GetParError(1));
     TText labeltext;
     labeltext.SetTextColor(2);
     labeltext.DrawTextNDC(0.4,0.2, TString(text));
