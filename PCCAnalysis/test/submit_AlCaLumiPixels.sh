@@ -25,7 +25,7 @@ INSTALLATION=${CMSSW_BASE}/src
 ### options:
 #corr= PCC corrections from Random triggers
 #lumi= lumi from ZeroBias 
-jobtype=lumi
+jobtype=corr
 echo "job type: $jobtype"
 
 ## in case of jobtype=lumi: directory containing the PCC corrections to be applied
@@ -132,6 +132,12 @@ for f in `/bin/ls $submitdir | grep .txt | grep -v "~" `; do
 	    echo "export DBFILE=${DBDIR}/${run}.db" >> $submitdir/${run}.sh
 	fi
 	echo "export INPUTFILE=${submitdir}/${run}.txt" >> $submitdir/${run}.sh
+
+	###if json exist for each run  
+	if [ -f ${submitdir}/${run}.json ]; then
+	    echo "export JSONFILE=${submitdir}/${run}.json" >> $submitdir/${run}.sh
+	fi
+
 	echo "env" >> $submitdir/${run}.sh
 
 	echo "cmsRun  ${submitdir}/cfg.py" >> $submitdir/${run}.sh

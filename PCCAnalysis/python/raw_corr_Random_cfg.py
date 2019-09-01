@@ -3,6 +3,7 @@
 #Purpose: To investigate the AlCaPCCProducer input and output. 
 #########################
 import FWCore.ParameterSet.Config as cms
+import FWCore.PythonUtilities.LumiList as LumiList
 import os
 
 process = cms.Process("corrRECO")
@@ -11,6 +12,7 @@ process = cms.Process("corrRECO")
 
 inputlist=cms.untracked.vstring()
 #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCRandom-02May2018-v1/70000/6CE65B93-D657-E811-BBB5-FA163E8006EF.root')
+#inputlist.insert(-1,'file:/eos/cms/store/data/Run2017G/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-17Nov2017-v1/20000/229B17F0-2B93-E811-9506-0025905B8568.root')
 
 ## read from file, environment variable must be set
 if len(inputlist) == 0 :
@@ -27,6 +29,12 @@ process.source = cms.Source("PoolSource",
 )
 
 
+jsonfile=os.getenv('JSONFILE')
+if jsonfile != '' :
+   print 'will apply json file: ', jsonfile
+   process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
+   print "LumisToProcess: ", process.source.lumisToProcess
+
 
 #Make sure that variables match in producer.cc and .h
 process.rawPCCProd = cms.EDProducer("RawPCCProducer",
@@ -42,9 +50,9 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
 
 ###### veto list
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
 print 'reading from veto file: ', vetofilename
 vetofile = open(vetofilename,'r')
 with vetofile as f:

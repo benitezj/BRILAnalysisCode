@@ -1,6 +1,6 @@
 #########################
 import FWCore.ParameterSet.Config as cms
-import os
+import os,sys
 
 process = cms.Process("LumiInfo")
 process.path1 = cms.Path()
@@ -12,18 +12,20 @@ process.path1 = cms.Path()
 ## PoolSource module
 
 inputlist=cms.untracked.vstring()
-#inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
-#inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-02May2018-v1/70000/AA1D32AA-CE57-E811-B631-FA163E09BABD.root')
-#inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-02May2018-v1/30000/F451E0E9-C553-E811-8AB7-FA163E4D19DB.root')
 
-if len(inputlist) == 0 :
-    inputfile=os.getenv('INPUTFILE')
-    if inputfile == '' : sys.exit('invalid INPUTFILE')
+inputfile=os.getenv('INPUTFILE')
+if inputfile != None : 
     print 'reading from input file: ', inputfile
     infile = open(inputfile,'r')
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
+else:    
+    inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
+    #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-02May2018-v1/70000/AA1D32AA-CE57-E811-B631-FA163E09BABD.root')
+    #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-02May2018-v1/30000/F451E0E9-C553-E811-8AB7-FA163E4D19DB.root')
+    
 
+if len(inputlist) == 0 : sys.exit("No input files")
 print inputlist
 process.source = cms.Source("PoolSource",
     fileNames =     inputlist
@@ -89,9 +91,9 @@ print 'RawPCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.RawPCCPr
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/mergedModuleList.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Lo.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Hi.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
-vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
 
 print 'reading from veto file: ', vetofilename
 vetofile = open(vetofilename,'r')
