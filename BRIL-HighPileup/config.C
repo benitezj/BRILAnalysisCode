@@ -1,8 +1,11 @@
 
 
 /////input and output paths
-TString INPATH("/afs/cern.ch/user/b/benitezj/output/BRIL/CMSSW_10_2_2/src/BRILAnalysisCode/BRIL-HighPileup");
-TString OUTPATH("/afs/cern.ch/user/b/benitezj/www/BRIL/HighPULinearity");
+//TString INPATH("/afs/cern.ch/user/b/benitezj/output/BRIL/CMSSW_10_2_2/src/BRILAnalysisCode/BRIL-HighPileup");
+//TString OUTPATH("/afs/cern.ch/user/b/benitezj/www/BRIL/HighPULinearity");
+
+TString INPATH(".");
+TString OUTPATH(".");
 
 
 ////////////
@@ -96,7 +99,7 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = std::vector<long>{686};
     NBXTrain = 1;
     BXLeading = std::vector<long>{686,816,2591,2612,2633};
-    ///BXSpecial = BXLeading;
+    BXSpecial = BXLeading;
   }
   if(FILL==6854){
     tree->Add(INPATH+"/bril_6854_RunDModVeto.root");

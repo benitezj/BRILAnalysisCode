@@ -3,7 +3,7 @@
 
 
 void compareFills(){
-  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  gROOT->ProcessLine(".x ../rootlogon.C");
   C=new TCanvas();
 
   TLegend bx_leg(0.6,0.2,.82,0.4);
@@ -15,9 +15,12 @@ void compareFills(){
   
   TString det="pcc";
   
-  std::vector<long> fills{7358,7274,6854,6847};
-  std::vector<long> colors{1,2,4,6};
-  
+  //std::vector<long> fills{7358,7274,6854,6847};
+  //std::vector<long> colors{1,2,4,6};
+
+  std::vector<long> fills{7358,6847};
+  std::vector<long> colors{1,2};
+
 
   float rmin=0.9;
   float rmax=1.1;
@@ -94,7 +97,6 @@ void compareFills(){
 
 
 
-
   ////////////////
   /// with per bcid scale offset corrections
   C->Clear();
@@ -121,6 +123,8 @@ void compareFills(){
     P->GetYaxis()->SetTitle(histos_corr[i]->GetYaxis()->GetTitle());
 
     if(histos_corr[i]->Integral()==0) continue;
+    P->SetMarkerStyle(8);
+    P->SetMarkerSize(0.7);
     P->Draw(i==0?"histpe":"histpesame");
     fits_corr[i]->Draw("lsame");
 
@@ -188,29 +192,20 @@ void compareFills(){
     P->Add(profiles_corr[i]);
   }
   TF1*FComb=fitLinearity(P);
-  FComb->SetLineColor(1);
-
-  labeltext.SetTextColor(1);
   
-  // C->Clear();
-  // P->GetYaxis()->SetRangeUser(rmin,rmax);
-  // P->Draw("histpe");
-  // FComb->Draw("lsame");
-  // sprintf(txt,"slope  = %.2f +/- %.2f %%",100*FComb->GetParameter(1),100*FComb->GetParError(1));
-  // labeltext.SetTextColor(FComb->GetLineColor());
-  // labeltext.DrawTextNDC(0.24,0.32,txt);
-  // //C->Print(OUTPATH+"/compareFills.pdf");
-  // C->Print(OUTPATH+"/compareFills_combined_fills_corr.gif");
-
 
   C->Clear();
   for(long i=0;i<fills.size();i++){
+    profiles_corr[i]->SetMarkerStyle(8);
+    profiles_corr[i]->SetMarkerSize(0.7);
     if(histos_corr[i]->Integral()==0) continue;
     profiles_corr[i]->Draw(i==0?"histpe":"histpesame");
   }
   
   bx_leg.Draw();
-  
+
+  FComb->SetLineColor(4);
+  labeltext.SetTextColor(4);
   FComb->Draw("lsame");
   sprintf(txt,"slope  = %.2f +/- %.2f %%",100*FComb->GetParameter(1),100*FComb->GetParError(1));
   labeltext.DrawTextNDC(0.24,0.32,txt);
