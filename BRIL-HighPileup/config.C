@@ -21,7 +21,7 @@ std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4}
 
 #define NDET 20
 std::vector<TString> DETLIST;
-TString detsel("pccB3");
+TString detsel("hfoc");
 #define NPLT 16
 #define NBX 3564
 #define NLS 500
@@ -63,18 +63,18 @@ void configFill(long fill=0){///set fill specific configurations
   //DETLIST.push_back("hfet");
   //DETLIST.push_back("plt");
   //DETLIST.push_back("bcm");
-  //DETLIST.push_back("pcc");
+  DETLIST.push_back("pcc");
   //DETLIST.push_back("pccB");
   //DETLIST.push_back("pccF");
-  DETLIST.push_back("pccB1");
-  DETLIST.push_back("pccB2");
-  DETLIST.push_back("pccB3");
-  DETLIST.push_back("pccF1p1");
-  DETLIST.push_back("pccF2p1");
-  DETLIST.push_back("pccF3p1");
-  DETLIST.push_back("pccF1p2");
-  DETLIST.push_back("pccF2p2");
-  DETLIST.push_back("pccF3p2");
+  // DETLIST.push_back("pccB1");
+  // DETLIST.push_back("pccB2");
+  // DETLIST.push_back("pccB3");
+  // DETLIST.push_back("pccF1p1");
+  // DETLIST.push_back("pccF2p1");
+  // DETLIST.push_back("pccF3p1");
+  // DETLIST.push_back("pccF1p2");
+  // DETLIST.push_back("pccF2p2");
+  // DETLIST.push_back("pccF3p2");
 
   BXLIST.clear();
   BXLeading.clear();
@@ -129,8 +129,8 @@ void configFill(long fill=0){///set fill specific configurations
     }
   }
   if(FILL==7358){
-    tree->Add(INPATH+"/bril.root");
-    //tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
+    //tree->Add(INPATH+"/bril.root");
+    tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoCorr.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoHFCorr.root");
     tmin = 1540537829;
@@ -139,11 +139,13 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = std::vector<long>{750};
     NBXTrain = 10 ;
     BXLeading = std::vector<long>{750,1644};
-    //BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
-    BXSpecial = std::vector<long>{751,752,753,754,755,756,757,758,759,760,761,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //train bx's
+    BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
+    //BXSpecial = std::vector<long>{751,752,753,754,755,756,757,758,759,760,761,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //train bx's
     //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
     //BXSpecial = std::vector<long>{761, 1655}; //last bx 
   }
+  
+  cout<<"tree entries: "<<tree->GetEntries()<<endl;
 
 
   ////////////////////////////
@@ -162,19 +164,6 @@ void configFill(long fill=0){///set fill specific configurations
     }
   }
   cout<<endl;
-
-
-  /* //fill the bcid list */
-  /* BXLIST.clear(); */
-  /* cout<<"BX list : "; */
-  /* for(int i=0;i<BXLeading.size();i++) */
-  /*   for(int j=0;j<NBXTrain;j++){ */
-  /*     BXLIST.push_back(BXLeading[i] + j); */
-  /*     cout<<", "<<BXLeading[i] + j; */
-  /*     if(j>0) BXTrain.push_back(BXLeading[i] + j); */
-  /*   } */
-  /* cout<<endl; */
-
 
   
   //// General

@@ -14,6 +14,8 @@ action=$2
 
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags
 
+ref=hfoc
+
 ###################
 ###  options
 ###################
@@ -25,7 +27,7 @@ INSTALLATION=${CMSSW_BASE}/src
 ### options:
 #corr= PCC corrections from Random triggers
 #lumi= lumi from ZeroBias 
-jobtype=corr
+jobtype=lumi
 echo "job type: $jobtype"
 
 ## in case of jobtype=lumi: directory containing the PCC corrections to be applied
@@ -35,6 +37,8 @@ echo "job type: $jobtype"
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E_10LS_F3P2
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G
+#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
+#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
 if [ "$DBDIR" != "" ]; then
    echo "corections: $DBDIR"
 fi
@@ -184,7 +188,8 @@ for f in `/bin/ls $submitdir | grep .txt | grep -v "~" `; do
 	fi
 	
 	if [ "$fail" == "0" ]; then
-	    success=`cat $submitdir/${run}.log | grep "Successfully completed."`
+	    #success=`cat $submitdir/${run}.log | grep "Successfully completed."`
+	    success=`cat $submitdir/${run}.log | grep "Normal termination"`
 	    if [ "$success" == "" ]; then
 		echo "no Success"
 		fail=1
@@ -233,43 +238,34 @@ for f in `/bin/ls $submitdir | grep .txt | grep -v "~" `; do
 
 
     ## produce the plots for lumi jobs
-    if [ "$action" == "5" ] ; then
+    if [ "$action" == "5" ] && [ -f  $outputdir/${run}.csv ]; then
 
 	# create reference csv for comparison
 	# note brilcalc must be setup 
-#	ref=hfet
-	ref=hfoc
-#	ref=dt
-#	ref=pltzero
-# ref=bcm1f
-#	ref=BRIL
 	if [ "$ref" != "" ]; then
 
-	    /bin/rm -f $submitdir/${run}.$ref
-	    
-#	    if [ "$ref" == "normtag_BRIL" ]; then
-#		brilcalc lumi --normtag ${normtagdir}/normtag_BRIL.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $submitdir/${run}.$ref
-#	    fi 
-#	    if [ "$ref" != "normtag_BRIL" ]; then
-#		brilcalc lumi -r $run --byls --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $submitdir/${run}.$ref
-#		#brilcalc lumi -r $run --xing --type $ref --output-style csv | grep ${run}: | grep $ref | sed -e 's/,/ /g' | sed -e 's/:/ /g'  | sed -e 's/\[//g'  | sed -e 's/\]//g' > $submitdir/${run}.$ref
-#	    fi
-	    
-	    #brilcalc lumi -c web --normtag ${normtagdir}/normtag_${ref}.json -r $run --byls --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' >> $submitdir/${run}.$ref
-	    
+	    /bin/rm -f $outputdir//${run}.$ref
 	    command="brilcalc lumi -c web --normtag ${normtagdir}/normtag_${ref}.json -r $run --xing --output-style csv"
-	    echo $command
-	    brilcalc lumi -c web --normtag ${normtagdir}/normtag_${ref}.json -r $run --xing --output-style csv | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' >> $outputdir/${run}.$ref
+	    ${command} | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' >> $outputdir/${run}.$ref
 	fi
 
         # run plotting macro
 	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${submitdir}\",\"${ref}\",1\)
-	/bin/rm -f $submitdir/${run}.$ref
+
     fi
 
 
     counter=`echo $counter | awk '{print $1+1}'`
 done
+
+
+##for the plots run the lumisections and runs comparisons plots
+if [ "$action" == "5" ] ; then
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${submitdir}\",\"${ref}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${submitdir}\",\"${ref}\"\)
+fi
+
+
 
 echo "Total runs: $counter"
 

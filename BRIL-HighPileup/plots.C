@@ -359,7 +359,7 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     
     C->Clear();
-    C->Divide(2,3);
+    C->Divide(2,2);
     int bxcounter=0; 
     for(int j=0;j<bxlist.size();j++){     
       if(bxcounter>=6)continue;
@@ -368,7 +368,6 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       Linearity[i][j]->Draw("histp");
       FLinearityFit[i][j]->SetLineColor(2);
       FLinearityFit[i][j]->Draw("lsame");
-      labeltext.SetTextSize(0.1);
       labeltext.DrawTextNDC(0.3,0.8,TString("bcid ")+bxlist[j]);
 
 

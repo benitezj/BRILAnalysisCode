@@ -1,5 +1,6 @@
 #########################
 import FWCore.ParameterSet.Config as cms
+import FWCore.PythonUtilities.LumiList as LumiList
 import os,sys
 
 process = cms.Process("LumiInfo")
@@ -31,6 +32,11 @@ process.source = cms.Source("PoolSource",
     fileNames =     inputlist
 )
 
+jsonfile=os.getenv('JSONFILE')
+if jsonfile != '' :
+   print 'will apply json file: ', jsonfile
+   process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
+   print "LumisToProcess: ", process.source.lumisToProcess
 
 #######################################
 #####Setup the conditions database
@@ -91,9 +97,9 @@ print 'RawPCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.RawPCCPr
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/mergedModuleList.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Lo.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Hi.txt'
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
 
 print 'reading from veto file: ', vetofilename
 vetofile = open(vetofilename,'r')

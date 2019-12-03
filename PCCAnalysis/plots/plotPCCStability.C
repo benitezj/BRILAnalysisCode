@@ -3,8 +3,8 @@
 #include <string>
 
 ///Ratios w.r.t. hfoc offline
-//#define scale 1.0        
-#define scale 9.97891e-01  // 2018Vdm Veto
+#define scale 1.0        
+//#define scale 9.97891e-01  // 2018Vdm Veto
 
 // #define scale 0.3243*0.965*1.005 //SAM Hi test
 // #define scale 0.3429*0.965*0.9968 //SAM Lo test

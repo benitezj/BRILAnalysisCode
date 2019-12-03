@@ -3,7 +3,7 @@
 
 void plot_linearity(long fill=7358){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  gROOT->ProcessLine(".x ../rootlogon.C");
  
   configFill(fill);
    

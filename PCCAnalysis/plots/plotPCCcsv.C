@@ -3,12 +3,13 @@
 #include <string>
 
 #define NBX 3564
-#define NLS 3000
+#define NLS 4000
 
 //#define SigmaPCC 5.8e6/(23.31*11245.6) // old veto list
 //#define SigmaPCC 6.704e6/(23.31*11245.6) // new veto list, but with double counting pixels
 //#define SigmaPCC 5.91e6/(23.31*11245.6) // new veto list, Georgios fixed pixel double counting
-#define SigmaPCC 3.14e6/(23.31*11245.6) // for second part of RunD 
+//#define SigmaPCC 3.14e6/(23.31*11245.6) // for second part of RunD 
+#define SigmaPCC 1.05*3.2e6/(23.31*11245.6) // Run2017G 
 
 //#define SigmaPCC 0.0117935*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B1
 //#define SigmaPCC 0.20715*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B2

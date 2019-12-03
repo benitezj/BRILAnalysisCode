@@ -12,7 +12,7 @@
 #define PCCRUNLUMIRatioMin 0.9
 #define PCCRUNLUMIRatioMax 1.1
 
-long RUNOFFSET=315000;
+long RUNOFFSET=300000;
 
 
 
