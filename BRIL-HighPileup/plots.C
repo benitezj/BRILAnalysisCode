@@ -2,7 +2,7 @@
 
 void plot_lumi_vstime_perbx(std::vector<long> bxlist){
 
-  TLegend bx_leg(0.75,0.9-DETLIST.size()*0.05,0.93,0.9);
+  TLegend bx_leg(0.75,0.9-DETLIST.size()*bxlist.size()*0.05,0.93,0.9);
   bx_leg.SetLineColor(0);
   bx_leg.SetLineStyle(0);
   bx_leg.SetShadowColor(0);
@@ -10,117 +10,54 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
   bx_leg.SetFillStyle(0);
   bx_leg.SetBorderSize(0);
 
-  float max=0;
   C->Clear();
-  //C->Divide(1,2);
 
   TH2F* Time2D_det = (TH2F*)Time2D->Clone(TString("Time2D_"));
   Time2D_det->Scale(0);
   Time2D_det->GetXaxis()->SetTitle("time  [s]");
   Time2D_det->GetYaxis()->SetRangeUser(0,FILL==7358?20:10);
-  //Time2D_det->GetYaxis()->SetTitle(DETName[DETLIST[i]]+" sbil");
-  Time2D_det->GetYaxis()->SetTitle(" sbil");
+  Time2D_det->GetYaxis()->SetTitle(" sbil   ");
   Time2D_det->GetYaxis()->SetTitleOffset(0.7);
   Time2D_det->GetYaxis()->SetNdivisions(5);
   Time2D_det->Draw("hist");
 
   int counter=0;
   for(long i=0;i<DETLIST.size();i++){
-
     for(long b=0;b<bxlist.size();b++){
+
       int color = counter+1;
 
       TH2F* Time2D_bx = (TH2F*)Time2D->Clone(TString("Time2D_")+i+"_b"+b);
       Time2D_bx->SetMarkerColor(color);
       Time2D_bx->SetLineColor(color);
 
-      //TString cut = CUTTime+TString("&&(bx==")+bxlist[b]+")";
-      TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";
-      //TString cut = TString("(bx==")+bxlist[b]+")";
+      //TString cut = TString("(bx==")+bxlist[b]+")";               //no time/ls selection
+      //TString cut = CUTTime+TString("&&(bx==")+bxlist[b]+")";     //time selection
+      TString cut = CUTLumis+TString("&&(bx==")+bxlist[b]+")";      //ls selection
+      
       tree->Draw(DETLIST[i]+":"+timeref+">>"+Time2D_bx->GetName(),cut.Data(),"histpsame");
       bx_leg.AddEntry(Time2D_bx,TString("")+DETName[DETLIST[i]]+",bx="+bxlist[b],"lp");
       
       counter++;
     }
+
+    ///Draw the vertical lines to show the boundaries
+    draw_time_boundaries(0,FILL==7358?20:10);
     
-    line.SetLineStyle(2);
-    line.SetLineColor(3);
-    for(long i=0;i<TimeStep.size();i++){
-      //line.DrawLine(TimeStep[i]-tmin,0,TimeStep[i]-tmin,FILL==7358?20:10);
-    }
-    //leg->Draw();
   }
+  
   C->Update();
   bx_leg.Draw();
-  //C->Print(OUTPATH+"/plot_linearity.pdf");
-  C->Print(OUTPATH+"/plot_lumi_vstime_perbx.gif"); 
-  
+
+  C->Print(OUTPATH+"/plot_lumi_vstime_perbx.gif");   
 }
 
 
-void plot_det_vstime(){
-
-  ///draw each detector separately including all bcid's
-  TH2F * Det[NDET];
-  C->Clear();
-  C->Divide(1,2);
-  for(long i=0;i<DETLIST.size();i++){
-    C->cd(i+1);
-    TString name=TString("Det_vs_time_")+i;
-    Det[i] = (TH2F*)Time2D->Clone(name); 
-    Det[i]->GetYaxis()->SetTitle(DETName[DETLIST[i].Data()] + "  sbil");
-    Det[i]->GetXaxis()->SetTitle("time [s]");
-    Det[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
-    Det[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
-    tree->Draw(DETLIST[i]+":"+timeref+">>"+Det[i]->GetName(),CUTTime+"&&"+CUTBX);//
-  }
-  //C->Print(OUTPATH+"/plot_linearity.pdf");
-  C->Print(OUTPATH+"/plot_linearity_det_vstime.gif");
-
-
+void plot_det_ratio_vstime(std::vector<long> bxlist){
+  float rmin=0.9, rmax=1.1;
   
-// ///compare detectors in same plot, using only one bcid
-// TH2F * Det[NDET];
-// TLegend det_leg(0.87,0.2,1.0,0.9);
-// det_leg.SetLineColor(0);
-// det_leg.SetLineColor(0);
-// det_leg.SetShadowColor(0);
-// det_leg.SetFillColor(0);
-// det_leg.SetFillStyle(0);
-// for(long i=0;i<NDET;i++){
-//   TString name=TString("Det_vs_time_")+i;
-//   Det[i] = (TH2F*)Time2D->Clone(name); 
-//   Det[i]->GetYaxis()->SetTitle("sbil");
-//   Det[i]->GetXaxis()->SetTitle("time [s]");
-//   Det[i]->SetMarkerColor(i+1);
-//   Det[i]->SetLineColor(i+1);
-//   
-//   det_leg.AddEntry(Det[i],DETName[DETLIST[i].Data()],"pl");
-//   tree->Draw(DETLIST[i]+":"+timeref+">>"+Det[i]->GetName(),CUTTime+"&&"+"bx=="+BXSel);//
-// }
-//
-// Time2D->Scale(0);
-// Time2D->GetYaxis()->SetRangeUser(0,20);
-// Time2D->GetXaxis()->SetRangeUser(0,(tmax-tmin));
-// Time2D->GetYaxis()->SetTitle(TString("sbil ,  bcid=")+BXSel);
-// Time2D->GetXaxis()->SetTitle("time  [s]");
-// C->Clear();
-// Time2D->Draw("hist");
-// for(long i=0;i<NDET;i++)
-//   Det[i]->Draw("histplsame");
-// det_leg.Draw();
-// C->Print(OUTPATH+"/plot_linearity.pdf");
-
-
-
-  
-}
-
-
-void plot_det_ratio_vstime(TString CUTBX){
-
   /////Draw detector ratios vs time
-  TH2F * Ratio[NDET];
+  TH2F * Ratio[NDET][NBX];
   TLegend ratio_leg(0.6,0.6,0.8,0.85);
   ratio_leg.SetLineColor(0);
   ratio_leg.SetLineStyle(0);
@@ -128,35 +65,37 @@ void plot_det_ratio_vstime(TString CUTBX){
   ratio_leg.SetShadowColor(0);
   ratio_leg.SetFillColor(0);
   ratio_leg.SetFillStyle(0);
-  for(long i=0;i<DETLIST.size();i++){
 
+  int counter=1;
+  for(long i=0;i<DETLIST.size();i++){
     TString ratio=DETLIST[i]+"/"+detsel;
-    TString name=TString("Ratio_vs_time_")+i;
     TString title=DETName[DETLIST[i].Data()]+"/"+DETName[detsel.Data()];
-
-    Ratio[i] = new TH2F(name,"",100,0,tmax-tmin,100,0.8,1.2);
-    Ratio[i]->GetYaxis()->SetTitle(DETName[DETLIST[i].Data()] + " / " + DETName[detsel.Data()] );
-    Ratio[i]->GetXaxis()->SetTitle("time [s]");
-    Ratio[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
-    Ratio[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
     
-    if(DETLIST[i].CompareTo(detsel)==0) continue;
-    ratio_leg.AddEntry(Ratio[i],title,"pl");
-    tree->Draw(ratio+":"+timeref+">>"+name,CUTTime+"&&"+CUTBX);
+    for(long b=0;b<bxlist.size();b++){
+      TString name=TString("Ratio_vs_time_")+i+"_"+b;
+      Ratio[i][b] = new TH2F(name,"",500,0,tmax-tmin,500,rmin,rmax);
+      Ratio[i][b]->GetYaxis()->SetTitle(" sbil ratio  ");
+      Ratio[i][b]->GetXaxis()->SetTitle("time [s]");
+      Ratio[i][b]->SetMarkerColor(counter);
+      Ratio[i][b]->SetLineColor(counter);      
+
+      tree->Draw(ratio+":"+timeref+">>"+name,CUTLumis+"&&("+detsel.Data()+">0.5)"+"&&(bx=="+bxlist[b]+")");
+      ratio_leg.AddEntry(Ratio[i][b],title+",bx="+bxlist[b],"pl");
+      counter++;
+    }
   }
 
 
-  int counter=0;
-  C->Clear();
-  //C->Divide(2,2);
+
   for(long i=0;i<DETLIST.size();i++){
-    if(DETLIST[i].CompareTo(detsel)==0) continue;
-    //C->cd(++counter);
-    Ratio[i]->Draw("histp");
+    C->Clear();
+    for(long b=0;b<bxlist.size();b++){
+      Ratio[i][b]->Draw(b==0?"histp":"histpsame");
+    }
+    draw_time_boundaries(rmin,rmax);
+    C->Print(OUTPATH+"/plot_linearity_det_ratio_vstime_"+DETLIST[i]+".gif");
   }
-  //ratio_leg.Draw();
-  //C->Print(OUTPATH+"/plot_linearity.pdf");
-  C->Print(OUTPATH+"/plot_linearity_det_ratio_vstime");
+
 
 }
 
