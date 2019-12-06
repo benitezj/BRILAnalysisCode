@@ -26,6 +26,7 @@ std::map<TString,int> DETColor = {{"hfoc",1},{"hfet",2},{"plt",3},{"bcm",4}
 #define NPLT 16
 #define NBX 3564
 #define NLS 500
+long timeboundary(24);
 long FILL;
 float BXCorr[NBX];
 long NBXTrain;
@@ -35,6 +36,7 @@ std::vector<TString> DETLIST;
 std::vector<long> BXLIST;
 std::vector<long> BXLeading;
 std::vector<long> BXSpecial;
+std::vector<long> LSlist;
 long BXSel;
 
 
@@ -63,18 +65,18 @@ void configFill(long fill=0){///set fill specific configurations
   //DETLIST.push_back("hfet");
   //DETLIST.push_back("plt");
   //DETLIST.push_back("bcm");
-  DETLIST.push_back("pcc");
+  //  DETLIST.push_back("pcc");
   //DETLIST.push_back("pccB");
   //DETLIST.push_back("pccF");
-  // DETLIST.push_back("pccB1");
+  DETLIST.push_back("pccB1");
   DETLIST.push_back("pccB2");
   DETLIST.push_back("pccB3");
-  DETLIST.push_back("pccF1p1");
-  DETLIST.push_back("pccF2p1");
-  DETLIST.push_back("pccF3p1");
-  DETLIST.push_back("pccF1p2");
-  DETLIST.push_back("pccF2p2");
-  DETLIST.push_back("pccF3p2");
+//   DETLIST.push_back("pccF1p1");
+//   DETLIST.push_back("pccF2p1");
+//   DETLIST.push_back("pccF3p1");
+//   DETLIST.push_back("pccF1p2");
+//   DETLIST.push_back("pccF2p2");
+//   DETLIST.push_back("pccF3p2");
 
   BXLIST.clear();
   BXLeading.clear();
@@ -89,8 +91,8 @@ void configFill(long fill=0){///set fill specific configurations
     //tree->Add(INPATH+"/bril_6847_RunDModVeto_NoCorr.root");
     tmin = 1530010610 ;
     //tmax = tmin + 400 ;//half a scan
-    //tmax = tmin + 790 ;//one scan
-    tmax = tmin + 1770;//both scans
+    tmax = tmin + 790 ;//one scan
+    //tmax = tmin + 1770;//both scans
     TimeStep = std::vector<long>{tmin+5,tmin+60,tmin+111,tmin+162,tmin+214,tmin+265,tmin+316,tmin+368,tmin+421,tmin+472,tmin+523,tmin+574,tmin+625,tmin+677,tmin+729,tmin+783,tmin+831,tmin+879,tmin+927,tmin+975,tmin+1023,tmin+1071,tmin+1119,tmin+1151,tmin+1201,tmin+1253,tmin+1304,tmin+1356,tmin+1409,tmin+1460,tmin+1512,tmin+1563,tmin+1615,tmin+1667,tmin+1718};
     BXSel = 686;
     NBXTrain = 1;
@@ -133,7 +135,7 @@ void configFill(long fill=0){///set fill specific configurations
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoCorr.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoHFCorr.root");
     tmin = 1540537829;
-    tmax = tmin + 680;
+    tmax = tmin + 600;
     TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
     BXSel = 750;
     NBXTrain = 10 ;
@@ -142,7 +144,7 @@ void configFill(long fill=0){///set fill specific configurations
     //BXSpecial = std::vector<long>{751,752,753,754,755,756,757,758,759,760,761,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //train bx's
     //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
     //BXSpecial = std::vector<long>{761, 1655}; //last bx
-    BXSpecial = std::vector<long>{750,1655}; //last bx 
+    BXSpecial = std::vector<long>{750,761};    //last bx 
   }
   
   cout<<"tree entries: "<<tree->GetEntries()<<endl;
@@ -177,8 +179,8 @@ void configFill(long fill=0){///set fill specific configurations
   
   TString CUTTimeStep("(");
   for(long i=0;i<TimeStep.size()-1;i++)
-    CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[i])+")>24&&";
-  CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[TimeStep.size()-1])+")>24)";
+    CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[i])+")>"+timeboundary+"&&";
+  CUTTimeStep = CUTTimeStep + "abs(time-"+(TimeStep[TimeStep.size()-1])+")>"+timeboundary+")";
 
   CUTTime = CUTTime + "&&" + CUTTimeStep;
   cout<<"Time selection: "<<CUTTime<<endl;  
@@ -195,21 +197,11 @@ void configFill(long fill=0){///set fill specific configurations
     if(HNDet.GetBinContent(l)>0){
       if(countls==0) CUTLumis=CUTLumis+"ls=="+l;
       else CUTLumis=CUTLumis+"||ls=="+l;
+      LSlist.push_back(l);
       countls++;
     }
   CUTLumis=CUTLumis+")";
   cout<<"cut lumis: "<<CUTLumis<<endl;
-
-  
-  /* //// Define the cut on the active bcids */
-  /* CUTBX="("; */
-  /* for(long i=0;i<BXLIST.size();i++){ */
-  /*   if(i!=0) CUTBX+="||"; */
-  /*   CUTBX=CUTBX+"bx=="+BXLIST[i]; */
-  /* } */
-  /* CUTBX+=")"; */
-  /* cout<<"BX selection: "<<CUTBX<<endl; */
-
 
   
   ///per bcid correction factors
@@ -242,7 +234,7 @@ TH2F * getLinearityHisto(TString name, TString det, std::vector<long> bxlist){
 }
 
 
-TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlist){
+TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlist, int type=0){
 
   TH2F HDet("HDet","",NBX,0.5,NBX+0.5,NLS,0.5,NLS+0.5);
   HDet.Sumw2();
@@ -264,25 +256,33 @@ TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlis
   ////apply per bcid corrections
   for(int l=1;l<=NLS;l++)
     for(int b=1;b<=NBX;b++)
-      if(BXCorr[b-1]>0.) HDet.SetBinContent(b,l,HDet.GetBinContent(b,l)/BXCorr[b-1]);
+      if(BXCorr[b-1]>0.)
+	HDet.SetBinContent(b,l,HDet.GetBinContent(b,l)/BXCorr[b-1]);
   
 
   ///
   TH2F* HRatio = (TH2F*)HDet.Clone("HRatio");//calculate detector ratio
   HRatio->Divide(&HRef);
 
-  TH2F * HLinearity = new TH2F(name,"",400,0,20,200,0.5,1.5);
+  TH2F * HLinearity = 0;
+  if(type==0){
+    HLinearity = new TH2F(name,"",400,0,20,500,0.5,1.5);//vs sbil
+    HLinearity->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
+  }
+  if(type==1){
+    HLinearity = new TH2F(name,"",NLS,-0.5,NLS-0.5,500,0.5,1.5);//vs LS
+    HLinearity->GetXaxis()->SetTitle("lumi section");
+    HLinearity->GetXaxis()->SetRangeUser(LSlist[0],LSlist[LSlist.size()-1]); 
+  }
+  HLinearity->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[detsel.Data()]);
   for(int l=1;l<=NLS;l++)
     for(int b=0;b<bxlist.size();b++){
       if(fabs(HRatio->GetBinContent(bxlist[b],l)-1)<0.3){
-	HLinearity->Fill(HRef.GetBinContent(bxlist[b],l),HRatio->GetBinContent(bxlist[b],l));
+	if(type==0)HLinearity->Fill(HRef.GetBinContent(bxlist[b],l), HRatio->GetBinContent(bxlist[b],l));
+	if(type==1)HLinearity->Fill(l, HRatio->GetBinContent(bxlist[b],l));
       }
     }
   delete HRatio;
-
-  
-  HLinearity->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[detsel.Data()]);
-  HLinearity->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
   return HLinearity;
 }
   
@@ -338,7 +338,8 @@ void draw_time_boundaries(float ymin, float ymax){
   line.SetLineStyle(2);
   line.SetLineColor(3);
   for(long i=0;i<TimeStep.size();i++){
-    line.DrawLine(TimeStep[i]-tmin,ymin,TimeStep[i]-tmin,ymax);
+    if(tmin<TimeStep[i]&&TimeStep[i]<tmax)
+      line.DrawLine(TimeStep[i]-tmin,ymin,TimeStep[i]-tmin,ymax);
   }
     
 }

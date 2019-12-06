@@ -10,19 +10,22 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
   bx_leg.SetFillStyle(0);
   bx_leg.SetBorderSize(0);
 
-  C->Clear();
+
 
   TH2F* Time2D_det = (TH2F*)Time2D->Clone(TString("Time2D_"));
   Time2D_det->Scale(0);
   Time2D_det->GetXaxis()->SetTitle("time  [s]");
-  Time2D_det->GetYaxis()->SetRangeUser(0,FILL==7358?20:10);
+  Time2D_det->GetYaxis()->SetRangeUser(0,FILL==7358?15:10);
   Time2D_det->GetYaxis()->SetTitle(" sbil   ");
   Time2D_det->GetYaxis()->SetTitleOffset(0.7);
   Time2D_det->GetYaxis()->SetNdivisions(5);
-  Time2D_det->Draw("hist");
 
+
+  C->Clear();
   int counter=0;
+  Time2D_det->Draw("hist");
   for(long i=0;i<DETLIST.size();i++){
+
     for(long b=0;b<bxlist.size();b++){
 
       int color = counter+1;
@@ -41,15 +44,13 @@ void plot_lumi_vstime_perbx(std::vector<long> bxlist){
       counter++;
     }
 
-    ///Draw the vertical lines to show the boundaries
-    draw_time_boundaries(0,FILL==7358?20:10);
-    
   }
-  
-  C->Update();
+  ///Draw the vertical lines to show the boundaries
+  draw_time_boundaries(0,FILL==7358?15:10);
   bx_leg.Draw();
-
-  C->Print(OUTPATH+"/plot_lumi_vstime_perbx.gif");   
+  C->Update();
+  C->Print(OUTPATH+"/plot_lumi_vstime_perbx.gif");      
+    
 }
 
 
@@ -58,45 +59,106 @@ void plot_det_ratio_vstime(std::vector<long> bxlist){
   
   /////Draw detector ratios vs time
   TH2F * Ratio[NDET][NBX];
-  TLegend ratio_leg(0.6,0.6,0.8,0.85);
-  ratio_leg.SetLineColor(0);
-  ratio_leg.SetLineStyle(0);
-  ratio_leg.SetLineWidth(0);
-  ratio_leg.SetShadowColor(0);
-  ratio_leg.SetFillColor(0);
-  ratio_leg.SetFillStyle(0);
-
-  int counter=1;
   for(long i=0;i<DETLIST.size();i++){
     TString ratio=DETLIST[i]+"/"+detsel;
-    TString title=DETName[DETLIST[i].Data()]+"/"+DETName[detsel.Data()];
+    int counter=1;
     
     for(long b=0;b<bxlist.size();b++){
       TString name=TString("Ratio_vs_time_")+i+"_"+b;
       Ratio[i][b] = new TH2F(name,"",500,0,tmax-tmin,500,rmin,rmax);
-      Ratio[i][b]->GetYaxis()->SetTitle(" sbil ratio  ");
+      Ratio[i][b]->GetYaxis()->SetTitle(ratio);
       Ratio[i][b]->GetXaxis()->SetTitle("time [s]");
       Ratio[i][b]->SetMarkerColor(counter);
       Ratio[i][b]->SetLineColor(counter);      
 
       tree->Draw(ratio+":"+timeref+">>"+name,CUTLumis+"&&("+detsel.Data()+">0.5)"+"&&(bx=="+bxlist[b]+")");
-      ratio_leg.AddEntry(Ratio[i][b],title+",bx="+bxlist[b],"pl");
       counter++;
     }
+    
   }
 
 
 
   for(long i=0;i<DETLIST.size();i++){
+    TLegend ratio_leg(0.7,0.25,0.9,0.4);
+    ratio_leg.SetLineColor(0);
+    ratio_leg.SetLineStyle(0);
+    ratio_leg.SetLineWidth(0);
+    ratio_leg.SetShadowColor(0);
+    ratio_leg.SetFillColor(0);
+    ratio_leg.SetFillStyle(0);
+
     C->Clear();
+    TString title=DETName[DETLIST[i].Data()]+"/"+DETName[detsel.Data()];
     for(long b=0;b<bxlist.size();b++){
       Ratio[i][b]->Draw(b==0?"histp":"histpsame");
+      ratio_leg.AddEntry(Ratio[i][b],TString("bx=")+bxlist[b],"pl");
     }
+    ratio_leg.Draw();
     draw_time_boundaries(rmin,rmax);
     C->Print(OUTPATH+"/plot_linearity_det_ratio_vstime_"+DETLIST[i]+".gif");
   }
 
+}
 
+
+void plot_det_ratio_vsls(std::vector<long> bxlist){
+  float rmin=0.94;
+  float rmax=1.06;
+  
+  /////Draw detector ratios vs time
+  TH2F * Ratio[NDET][NBX];
+  for(long i=0;i<DETLIST.size();i++){
+    for(long b=0;b<bxlist.size();b++){
+      TString name=TString("Ratio_vs_time_")+i+"_"+b;
+      Ratio[i][b]=getLinearityHistoAvgLS(name,DETLIST[i],std::vector<long>{bxlist[b]},1);
+    }    
+  }
+
+
+  for(long b=0;b<bxlist.size();b++){
+
+    TLegend ratio_leg(0.6,0.2,0.9,0.35);
+    ratio_leg.SetLineColor(0);
+    ratio_leg.SetLineStyle(0);
+    ratio_leg.SetLineWidth(0);
+    ratio_leg.SetShadowColor(0);
+    ratio_leg.SetFillColor(0);
+    ratio_leg.SetFillStyle(0);
+    
+    int counter=1;
+    C->Clear();
+    for(long i=0;i<DETLIST.size();i++){
+      
+      TH1D* H=Ratio[i][b]->ProfileX()->ProjectionX(TString(Ratio[i][b]->GetName())+"proj","e");
+      TGraphErrors*h=new TGraphErrors();
+      int n=0;
+      for(int k=1;k<=NLS;k++){
+	if(H->GetBinContent(k)>0){
+	  h->SetPoint(n,k,H->GetBinContent(k));
+	  h->SetPointError(n,H->GetBinWidth(k)/2,H->GetBinError(k));
+	  n++;
+	}
+      }
+	
+      
+      h->GetYaxis()->SetTitle("sbil ratio");
+      h->GetXaxis()->SetTitle(Ratio[i][b]->GetXaxis()->GetTitle());
+      h->GetYaxis()->SetRangeUser(rmin,rmax);
+      h->SetMarkerColor(counter);
+      h->SetLineColor(counter);
+      h->SetMarkerSize(0.8);
+      h->SetMarkerStyle(1);
+      h->Draw(counter==1?"ael":"elsame");
+      
+      ratio_leg.AddEntry(h,DETLIST[i]+","+TString("bx=")+bxlist[b],"pl");
+      counter++;
+    }
+    ratio_leg.Draw();
+    C->Print(OUTPATH+"/plot_linearity_det_ratio_vsls_"+bxlist[b]+".gif");
+  }
+
+  
 }
 
 void plot_det_correlation(TString CUTBX){
@@ -128,11 +190,8 @@ void plot_det_correlation(TString CUTBX){
   labeltext.SetTextSize(0.045);
   int counter=0; 
   C->Clear();
-  //C->Divide(2,2);
   for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0)continue;
-    //C->cd(++counter);
-    //HFrame.Draw("hist");
     Correlation[i]->GetYaxis()->SetRangeUser(0,20);
     Correlation[i]->GetYaxis()->SetTitle(DETName[DETLIST[i].Data()]+" sbil");
     Correlation[i]->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
@@ -142,11 +201,8 @@ void plot_det_correlation(TString CUTBX){
     sprintf(text," y = (%.2f+/-%.2f) + (%.3f+/-%.3f)*x ",
 	    FCorrFit[i]->GetParameter(0),FCorrFit[i]->GetParError(0),
 	    FCorrFit[i]->GetParameter(1),FCorrFit[i]->GetParError(1));
-    //correlation_leg.AddEntry(Correlation[i],text,"lp");
     labeltext.DrawTextNDC(0.3,0.2,text);
   }
-  //correlation_leg.Draw();
-  //C->Print(OUTPATH+"/plot_linearity.pdf");
   C->Print(OUTPATH+"/plot_linearity_det_correlation.gif");
  	     
 }
@@ -183,6 +239,8 @@ void plot_det_linearity(std::vector<long> bxlist){
 
 
 }
+
+
 
 
 void plot_linearity_compare(std::vector<long> bxlist1, std::vector<long> bxlist2, TString title1="", TString title2=""){
