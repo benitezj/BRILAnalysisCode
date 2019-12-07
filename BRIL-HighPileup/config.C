@@ -138,13 +138,13 @@ void configFill(long fill=0){///set fill specific configurations
     tmax = tmin + 600;
     TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
     BXSel = 750;
-    NBXTrain = 10 ;
+    NBXTrain = 12 ;
     BXLeading = std::vector<long>{750,1644};
-    //BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
+    BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
     //BXSpecial = std::vector<long>{751,752,753,754,755,756,757,758,759,760,761,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //train bx's
     //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
-    //BXSpecial = std::vector<long>{761, 1655}; //last bx
-    BXSpecial = std::vector<long>{750,761};    //last bx 
+    //BXSpecial = std::vector<long>{761,1655}; //last bx
+    //BXSpecial = std::vector<long>{750,761};    //last bx 
   }
   
   cout<<"tree entries: "<<tree->GetEntries()<<endl;
@@ -261,12 +261,12 @@ TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlis
   
 
   ///
-  TH2F* HRatio = (TH2F*)HDet.Clone("HRatio");//calculate detector ratio
+  TH2F* HRatio = (TH2F*)HDet.Clone("HRatio");  //calculate detector ratio
   HRatio->Divide(&HRef);
 
   TH2F * HLinearity = 0;
   if(type==0){
-    HLinearity = new TH2F(name,"",400,0,20,500,0.5,1.5);//vs sbil
+    HLinearity = new TH2F(name,"",400,0,20,500,0.5,1.5);   //vs sbil
     HLinearity->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
   }
   if(type==1){

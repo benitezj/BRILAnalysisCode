@@ -18,11 +18,12 @@ void plot_linearity(long fill=7358){
   //plot_det_ratio_vstime(BXSpecial);
   plot_det_ratio_vsls(std::vector<long>{BXSel});
   // plot_det_ratio_vsls(BXSpecial);
-  
-  ////// Detector correlations
+
+
   //plot_det_correlation(CUTBX);
 
   //
+  //plot_det_linearity(std::vector<long>{BXSel});
   //plot_det_linearity(BXLIST);
   //plot_det_linearity(BXLeading);
   //plot_det_linearity(BXSpecial);
@@ -31,6 +32,7 @@ void plot_linearity(long fill=7358){
 
   //plot_linearity_compare(BXSpecial,BXTrain,"Leading bunches","Train bunches");
   
+
   //get_bx_corrections("pcc");
 
   //plot_det_linearity_perbx(BXLeading);  

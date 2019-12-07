@@ -230,8 +230,7 @@ void plot_det_linearity(std::vector<long> bxlist){
     FLinearityFit[i]->Draw("lsame");
 
     char text[100];
-    sprintf(text,"slope = %.2f +/- %.2f",
-	    100*FLinearityFit[i]->GetParameter(1),100*FLinearityFit[i]->GetParError(1));
+    sprintf(text,"slope = %.2f +/- %.2f",100*FLinearityFit[i]->GetParameter(1),100*FLinearityFit[i]->GetParError(1));
     labeltext.DrawTextNDC(0.4,0.2, TString(text) + " %");
     //C->Print(OUTPATH+"/plot_linearity.pdf");
     C->Print(OUTPATH+"/plot_det_linearity_"+DETLIST[i]+".gif"); 
@@ -355,18 +354,14 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
   for(int i=0;i<DETLIST.size();i++){
     if(DETLIST[i].CompareTo(detsel)==0) continue;
     
-    C->Clear();
-    C->Divide(2,2);
     int bxcounter=0; 
     for(int j=0;j<bxlist.size();j++){     
-      if(bxcounter>=6)continue;
-      C->cd(++bxcounter);
+      C->Clear();
       Linearity[i][j]->GetYaxis()->SetRangeUser(0.9,1.1);
       Linearity[i][j]->Draw("histp");
       FLinearityFit[i][j]->SetLineColor(2);
       FLinearityFit[i][j]->Draw("lsame");
       labeltext.DrawTextNDC(0.3,0.8,TString("bcid ")+bxlist[j]);
-
 
       char text[100];
       sprintf(text,"y-intercept = %.2f+/-%.2f",FLinearityFit[i][j]->GetParameter(0),FLinearityFit[i][j]->GetParError(0));
@@ -374,10 +369,8 @@ void plot_det_linearity_perbx(std::vector<long> bxlist){
       sprintf(text,"slope = %.2f+/-%.2f %%",100*FLinearityFit[i][j]->GetParameter(1),100*FLinearityFit[i][j]->GetParError(1));
       labeltext.DrawTextNDC(0.3,0.2,text);
 
+      C->Print(OUTPATH+"/plot_det_linearity_perbx_"+DETLIST[i]+"_"+bxlist[i]+".gif");
     }
-    //C->Print(OUTPATH+"/plot_linearity.pdf");
-    C->Print(OUTPATH+"/plot_det_linearity_perbx_"+DETLIST[i]+".gif");
-
   }
   
   
