@@ -5,14 +5,8 @@ void compareFills(){
   gROOT->ProcessLine(".x ../rootlogon.C");
   C=new TCanvas();
 
-  TLegend bx_leg(0.6,0.2,.82,0.4);
-  bx_leg.SetLineColor(0);
-  bx_leg.SetLineStyle(0);
-  bx_leg.SetShadowColor(0);
-  bx_leg.SetFillColor(0);
-  bx_leg.SetFillStyle(0);
-  
-  TString det="pcc";
+
+  TString det="bcm";
   std::vector<long> fills{7358,6847};
   std::vector<long> colors{1,2};
 
@@ -25,7 +19,7 @@ void compareFills(){
   
   float rmin=0.9;
   float rmax=1.1;
-  int REBIN=40;
+  int REBIN=20;
   
   ///fill the histograms and fit 
   for(long i=0;i<fills.size();i++){
@@ -61,19 +55,47 @@ void compareFills(){
     C->Clear();
     histos[i]->GetYaxis()->SetRangeUser(rmin,rmax);
     histos[i]->Draw("histp");
+    fits[i]->Draw("lsame");
     C->Print(OUTPATH+"/compareFills_scatter_fill"+fills[i]+".gif");
     for(long b=0;b<nbx[i];b++){
       C->Clear();
       histos_bx[i][b]->GetYaxis()->SetRangeUser(rmin,rmax);
       histos_bx[i][b]->Draw("histp");
+      fits_bx[i][b]->Draw("lsame");
       C->Print(OUTPATH+"/compareFills_scatter_fill"+fills[i]+"_bcid"+b+".gif");
     }
   }
 
 
+
+  //////////////////////////////////////////
+  ///// show the slope per bcid
+  for(long i=0;i<fills.size();i++){
+    TGraphErrors GSlopeVsBCID;
+    for(long b=0;b<nbx[i];b++){
+      GSlopeVsBCID.SetPoint(b,b+1,fits_bx[i][b]->GetParameter(1));
+      GSlopeVsBCID.SetPointError(b,0,fits_bx[i][b]->GetParError(1));
+    }    
+    C->Clear();
+    GSlopeVsBCID.GetXaxis()->SetTitle("bcid");
+    GSlopeVsBCID.GetYaxis()->SetTitle("slope");
+    GSlopeVsBCID.GetYaxis()->SetRangeUser(-0.01,0.01);
+    GSlopeVsBCID.Draw("ape");
+    C->Print(OUTPATH+"/compareFills_SlopeVsBcid_"+fills[i]+".gif");
+  }
+
+  
+  
   
   ////////////////////////////////////////////
   /// show the profiles of the scatter plots
+  TLegend bx_leg(0.2,0.2,.7,0.4);
+  bx_leg.SetLineColor(0);
+  bx_leg.SetLineStyle(0);
+  bx_leg.SetShadowColor(0);
+  bx_leg.SetFillColor(0);
+  bx_leg.SetFillStyle(0);
+  
   C->Clear();
   char txt[100]; 
   labeltext.SetTextSize(0.035); 
@@ -92,10 +114,10 @@ void compareFills(){
     fits[i]->Draw("lsame");
 
     sprintf(txt,"slope  = %.2f +/- %.2f %%",100*fits[i]->GetParameter(1),100*fits[i]->GetParError(1));
-    labeltext.SetTextColor(fits[i]->GetLineColor());
-    labeltext.DrawTextNDC(0.24,0.32-i*0.05,txt);
+    //labeltext.SetTextColor(fits[i]->GetLineColor());
+    //labeltext.DrawTextNDC(0.24,0.32-i*0.05,txt);
 
-    bx_leg.AddEntry(P,TString("FILL ")+fills[i],"flp");
+    bx_leg.AddEntry(P,TString("FILL ")+fills[i]+": "+txt,"flp");
   }
   bx_leg.Draw(); 
   C->Print(OUTPATH+"/compareFills_profile_perfill.gif");
@@ -135,13 +157,15 @@ void compareFills(){
 
   
   ///////////////////////////////////
-  /// combined fills profile 
-  TProfile * P = (TProfile*) profiles[0]->Clone("PComb");
-  for(int i=1;i<fills.size();i++){
-    if(histos[i]->Integral()==0) continue; 
-    P->Add(profiles[i]);
-  }
-  TF1*FComb=fitLinearity(P);
+  /// combined fills profile
+  TLegend legend(0.2,0.2,.45,0.4);
+  legend.SetLineColor(0);
+  legend.SetLineStyle(0);
+  legend.SetShadowColor(0);
+  legend.SetFillColor(0);
+  legend.SetFillStyle(0);
+  
+
   
   C->Clear();
   for(long i=0;i<fills.size();i++){
@@ -149,41 +173,31 @@ void compareFills(){
     profiles[i]->SetMarkerStyle(8);
     profiles[i]->SetMarkerSize(0.7);
     profiles[i]->Draw(i==0?"histpe":"histpesame");
+    legend.AddEntry(profiles[i],TString("FILL ")+fills[i],"flp");
   }
 
+
+//  TProfile * P = (TProfile*) profiles[0]->Clone("PComb");
+//  for(int i=1;i<fills.size();i++){
+//    if(histos[i]->Integral()==0) continue; 
+//    P->Add(profiles[i]);
+//  }
+//  TF1*FComb=fitLinearity(P);
   //P->SetMarkerColor(3);
   //P->Draw("histpesame");
-  
-  bx_leg.Draw();
+  //FComb->SetLineColor(4);
+  //FComb->Draw("lsame");
+  //sprintf(txt,"slope  = %.2f +/- %.2f %%", 100*FComb->GetParameter(1), 100*FComb->GetParError(1));
+  //labeltext.SetTextColor(4);
+  //labeltext.DrawTextNDC(0.24,0.32,txt);
 
-  FComb->SetLineColor(4);
-  FComb->Draw("lsame");
-  sprintf(txt,"slope  = %.2f +/- %.2f %%", 100*FComb->GetParameter(1), 100*FComb->GetParError(1));
-  labeltext.SetTextColor(4);
-  labeltext.DrawTextNDC(0.24,0.32,txt);
+  legend.Draw();
   C->Print(OUTPATH+"/compareFills_profile_combinedfills.gif");
 
 
 
 
-  //////////////////////////////////////////
-  ///// show the slope per bcid
-  TGraphErrors GSlopeVsBCID;
-  for(long i=0;i<fills.size();i++){
-    for(long b=0;b<nbx[i];b++){
-      long k = i*nbx[i] + b;
-      GSlopeVsBCID.SetPoint(k,k+1,fits_bx[i][b]->GetParameter(1));
-      GSlopeVsBCID.SetPointError(k,0,fits_bx[i][b]->GetParError(1));
-      //cout<<k<<" "<<fits_bx[i][b]->GetParameter(1)<<" "<<fits_bx[i][b]->GetParError(1)<<endl;
-    }    
-  }
-  C->Clear();
-  GSlopeVsBCID.GetXaxis()->SetTitle("bcid");
-  GSlopeVsBCID.GetYaxis()->SetTitle("slope");
-  GSlopeVsBCID.GetYaxis()->SetRangeUser(-0.01,0.01);
-  GSlopeVsBCID.Draw("ape");
-  C->Print(OUTPATH+"/compareFills_SlopeVsBcid.gif");
-  
+
   gROOT->ProcessLine(".q");
 }
 

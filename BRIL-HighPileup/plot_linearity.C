@@ -6,39 +6,33 @@ void plot_linearity(long fill=7358){
   gROOT->ProcessLine(".x ../rootlogon.C");
  
   configFill(fill);
-   
-
-  C=new TCanvas();
-
-  //C->Print(OUTPATH+"/plot_linearity.pdf[");
+  
 
   ////// show each bcid vs time
-  plot_lumi_vstime_perbx(std::vector<long>{BXSel});
-  //plot_det_ratio_vstime(std::vector<long>{BXSel});
-  //plot_det_ratio_vstime(BXSpecial);
-  plot_det_ratio_vsls(std::vector<long>{BXSel});
-  // plot_det_ratio_vsls(BXSpecial);
-
+  std::vector<TString> detl=DETLIST;
+  detl.push_back(detsel);
+  plot_lumi_vstime(detl,std::vector<long>{BXSel});
+  plot_lumi_vsls(detl,std::vector<long>{BXSel});
+  
+  plot_det_ratio_vstime(std::vector<long>{BXSel},0.9,1.20);
+  plot_det_ratio_vsls(std::vector<long>{BXSel},0.9,1.20);
 
   //plot_det_correlation(CUTBX);
 
-  //
   //plot_det_linearity(std::vector<long>{BXSel});
   //plot_det_linearity(BXLIST);
   //plot_det_linearity(BXLeading);
   //plot_det_linearity(BXSpecial);
   //plot_det_linearity(BXSpecialTrain);
 
-
   //plot_linearity_compare(BXSpecial,BXTrain,"Leading bunches","Train bunches");
-  
 
-  //get_bx_corrections("pcc");
-
+  //plot_det_linearity_perbx(std::vector<long>{BXSel});  
   //plot_det_linearity_perbx(BXLeading);  
   //plot_det_linearity_perbx(BXLIST);
   //plot_det_linearity_perbx(BXSpecial);
   //plot_det_linearity_perbx(BXSpecialTrain);
+
   
   //plot_det_linearity_pertrain();
 
@@ -48,7 +42,6 @@ void plot_linearity(long fill=7358){
   //plot_plt_chan_perbx();
 
   
-  //C->Print(OUTPATH+"/plot_linearity.pdf]");
   gROOT->ProcessLine(".q");
   
 }
