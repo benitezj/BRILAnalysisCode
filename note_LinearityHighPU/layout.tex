@@ -11,11 +11,11 @@
 
 
 The layout of one quadrant of the Pixel detector used in CMS for  Run II is shown in Fig~\ref{fig:pixellayout}.
-It is composed of a Barrel section with 4 layers and the Forward section with 3 disks (each with 2 Panels).
+It is composed of a Barrel section with 4 layers and the Forward section with two Panels, each with 3 disks.
 The Pixel sensors are read out by a total of 1856 modules.
 A stability study comparing different periods in 2018 was used to exclude a list of modules which showed large variations between periods.
-From this study a total of 1387 modules are removed, this veto list can be found in Appendix~\ref{sec:appendix1} and maps per detector section are shown in figure~\ref{fig:pixelmodvetomap} and table~\ref{tab:pixveto}.
-
+A total of 1387 modules are removed, this veto list can be found in Appendix~\ref{sec:appendix1} and maps per detector section are shown in figure~\ref{fig:pixelmodvetomap} and table~\ref{tab:pixveto}.
+After the module veto the relative weights of each detector have the values shown in Figure~\ref{fig:pixelweights}.
 
 \begin{table}[hc]
 \caption{Number of vetoed modules per Pixel section.}
@@ -39,20 +39,6 @@ FPIX Panel 1 & 140 & 132 \\
 
 
 \newpage
-\begin{figure}[hc]
-  \begin{center}
-    \includegraphics[width=0.7\linewidth]{plots/PCCWeights.png}
-    \caption{
-      Fraction of total clusters per each part of the Pixel detector. The weights are determined after applying the module veto list.
-      Bins 1,2,3 correspond to the BPIX layers, bins 4,5,6 correspond to the FPIX Panel 0 disks (inner), and 7,8,9 to the FPIX Panel 1 disks (outer).
-      \label{fig:pixelweights}
-    }
-  \end{center}
-\end{figure}
-
-
-
-\newpage
 \begin{figure}[hbt]
   \begin{center}
 
@@ -65,6 +51,20 @@ FPIX Panel 1 & 140 & 132 \\
     \caption{
       Maps of Pixel modules vetoed in the PCC luminosity computation. The veto list corresponds to the study performed using 2018 data including Run D period.
     \label{fig:pixelmodvetomap}
+    }
+  \end{center}
+\end{figure}
+
+
+
+\newpage
+\begin{figure}[hc]
+  \begin{center}
+    \includegraphics[width=0.7\linewidth]{plots/PCCWeights.png}
+    \caption{
+      Fraction of total clusters per each part of the Pixel detector. The weights are determined after applying the module veto list.
+      Bins 1,2,3 correspond to the BPIX layers, bins 4,5,6 correspond to the FPIX Panel 0 disks (inner), and 7,8,9 to the FPIX Panel 1 disks (outer).
+      \label{fig:pixelweights}
     }
   \end{center}
 \end{figure}
