@@ -1,0 +1,23 @@
+
+The PCC and HF luminometers  require corrections for the so called ``afterglow'' effects, noise induced in bunch crossings following colliding bunch crossings.
+Two corrections have been previously developed: Type-1 refers to a spill over into the bunch crossing immediately following an active bunch crossing due to charge residuals in the pixel sensors, the second Type-2 refers to exponentially decaying noise created by activated material.
+The models for both corrections are normalized using data from empty bunch crossings recorded with RANDOM triggers.
+The corrections are stored in the Conditions Database (CONDDB) during the Prompt Calibration Loop (PCL).
+The PCC values obtained from the ZEROBIAS trigger data are then corrected in an offline analysis.
+
+The afterglow corrections are normally calculated for an integrated range of lumi sections to improve the statistical precision, for PCC every 50 LS while for HFOC every 20. In this study the PCC corrections were determined privately every 10 LS to capture variations during $\mu$-scans.
+Example corrections (Type-1 and Type-2 combined) are showin in Figure~\ref{fig:afterglow}.
+For fill 6847 the corrections have values of 1.0 due to the single bunch pattern.
+
+\begin{figure}[t]
+  \begin{center}
+    \includegraphics[width=0.47\linewidth]{plots/AfterglowCorrections_7358_PCC.png}
+    \includegraphics[width=0.47\linewidth]{plots/AfterglowCorrections_7358_HFOC.png}
+    \caption{
+      Afterglow corrections as a function of bcid for one bunch train in fill 7358.
+      For PCC (HFOC) the blue histogram corresponds to lumi sections 1-11 (1-20), while the red histogram to lumi sections 23-33 (21-40).
+    \label{fig:afterglow}
+    }
+  \end{center}
+\end{figure}
+
