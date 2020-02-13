@@ -31,7 +31,7 @@ long FILL;
 float BXCorr[NBX];
 long NBXTrain;
 TString detsel("hfoc");
-TString minsbil("2");
+TString minsbil("1.5");
 TString CUTDetSelMin=TString("(")+detsel+">"+minsbil+")";
 long maxsbil=10;
 
@@ -58,6 +58,7 @@ TH2F * Time2D;
 TLine line;
 TText labeltext;
 
+TH2F HLinearityFrame("HLinearityFrame","",200,0,20,200,0.5,1.5);
 
 /////////////////////////////////////////////////
 void configFill(long fill=0){///set fill specific configurations
@@ -66,18 +67,18 @@ void configFill(long fill=0){///set fill specific configurations
   cout<<"Beging Fill "<<FILL<<" configuration"<<endl;
 
   DETLIST.clear();
-  //DETLIST.push_back("hfoc");
+  //  DETLIST.push_back("hfoc");
 //  DETLIST.push_back("hfet");
 //  DETLIST.push_back("plt");
 //  DETLIST.push_back("bcm");
   DETLIST.push_back("pcc");
-  //DETLIST.push_back("pccB");
-  //DETLIST.push_back("pccF");
+//  DETLIST.push_back("pccB");
+//  DETLIST.push_back("pccF");
 //  DETLIST.push_back("pccB1");
 //  DETLIST.push_back("pccB2");
 //  DETLIST.push_back("pccB3");
-//   DETLIST.push_back("pccF1p1");
-//   DETLIST.push_back("pccF2p1");
+//  DETLIST.push_back("pccF1p1"); 
+//  DETLIST.push_back("pccF2p1"); 
 //   DETLIST.push_back("pccF3p1");
 //   DETLIST.push_back("pccF1p2");
 //   DETLIST.push_back("pccF2p2");
@@ -97,9 +98,9 @@ void configFill(long fill=0){///set fill specific configurations
     tree->Add(INPATH+"/bril_6847_RunDModVeto.root");
     //tree->Add(INPATH+"/bril_6847_RunDModVeto_NoCorr.root");
     tmin = 1530010610 ;
-    tmax = tmin + 400 ;//half a scan
+    //tmax = tmin + 400 ;//half a scan
     //tmax = tmin + 790 ;//one scan
-    //tmax = tmin + 1770;//both scans
+    tmax = tmin + 1770;//both scans
     TimeStep = std::vector<long>{tmin+5,tmin+60,tmin+111,tmin+162,tmin+214,tmin+265,tmin+316,tmin+368,tmin+421,tmin+472,tmin+523,tmin+574,tmin+625,tmin+677,tmin+729,tmin+783,tmin+831,tmin+879,tmin+927,tmin+975,tmin+1023,tmin+1071,tmin+1119,tmin+1151,tmin+1201,tmin+1253,tmin+1304,tmin+1356,tmin+1409,tmin+1460,tmin+1512,tmin+1563,tmin+1615,tmin+1667,tmin+1718};
     BXSel = 686;
     NBXTrain = 1;
@@ -141,17 +142,17 @@ void configFill(long fill=0){///set fill specific configurations
     tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoCorr.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoHFCorr.root");
-    tmin = 1540537829;
+    tmin = 1540537829-25;
     tmax = tmin + 600;
     TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
-    BXSel = 1644;
+    BXSel = 750;
     NBXTrain = 12 ;
     BXLeading = std::vector<long>{750,1644};
-    BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
-    //BXSpecial = std::vector<long>{751,752,753,754,755,756,757,758,759,760,761,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //train bx's
+    //BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
+    BXSpecial = std::vector<long>{750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //trains
     //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
     //BXSpecial = std::vector<long>{761,1655}; //last bx
-    //BXSpecial = std::vector<long>{750,761};    //last bx
+    //BXSpecial = std::vector<long>{750,761};  //first bx
     maxsbil=17;
   }
   
@@ -291,24 +292,142 @@ TH2F*  getLinearityHistoAvgLS(TString name, TString det, std::vector<long> bxlis
 	if(fabs(HRatio->GetBinContent(bxlist[b],l)-1)<0.3)
 	  HLinearity->Fill(l, HRatio->GetBinContent(bxlist[b],l));
   }
+
+
   
   HLinearity->GetYaxis()->SetTitle(DETName[det.Data()]+" / " + DETName[detsel.Data()]);
   delete HRatio;
   return HLinearity;
 }
+
+
+
+TGraphErrors * getLinearityGraph(TH2* H){
+  TGraphErrors * G = new TGraphErrors();
+  G->SetName(TString(H->GetName())+"_linearity_graph");
+
+  const float interval=0.5;
   
+  float xmin=0.;
+  Double_t xavg=0.;
+  Double_t yavg=0.;
+  int navg=0;
+  int npt=0;
+  for(int x=1;x<=H->GetNbinsX();x++)
+    for(int y=1;y<=H->GetNbinsY();y++){
+      if(H->GetBinContent(x,y)>0){//use only non-empty bins
+	//cout<<npt<<" "<<xmin<<" "<<navg<<" ("<< H->GetXaxis()->GetBinCenter(x)<<" , "<< H->GetYaxis()->GetBinCenter(y)<<")"<<endl;
+	if(navg==0){
+	  xmin = H->GetXaxis()->GetBinCenter(x);
+	  xavg = H->GetXaxis()->GetBinCenter(x);
+	  yavg = H->GetYaxis()->GetBinCenter(y);
+	  navg = 1;
+
+	}else if(H->GetXaxis()->GetBinCenter(x)<xmin+interval){
+	  xavg += H->GetXaxis()->GetBinCenter(x);
+	  yavg += H->GetYaxis()->GetBinCenter(y);
+	  navg++;
+
+	}else {//compute avg and reset
+	  if(navg>1){
+	    xavg /= navg;
+	    yavg /= navg;
+	    //cout<<npt<<" "<<xavg<<" "<<yavg<<" "<<xmin<<endl;
+	    G->SetPoint(npt,xavg,yavg);
+	    npt++;
+	  }
+	  
+	  xmin = H->GetXaxis()->GetBinCenter(x);
+	  xavg = H->GetXaxis()->GetBinCenter(x);
+	  yavg = H->GetYaxis()->GetBinCenter(y);
+	  navg = 1;
+	}
+      }
+    }
+
+  //catch last point
+  if(navg>1){
+    xavg /= navg;
+    yavg /= navg;
+    //cout<<npt<<" "<<xavg<<" "<<yavg<<" "<<xmin<<endl;
+    G->SetPoint(npt,xavg,yavg);
+  }
+  
+  
+  //calculate standard deviations
+  float minunc=0.001;
+  xmin=0.;
+  float dxavg=0.;
+  float dyavg=0.;
+  navg=0;
+  npt=0;
+  for(int x=1;x<=H->GetNbinsX();x++)
+    for(int y=1;y<=H->GetNbinsY();y++){
+      if(H->GetBinContent(x,y)>0){//use only non-empty bins
+
+	if(navg==0){
+	  G->GetPoint(npt,xavg,yavg);
+	  xmin = H->GetXaxis()->GetBinCenter(x);
+	  dxavg = pow(xavg - H->GetXaxis()->GetBinCenter(x),2);
+	  dyavg = pow(yavg - H->GetYaxis()->GetBinCenter(y),2);
+	  navg++;
+
+	}else if(H->GetXaxis()->GetBinCenter(x)<xmin+interval){
+	  G->GetPoint(npt,xavg,yavg);
+	  dxavg += pow(xavg - H->GetXaxis()->GetBinCenter(x),2);
+	  dyavg += pow(yavg - H->GetYaxis()->GetBinCenter(y),2);
+	  navg++;
+	}else {//compute cluster and reset
+	  if(navg>1) {
+	    dxavg /= navg;
+	    dyavg /= navg;
+	    G->SetPointError(npt,sqrt(dxavg),sqrt(dyavg)+minunc);//0.001 minimum uncertainty to avoid points with ~0 uncertainty
+	    npt++;
+	  }
+	  
+	  G->GetPoint(npt,xavg,yavg);
+	  xmin = H->GetXaxis()->GetBinCenter(x);
+	  dxavg = pow(xavg - H->GetXaxis()->GetBinCenter(x),2);
+	  dyavg = pow(yavg - H->GetYaxis()->GetBinCenter(y),2);
+	  navg = 1;
+	}
+      }
+    }
+
+  //catch last point
+  if(navg>1){
+    dxavg /= navg;
+    dyavg /= navg;
+    G->SetPointError(npt,sqrt(dxavg),sqrt(dyavg)+minunc);
+  }
+  
+
+  
+  return G;
+}
+
 
 TF1 * fitLinearity(TH1* H, float low=0, float high=20){
   if(H==NULL) return 0;  
   TF1 * F = new TF1(TString(H->GetName())+"_Fit","[0]+[1]*x",low,high);
   F->SetLineColor(H->GetLineColor());
   F->SetMarkerColor(H->GetMarkerColor());
-  H->Fit(F,"Q","N",low,high);
+  F->SetParameter(0,1);
+  H->Fit(F,"NQ","N",low,high);
   return F;
 }
 
 
 
+TF1 * fitLinearity(TGraphErrors * H, float low=0, float high=20){
+  if(H==NULL) return 0;  
+  TF1 * F = new TF1(TString(H->GetName())+"_Fit","[0]+[1]*x",low,high);
+  F->SetLineColor(H->GetLineColor());
+  F->SetMarkerColor(H->GetMarkerColor());
+  F->SetParameter(0,1);
+  H->Fit(F,"NQ","N",low,high);
+  return F;
+}
 
 
 
