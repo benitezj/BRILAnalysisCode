@@ -1,41 +1,6 @@
 
-For the PCC luminosity determination two types of data-sets are processed, RANDOM trigger data for determination of ``Afterglow'' corrections using non-colliding bunches, and ZEROBIAS data for the cluster counting in colliding bunches.
-The samples are processed and stored in ALCARECO format in the CERN EOS system path: /eos/cms/store/
-
-
-\begin{table}[h]
-  \caption{Data files used for the PCC luminosity determination and Afterglow corrections.}
-  \tiny
-  \begin{tabular}{l}
-    \hline\hline
-    Fill 6847:\\
-data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v2/000/318/675/00000/1E77B884-FF7A-E811-803C-FA163E76D066.root \\
-data/Run2018B/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/9A8628CC-DF7A-E811-A671-FA163EDE4F34.root \\
-data/Run2018B/AlCaLumiPixels1/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/16F2BA8F-D97A-E811-9385-FA163EA487EB.root \\
-data/Run2018B/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/0677196F-D67A-E811-8E4E-FA163EF568AC.root \\
-data/Run2018B/AlCaLumiPixels3/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/D8813469-D57A-E811-84C8-FA163E18DCD1.root \\
-data/Run2018B/AlCaLumiPixels4/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/DECE9555-FD7A-E811-A11F-FA163E5B62DF.root \\
-data/Run2018B/AlCaLumiPixels5/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/BA53B331-EE7A-E811-8AC2-02163E019EC5.root \\
-data/Run2018B/AlCaLumiPixels6/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/4E162320-E47A-E811-B5EA-FA163EB7AC61.root \\
-data/Run2018B/AlCaLumiPixels7/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/22A4C262-E17A-E811-AFEF-FA163E336245.root \\
-data/Run2018B/AlCaLumiPixels8/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/F69D7D47-E77A-E811-9C74-FA163E163082.root \\
-data/Run2018B/AlCaLumiPixels9/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/00000/680CF7EB-D47A-E811-BAFB-FA163EA487EB.root \\
-\hline
-    Fill 7358:\\
-express/Run2018E/StreamALCALUMIPIXELSEXPRESS/ALCARECO/AlCaPCCRandom-Express-v1/000/325/309/00000/4C63A580-3BA2-0D4E-A447-E5A980883D1E.root \\
-data/Run2018E/AlCaLumiPixels1/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/3993D954-4C5C-2247-8935-A8D6019151B7.root \\
-data/Run2018E/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/E56486D8-15C1-6E47-BB5B-C798DC7B35E5.root \\
-data/Run2018E/AlCaLumiPixels3/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/7136F0DC-3A4B-4445-8AB4-9EA9D9BE16F6.root \\
-data/Run2018E/AlCaLumiPixels4/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/B0920DA1-D6B5-1545-BA56-7597EB33FD47.root \\
-data/Run2018E/AlCaLumiPixels5/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/96C74CCD-682A-5D47-9AC8-BE229BD27DA3.root \\
-data/Run2018E/AlCaLumiPixels6/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/415CC662-DB7D-F74F-9FB9-AB878EF770C5.root \\
-data/Run2018E/AlCaLumiPixels7/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/A4711D16-DB69-7447-93FF-4CA53B476927.root \\
-data/Run2018E/AlCaLumiPixels8/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/CC2437DB-E2CD-444D-832A-BAF3C7592C21.root \\
-data/Run2018E/AlCaLumiPixels9/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/00000/E7DA9BE1-28F3-3A40-98A9-A22761530735.root \\
-\hline\hline
-  \end{tabular}
-  \end{table}
-
+For the PCC luminosity determination two types of data-sets are processed, RANDOM trigger data for determination of ``afterglow'' corrections using non-colliding bunches, and ZEROBIAS data for the cluster counting in colliding bunches.
+The data samples are stored in ALCARECO format in the CERN EOS system ($/eos/cms/store/$) in the paths shown in Table~\ref{tab:datapaths}.
 
 Additional data is needed to obtain the corresponding luminosity for the HF, PLT, and BCM luminometers.
 For these detectors the BRIL data acquisition system (BRIL-DAQ) is used and the data is stored in HD5 file format in special machines at Point 5 (brildev).
@@ -49,14 +14,51 @@ Finally, the HF luminometer data in the hd5 files does not include final aftergl
 These corrections have been obtained separately in ROOT histogram format from the Princeton group, and are currently stored in the following public directory:\\
 {\small /afs/cern.ch/user/j/jingyu/public/LUMI/for\_jose/}
 
-
-
 The visible cross-sections used to normalize the data from each luminometer are listed in Table~\ref{tab:crossections}.
 
+
+
+
+\clearpage
 \begin{table}[h]
-  \caption{Visible cross-sections used for each luminometer in 2018. The differences with respect to the values in the publication \cite{CMS-PAS-LUM-18-002} are described in the third column.}
+  \caption{Paths to the data used for the PCC luminosity determination (ZeroBias) and afterglow corrections (Random).}
+  \label{tab:datapaths}
+  \footnotesize
+  \begin{tabular}{l}
+    \hline\hline
+    Fill 6847:\\
+data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v2/000/318/675/\\ %00000/1E77B884-FF7A-E811-803C-FA163E76D066.root \\
+data/Run2018B/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/9A8628CC-DF7A-E811-A671-FA163EDE4F34.root \\
+data/Run2018B/AlCaLumiPixels1/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/16F2BA8F-D97A-E811-9385-FA163EA487EB.root \\
+data/Run2018B/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/0677196F-D67A-E811-8E4E-FA163EF568AC.root \\
+data/Run2018B/AlCaLumiPixels3/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/D8813469-D57A-E811-84C8-FA163E18DCD1.root \\
+data/Run2018B/AlCaLumiPixels4/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/DECE9555-FD7A-E811-A11F-FA163E5B62DF.root \\
+data/Run2018B/AlCaLumiPixels5/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/BA53B331-EE7A-E811-8AC2-02163E019EC5.root \\
+data/Run2018B/AlCaLumiPixels6/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/4E162320-E47A-E811-B5EA-FA163EB7AC61.root \\
+data/Run2018B/AlCaLumiPixels7/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/22A4C262-E17A-E811-AFEF-FA163E336245.root \\
+data/Run2018B/AlCaLumiPixels8/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/F69D7D47-E77A-E811-9C74-FA163E163082.root \\
+data/Run2018B/AlCaLumiPixels9/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/675/\\ %00000/680CF7EB-D47A-E811-BAFB-FA163EA487EB.root \\
+\hline
+    Fill 7358:\\
+express/Run2018E/StreamALCALUMIPIXELSEXPRESS/ALCARECO/AlCaPCCRandom-Express-v1/000/325/309/\\ %00000/4C63A580-3BA2-0D4E-A447-E5A980883D1E.root \\
+data/Run2018E/AlCaLumiPixels1/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/3993D954-4C5C-2247-8935-A8D6019151B7.root \\
+data/Run2018E/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/E56486D8-15C1-6E47-BB5B-C798DC7B35E5.root \\
+data/Run2018E/AlCaLumiPixels3/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/7136F0DC-3A4B-4445-8AB4-9EA9D9BE16F6.root \\
+data/Run2018E/AlCaLumiPixels4/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/B0920DA1-D6B5-1545-BA56-7597EB33FD47.root \\
+data/Run2018E/AlCaLumiPixels5/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/96C74CCD-682A-5D47-9AC8-BE229BD27DA3.root \\
+data/Run2018E/AlCaLumiPixels6/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/415CC662-DB7D-F74F-9FB9-AB878EF770C5.root \\
+data/Run2018E/AlCaLumiPixels7/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/A4711D16-DB69-7447-93FF-4CA53B476927.root \\
+data/Run2018E/AlCaLumiPixels8/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/CC2437DB-E2CD-444D-832A-BAF3C7592C21.root \\
+data/Run2018E/AlCaLumiPixels9/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309/\\ %00000/E7DA9BE1-28F3-3A40-98A9-A22761530735.root \\
+\hline\hline
+  \end{tabular}
+\end{table}
+
+
+
+\begin{table}[h]
+  \caption{Visible cross-sections used for each luminometer in this analysis. The differences with respect to the values in the 2018 PAS \cite{CMS-PAS-LUM-18-002} are described in the third column.}
   \label{tab:crossections}
-  \begin{center}
     \begin{tabular}{l|c|c}
       \hline
       Luminometer & $\sigma_{vis}$ & Difference w.r.t \cite{CMS-PAS-LUM-18-002}\\
@@ -67,8 +69,4 @@ The visible cross-sections used to normalize the data from each luminometer are 
       PLT   &  305 $\mu b$   & Corrected using emmittance scan data. \\
       \hline\hline
     \end{tabular}
-  \end{center}
 \end{table}
-
-
-

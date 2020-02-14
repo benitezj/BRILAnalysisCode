@@ -139,9 +139,9 @@ void configFill(long fill=0){///set fill specific configurations
   }
   if(FILL==7358){
     //tree->Add(INPATH+"/bril.root");
-    tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
+    //tree->Add(INPATH+"/bril_7358_RunDModVeto.root");
     //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoCorr.root");
-    //tree->Add(INPATH+"/bril_7358_RunDModVeto_NoHFCorr.root");
+    tree->Add(INPATH+"/bril_7358_RunDModVeto_NoHFCorr.root");
     tmin = 1540537829-25;
     tmax = tmin + 600;
     TimeStep = std::vector<long>{1540537800+64,1540537800+140,1540537800+237,1540537800+358,1540537800+477,1540537800+646};
