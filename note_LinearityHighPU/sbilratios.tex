@@ -1,12 +1,10 @@
 
 The determination of the relative linearity between two luminometers requires fitting for the slope in the ratio of the SBIL values as a function of SBIL.
-In the nominal comparison we choose the HFOC as a reference luminometer due to its high statistical precision and stability.
+In the nominal comparison the HFOC is chosen as a reference luminometer due to its good statistical precision and stability.
 The linearity is studied for individual bunch crossings after the corrections and selections described before.
-In order to assign an uncertainty on the SBIL ratio at a given SBIL value the following method is used:
-\begin{itemize}
-\item ratio values computed for individual lumisections are grouped and averaged if their reference SBIL values are within 0.5,
-\item a conservative uncertainty in the average ratio is assigned as the standard deviation of the ratios in the group.
-\end{itemize}
+
+In order to assign an uncertainty on the PCC/HFOC ratio at a given SBIL, ratio values computed for individual lumisections are grouped and averaged if their reference SBIL values are within 0.5.
+The uncertainty is assigned as the standard deviation of the ratios used in the average.
 Figure~\ref{fig:sbilratiomethod} illustrates the method, the resulting graph is fit using a linear function.
 
 
@@ -14,13 +12,15 @@ In Figures~\ref{fig:sbilratios6847} and \ref{fig:sbilratios7358} the linearity f
 Figures~\ref{fig:sbilratiosresults6847} and \ref{fig:sbilratiosresults7358} summarize  the fit parameter results.
 
 
+Figure~\ref{fig:sbilratios_dets} compares the correlations and ratios between different luminometers for fill 7358.
+
 \begin{figure}[t]
   \begin{center}
     \includegraphics[width=0.47\linewidth]{plots/plot_det_linearity_perbx_pcc_7358_750_scatter.png}
     \includegraphics[width=0.47\linewidth]{plots/plot_det_linearity_perbx_pcc_7358_750_avg.png}
     \caption{
       PCC / HFOC  SBIL ratios as a function of HFOC SBIL for one bunch crossing in Fill 7358.
-      The graphs illustrate the method for determining the uncertainty on the average ratio at a given SBIL value as described in the text.
+      The graphs illustrate the method for determining the average ratio at a given SBIL value as described in the text.
     \label{fig:sbilratiomethod}
     }
   \end{center}
@@ -91,6 +91,19 @@ Figures~\ref{fig:sbilratiosresults6847} and \ref{fig:sbilratiosresults7358} summ
       The data points and uncertainties are determined as described in the text.
       The fills are fit separately (top) and together (bottom).
       \label{fig:sbilratiosresultscombined}
+    }
+  \end{center}
+\end{figure}
+
+
+\clearpage
+\begin{figure}[t]
+  \begin{center}
+    \includegraphics[width=0.47\linewidth]{plots/sbilratios_singles/plot_linearity_det_correlation.png}
+    \includegraphics[width=0.47\linewidth]{plots/sbilratios_singles/plot_linearity_det_correlation_ratio.png}
+    \caption{
+      Correlations (left) and ratios (right) of the SBIL values between different luminometers in Fill 7358.
+    \label{fig:sbilratios_dets}
     }
   \end{center}
 \end{figure}

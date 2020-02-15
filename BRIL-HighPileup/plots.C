@@ -237,50 +237,90 @@ void plot_det_ratio_vsls(std::vector<long> bxlist,float rmin=0.90,float rmax=1.1
   
 }
 
-void plot_det_correlation(TString CUTBX){
+void plot_det_correlation(std::vector<long> bxlist){
+
+  TString CUTBX=TString("((bx==")+bxlist[0]+")";
+  for(int b=1;b<bxlist.size();b++)
+    CUTBX=CUTBX+"||(bx=="+bxlist[b]+")";
+  CUTBX=CUTBX+")";
   
   TH2F* Correlation[NDET];
+  TH2F* Ratio[NDET];
   TF1* FCorrFit[NDET];
   for(int i=0;i<DETLIST.size();i++){
     TString name=TString("Correlation_")+DETLIST[i];
-    Correlation[i] = new TH2F(name,"",100,0.1,20,100,0.1,20);
+    Correlation[i] = new TH2F(name,"",400,0.1,20,400,0.1,20);
     Correlation[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
     Correlation[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
-    tree->Draw(TString("")+DETLIST[i]+":"+detsel+">>"+Correlation[i]->GetName(),CUTTime+"&&"+CUTBX+"&&"+detsel+">1.0");
+    tree->Draw(TString("")+DETLIST[i]+":"+detsel+">>"+Correlation[i]->GetName(),CUTLumis+"&&("+detsel+">"+minsbil+")"+"&&"+CUTBX);
     FCorrFit[i] = fitLinearity(Correlation[i]);
+
+    Ratio[i] = new TH2F(name+"ratio","",400,0.1,20,400,0,1.3);
+    Ratio[i]->SetMarkerColor(DETColor[DETLIST[i].Data()]);
+    Ratio[i]->SetLineColor(DETColor[DETLIST[i].Data()]);
+    tree->Draw(TString("")+DETLIST[i]+"/"+detsel+":"+detsel+">>"+Ratio[i]->GetName(),CUTLumis+"&&("+detsel+">"+minsbil+")"+"&&"+CUTBX);
   }
+
+
   
   TH1F HFrame("HFrame","",1,0,20);
   HFrame.GetYaxis()->SetRangeUser(0,20);
-  HFrame.GetYaxis()->SetTitle("sbil");
-  HFrame.GetXaxis()->SetTitle(TString("")+DETName[detsel.Data()]+"  sbil");
+  HFrame.GetYaxis()->SetTitle("SBIL");
+  HFrame.GetXaxis()->SetTitle(TString("")+DETName[detsel.Data()]+"  SBIL");
   
-  TLegend correlation_leg(0.5,0.17,0.87,0.45);
-  correlation_leg.SetLineColor(0);
-  correlation_leg.SetLineWidth(0);
-  correlation_leg.SetShadowColor(0);
-  correlation_leg.SetFillColor(0);
-  correlation_leg.SetFillStyle(0);
-  
+  TF1 FDiag("FDiag","x",0,20);
+  FDiag.SetLineStyle(2);
+  FDiag.SetLineColor(1);
 
-  labeltext.SetTextSize(0.045);
-  int counter=0; 
-  C->Clear();
+  
+  TCanvas C2("C2","",700,700);
+
+  //int counter=0; 
+  C2.Clear();
+  HFrame.Draw();
   for(int i=0;i<DETLIST.size();i++){
-    if(DETLIST[i].CompareTo(detsel)==0)continue;
-    Correlation[i]->GetYaxis()->SetRangeUser(0,20);
-    Correlation[i]->GetYaxis()->SetTitle(DETName[DETLIST[i].Data()]+" sbil");
-    Correlation[i]->GetXaxis()->SetTitle(DETName[detsel.Data()]+"  sbil");
-    Correlation[i]->Draw("psame");
-    FCorrFit[i]->Draw("lsame");
+    //Correlation[i]->SetMarkerSize(1.);
+    Correlation[i]->Draw("histpsame");
+    //FCorrFit[i]->Draw("lsame");
+
+    labeltext.SetTextSize(0.025);
     char text[100];
-    sprintf(text," y = (%.2f+/-%.2f) + (%.3f+/-%.3f)*x ",
-	    FCorrFit[i]->GetParameter(0),FCorrFit[i]->GetParError(0),
-	    FCorrFit[i]->GetParameter(1),FCorrFit[i]->GetParError(1));
-    labeltext.DrawTextNDC(0.3,0.2,text);
+    //sprintf(text,DETName[DETLIST[i].Data()]+": y = (%.2f+/-%.2f) + (%.3f+/-%.3f)*x ", FCorrFit[i]->GetParameter(0),FCorrFit[i]->GetParError(0),FCorrFit[i]->GetParameter(1),FCorrFit[i]->GetParError(1));
+    sprintf(text,"%s",DETName[DETLIST[i].Data()].Data());
+    labeltext.SetTextColor(DETColor[DETLIST[i].Data()]);
+    labeltext.DrawTextNDC(0.6,0.3-0.04*i,text);
   }
-  C->Print(OUTPATH+"/plot_linearity_det_correlation.png");
- 	     
+  FDiag.Draw("lsame");
+  labeltext.SetTextSize(0.035);
+  labeltext.SetTextColor(1);
+  labeltext.DrawTextNDC(0.22,0.85,TString("Fill ")+FILL+", single/leading bunches");
+  C2.Print(OUTPATH+"/plot_linearity_det_correlation.png");
+
+
+  TF1 FHor("FHor","1",0,20);
+  FHor.SetLineStyle(2);
+  FHor.SetLineColor(1);
+
+  C2.Clear();
+  HFrame.GetYaxis()->SetRangeUser(0.8,1.3);
+  HFrame.GetYaxis()->SetTitle("ratio");
+  HFrame.Draw();
+  for(int i=0;i<DETLIST.size();i++){
+    //Ratio[i]->SetMarkerSize(1.05);
+    Ratio[i]->Draw("histpsame");
+ 
+    labeltext.SetTextSize(0.025);
+    char text[100];
+    sprintf(text,"%s",(DETName[DETLIST[i].Data()]+" / "+DETName[detsel.Data()]).Data());
+    labeltext.SetTextColor(DETColor[DETLIST[i].Data()]);
+    labeltext.DrawTextNDC(0.6,0.3-0.04*i,text);
+  }
+  FHor.Draw("lsame");
+  labeltext.SetTextSize(0.035);
+  labeltext.SetTextColor(1);
+  labeltext.DrawTextNDC(0.22,0.85,TString("Fill ")+FILL+", single/leading bunches");
+  C2.Print(OUTPATH+"/plot_linearity_det_correlation_ratio.png");
+
 }
 
 

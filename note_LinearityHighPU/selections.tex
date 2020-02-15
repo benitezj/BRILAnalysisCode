@@ -1,6 +1,6 @@
 
 The luminometer data corresponding to the $\mu$-scans is selected by applying selections on the time stamps.
-The selections remove luminosity values when the LHC beam conditions are in transition and cause comparisons across luminometers to fail.
+The selections remove luminosity values when the LHC beam conditions are in transition.
 The time selections are best determined from one of the luminometers read by the BRIL-DAQ as the temporal granularity has ``nibble'' resolution ($\sim$2s), while the PCC luminosity values are determined every lumi section ($\sim$23s).
 
 Figure~\ref{fig:lumivstime} shows the luminosity vs. time for the HFOC luminometer and the transition time stamps that were determined from these data.
@@ -11,8 +11,7 @@ The absolute time stamp values in seconds are the following:
 \end{itemize}
 
 All data  within 24 seconds of these transitions times are excluded from the analysis, in the case of PCC the luminosity sections with time stamps in these windows are removed.
-The data for luminometers with nibble granualurity (HFOC, PLT, BCM) are then averaged within lumi sections for comparison with PCC. 
-
+The data for luminometers with nibble granualurity (HFOC, PLT, BCM) are then averaged within the corresponding  lumisections for comparison with PCC. 
 The PCC and HFOC luminosity values per lumisection before and after the time selections are shown in Figure~\ref{fig:lumivsls}.
 
 
@@ -35,7 +34,7 @@ The PCC and HFOC luminosity values per lumisection before and after the time sel
     \includegraphics[width=0.6\linewidth]{plots/plot_lumi_vsls_7358_before.png}
     \includegraphics[width=0.6\linewidth]{plots/plot_lumi_vsls_7358_after.png}
     \caption{
-    PCC and HFOC single bunch instantenous luminosity (SBIL) after applying afterglow corrections for one bunch crossing in Fill 7358, before (top) and after (bottom) applying the time selections.
+    PCC and HFOC single bunch instantenous luminosity (SBIL) for one bunch crossing in Fill 7358 before (top) and after (bottom) applying the time selections.
     \label{fig:lumivsls}
     }
   \end{center}

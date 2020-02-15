@@ -2,10 +2,11 @@
 % Lines starting with the comment character (%) are normally removed before release outside the collaboration, but not those comments ending lines
 
 
-
 %%%%%%%%%%%%% local definitions %%%%%%%%%%%%%%%%%%%%%
-\newcommand{\mytitle}{PCC luminosity linearity studies with high pile-up data}
+\newcommand{\mytitle}{PCC linearity studies with high pile-up p-p collisions}
 \newcommand{\instlumiunit}{$\times 10^{34} cm^{-2} s^{-1}$}
+\newcommand{\zerobias}{$ZeroBias$}
+\newcommand{\random}{$Random$}
 
 
 %%%%%%%%%%%%%%%  Title page %%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,7 +32,8 @@
 % 2. **DO NOT use %**                  to comment out sections of the abstract: the extractor will still grab those lines (and they won't be comments any longer!).
 % 3. For PASs: **DO NOT use CMS tex macros.**...in the abstract: CDS MathJax processor used on the abstract doesn't understand them _and_ will only look within $$. The abstracts for papers are hand formatted so macros are okay.
 \abstract{
-   Studies are presented on the relative linearity of the PCC, PLT, BCM1F, and HF-OC luminometers using special high pile-up proton-proton data from the 2018 LHC runs.
+  This note documents studies on the relative linearity of the PCC and other luminometers using special high pile-up proton-proton data from the 2018 LHC runs.
+  A wide range of pile-up is tested between 5 and 100 using scans in fills 6847 and 7358.
 }
 
 % >> PDF Metadata
@@ -39,11 +41,14 @@
 % Also: make sure that the values of the metadata items are sensible and are in plain text with the possible exception of the PDFtitle for a PAS. Then you can use pure TeX symbols as if on a typewriter. Examples: $\sqrt{s}=13\TeV$ => $sqrt{s}=$ 13 TeV; 32\fbinv => 32 fb$^{-1}$
 % No unescaped comment % characters.
 % No curly braces {} except for TeX in the PDFtitle.
-\hypersetup{%
-pdfauthor={Jose Benitez},%
-pdftitle={\mytitle},
-pdfsubject={CMS},%
-pdfkeywords={CMS, BRIL, Luminosity, Pixel}}
+\hypersetup{
+  linkcolor=blue,
+  urlcolor=blue,
+  pdfauthor={Jose Benitez},
+  pdftitle={\mytitle},
+  pdfsubject={CMS},
+  pdfkeywords={CMS, BRIL, Luminosity, Pixel}
+}
 
 \maketitle %maketitle comes after all the front information has been supplied
 % >> Text
@@ -75,7 +80,7 @@ pdfkeywords={CMS, BRIL, Luminosity, Pixel}}
 \input{selections}
 \clearpage
 \newpage
-\section{Linearity determination}
+\section{Relative linearity determination}
 \input{sbilratios}
 \clearpage
 \newpage
@@ -84,7 +89,7 @@ pdfkeywords={CMS, BRIL, Luminosity, Pixel}}
 \clearpage
 \newpage
 \section{Summary}
-
+\input{summary}
 
 
 % >> acknowledgments (for journal papers only)

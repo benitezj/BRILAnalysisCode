@@ -1,27 +1,27 @@
 
-For the PCC luminosity determination two types of data-sets are processed, RANDOM trigger data for determination of ``afterglow'' corrections using non-colliding bunches, and ZEROBIAS data for the cluster counting in colliding bunches.
-The data samples are stored in ALCARECO format in the CERN EOS system ($/eos/cms/store/$) in the paths shown in Table~\ref{tab:datapaths}.
+For the PCC luminosity determination two types of data-sets are processed, Random trigger data for determination of ``afterglow'' corrections using the noise observed in non-colliding bunches, and ZeroBias data for the cluster counting in colliding bunches.
+The data samples are stored in ALCARECO format in the CERN EOS system in the paths shown in Table~\ref{tab:datapaths}.
 
 Additional data is needed to obtain the corresponding luminosity for the HF, PLT, and BCM luminometers.
-For these detectors the BRIL data acquisition system (BRIL-DAQ) is used and the data is stored in HD5 file format in special machines at Point 5 (brildev).
-The files used for the two fills are the following:\\
-{\small /brildata/vdmdata18/7358\_1810260704\_1810260726.hd5 \\
-/brildata/vdmdata18/6847\_1806261047\_1806261133.hd5
-}
+For these detectors the BRIL data acquisition system (\emph{BRIL-DAQ}) is used and the data is stored in HD5 file format in special machines at Point 5 (\emph{brildev}).
+The data samples used are shown in the Table~\ref{tab:datapathsbrildev}.
+For these luminometers no additional corrections are applied, except for the HFOC residual afterglow.
 
-
-Finally, the HF luminometer data in the hd5 files does not include final afterglow corrections for the HF-OC algorithm.
+The HF luminometer data in the hd5 files does not include final afterglow corrections for the HFOC algorithm.
 These corrections have been obtained separately in ROOT histogram format from the Princeton group, and are currently stored in the following public directory:\\
-{\small /afs/cern.ch/user/j/jingyu/public/LUMI/for\_jose/}
+\emph{/afs/cern.ch/user/j/jingyu/public/LUMI/for\_jose/}
 
 The visible cross-sections used to normalize the data from each luminometer are listed in Table~\ref{tab:crossections}.
+The values used for each luminometer differ from the ones listed in the 2018 PAS due to corrections which are needed for each detector as described in the table.
 
 
 
 
 \clearpage
 \begin{table}[h]
-  \caption{Paths to the data used for the PCC luminosity determination (ZeroBias) and afterglow corrections (Random).}
+  \caption{Paths to the data used for the PCC luminosity determination (ZeroBias) and afterglow corrections (Random).
+  The data paths are relative to the CERN eos system: $/eos/cms/store/$
+  }
   \label{tab:datapaths}
   \footnotesize
   \begin{tabular}{l}
@@ -54,8 +54,24 @@ data/Run2018E/AlCaLumiPixels9/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309
   \end{tabular}
 \end{table}
 
+\vspace{24pt}
+\begin{table}[h]
+\begin{center}
+\caption{Paths to the data used for the HF, BCM, and PLT luminometers. This data is stored in the \emph{brildev} system at Point 5.}
+  \label{tab:datapathsbrildev}
+ % \footnotesize
+  \begin{tabular}{c|l}
+    \hline\hline
+Fill & Data Path \\
+6847 &  /brildata/vdmdata18/6847\_1806261047\_1806261133.hd5 \\
+7358 & /brildata/vdmdata18/7358\_1810260704\_1810260726.hd5  \\
+    \hline\hline
+  \end{tabular}
+\end{center}
+\end{table}
 
 
+\vspace{24pt}
 \begin{table}[h]
   \caption{Visible cross-sections used for each luminometer in this analysis. The differences with respect to the values in the 2018 PAS \cite{CMS-PAS-LUM-18-002} are described in the third column.}
   \label{tab:crossections}
@@ -63,10 +79,10 @@ data/Run2018E/AlCaLumiPixels9/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/325/309
       \hline
       Luminometer & $\sigma_{vis}$ & Difference w.r.t \cite{CMS-PAS-LUM-18-002}\\
       \hline
-      PCC   &  3140 $mb$     & Corresponds to a tighter Pixel module veto list. \\
-      HFOC  &  797.5 $\mu b$ & Includes additional correction of 0.987 for radiation damage in Fill 7358. \\
-      BCM1F &  203.2 $\mu b$ &  ?? \\
-      PLT   &  305 $\mu b$   & Corrected using emmittance scan data. \\
+      PCC   &  3140  $mb$     & This value corresponds to a tighter module veto list. \\
+      HFOC  &  797.5 $\mu b$  & This value is further corrected by 0.987 for radiation damage in Fill 7358. \\
+      BCM1F &  203.2 $\mu b$  &  ?? \\
+      PLT   &  305   $\mu b$  & Corrected using emmittance scan data. \\
       \hline\hline
     \end{tabular}
 \end{table}

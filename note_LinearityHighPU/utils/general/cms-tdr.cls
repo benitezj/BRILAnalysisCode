@@ -317,7 +317,7 @@
 %\usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks,linkcolor=magenta,citecolor=blue,urlcolor=red,plainpages=false,pdfpagelabels]{hyperref}
 
 % Use following line for paper (no coloured links etc)
-\usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks=false,pdfborder={0 0 0},plainpages=false,pdfpagelabels]{hyperref}
+\usepackage[bookmarksnumbered,bookmarksopen,bookmarksopenlevel=1,colorlinks=true,pdfborder={0 0 0},plainpages=false,pdfpagelabels]{hyperref}
 
 \usepackage[numbers,sort&compress,merge]{natbib}
 \ifthenelse{\boolean{cms@tdr}}

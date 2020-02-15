@@ -17,7 +17,7 @@ void plot_linearity(long fill=7358){
   //plot_det_ratio_vstime(std::vector<long>{BXSel},0.9,1.20);
   //plot_det_ratio_vsls(std::vector<long>{BXSel},0.9,1.20);
 
-  //plot_det_correlation(CUTBX);
+  plot_det_correlation(BXSpecial);//std::vector<long>{BXSel});
 
   /////this will combine the bx list
   //plot_det_linearity(std::vector<long>{BXSel});
@@ -32,7 +32,7 @@ void plot_linearity(long fill=7358){
   //plot_det_linearity_perbx(std::vector<long>{BXSel});  
   //plot_det_linearity_perbx(BXLeading);  
   //plot_det_linearity_perbx(BXLIST);
-  plot_det_linearity_perbx(BXSpecial);
+  //plot_det_linearity_perbx(BXSpecial);
 
 
   ///// this will combine trains and plot vs bcid within train

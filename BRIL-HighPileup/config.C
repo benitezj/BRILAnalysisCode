@@ -68,10 +68,11 @@ void configFill(long fill=0){///set fill specific configurations
 
   DETLIST.clear();
   //  DETLIST.push_back("hfoc");
-//  DETLIST.push_back("hfet");
-//  DETLIST.push_back("plt");
-//  DETLIST.push_back("bcm");
   DETLIST.push_back("pcc");
+  DETLIST.push_back("hfet");
+  DETLIST.push_back("plt");
+  DETLIST.push_back("bcm");
+
 //  DETLIST.push_back("pccB");
 //  DETLIST.push_back("pccF");
 //  DETLIST.push_back("pccB1");
@@ -148,8 +149,8 @@ void configFill(long fill=0){///set fill specific configurations
     BXSel = 750;
     NBXTrain = 12 ;
     BXLeading = std::vector<long>{750,1644};
-    //BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
-    BXSpecial = std::vector<long>{750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //trains
+    BXSpecial = std::vector<long>{11,536,750,1644}; //leading/solo bunches
+    //BXSpecial = std::vector<long>{750,751,752,753,754,755,756,757,758,759,760,761,1644,1645,1646,1647,1648,1649,1650,1651,1652,1653,1654,1655}; //trains
     //BXSpecial = std::vector<long>{758,759,760,761,1652,1653,1654,1655}; //last 4 bx's
     //BXSpecial = std::vector<long>{761,1655}; //last bx
     //BXSpecial = std::vector<long>{750,761};  //first bx
