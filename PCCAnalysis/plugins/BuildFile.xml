@@ -27,3 +27,7 @@
   <use   name="CondFormats/Common"/>
   <use   name="boost_python"/>
 </library>
+
+<library   file="PCCProducer.cc" name="PCCProducer">
+  <flags   EDM_PLUGIN="1"/>
+</library>

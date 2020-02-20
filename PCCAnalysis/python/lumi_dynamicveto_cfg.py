@@ -22,9 +22,6 @@ if inputfile != None :
     infile.close()
 else:    
     inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
-    #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-02May2018-v1/70000/AA1D32AA-CE57-E811-B631-FA163E09BABD.root')
-    #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-02May2018-v1/30000/F451E0E9-C553-E811-8AB7-FA163E4D19DB.root')
-    
 
 if len(inputlist) == 0 : sys.exit("No input files")
 print inputlist
@@ -59,24 +56,10 @@ if dbfile :
                                                                 tag = cms.string('TestCorrections'))),)    
 
 
-#process.load("CondCore.CondDB.CondDB_cfi")
-#process.PoolDBESSource = cms.ESSource("PoolDBESSource",
-#    DumpStat=cms.untracked.bool(True),
-#    toGet = cms.VPSet(cms.PSet(
-#        record = cms.string('LumiCorrectionsRcd'),
-#        tag = cms.string("TestCorrections")
-#    )),
-#    #connect = cms.string('sqlite_file:Global.db')
-#    connect = cms.string('sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db')
-#)
-
-
-
-
 ##################
 # rawPCC producer
-process.rawPCCProd = cms.EDProducer("RawPCCProducer",
-    RawPCCProducerParameters = cms.PSet(
+process.rawPCCProd = cms.EDProducer("PCCProducer",
+    PCCProducerParameters = cms.PSet(
         #Mod factor to count lumi and the string to specify output 
         inputPccLabel = cms.string("alcaPCCProducerZeroBias"),
         ProdInst = cms.string("alcaPCCZeroBias"),
@@ -89,10 +72,11 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
         OutputValue = cms.untracked.string("Average"),
     )    
 ) 
-print 'RawPCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections
+print 'PCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.PCCProducerParameters.ApplyCorrections
 
 
 ###### veto list  
+#vetofilename = None
 vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/mergedModuleList.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Lo.txt'
@@ -100,15 +84,16 @@ vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/v
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+if vetofilename : 
+    print 'reading from veto file: ', vetofilename
+    vetofile = open(vetofilename,'r')
+    for line in vetofile:
+        process.rawPCCProd.PCCProducerParameters.modVeto.extend([int(line.rstrip())])
+    vetofile.close()
+else :
+    print "module veto list is empty"
 
-print 'reading from veto file: ', vetofilename
-vetofile = open(vetofilename,'r')
-with vetofile as f:
-   for line in f:
-       process.rawPCCProd.RawPCCProducerParameters.modVeto.extend([int(line.rstrip())])
-vetofile.close()
-print process.rawPCCProd.RawPCCProducerParameters.modVeto
-
+print process.rawPCCProd.PCCProducerParameters.modVeto
 
 #process.path1 = cms.Path(process.rawPCCProd)
 process.path1 += process.rawPCCProd

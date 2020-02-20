@@ -23,16 +23,18 @@ process.source = cms.Source(
 #############################    init the reader   #######################################
 process.PCCLumiAnalyzer = cms.EDAnalyzer("PCCLumiAnalyzer", 
         cms.PSet(
-        # inLumiObLabel = cms.string("rawPCCProd"),ProdInst = cms.string("rawPCCRandom"),
+            # inLumiObLabel = cms.string("rawPCCProd"),ProdInst = cms.string("rawPCCRandom"),
+            
+            ###  LuminosityBlocks->Print()    ...   LumiInfo_rawPCCProd_rawPCZeroBias_rawRECO.obj.errLumiByBX_
+            #        inLumiObLabel = cms.string("rawPCCProd"), ProdInst = cms.string("rawPCZeroBias"),
+            
+            ### LumiInfo_rawPCCProd_lumiInfo_LumiInfo
+            inLumiObLabel = cms.string("rawPCCProd"), ProdInst = cms.string("lumiInfo"),
 
-        ###  LuminosityBlocks->Print()    ...   LumiInfo_rawPCCProd_rawPCZeroBias_rawRECO.obj.errLumiByBX_
-#        inLumiObLabel = cms.string("rawPCCProd"), ProdInst = cms.string("rawPCZeroBias"),
-        
-        ### LumiInfo_rawPCCProd_lumiInfo_LumiInfo
-        inLumiObLabel = cms.string("rawPCCProd"), ProdInst = cms.string("lumiInfo"),
+            readChannels = cms.untracked.bool(True)
 
         )
-    )
+)
 
 process.p = cms.Path(process.PCCLumiAnalyzer)
 

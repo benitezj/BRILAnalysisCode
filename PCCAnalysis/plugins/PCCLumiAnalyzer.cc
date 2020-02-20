@@ -7,6 +7,7 @@
 // system include files
 #include <memory>
 #include <fstream>
+#include <iostream>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -51,6 +52,10 @@ private:
   std::string   errfilename_;//
   std::ofstream errfile;
 
+  std::string   modfilename_;//
+  std::ofstream modfile;
+
+  bool readChannels_;
 };
 
 
@@ -62,13 +67,17 @@ PCCLumiAnalyzer::PCCLumiAnalyzer(const edm::ParameterSet& iConfig)
   countLumi_(0), 
   run_(0),
   csvfilename_("PCCLumiByBX.csv"),
-  errfilename_("PCCLumiByBX.err")
+  errfilename_("PCCLumiByBX.err"),
+  modfilename_("PCCLumiByBX.mod"),
+  readChannels_(0)
 {
   //
   //read the config
   //
   pccSrc_ = iConfig.getParameter<std::string>("inLumiObLabel");
   prodInst_ = iConfig.getParameter<std::string>("ProdInst");
+  readChannels_ = iConfig.getUntrackedParameter<bool>("readChannels",false);
+
 
   //
   //create LumiInfo token
@@ -139,6 +148,21 @@ PCCLumiAnalyzer::beginLuminosityBlock(const edm::LuminosityBlock& lumiSeg, const
     errfile<<","<<std::to_string(errByBX[i]);
   errfile<<std::endl;
   errfile.close();
+
+
+  if(readChannels_){
+    const std::vector<unsigned int> channelIDs= inLumiOb.getChannelIDs();
+    //std::cout<<lumiSeg.luminosityBlock()<<" ("<<channelIDs.size()<<"):";
+    //for(auto & id: channelIDs) std::cout<<", "<<id;
+    //std::cout<<std::endl;
+
+    modfile.open(modfilename_, std::ios_base::app);
+    modfile<<std::to_string(lumiSeg.run())<<",";
+    modfile<<std::to_string(lumiSeg.luminosityBlock())<<","<<channelIDs.size();
+    for(auto & id: channelIDs) modfile<<","<<id;
+    modfile<<std::endl;
+    modfile.close();
+  }
 
 
 }
