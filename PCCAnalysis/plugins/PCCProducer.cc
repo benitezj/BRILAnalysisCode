@@ -47,7 +47,9 @@ class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
             void endLuminosityBlockProduce(edm::LuminosityBlock& lumiSeg, const edm::EventSetup& iSetup) final;
             void produce                  (edm::Event& iEvent, const edm::EventSetup& iSetup) final;
 
-
+            virtual void beginJob() override;
+            virtual void endJob() override;
+  
             edm::EDGetTokenT<reco::PixelClusterCounts>  pccToken;
             std::string   pccSource_;                   //input file EDproducer module label 
             std::string   prodInst_;                    //input file product instance 
@@ -68,6 +70,11 @@ class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
             std::string csvOutLabel_;
             bool saveCSVFile_;
 
+            std::string modOutLabel_;
+            std::ofstream modfile;
+            unsigned int modid_[2000];
+            unsigned int modcount_[2000][LumiConstants::numBX];//integrates counts per module and bx
+
             bool applyCorr_;
             std::vector<float> correctionScaleFactors_;
 
@@ -87,6 +94,7 @@ PCCProducer::PCCProducer(const edm::ParameterSet& iConfig)
     applyCorr_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("ApplyCorrections",false);
     saveCSVFile_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("saveCSVFile",false);
     csvOutLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("label",std::string("rawPCC.csv"));
+    modOutLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("modOutLabel",std::string(""));
 
     edm::InputTag PCCInputTag_(pccSource_, prodInst_);
     clustersPerBXOutput_.resize(LumiConstants::numBX,0);//vector containing clusters per bxid 
@@ -101,6 +109,36 @@ PCCProducer::PCCProducer(const edm::ParameterSet& iConfig)
 
 //--------------------------------------------------------------------------------------------------
 PCCProducer::~PCCProducer(){
+}
+
+//-------------------------------------------------------------------------------------------------
+void PCCProducer::beginJob(){
+  if(modOutLabel_.compare("")!=0){
+    system((std::string("rm -f ")+modOutLabel_).c_str());
+    modfile.open(modOutLabel_, std::ios_base::out);
+    if (!modfile.is_open())
+      throw cms::Exception("PCCProducer:: ") <<  " unable to create the modOutLabel file.";
+    modfile.close();
+
+    for (int i=0;i<2000;i++){
+      modid_[i] = 0 ;
+      for (int bx=0;bx<int(LumiConstants::numBX);bx++)
+	modcount_[i][bx] = 0 ;
+    }
+  }
+}
+
+void PCCProducer::endJob(){
+  if(modOutLabel_.compare("")!=0){
+    modfile.open(modOutLabel_, std::ios_base::out);
+    for (int i=0;i<2000;i++){
+      modfile<<modid_[i]<<",";
+      for (int bx=0;bx<int(LumiConstants::numBX);bx++)
+	modfile<<modcount_[i][bx]<<",";
+      modfile<<std::endl;
+    }
+    modfile.close();
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -254,6 +292,25 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
 
         csvfile.close();
     }
+
+
+
+    if(modOutLabel_.compare("")!=0){
+      for (unsigned int i=0;i<modID_.size();i++){      
+	// modfile<<std::to_string(lumiSeg.run())<<",";
+	// modfile<<std::to_string(lumiSeg.luminosityBlock())<<",";	
+	// modfile<<std::to_string(modID_.at(i))<<",";	
+	// for (int bx=0;bx<int(LumiConstants::numBX);bx++)
+        //     modfile<<clustersPerBXInput_.at(i*int(LumiConstants::numBX)+bx)<<",";
+	// modfile<<std::endl;   
+	
+	modid_[i] = modID_.at(i);
+	for (int bx=0;bx<int(LumiConstants::numBX);bx++)
+	  modcount_[i][bx] += clustersPerBXInput_.at(i*int(LumiConstants::numBX)+bx);
+      }
+    }
+
+
 }
 
 //--------------------------------------------------------------------------------------------------

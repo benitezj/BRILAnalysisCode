@@ -22,7 +22,6 @@ INSTALLATION=${CMSSW_BASE}/src
 ## only a few runs
 TEST=0
 
-### options:
 #jobtype=corr
 jobtype=lumi
 echo "job type: $jobtype"
@@ -92,7 +91,6 @@ if [ "$action" == "0" ]; then
     echo "mkdir -p $outputdir"
     mkdir -p $outputdir
     /bin/ls $outputdir
-
 fi
 
 ## clean up the runs file

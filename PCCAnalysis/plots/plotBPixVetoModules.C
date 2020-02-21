@@ -1,38 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
-//BPIX
-std::map<long,int> LY;
-std::map<long,int> LD;
-std::map<long,int> MD;
-
-//FPIX
-std::map<long,int> SD;
-std::map<long,int> DI;
-std::map<long,int> BL;
-std::map<long,int> PN;
+#include "globals.h"
 
 
 void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
-  //BPIX
-  ifstream cfile_bpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix.txt");
-  if (!cfile_bpix.is_open()){
-    std::cout << "Unable to open coordinates"<<endl;
-    return;
-  }
-  std::string cline_bpix;
-  while (std::getline(cfile_bpix,cline_bpix)){
-    std::stringstream iss(cline_bpix);
-    long module,ly,ld,mod;
-    iss>>module>>ly>>ld>>mod;
-    LY[module]=ly;
-    LD[module]=ld;
-    MD[module]=mod;
-  }
+  readModCoordinates();
   
   //BPIX
   TH2F B[4];
@@ -45,15 +21,14 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     //B[l].SetMarkerStyle(8);
   }
 
+  
+  int BCountN[4]={0,0,0,0};
+  int BCountP[4]={0,0,0,0};
   ifstream myfile(VetoList.c_str());
   if (!myfile.is_open()){
     std::cout << "Unable to open "<<endl;
     return;
   }
-
-  
-  int BCountN[4]={0,0,0,0};
-  int BCountP[4]={0,0,0,0};
   std::string line;
   while (std::getline(myfile,line)){
     int module=atoi(line.c_str());
@@ -71,23 +46,6 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
 
 
   ////FPIX
-  ifstream cfile_fpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix.txt");
-  if (!cfile_fpix.is_open()){
-    std::cout << "Unable to open coordinates"<<endl;
-    return;
-  }
-  std::string cline_fpix;
-  while (std::getline(cfile_fpix,cline_fpix)){
-    std::stringstream iss(cline_fpix);
-    long module,sd,di,bl,pn;
-    iss>>module>>sd>>di>>bl>>pn;
-    SD[module]=sd;
-    DI[module]=di;
-    BL[module]=bl;
-    PN[module]=pn;
-  }
-
-
   TH2F F[2];
   for(long l=0;l<2;l++){
     F[l]=TH2F(TString("D")+l,"",7,-3.5,3.5,57,-28.5,28.5);

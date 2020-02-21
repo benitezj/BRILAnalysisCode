@@ -70,6 +70,7 @@ process.rawPCCProd = cms.EDProducer("PCCProducer",
         saveCSVFile=cms.untracked.bool(True),
         modVeto=cms.vint32(),
         OutputValue = cms.untracked.string("Average"),
+        modOutLabel = cms.untracked.string("PCCLumiByBX.mod"),
     )    
 ) 
 print 'PCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.PCCProducerParameters.ApplyCorrections
