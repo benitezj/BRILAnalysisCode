@@ -38,8 +38,8 @@ void rootlogon(){
   gStyle->SetFrameBorderMode( 0);
 
   ////// Histograms
-  //  gStyle->SetHistFillColor(2);
-  //  gStyle->SetHistFillStyle(0);
+  gStyle->SetHistFillColor(0);
+  gStyle->SetHistFillStyle(0);
   gStyle->SetHistLineColor(1);
   gStyle->SetHistLineStyle(0);
   gStyle->SetHistLineWidth(1);

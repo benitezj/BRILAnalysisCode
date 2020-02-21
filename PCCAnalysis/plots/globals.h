@@ -42,13 +42,14 @@ void drawCMSPrelim(long year,float xpos=0.2){
 std::map<long,int> LY;
 std::map<long,int> LD;
 std::map<long,int> MD;
-int BPIX_nLD[4]={6,14,22,32};
+unsigned BPIX_nLD[4]={12,28,44,64};
 
 //FPIX
 std::map<long,int> SD;
 std::map<long,int> DI;
 std::map<long,int> BL;
 std::map<long,int> PN;
+unsigned FPIX_nBL = 56;
 
 void readModCoordinates(){
 
