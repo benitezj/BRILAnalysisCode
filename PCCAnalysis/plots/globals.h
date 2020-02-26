@@ -69,8 +69,6 @@ void readModCoordinates(){
     MD[module]=mod;
   }
 
-
-
   ////FPIX
   ifstream cfile_fpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix.txt");
   if (!cfile_fpix.is_open()){
@@ -90,4 +88,36 @@ void readModCoordinates(){
 
 
   cout<<"successfully read the module coordinates"<<endl;
+}
+
+
+std::map<long,int> BPIX_R;
+std::map<long,int> BPIX_PHI;
+std::map<long,int> BPIX_Z;
+
+void readModRPhiZCoordinates(){
+
+  //BPix
+  ifstream cfile_bpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");
+  if (!cfile_bpix.is_open()){
+    std::cout << "Unable to open coordinates"<<endl;
+    return;
+  }
+
+  std::string cline_bpix;
+  while (std::getline(cfile_bpix,cline_bpix)){
+    std::stringstream iss(cline_bpix);
+    long module;
+    string lyldmod;
+    string rphiz;
+    
+    iss>>module>>lyldmod>>rphiz;
+
+    cout<<module<<" "<<lyldmod.c_str()<<" "<<rphiz.c_str()<<endl;
+    
+    //LY[module]=ly;
+    //LD[module]=ld;
+    //MD[module]=mod;
+  }
+
 }

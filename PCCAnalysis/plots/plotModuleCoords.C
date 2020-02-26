@@ -1,0 +1,117 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include "BRILAnalysisCode/PCCAnalysis/plots/globals.h"
+
+
+TString OutPath=".";
+
+
+void plotModuleCoords(long Run){
+ 
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+
+  readModCoordinates();
+  readModRPhiZCoordinates();
+
+
+  TH1F * GBPIX[4];
+  for(int l=0;l<4;l++)
+    GBPIX[l] = new TH1F(TString("GBPIX_")+(long)l, "" , 8*BPIX_nLD[l], 0.5, 8*BPIX_nLD[l] + 0.5);
+
+  TH1F * GFPIX[2];
+  for(int p=0;p<2;p++)
+    GFPIX[p] = new TH1F(TString("GFPIX_")+(long)p, "" , 6*FPIX_nBL, 0.5, 6*FPIX_nBL + 0.5);
+  
+
+   
+    /* //BPIX modules */
+    /* if ( MD.find(mod) != MD.end() ){ */
+    /*   GBPIX[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , modcount[counter] ); */
+    /*   //cout<<mod<<":"<<LY[mod]<<","<<MD[mod]<<","<<LD[mod]<<endl; */
+    /* } */
+
+   
+    /* //FPIX modules */
+    /* if( SD.find(mod) != SD.end() ){ */
+    /*   unsigned disc = (SD[mod]==1?-1:1)*DI[mod] + 3; */
+    /*   if( disc > 3 ) disc--; */
+    /*   GFPIX[PN[mod]-1]->SetBinContent( FPIX_nBL * disc + BL[mod] , modcount[counter] ); */
+    /* } */
+    
+
+
+
+
+  
+  /////////////////////////////////////////////////////
+  ///   make the plots
+  ///////////////////////////////////////////////////
+  gStyle->SetOptStat(0);  
+  TCanvas C;
+  TLine Line;
+  Line.SetLineStyle(2);
+  TLatex text;
+  TCanvas C2("C2","",800,500);
+
+
+  ///////////////////////////////////////////////////////////
+  ///// BPIX
+  for(long l=0;l<4;l++){
+    C2.Clear();
+    GBPIX[l]->SetTitle(TString("                                       Barrel Layer ")+l);
+    GBPIX[l]->GetYaxis()->SetTitle("counts per module");
+    GBPIX[l]->GetXaxis()->SetTitle("ladder");
+    GBPIX[l]->GetXaxis()->SetNdivisions(0);
+    GBPIX[l]->GetYaxis()->SetRangeUser(0,GBPIX[l]->GetMaximum());//*1.5);
+    GBPIX[l]->SetMarkerSize(1);
+    GBPIX[l]->Draw("histp");
+
+    for(int m=0;m<8;m++){
+      Line.DrawLine(BPIX_nLD[l]*m, 0, BPIX_nLD[l]*m, GBPIX[l]->GetMaximum()*1.);
+      text.SetTextSize(0.035);
+      if(m==0) text.DrawLatex(BPIX_nLD[l]*(m+0.5), GBPIX[l]->GetMaximum()*0.15, TString("z Module"));
+      text.DrawLatex(BPIX_nLD[l]*(m+0.5), GBPIX[l]->GetMaximum()*0.1, TString("")+(long)(m>=4?m-3:m-4));
+    }
+    
+    text.SetTextSize(0.04);
+    text.DrawLatex(0,-GBPIX[l]->GetMaximum()*0.1,"1");
+    text.DrawLatex(BPIX_nLD[l]/2.,-GBPIX[l]->GetMaximum()*0.1,"--");
+    text.DrawLatex(BPIX_nLD[l],-GBPIX[l]->GetMaximum()*0.1,TString("")+(long)BPIX_nLD[l]+" ladder (#phi)");
+    
+    C2.Print(OutPath+"/plotModuleCoords_BPIX_r_L"+l+".png");
+  }
+
+  
+
+  /////////////////////////////////////////
+  /// FPIX
+  for(int p=0;p<2;p++){
+    C2.Clear();
+    GFPIX[p]->SetTitle(TString("                                       FPIX  Panel ")+(long)(p+1));
+    GFPIX[p]->GetYaxis()->SetTitle("counts per module");
+    //GFPIX[p]->GetXaxis()->SetTitle("blade");
+    GFPIX[p]->GetXaxis()->SetNdivisions(0);
+    GFPIX[p]->GetYaxis()->SetRangeUser(0,GFPIX[p]->GetMaximum());
+    GFPIX[p]->SetMarkerSize(1);
+    GFPIX[p]->Draw("histp");
+
+    text.SetTextSize(0.035);
+    for(int d=0;d<6;d++){
+      Line.DrawLine(FPIX_nBL*d, 0, FPIX_nBL*d, GFPIX[p]->GetMaximum()*1.);
+      text.DrawLatex(FPIX_nBL*(d+0.5), GFPIX[p]->GetMaximum()*0.1, TString("")+(long)(d>=3?d-2:d-3));
+    }
+    text.DrawLatex(FPIX_nBL/2., GFPIX[p]->GetMaximum()*0.15, TString("z Disk "));
+
+    text.SetTextSize(0.04);
+    text.DrawLatex(0,-GFPIX[p]->GetMaximum()*0.1,"1");
+    text.DrawLatex(FPIX_nBL/2.,-GFPIX[p]->GetMaximum()*0.1,"--");
+    text.DrawLatex(FPIX_nBL,-GFPIX[p]->GetMaximum()*0.1,TString("")+(long)FPIX_nBL+" blade (#phi)");
+
+    C2.Print(OutPath+"/plotModuleCoords_FPIX_r_P"+p+".png");    
+  }
+
+  gROOT->ProcessLine(".q");
+}
+
