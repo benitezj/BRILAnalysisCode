@@ -7,6 +7,7 @@ if [ "$submitdir" == "" ]; then
 fi
 #get the absolute path
 fullsubmitdir=`readlink -f $submitdir`
+echo "fullsubmitdir: $fullsubmitdir"
 
 ## what to do : 0=create scripts, 1=submit, 2=check
 action=$2
@@ -15,6 +16,7 @@ action=$2
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags
 ref=hfoc
 INSTALLATION=${CMSSW_BASE}/src
+echo "INSTALLATION: $INSTALLATION"
 
 ###################
 ###  options
@@ -22,8 +24,8 @@ INSTALLATION=${CMSSW_BASE}/src
 ## only a few runs
 TEST=0
 
-#jobtype=corr
-jobtype=lumi
+jobtype=corr
+#jobtype=lumi
 echo "job type: $jobtype"
 
 #########################################################
@@ -207,8 +209,8 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
 	#### error check for corrections jobs
 	if [ "$jobtype" == "corr" ] && [ "$fail" == "0" ] ; then
-	    dbf=`/bin/ls $outputdir/${run}.db | grep err `
-	    if [ "$dbf" != "" ]; then
+	    #dbf=`/bin/ls $outputdir/${run}.db | grep err `	    
+	    if [ ! -f $outputdir/${run}.db ]; then
 		echo "no db"
 		fail=1
 	    fi

@@ -89,13 +89,13 @@ void plotPCCModules(long Run){
       //cout<<mod<<":"<<LY[mod]<<","<<MD[mod]<<","<<LD[mod]<<endl;
     }
 
-
-    // //FPIX modules
-    // if( SD.find(mod) != SD.end() ){
-    //   unsigned disc = (SD[mod]==1?-1:1)*DI[mod] + 3;
-    //   if( disc > 3 ) disc--;
-    //   GFPIX[PN[mod]-1]->SetBinContent( FPIX_nBL * disc + BL[mod] , modcount[counter] );
-    // }
+   
+    //FPIX modules
+    if( SD.find(mod) != SD.end() ){
+      unsigned disc = (SD[mod]==1?-1:1)*DI[mod] + 3;
+      if( disc > 3 ) disc--;
+      GFPIX[PN[mod]-1]->SetBinContent( FPIX_nBL * disc + BL[mod] , modcount[counter] );
+    }
     
     //cout<<mod<<endl;//<<" , "<<HModVsBX.GetBinContent(1,1)<<endl;
     counter++;
