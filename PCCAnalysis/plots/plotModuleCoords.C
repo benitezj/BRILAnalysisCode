@@ -4,113 +4,196 @@
 
 #include "BRILAnalysisCode/PCCAnalysis/plots/globals.h"
 
+TString OutPath="/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/DynamicVeto";
 
-TString OutPath=".";
+TLine Line;
+TLatex text;
+TCanvas Canvas("Canvas","",800,500);
 
 
-void plotModuleCoords(long Run){
+void drawBPIX(TH1F * G[4], TString cord){
+  Canvas.SetLeftMargin(0.15);
+
+  for(long l=0;l<4;l++){
+    Canvas.Clear();
+    G[l]->SetTitle(TString("                                       BPIX Layer ")+l);
+    G[l]->GetYaxis()->SetTitle(cord.Data());
+    G[l]->GetYaxis()->SetTitleSize(0.05);
+    G[l]->GetYaxis()->SetTitleOffset(0);
+    G[l]->GetXaxis()->SetNdivisions(0);
+    G[l]->GetYaxis()->SetRangeUser(G[l]->GetMinimum(),G[l]->GetMaximum());
+    G[l]->SetMarkerSize(1);
+    G[l]->Draw("histp");
+
+    float range=G[l]->GetMaximum()-G[l]->GetMinimum();
+    Line.SetLineStyle(2);
+    text.SetTextSize(0.035);
+    for(int m=0;m<8;m++){
+      Line.DrawLine(BPIX_nLD[l]*m, G[l]->GetMinimum(), BPIX_nLD[l]*m, G[l]->GetMaximum());
+      text.DrawLatex(BPIX_nLD[l]*(m+0.5), G[l]->GetMinimum()-range*0.05, TString("")+(long)(m>=4?m-3:m-4));
+    }    
+    text.DrawLatex(BPIX_nLD[l]*7.5, G[l]->GetMinimum()-range*0.05, TString("   Module"));
+
+    text.SetTextSize(0.04);
+    text.DrawLatex(0,G[l]->GetMinimum()-range*0.1,"1");
+    text.DrawLatex(BPIX_nLD[l]/2.,G[l]->GetMinimum()-range*0.1,"--");
+    text.DrawLatex(BPIX_nLD[l],G[l]->GetMinimum()-range*0.1,TString("")+(long)BPIX_nLD[l]+" Ladder");
+    
+    Canvas.Print(OutPath+"/plotModuleCoords_BPIX_"+cord+"_L"+l+".png");
+  }
+
+}
+
+
+void drawFPIX_0(TH1F ** G, TString cord){
+  Canvas.SetLeftMargin(0.15);
+
+  for(long p=0;p<2;p++){
+    Canvas.Clear();
+    G[p]->SetTitle(TString("                                       FPIX  Panel ")+(long)(p+1));
+    G[p]->GetYaxis()->SetTitle(cord.Data());
+    G[p]->GetYaxis()->SetTitleSize(0.05);
+    G[p]->GetYaxis()->SetTitleOffset(0);
+    G[p]->GetXaxis()->SetNdivisions(0);
+    G[p]->GetYaxis()->SetRangeUser(G[p]->GetMinimum(),G[p]->GetMaximum());
+    G[p]->SetMarkerSize(1);
+    G[p]->Draw("histp");
+
+    float range=G[p]->GetMaximum() - G[p]->GetMinimum();
+    Line.SetLineStyle(2);
+    text.SetTextSize(0.04);
+    for(int d=0;d<6;d++){
+      Line.DrawLine(FPIX_nBL*d,G[p]->GetMinimum(), FPIX_nBL*d, G[p]->GetMaximum());
+      text.DrawLatex(FPIX_nBL*(d+0.5), G[p]->GetMinimum() - range*0.05, TString("")+(long)(d>=3?d-2:d-3));
+    }
+    text.DrawLatex(FPIX_nBL*5.5, G[p]->GetMinimum() - range*0.05, TString("   Disk "));
+
+    text.SetTextSize(0.04);
+    text.DrawLatex(0,G[p]->GetMinimum()-range*0.1,"1");
+    text.DrawLatex(FPIX_nBL/2.,G[p]->GetMinimum()-range*0.1,"--");
+    text.DrawLatex(FPIX_nBL,G[p]->GetMinimum()-range*0.1,TString("")+(long)FPIX_nBL+" Blade ");
+
+    Canvas.Print(OutPath+"/plotModuleCoords_FPIX_"+cord+"_P"+p+".png");    
+  }
+
+
+}
+
+
+void drawFPIX(TH1F * G[2][2], TString cord){
+  Canvas.SetLeftMargin(0.15);
+
+  for(long p=0;p<2;p++){
+    for(long r=0;r<2;r++){
+      Canvas.Clear();
+      G[p][r]->SetTitle(TString("                                       FPIX  Panel ")+(p+1)+" Ring "+(r+1));
+      G[p][r]->GetYaxis()->SetTitle(cord.Data());
+      G[p][r]->GetYaxis()->SetTitleSize(0.05);
+      G[p][r]->GetYaxis()->SetTitleOffset(0);
+      G[p][r]->GetXaxis()->SetNdivisions(0);
+      G[p][r]->GetYaxis()->SetRangeUser(G[p][r]->GetMinimum(),G[p][r]->GetMaximum());
+      G[p][r]->SetMarkerSize(1);
+      G[p][r]->Draw("histp");
+      
+      float range=G[p][r]->GetMaximum() - G[p][r]->GetMinimum();
+      Line.SetLineStyle(2);
+      text.SetTextSize(0.04);
+      for(int d=0;d<6;d++){
+	Line.DrawLine(FPIX_nBLR[r]*d,G[p][r]->GetMinimum(), FPIX_nBLR[r]*d, G[p][r]->GetMaximum());
+	text.DrawLatex(FPIX_nBLR[r]*(d+0.5), G[p][r]->GetMinimum() - range*0.05, TString("")+(long)(d>=3?d-2:d-3));
+      }
+      text.DrawLatex(FPIX_nBLR[r]*5, G[p][r]->GetMinimum() - range*0.1, TString("Disk"));
+      
+      text.SetTextSize(0.04);
+      text.DrawLatex(0,G[p][r]->GetMinimum()-range*0.1,TString("")+(long)(r==0 ? 1 : FPIX_nBLR[0]+1));
+      text.DrawLatex(FPIX_nBLR[r]/2.,G[p][r]->GetMinimum()-range*0.1,"--");
+      text.DrawLatex(FPIX_nBLR[r],G[p][r]->GetMinimum()-range*0.1,TString("")+(long)(r==0 ? FPIX_nBLR[0] : FPIX_nBL)+" Blade");
+      
+      Canvas.Print(OutPath+"/plotModuleCoords_FPIX_"+cord+"_P"+p+"_R"+r+".png");    
+    }
+  }
+
+
+}
+
+void plotModuleCoords(){
  
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
-  readModCoordinates();
+  //readModCoordinates();
   readModRPhiZCoordinates();
 
 
   TH1F * GBPIX[4];
-  for(int l=0;l<4;l++)
+  TH1F * GBPIX_PHI[4];
+  TH1F * GBPIX_Z[4];
+  for(int l=0;l<4;l++){
     GBPIX[l] = new TH1F(TString("GBPIX_")+(long)l, "" , 8*BPIX_nLD[l], 0.5, 8*BPIX_nLD[l] + 0.5);
+    GBPIX_PHI[l] = new TH1F(TString("GBPIX_PHI_")+(long)l, "" , 8*BPIX_nLD[l], 0.5, 8*BPIX_nLD[l] + 0.5);
+    GBPIX_Z[l] = new TH1F(TString("GBPIX_Z_")+(long)l, "" , 8*BPIX_nLD[l], 0.5, 8*BPIX_nLD[l] + 0.5);
+  }
 
-  TH1F * GFPIX[2];
+  TH1F * GFPIX[2][2];//Panel 1,2; Ring 1,2
+  TH1F * GFPIX_PHI[2][2];
+  TH1F * GFPIX_Z[2][2];
   for(int p=0;p<2;p++)
-    GFPIX[p] = new TH1F(TString("GFPIX_")+(long)p, "" , 6*FPIX_nBL, 0.5, 6*FPIX_nBL + 0.5);
-  
+    for(int r=0;r<2;r++){
+      GFPIX[p][r] = new TH1F(TString("GFPIX_P")+(long)p+"_R"+(long)r, "" , 6*FPIX_nBLR[r], 0.5, 6*FPIX_nBLR[r] + 0.5);
+      GFPIX_PHI[p][r] = new TH1F(TString("GFPIX_PHI_")+(long)p+"_R"+(long)r, "" , 6*FPIX_nBLR[r], 0.5, 6*FPIX_nBLR[r] + 0.5);
+      GFPIX_Z[p][r] = new TH1F(TString("GFPIX_Z_")+(long)p+"_R"+(long)r, "" , 6*FPIX_nBLR[r], 0.5, 6*FPIX_nBLR[r] + 0.5);
+    }
 
-   
-    /* //BPIX modules */
-    /* if ( MD.find(mod) != MD.end() ){ */
-    /*   GBPIX[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , modcount[counter] ); */
-    /*   //cout<<mod<<":"<<LY[mod]<<","<<MD[mod]<<","<<LD[mod]<<endl; */
-    /* } */
+  /////////////
+  ifstream cfile_bpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");
+  if (!cfile_bpix.is_open()){
+    std::cout << "Unable to open coordinates"<<endl;
+    return;
+  }
+  std::string cline_bpix;
+  while (std::getline(cfile_bpix,cline_bpix)){
+    std::stringstream iss(cline_bpix);
+    long mod;
+    iss>>mod;
+    GBPIX[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , BPIX_R[mod]);
+    GBPIX_PHI[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , BPIX_PHI[mod]);
+    GBPIX_Z[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , BPIX_Z[mod]);
+  }
 
-   
-    /* //FPIX modules */
-    /* if( SD.find(mod) != SD.end() ){ */
-    /*   unsigned disc = (SD[mod]==1?-1:1)*DI[mod] + 3; */
-    /*   if( disc > 3 ) disc--; */
-    /*   GFPIX[PN[mod]-1]->SetBinContent( FPIX_nBL * disc + BL[mod] , modcount[counter] ); */
-    /* } */
-    
 
-
+  ifstream cfile_fpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt");
+  if (!cfile_fpix.is_open()){
+    std::cout << "Unable to open coordinates"<<endl;
+    return;
+  }
+  std::string cline_fpix;
+  while (std::getline(cfile_fpix,cline_fpix)){
+    std::stringstream iss(cline_fpix);
+    long mod; iss>>mod;
+    int bin=FPIX_nBLR[RING[mod]] * DISK[mod] + (RING[mod]==0 ? BL[mod] : (BL[mod]-FPIX_nBLR[0]));
+    GFPIX[PN[mod]-1][RING[mod]]->SetBinContent( bin , FPIX_R[mod] );
+    GFPIX_PHI[PN[mod]-1][RING[mod]]->SetBinContent( bin, FPIX_PHI[mod] );
+    GFPIX_Z[PN[mod]-1][RING[mod]]->SetBinContent( bin , FPIX_Z[mod] );
+  }
 
 
   
   /////////////////////////////////////////////////////
   ///   make the plots
   ///////////////////////////////////////////////////
-  gStyle->SetOptStat(0);  
-  TCanvas C;
-  TLine Line;
-  Line.SetLineStyle(2);
-  TLatex text;
-  TCanvas C2("C2","",800,500);
-
 
   ///////////////////////////////////////////////////////////
   ///// BPIX
-  for(long l=0;l<4;l++){
-    C2.Clear();
-    GBPIX[l]->SetTitle(TString("                                       Barrel Layer ")+l);
-    GBPIX[l]->GetYaxis()->SetTitle("counts per module");
-    GBPIX[l]->GetXaxis()->SetTitle("ladder");
-    GBPIX[l]->GetXaxis()->SetNdivisions(0);
-    GBPIX[l]->GetYaxis()->SetRangeUser(0,GBPIX[l]->GetMaximum());//*1.5);
-    GBPIX[l]->SetMarkerSize(1);
-    GBPIX[l]->Draw("histp");
-
-    for(int m=0;m<8;m++){
-      Line.DrawLine(BPIX_nLD[l]*m, 0, BPIX_nLD[l]*m, GBPIX[l]->GetMaximum()*1.);
-      text.SetTextSize(0.035);
-      if(m==0) text.DrawLatex(BPIX_nLD[l]*(m+0.5), GBPIX[l]->GetMaximum()*0.15, TString("z Module"));
-      text.DrawLatex(BPIX_nLD[l]*(m+0.5), GBPIX[l]->GetMaximum()*0.1, TString("")+(long)(m>=4?m-3:m-4));
-    }
-    
-    text.SetTextSize(0.04);
-    text.DrawLatex(0,-GBPIX[l]->GetMaximum()*0.1,"1");
-    text.DrawLatex(BPIX_nLD[l]/2.,-GBPIX[l]->GetMaximum()*0.1,"--");
-    text.DrawLatex(BPIX_nLD[l],-GBPIX[l]->GetMaximum()*0.1,TString("")+(long)BPIX_nLD[l]+" ladder (#phi)");
-    
-    C2.Print(OutPath+"/plotModuleCoords_BPIX_r_L"+l+".png");
-  }
-
+  drawBPIX(GBPIX,"radius");
+  drawBPIX(GBPIX_PHI,"phi");
+  drawBPIX(GBPIX_Z,"z");
   
-
+  
   /////////////////////////////////////////
   /// FPIX
-  for(int p=0;p<2;p++){
-    C2.Clear();
-    GFPIX[p]->SetTitle(TString("                                       FPIX  Panel ")+(long)(p+1));
-    GFPIX[p]->GetYaxis()->SetTitle("counts per module");
-    //GFPIX[p]->GetXaxis()->SetTitle("blade");
-    GFPIX[p]->GetXaxis()->SetNdivisions(0);
-    GFPIX[p]->GetYaxis()->SetRangeUser(0,GFPIX[p]->GetMaximum());
-    GFPIX[p]->SetMarkerSize(1);
-    GFPIX[p]->Draw("histp");
-
-    text.SetTextSize(0.035);
-    for(int d=0;d<6;d++){
-      Line.DrawLine(FPIX_nBL*d, 0, FPIX_nBL*d, GFPIX[p]->GetMaximum()*1.);
-      text.DrawLatex(FPIX_nBL*(d+0.5), GFPIX[p]->GetMaximum()*0.1, TString("")+(long)(d>=3?d-2:d-3));
-    }
-    text.DrawLatex(FPIX_nBL/2., GFPIX[p]->GetMaximum()*0.15, TString("z Disk "));
-
-    text.SetTextSize(0.04);
-    text.DrawLatex(0,-GFPIX[p]->GetMaximum()*0.1,"1");
-    text.DrawLatex(FPIX_nBL/2.,-GFPIX[p]->GetMaximum()*0.1,"--");
-    text.DrawLatex(FPIX_nBL,-GFPIX[p]->GetMaximum()*0.1,TString("")+(long)FPIX_nBL+" blade (#phi)");
-
-    C2.Print(OutPath+"/plotModuleCoords_FPIX_r_P"+p+".png");    
-  }
+  drawFPIX(GFPIX,"radius");
+  drawFPIX(GFPIX_PHI,"phi");
+  drawFPIX(GFPIX_Z,"z");
+  
 
   gROOT->ProcessLine(".q");
 }
