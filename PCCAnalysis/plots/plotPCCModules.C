@@ -10,19 +10,14 @@ void plotPCCModules(long Run){
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   gStyle->SetOptStat(0);  
 
-  TString Path="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B_dynamicVeto_modules";
-  TString OutPath="/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/DynamicVeto";  
+  TString Path="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B_dynamicVeto_modules_v2";
+  cout<<"Reading from: "<< Path<<endl;
+
+  OutPath+=TString("/")+Run;
+  system(TString("mkdir ")+OutPath);
 
   readModRPhiZCoordinates();
-
-  TH2F HModVsBX("HModVsBX","",NBX,0.5,NBX+0.5,NMOD,0,NMOD);
-  HModVsBX.GetXaxis()->SetTitle("bcid");
-  HModVsBX.GetYaxis()->SetTitle("Module");
-  HModVsBX.GetZaxis()->SetTitle("counts");
-  
-  TH1F HMod("HMod","",NMOD,0,NMOD);
-  HMod.GetXaxis()->SetTitle("Module");
-  HMod.GetYaxis()->SetTitle("counts");
+  readModVeto("BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt");
 
   TH1F * GBPIX[4];
   for(int l=0;l<4;l++)
@@ -39,8 +34,7 @@ void plotPCCModules(long Run){
   int NFPIX[6]={0,0,0,0,0,0};//modules per disk
   
 
-  //read the file
-  ///Open the lumi 
+  ///////////////////////////////////////////////
   TString infile=Path+"/"+Run+".mod";
   cout<<"Reading :"<<infile<<endl;
   ifstream myfile (infile.Data());
@@ -48,79 +42,103 @@ void plotPCCModules(long Run){
     cout << "Unable to open file: "<<infile.Data()<<endl; 
     return;
   }
+
   std::string line;
-  unsigned int mod=0;
-  unsigned short counter=0;
-  unsigned lumi=0.;
-  //std::map<unsigned,unsigned> modcount;
-  long modcount[NMOD];
-  for(int m=0;m<NMOD;m++) modcount[m]=0;
-
-
+  unsigned mod=0;
+  unsigned counter=0;
+  long clusters=0;
+  long totclusters=0;
   while (std::getline(myfile, line)){
     std::stringstream iss(line);
-    std::string token;
-    
-    ///read the module id
-    std::getline(iss,token,',');
-    std::stringstream modentry(token);
-    modentry>>mod;
-    if(mod < 30000000) continue;//skip some lines
-    
-    ///sum the bcids
-    for(int bx=0;bx<NBX;bx++){
-      std::getline(iss,token,',');
-      std::stringstream lumentry(token);
-      lumentry>>lumi;
-      modcount[counter] += lumi;      
-      HModVsBX.SetBinContent(bx+1,counter+1,lumi);
-    }    
 
-    HMod.SetBinContent(counter+1,modcount[counter]);
-    
+    iss>>mod>>clusters;
+    //cout<<mod<<" "<<clusters<<endl;
+
+    if(mod < 30000000) continue;//skip wrong lines
+
+
+    //here apply the veto list
+    if(MODVETO[mod]) continue;
+
 
     //BPIX modules
     if ( MD.find(mod) != MD.end() ){
-      GBPIX[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , modcount[counter] );
+      GBPIX[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , clusters );
       NBPIX[LY[mod]-1]++;
     }
-
    
     //FPIX modules
     if( SD.find(mod) != SD.end() ){
       int bin=FPIX_nBLR[RING[mod]] * DISK[mod] + (RING[mod]==0 ? BL[mod] : (BL[mod]-FPIX_nBLR[0]));
-      GFPIX[PN[mod]-1][RING[mod]]->SetBinContent( bin , modcount[counter] );
+      GFPIX[PN[mod]-1][RING[mod]]->SetBinContent( bin , clusters );
       NFPIX[DISK[mod]]++;
     }
     
+    totclusters+=clusters;
     counter++;
   }    
-  ///close files
-  myfile.close();
   
   cout<<"Total number of modules: "<<counter<<endl;
   cout<<"BPIX modules per layer:  "<<NBPIX[0]<<" , "<<NBPIX[1]<<" , "<<NBPIX[2]<<" , "<<NBPIX[3]<<endl;
   cout<<"FPIX modules per disk:  "<<NFPIX[0]<<" , "<<NFPIX[1]<<" , "<<NFPIX[2]<<" , "<<NFPIX[3]<<" , "<<NFPIX[4]<<" , "<<NFPIX[5]<<endl;
 
- 
+
+
+  //////////////////////////////////////////////
+  //// compute the module fractions
+  ////////////////////////////////////////////
+  std::ofstream ofile;
+  ofile.open("./Module_fraction.txt",std::ios_base::out);
+  if (!ofile.is_open())
+    std::cout<<  " unable to create output file."<<endl;
+
+  TH1F * GBPIXf[4];
+  for(int l=0;l<4;l++){
+    GBPIXf[l] = new TH1F(TString("GBPIXf_")+(long)l, "" , 8*BPIX_nLD[l], 0.5, 8*BPIX_nLD[l] + 0.5);
+  }
+
+  TH1F * GFPIXf[2][2];
+  for(int p=0;p<2;p++)
+    for(int r=0;r<2;r++){
+      GFPIXf[p][r] = new TH1F(TString("GFPIXf_P")+(long)p+"_R"+(long)r, "" , 6*FPIX_nBLR[r], 0.5, 6*FPIX_nBLR[r] + 0.5);
+    }
+
+  myfile.clear();
+  myfile.seekg (0, ios::beg);
+  float fraction=0.;
+  while (std::getline(myfile, line)){
+    std::stringstream iss(line);
+    iss>>mod>>clusters;
+    //cout<<mod<<", "<<clusters<<endl;
+    if(mod < 30000000) continue;//skip wrong lines
+    if(MODVETO[mod]) continue;
+
+    fraction = clusters/(double)totclusters;
+
+    if( MD.find(mod) != MD.end() )
+      GBPIXf[LY[mod]-1]->SetBinContent( BPIX_nLD[LY[mod]-1]*(MD[mod]-1) + LD[mod] , 100*fraction );
+   
+    if( SD.find(mod) != SD.end() ){
+      int bin=FPIX_nBLR[RING[mod]] * DISK[mod] + (RING[mod]==0 ? BL[mod] : (BL[mod]-FPIX_nBLR[0]));
+      GFPIXf[PN[mod]-1][RING[mod]]->SetBinContent( bin , 100*fraction );
+    }
+   
+    ofile<<mod<<" "<<fraction<<std::endl;
+  }
+  ofile.close();
+
     
   /////////////////////////////////////////////////////
   ///   make the plots
   ///////////////////////////////////////////////////
   drawBPIX(GBPIX,"counts");
   drawFPIX(GFPIX,"counts");
+  drawBPIX(GBPIXf,"percent");
+  drawFPIX(GFPIXf,"percent");
 
 
-  ///////////////////////////////////////////////////////////
-//  C.Clear();
-//  HModVsBX.Draw("colz");
-//  C.Print(OutPath+"/plotPCCModules_ModVsBX.png");
-//  C.Clear();
-//  HMod.Draw("histp");
-//  C.Print(OutPath+"/plotPCCModules_Mod.png");
-
-
-
+  ///close files
+  myfile.close();
   gROOT->ProcessLine(".q");
 }
 

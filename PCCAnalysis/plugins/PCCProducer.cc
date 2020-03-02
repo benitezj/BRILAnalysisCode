@@ -70,10 +70,16 @@ class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
             std::string csvOutLabel_;
             bool saveCSVFile_;
 
-            std::string modOutLabel_;
+
+            std::string modCountOutLabel_;                //file to save the module counts for job
             std::ofstream modfile;
-            unsigned int modid_[2000];
-            unsigned int modcount_[2000][LumiConstants::numBX];//integrates counts per module and bx
+            std::map<unsigned,long> modcount_;
+
+            bool applySiPixelQual_;                 // read the CONDDB Pixel quality flags and remove bad modules
+            std::string moduleFractionInputLabel_;       // file containing the module fractions
+            std::map<unsigned,float> modfraction_; 
+            std::string moduleFractionOutputLabel_;       // output file containing the visible crossection fraction
+            std::ofstream modFracOut;
 
             bool applyCorr_;
             std::vector<float> correctionScaleFactors_;
@@ -94,7 +100,12 @@ PCCProducer::PCCProducer(const edm::ParameterSet& iConfig)
     applyCorr_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("ApplyCorrections",false);
     saveCSVFile_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("saveCSVFile",false);
     csvOutLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("label",std::string("rawPCC.csv"));
-    modOutLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("modOutLabel",std::string(""));
+
+    modCountOutLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("modCountOutLabel",std::string(""));
+
+    applySiPixelQual_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("applySiPixelQual",false);
+    moduleFractionInputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionInputLabel","");
+    moduleFractionOutputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionOutputLabel","moduleFractionOutputLabel.csv");
 
     edm::InputTag PCCInputTag_(pccSource_, prodInst_);
     clustersPerBXOutput_.resize(LumiConstants::numBX,0);//vector containing clusters per bxid 
@@ -113,30 +124,51 @@ PCCProducer::~PCCProducer(){
 
 //-------------------------------------------------------------------------------------------------
 void PCCProducer::beginJob(){
-  if(modOutLabel_.compare("")!=0){
-    system((std::string("rm -f ")+modOutLabel_).c_str());
-    modfile.open(modOutLabel_, std::ios_base::out);
-    if (!modfile.is_open())
-      throw cms::Exception("PCCProducer:: ") <<  " unable to create the modOutLabel file.";
-    modfile.close();
 
-    for (int i=0;i<2000;i++){
-      modid_[i] = 0 ;
-      for (int bx=0;bx<int(LumiConstants::numBX);bx++)
-	modcount_[i][bx] = 0 ;
+  if(applySiPixelQual_){
+
+    ///read the module fraction values
+    std::ifstream modfracfile(moduleFractionInputLabel_.c_str());
+    if (!modfracfile.is_open())
+      throw cms::Exception("PCCProducer:: ") <<  " unable to open the module fractions file";
+    std::string line;
+    unsigned mod; float frac;
+    while (std::getline(modfracfile,line)){
+      std::stringstream iss(line);
+      iss>>mod>>frac;
+      modfraction_[mod]=frac; 
     }
+    modfracfile.close();
+
+    //open file for output of the visible crossection fraction
+    system((std::string("rm -f ")+moduleFractionOutputLabel_).c_str());
+    modFracOut.open(moduleFractionOutputLabel_, std::ios_base::app);
+    if (!modFracOut.is_open())
+      throw cms::Exception("PCCProducer:: ") <<  " unable to open the output module fraction file";
   }
+
+
+  if(modCountOutLabel_.compare("")!=0){
+    system((std::string("rm -f ")+modCountOutLabel_).c_str());
+    modfile.open(modCountOutLabel_, std::ios_base::out);
+    if (!modfile.is_open())
+      throw cms::Exception("PCCProducer:: ") <<  " unable to create the modCountOutLabel file.";
+    modfile.close();  
+  }
+
 }
 
 void PCCProducer::endJob(){
-  if(modOutLabel_.compare("")!=0){
-    modfile.open(modOutLabel_, std::ios_base::out);
-    for (int i=0;i<2000;i++){
-      modfile<<modid_[i]<<",";
-      for (int bx=0;bx<int(LumiConstants::numBX);bx++)
-	modfile<<modcount_[i][bx]<<",";
-      modfile<<std::endl;
-    }
+
+  if(applySiPixelQual_)
+    modFracOut.close();
+
+  if(modCountOutLabel_.compare("")!=0){
+    modfile.open(modCountOutLabel_, std::ios_base::out);
+    for( std::map<unsigned, long>::iterator iter = modcount_.begin();
+	 iter != modcount_.end();
+	 ++iter )
+      modfile<<iter->first<<" "<<iter->second<<std::endl;
     modfile.close();
   }
 }
@@ -179,49 +211,37 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
     clustersPerBXInput_ = inputPcc.readCounts();
 
 
-    std::vector<unsigned int> goodmodID;
+    double totfrac=0.;
     edm::ESHandle< SiPixelQuality > siPixelQualityHandle;
-    iSetup.get< SiPixelQualityRcd >().get(siPixelQualityHandle);
-    const SiPixelQuality * siPixelQuality = siPixelQualityHandle.product();
-    // if( siPixelQuality ){
-    //   //std::cout<<"siPixelQuality is available"<<std::endl;
-   //   auto theDisabledModules = siPixelQuality->getBadComponentList();
-   //   for (const auto &mod : theDisabledModules){
-   //     int BadRocCount(0);
-   //     for (unsigned short n = 0; n < 16; n++){
-   // 	unsigned short mask = 1 << n;  // 1 << n = 2^{n} using bitwise shift
-   // 	if (mod.BadRocs & mask) BadRocCount++;
-   //     }
-   //     //std::cout<<"detId:" <<  mod.DetID << " error type:" << mod.errorType << " BadRocs:"  << BadRocCount <<  std::endl;
-   //   }
-   // }
-  
-  
- 
+    const SiPixelQuality * siPixelQuality = NULL;
+    if(applySiPixelQual_){
+      iSetup.get< SiPixelQualityRcd >().get(siPixelQualityHandle);
+      siPixelQuality = siPixelQualityHandle.product();
+    }
 
     //making list of modules to sum over
     for (unsigned int i=0;i<modID_.size();i++){
-      bool badmod=0;
 
       ///check if this is module is in the veto list
       if (std::find(modVeto_.begin(),modVeto_.end(), modID_.at(i)) != modVeto_.end())
-	badmod=1;
+	continue;
    
       ///check if it is in the PixelQuality bad list
-      if(!badmod && siPixelQuality ){
+      if(siPixelQuality ){
+	bool badmod=0;
 	auto theDisabledModules = siPixelQuality->getBadComponentList();
 	for (const auto &mod : theDisabledModules)
-	  if(mod.DetID == (unsigned int) modID_.at(i)) 
+	  if(mod.DetID == (unsigned int) modID_.at(i)) {
 	    badmod =1;
+	    //std::cout<<"Disabled module :"<<modID_.at(i)<<"  frac = "<<modfraction_[modID_.at(i)]<<std::endl;
+	  }
+	if(badmod) continue;
       }
-      
-      if(!badmod){
-	goodMods_.push_back(i);
-	goodmodID.push_back(modID_.at(i));
-      }
+
+      goodMods_.push_back(i);
+      totfrac += modfraction_[modID_.at(i)];
     }
-    //for (const auto &modid : goodmodID)
-    //std::cout<<", "<<modid;
+    //std::cout<<totfrac<<std::endl;
 
     //summing over good modules only 
     for (int bx=0;bx<int(LumiConstants::numBX);bx++){
@@ -276,7 +296,6 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
     outputLumiInfo->setErrorLumiAllBX(errorPerBX_);
     outputLumiInfo->setInstLumiAllBX(corrClustersPerBXOutput_);
 
-    outputLumiInfo->setChannelIDs(goodmodID);
 
     if(saveCSVFile_){
         csvfile<<std::to_string(totalLumi_);
@@ -291,25 +310,25 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
         }
 
         csvfile.close();
+
+
+	if(applySiPixelQual_){
+	  modFracOut<<std::to_string(lumiSeg.run())<<",";
+	  modFracOut<<std::to_string(lumiSeg.luminosityBlock())<<",";
+	  modFracOut<<totfrac<<",";
+	  modFracOut<<goodMods_.size()<<std::endl;
+	}
     }
 
 
-
-    if(modOutLabel_.compare("")!=0){
+    if(modCountOutLabel_.compare("")!=0){
       for (unsigned int i=0;i<modID_.size();i++){      
-	// modfile<<std::to_string(lumiSeg.run())<<",";
-	// modfile<<std::to_string(lumiSeg.luminosityBlock())<<",";	
-	// modfile<<std::to_string(modID_.at(i))<<",";	
-	// for (int bx=0;bx<int(LumiConstants::numBX);bx++)
-        //     modfile<<clustersPerBXInput_.at(i*int(LumiConstants::numBX)+bx)<<",";
-	// modfile<<std::endl;   
-	
-	modid_[i] = modID_.at(i);
+	unsigned totclusters=0;
 	for (int bx=0;bx<int(LumiConstants::numBX);bx++)
-	  modcount_[i][bx] += clustersPerBXInput_.at(i*int(LumiConstants::numBX)+bx);
+	  totclusters += clustersPerBXInput_.at(i*int(LumiConstants::numBX)+bx);
+	modcount_[modID_.at(i)] += totclusters;
       }
     }
-
 
 }
 

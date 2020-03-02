@@ -61,7 +61,7 @@ echo "output: $outputdir"
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
 #DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom/Run2018B_dynamicVeto
-DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
 if [ "$DBDIR" != "" ]; then
    echo "corections: $DBDIR"
 fi
@@ -143,10 +143,14 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	fi
 
 	if [ "$jobtype" == "lumi" ] ; then
-	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/python/pcc_LumiInfoRead_cfg.py " >> $fullsubmitdir/${run}.sh
-	    echo "cp PCCLumiByBX.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
-	    echo "cp PCCLumiByBX.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
-	    echo "cp PCCLumiByBX.mod  $outputdir/${run}.mod " >> $fullsubmitdir/${run}.sh
+#	    echo "cmsRun  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/python/pcc_LumiInfoRead_cfg.py " >> $fullsubmitdir/${run}.sh
+#	    echo "cp PCCLumiByBX.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
+#	    echo "cp PCCLumiByBX.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
+#	    echo "cp PCCLumiByBX.mod  $outputdir/${run}.mod " >> $fullsubmitdir/${run}.sh
+
+	    echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
+	    echo "cp rawPCC.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
+	    echo "cp moduleFractionOutputLabel.csv  $outputdir/${run}_frac.csv " >> $fullsubmitdir/${run}.sh
 	fi
 
 

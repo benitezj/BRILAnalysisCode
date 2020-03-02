@@ -11,7 +11,7 @@ TLatex text;
 TCanvas Canvas("Canvas","",800,500);
 
 
-void drawBPIX(TH1F * G[4], TString cord){
+void drawBPIX(TH1F * G[4], TString cord, float min=0.0, float max=0.0){
   Canvas.SetLeftMargin(0.15);
 
   for(long l=0;l<4;l++){
@@ -21,23 +21,28 @@ void drawBPIX(TH1F * G[4], TString cord){
     G[l]->GetYaxis()->SetTitleSize(0.05);
     G[l]->GetYaxis()->SetTitleOffset(0);
     G[l]->GetXaxis()->SetNdivisions(0);
-    G[l]->GetYaxis()->SetRangeUser(G[l]->GetMinimum(),G[l]->GetMaximum());
+    float ymin=G[l]->GetMinimum();
+    float ymax=G[l]->GetMaximum();
+    if(min!=0.0) ymin=min;
+    if(max!=0.0) ymax=max;
+    G[l]->GetYaxis()->SetRangeUser(ymin,ymax);
     G[l]->SetMarkerSize(1);
     G[l]->Draw("histp");
+    //cout<<G[l]->GetMinimum()<<" "<<G[l]->GetMaximum()<<endl;
 
-    float range=G[l]->GetMaximum()-G[l]->GetMinimum();
+    float range=ymax-ymin;
     Line.SetLineStyle(2);
     text.SetTextSize(0.035);
     for(int m=0;m<8;m++){
-      Line.DrawLine(BPIX_nLD[l]*m, G[l]->GetMinimum(), BPIX_nLD[l]*m, G[l]->GetMaximum());
-      text.DrawLatex(BPIX_nLD[l]*(m+0.5), G[l]->GetMinimum()-range*0.05, TString("")+(long)(m>=4?m-3:m-4));
+      Line.DrawLine(BPIX_nLD[l]*m, ymin, BPIX_nLD[l]*m, ymax);
+      text.DrawLatex(BPIX_nLD[l]*(m+0.5), ymin - range*0.05, TString("")+(long)(m>=4?m-3:m-4));
     }    
-    text.DrawLatex(BPIX_nLD[l]*7.5, G[l]->GetMinimum()-range*0.05, TString("   Module"));
+    text.DrawLatex(BPIX_nLD[l]*7.5, ymin - range*0.05, TString("   Module"));
 
     text.SetTextSize(0.04);
-    text.DrawLatex(0,G[l]->GetMinimum()-range*0.1,"1");
-    text.DrawLatex(BPIX_nLD[l]/2.,G[l]->GetMinimum()-range*0.1,"--");
-    text.DrawLatex(BPIX_nLD[l],G[l]->GetMinimum()-range*0.1,TString("")+(long)BPIX_nLD[l]+" Ladder");
+    text.DrawLatex(0, ymin - range*0.1,"1");
+    text.DrawLatex(BPIX_nLD[l]/2., ymin - range*0.1,"--");
+    text.DrawLatex(BPIX_nLD[l], ymin - range*0.1,TString("")+(long)BPIX_nLD[l]+" Ladder");
     
     Canvas.Print(OutPath+"/plotModuleCoords_BPIX_"+cord+"_L"+l+".png");
   }
@@ -80,7 +85,7 @@ void drawFPIX_0(TH1F ** G, TString cord){
 }
 
 
-void drawFPIX(TH1F * G[2][2], TString cord){
+void drawFPIX(TH1F * G[2][2], TString cord, float min=0.0, float max=0.0){
   Canvas.SetLeftMargin(0.15);
 
   for(long p=0;p<2;p++){
@@ -91,23 +96,27 @@ void drawFPIX(TH1F * G[2][2], TString cord){
       G[p][r]->GetYaxis()->SetTitleSize(0.05);
       G[p][r]->GetYaxis()->SetTitleOffset(0);
       G[p][r]->GetXaxis()->SetNdivisions(0);
-      G[p][r]->GetYaxis()->SetRangeUser(G[p][r]->GetMinimum(),G[p][r]->GetMaximum());
+      float ymin=G[p][r]->GetMinimum();
+      float ymax=G[p][r]->GetMaximum();
+      if(min!=0.0) ymin=min;
+      if(max!=0.0) ymax=max;
+      G[p][r]->GetYaxis()->SetRangeUser(ymin,ymax);
       G[p][r]->SetMarkerSize(1);
       G[p][r]->Draw("histp");
       
-      float range=G[p][r]->GetMaximum() - G[p][r]->GetMinimum();
+      float range=ymax-ymin;
       Line.SetLineStyle(2);
       text.SetTextSize(0.04);
       for(int d=0;d<6;d++){
-	Line.DrawLine(FPIX_nBLR[r]*d,G[p][r]->GetMinimum(), FPIX_nBLR[r]*d, G[p][r]->GetMaximum());
-	text.DrawLatex(FPIX_nBLR[r]*(d+0.5), G[p][r]->GetMinimum() - range*0.05, TString("")+(long)(d>=3?d-2:d-3));
+	Line.DrawLine(FPIX_nBLR[r]*d, ymin , FPIX_nBLR[r]*d, ymax);
+	text.DrawLatex(FPIX_nBLR[r]*(d+0.5), ymin - range*0.05, TString("")+(long)(d>=3?d-2:d-3));
       }
-      text.DrawLatex(FPIX_nBLR[r]*5, G[p][r]->GetMinimum() - range*0.1, TString("Disk"));
+      text.DrawLatex(FPIX_nBLR[r]*5, ymin - range*0.1, TString("Disk"));
       
       text.SetTextSize(0.04);
-      text.DrawLatex(0,G[p][r]->GetMinimum()-range*0.1,TString("")+(long)(r==0 ? 1 : FPIX_nBLR[0]+1));
-      text.DrawLatex(FPIX_nBLR[r]/2.,G[p][r]->GetMinimum()-range*0.1,"--");
-      text.DrawLatex(FPIX_nBLR[r],G[p][r]->GetMinimum()-range*0.1,TString("")+(long)(r==0 ? FPIX_nBLR[0] : FPIX_nBL)+" Blade");
+      text.DrawLatex(0, ymin - range*0.1,TString("")+(long)(r==0 ? 1 : FPIX_nBLR[0]+1));
+      text.DrawLatex(FPIX_nBLR[r]/2., ymin - range*0.1,"--");
+      text.DrawLatex(FPIX_nBLR[r], ymin - range*0.1,TString("")+(long)(r==0 ? FPIX_nBLR[0] : FPIX_nBL)+" Blade");
       
       Canvas.Print(OutPath+"/plotModuleCoords_FPIX_"+cord+"_P"+p+"_R"+r+".png");    
     }

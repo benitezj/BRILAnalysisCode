@@ -70,7 +70,9 @@ process.rawPCCProd = cms.EDProducer("PCCProducer",
         saveCSVFile=cms.untracked.bool(True),
         modVeto=cms.vint32(),
         OutputValue = cms.untracked.string("Average"),
-        modOutLabel = cms.untracked.string("PCCLumiByBX.mod"),
+        applySiPixelQual = cms.untracked.bool(True),
+        moduleFractionInputLabel = cms.untracked.string(os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/Module_fraction.txt'),
+#        modCountOutLabel = cms.untracked.string("PCCProducer.mod"),
     )    
 ) 
 print 'PCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.PCCProducerParameters.ApplyCorrections

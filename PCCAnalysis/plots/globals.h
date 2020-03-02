@@ -38,27 +38,29 @@ void drawCMSPrelim(long year,float xpos=0.2){
 /////////////////////////
 // Module coordinates
 ////////////////////////
+std::map<int,bool> MODVETO;
+
 //BPIX
-std::map<long,int> LY;
-std::map<long,int> LD;
-std::map<long,int> MD;
+std::map<int,int> LY;
+std::map<int,int> LD;
+std::map<int,int> MD;
 unsigned BPIX_nLD[4]={12,28,44,64};
-std::map<long,float> BPIX_R;
-std::map<long,float> BPIX_PHI;
-std::map<long,float> BPIX_Z;
+std::map<int,float> BPIX_R;
+std::map<int,float> BPIX_PHI;
+std::map<int,float> BPIX_Z;
 
 //FPIX
-std::map<long,int> SD;
-std::map<long,int> DI;
-std::map<long,int> BL;
-std::map<long,int> PN;
+std::map<int,int> SD;
+std::map<int,int> DI;
+std::map<int,int> BL;
+std::map<int,int> PN;
 unsigned FPIX_nBL = 56;
-unsigned FPIX_nBLR[2] ={22,34};
-std::map<long,int> DISK;//derived coordinates
-std::map<long,int> RING;
-std::map<long,float> FPIX_R;
-std::map<long,float> FPIX_PHI;
-std::map<long,float> FPIX_Z;
+unsigned FPIX_nBLR[2] = {22,34};
+std::map<int,int> DISK;//derived coordinates
+std::map<int,int> RING;
+std::map<int,float> FPIX_R;
+std::map<int,float> FPIX_PHI;
+std::map<int,float> FPIX_Z;
 
 void readModRPhiZCoordinates(){
 
@@ -92,6 +94,7 @@ void readModRPhiZCoordinates(){
 
     NBPIX[ly-1]++;
     
+    MODVETO[module]=0;
     counter++;
   }
 
@@ -125,6 +128,8 @@ void readModRPhiZCoordinates(){
     FPIX_Z[module]  =z;
 
     NFPIX[DISK[module]]++;
+
+    MODVETO[module]=0;
     counter++;
   }
 
@@ -134,3 +139,18 @@ void readModRPhiZCoordinates(){
 
   cout<<"Done reading the  module coordinates."<<endl;
 }
+
+
+void readModVeto(TString file){
+  ifstream myfile(file.Data());
+  if (!myfile.is_open()){
+    std::cout << "Unable to open "<<endl;
+    return;
+  }
+  std::string line;
+  while (std::getline(myfile,line)){
+    int module=atoi(line.c_str());
+    MODVETO[module]=1;
+  }
+}
+
