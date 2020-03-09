@@ -23,6 +23,7 @@ float getRefLumi(TString file, unsigned int RUN, unsigned int LS){
 
 
 void compareLumiVersions(TString refDir, TString newDir){
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
   TGraph LumiFrame;
   TGraph LumiRatio;

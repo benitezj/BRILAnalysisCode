@@ -20,6 +20,9 @@ float maxratio=1.05;
 
 void plotPCCStability(TString inpath, TString ref){
 
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+
+
   ifstream myfile((inpath+"/ls.dat").Data());
   if (!myfile.is_open()){
     cout << "Unable to open file"; 

@@ -8,6 +8,8 @@ long RUNOFFSET=315000;
 
 void plotPCCperRun(TString inpath){
 
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");  
+
   std::vector<std::string> Paths;
 
   float ymin=-0.006;
@@ -17,9 +19,6 @@ void plotPCCperRun(TString inpath){
   Paths.push_back("Run2018B/slope.dat");
   Paths.push_back("Run2018C/slope.dat");
   Paths.push_back("Run2018D/slope.dat");
-  
-
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
   
 
   ///create histogram

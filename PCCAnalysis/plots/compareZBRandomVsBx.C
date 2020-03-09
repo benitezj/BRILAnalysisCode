@@ -50,7 +50,7 @@ void compareZBRandomVsBx(){
   TString CSV="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_ZeroBias-PromptReco/Run2017G_v4_test/306550.csv";
   TString CORR="/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4/306550.root";
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   TCanvas C("C","",1200,500);
 
   //iterate over the TFile keys

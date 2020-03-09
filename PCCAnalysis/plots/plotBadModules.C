@@ -16,8 +16,7 @@ std::map<long,int> PN;
 
 void plotBadModules(string BadList="SiPixelQuality_byPCL_stuckTBM_v1.mod", string outpath="."){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
-
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
 
 

@@ -150,7 +150,7 @@ float getMaxLumi(TString inputfile){
 
 void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool perBXRatioPlots=0){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
 
   ///Open the lumi csv file

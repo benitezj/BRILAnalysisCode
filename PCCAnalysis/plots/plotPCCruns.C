@@ -80,6 +80,8 @@ bool getPIXReadyState(TString inputfile, int RUN){
 
 
 void plotPCCruns(TString Path,TString ref=""){
+
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   
   TString infile=Path+"/runs.dat";
   ifstream myfile(infile.Data());

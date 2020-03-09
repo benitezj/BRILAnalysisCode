@@ -2,6 +2,7 @@
 
 
 void compareCSVfiles(TString newF, TString refF){
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
   TGraph LumiFrame;
   TGraph LumiRatio;

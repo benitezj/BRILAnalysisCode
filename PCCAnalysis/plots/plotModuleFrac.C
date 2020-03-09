@@ -6,14 +6,13 @@
 
 void plotModuleFrac(TString Path, TString Runs, TString outpath="."){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
-float ratiomin=0.95;
-float ratiomax=1.0;
-short nmodmax=770;
-short nmodmin=700;
-
-
+  float ratiomin=0.95;
+  float ratiomax=1.0;
+  short nmodmax=770;
+  short nmodmin=700;
+  
   TGraph Frac;
   TGraph NMod;
 
