@@ -5,11 +5,10 @@
 #define NBX 3564
 #define NLS 4000
 
-//#define SigmaPCC 5.8e6/(23.31*11245.6) // old veto list
-//#define SigmaPCC 6.704e6/(23.31*11245.6) // new veto list, but with double counting pixels
-#define SigmaPCC 5.91e6/(23.31*11245.6) // new veto list, Georgios fixed pixel double counting
-//#define SigmaPCC 3.14e6/(23.31*11245.6) // for second part of RunD 
-//#define SigmaPCC 1.05*3.2e6/(23.31*11245.6) // Run2017G 
+//#define SigmaPCC 5.8e6/(11245.6) // old veto list
+//#define SigmaPCC 5.91e6/(11245.6) // new veto list, Georgios fixed pixel double counting
+//#define SigmaPCC 3.14e6/(11245.6) // for second part of RunD 
+#define SigmaPCC 0.095*3.2e6/(11245.6) // Run2017G (0.095 is for 306550)
 
 //#define SigmaPCC 0.0117935*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B1
 //#define SigmaPCC 0.20715*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B2
@@ -27,8 +26,11 @@
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
 
-float ratiomin=0.85;
-float ratiomax=1.15;
+
+float modfrac[NLS];//correction to visible crossection for applied Pixel Quality flags
+
+float ratiomin=0.9;
+float ratiomax=1.1;
 
 
 void getRefLumi(TString inputfile){
@@ -52,28 +54,8 @@ void getRefLumi(TString inputfile){
   while (std::getline(myfile, line)){
     std::stringstream iss(line);
     
-    // std::string token;
-
-    // std::getline(iss,token, ',');
-    // std::stringstream runiss(token);
-    // runiss>>run;
-
-    // std::getline(iss,token, ',');
-    // std::stringstream lsiss(token);
-    // lsiss>>ls;
-    // if(ls>NLS){
-    //   cout<<"LS larger than maximum"<<endl;
-    //   return;
-    // }
-    
-    // std::getline(iss,token, ',');
-    // std::stringstream totLiss(token);
-    // totLiss>>refLumi[ls];
-    // //cout<<run<<" "<<ls<endl;
-
-    
     //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
-    iss>>run>>tmp>>ls>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;
+    iss>>run>>tmp>>ls>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
     iss>>refLumi[ls];
     iss>>tmp>>tmp;
     for(int j=0;j<NBX;j++){
@@ -81,6 +63,44 @@ void getRefLumi(TString inputfile){
       HRefLumiBXvsLS.SetBinContent(ls,j+1,lumiBX/23.31);
     }
 
+  }
+}
+
+void getModFrac(TString inputfile){
+
+  for(int i=0;i<NLS;i++){
+    modfrac[i]=1.;
+  }
+
+  ifstream myfile(inputfile.Data());
+  if (!myfile.is_open()){
+    std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
+    return;
+  }
+
+  std::string line;
+  int run=0;
+  int ls=0;
+  string tmp;
+  while (std::getline(myfile, line)){
+    std::stringstream iss(line);
+    std::string token;
+
+    std::getline(iss,token, ',');
+    std::stringstream runiss(token);
+    runiss>>run;
+
+    std::getline(iss,token, ',');
+    std::stringstream lsiss(token);
+    lsiss>>ls;
+    if(ls>NLS){
+      cout<<"LS larger than maximum"<<endl;
+      return 0.;
+    }
+    
+    std::getline(iss,token, ',');
+    std::stringstream totLiss(token);
+    totLiss>>modfrac[ls];
 
   }
 
@@ -176,14 +196,17 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
 
   ///read the reference lumi
   if(ref.CompareTo("")!=0) getRefLumi(Path+"/"+Run+"."+ref);
+
   
+  ///get the module fraction corrections
+  getModFrac(Path+"/"+Run+"_frac.csv");
+
 
   std::string line;
   int run=0;
   int ls=0;
   double lsL=0;//lumi for given LS
   int maxLS=0;//find last LS with lumi
-  int nLS=0;
   float runL=0.;
   float runLRef=0.;
   while (std::getline(myfile, line)){
@@ -210,8 +233,15 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     std::getline(iss,token, ',');
     std::stringstream totLiss(token);
     totLiss>>lsL;
-    lsL/=SigmaPCC;
+    lsL /= (SigmaPCC*modfrac[ls]);
+
+
+    //cout<<run<<" "<<ls<<" "<<lsL<<endl;
+
+
     runL+=lsL;
+
+
 
     ////fill lumi per LS plots
     if(HLumiLS.GetBinContent(ls)>0)
@@ -225,23 +255,21 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     
 
     ///fill lumi per BX plots
-    double bxL=0.;
-    for(int bx=0;bx<NBX;bx++){
-      std::getline(iss,token, ',');
-      std::stringstream bxLiss(token);
-      bxLiss>>bxL;
-      bxL/=(SigmaPCC*23.31);
-      HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
-      HLumiBX.AddBinContent(bx+1,bxL);
+    if(perBXRatioPlots) { 
+      double bxL=0.;
+      for(int bx=0;bx<NBX;bx++){
+	std::getline(iss,token, ',');
+	std::stringstream bxLiss(token);
+	bxLiss>>bxL;
+	bxL/=(SigmaPCC*23.31);
+	HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
+	HLumiBX.AddBinContent(bx+1,bxL);
+      }
     }
     
-    
-    if(lsL>10){
-      nLS++;
-      if(ls>maxLS) maxLS=ls;
-    }
+    if(lsL>1&&ls>maxLS) maxLS=ls;
 
-    lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<std::endl;
+    lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<setw(5)<<lsL/refLumi[ls]<<std::endl;
   }
     
   ///close files
@@ -269,10 +297,6 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
 
   TCanvas C;
 
-  ///only 2D plot
-  //C.Clear();
-  //HLumiBXvsLS.Draw("colz");
-  
   //2D plot on top and 1D on bottom
   TPad can_1("can_1", "can_1", 0.0, 0.4, 1.0, 1.0);
   can_1.SetTopMargin(0.05);
@@ -309,6 +333,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
   HLumiLS.GetYaxis()->SetTitleSize(0.08);
   HLumiLS.GetYaxis()->SetTitleOffset(0.6);
   HLumiLS.GetYaxis()->SetRangeUser(0,MAXPCC);
+  HLumiLS.GetYaxis()->SetNdivisions(5);
   HLumiLS.SetMarkerStyle(8);
   HLumiLS.SetMarkerSize(0.5);
   HLumiLS.Draw("histp");
@@ -339,8 +364,8 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
   axis->SetTitleSize(0.08);
   axis->SetTitleOffset(0.6);
   axis->SetTitle(TString("PCC/")+ref);
-  if(ref.CompareTo("")!=0)axis->Draw();
-
+  axis->SetNdivisions(3);
+  if(ref.CompareTo("")!=0) axis->Draw();
  
 
   C.Clear();

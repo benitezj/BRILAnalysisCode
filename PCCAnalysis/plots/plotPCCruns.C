@@ -9,8 +9,8 @@
 
 #define MAXPCCRUN 1e9
 #define PCCZEROLUMI 1e3
-#define PCCRUNLUMIRatioMin 0.9
-#define PCCRUNLUMIRatioMax 1.1
+#define PCCRUNLUMIRatioMin 0.95
+#define PCCRUNLUMIRatioMax 1.05
 
 long RUNOFFSET=300000;
 
@@ -110,7 +110,6 @@ void plotPCCruns(TString Path,TString ref=""){
     iss>>run;
     iss>>totLRun;
 
-
     LumiRun.SetPoint(counter++,run-RUNOFFSET,totLRun);
     if(run>lastrun) lastrun=run-RUNOFFSET;    
 
@@ -131,22 +130,20 @@ void plotPCCruns(TString Path,TString ref=""){
       LumiRunZero.SetPoint(counterZero,run-RUNOFFSET,PCCZEROLUMI);
       counterZero++;
     }
-    
 
     // Comparison to another luminometer
     if(ref.CompareTo("")!=0){
-      // float totRefLRun = getRunRefLumi(Path+"/"+(long)run+"."+ref);
       float totRefLRun=0.;
       iss>>totRefLRun;
       cout<<run<<" "<<totLRun<<" "<<totRefLRun<<endl;
       if(totRefLRun>0){
-	//LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,((MAXPCCRUN)*(totLRun/totRefLRun-PCCRUNLUMIRatioMin))/(PCCRUNLUMIRatioMax-PCCRUNLUMIRatioMin));
-	LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,totLRun/totRefLRun);
+	LumiRunRatio.SetPoint(counterRatio,counterRatio,totLRun/totRefLRun);
 	HRatio.Fill(totLRun/totRefLRun);
       }else{
-	LumiRunRatio.SetPoint(counterRatio++,run-RUNOFFSET,0.);
+	LumiRunRatio.SetPoint(counterRatio,counterRatio,0.);
 	HRatio.Fill(0);
       }
+      counterRatio++;
     }
 
 
@@ -174,7 +171,7 @@ void plotPCCruns(TString Path,TString ref=""){
   LumiRun.SetMarkerSize(0.5);
   LumiRun.Draw("ap");
 
-  LumiRun.GetXaxis()->SetTitle(TString("run number ") + " - " + RUNOFFSET);
+  LumiRun.GetXaxis()->SetTitle("run");//TString("run number ") + " - " + RUNOFFSET);
   LumiRun.GetYaxis()->SetTitle("PCC Lumi [1/#mub]");
 
   LumiRunZero.SetMarkerStyle(8);

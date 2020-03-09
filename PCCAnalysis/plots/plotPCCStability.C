@@ -2,14 +2,20 @@
 #include <fstream>
 #include <string>
 
-///Ratios w.r.t. hfoc offline
-#define scale 1.0        
-//#define scale 9.97891e-01  // 2018Vdm Veto
+float minratio=0.95;
+float maxratio=1.05;
 
+///Ratios w.r.t. hfoc offline
+//#define scale 1.0        
+//#define scale 1.00895  // 2018Vdm Veto
 // #define scale 0.3243*0.965*1.005 //SAM Hi test
 // #define scale 0.3429*0.965*0.9968 //SAM Lo test
 // #define scale 0.546*0.975*0.9973  //Sam Tight cut
 // #define scale 0.546*0.9863 //Sam tight cut relative to pltzero
+//#define scale 1.024974  // 2018Vdm Veto, with dynamic module veto but uncorrected
+//#define scale 1.00892  // 2018Vdm Veto, with dynamic module veto corrected
+
+#define scale 0.97  //2017G after pedestal subtraction
 
 
 void plotPCCStability(TString inpath, TString ref){
@@ -23,9 +29,7 @@ void plotPCCStability(TString inpath, TString ref){
 
 
   ///create histogram
-  TH1F HLumiRatio("HLumiRatio","",100,0.95,1.05);
-  //TH1F HLumiRatio("HLumiRatio","",100,0.9,1.1);
-  //TH1F HLumiRatio("HLumiRatio","",100,0.4,0.8);
+  TH1F HLumiRatio("HLumiRatio","",100,minratio,maxratio);
 
   TGraph LumiRatio;
   int counterRatio=0;
@@ -44,7 +48,7 @@ void plotPCCStability(TString inpath, TString ref){
 
     std::stringstream iss(line);
     iss>>run>>ls>>totL>>totLRef;
-
+   
     totL/=scale;
 
     float ratio=0;
@@ -88,7 +92,7 @@ void plotPCCStability(TString inpath, TString ref){
 
 
   C.Clear();
-  LumiRatio.GetYaxis()->SetRangeUser(0.9,1.1);
+  LumiRatio.GetYaxis()->SetRangeUser(minratio,maxratio);
   LumiRatio.SetMarkerStyle(8);
   LumiRatio.SetMarkerSize(0.5);
   LumiRatio.GetXaxis()->SetTitle("lumi section");
