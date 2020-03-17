@@ -40,7 +40,7 @@ void plotModuleFrac(TString Path, TString Runs, TString outpath="."){
     getRefLumi(Path+"/"+Run+".hfoc");    
     
     ///Open the lumi csv file
-    TString infile=Path+"/"+Run+"_frac.csv";
+    TString infile=Path+"/"+Run+".frac";
     ifstream myfile (infile.Data());
     if (!myfile.is_open()){
       cout << "Unable to open file: "<<infile.Data()<<endl; 

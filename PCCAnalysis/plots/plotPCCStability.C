@@ -2,12 +2,12 @@
 #include <fstream>
 #include <string>
 
-float minratio=0.95;
-float maxratio=1.05;
+float minratio=0.98;
+float maxratio=1.02;
 
 ///Ratios w.r.t. hfoc offline
 //#define scale 1.0        
-//#define scale 1.00895  // 2018Vdm Veto
+#define scale 1.00895  // 2018Vdm Veto
 // #define scale 0.3243*0.965*1.005 //SAM Hi test
 // #define scale 0.3429*0.965*0.9968 //SAM Lo test
 // #define scale 0.546*0.975*0.9973  //Sam Tight cut
@@ -15,12 +15,12 @@ float maxratio=1.05;
 //#define scale 1.024974  // 2018Vdm Veto, with dynamic module veto but uncorrected
 //#define scale 1.00892  // 2018Vdm Veto, with dynamic module veto corrected
 
-#define scale 0.97  //2017G after pedestal subtraction
+//#define scale 0.97  //2017G after pedestal subtraction
 
 
 void plotPCCStability(TString inpath, TString ref){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  // gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
 
   ifstream myfile((inpath+"/ls.dat").Data());
@@ -80,11 +80,11 @@ void plotPCCStability(TString inpath, TString ref){
 
   TCanvas C;
 
-
-  C.Clear();
   gStyle->SetOptStat(111111);
   gStyle->SetOptFit(1);
 
+
+  C.Clear();
   HLumiRatio.GetYaxis()->SetTitle(" # of lumi sections ");
   HLumiRatio.GetXaxis()->SetTitle(TString(" PCC / ")+ref);
   HLumiRatio.SetMarkerStyle(8);
@@ -105,7 +105,6 @@ void plotPCCStability(TString inpath, TString ref){
 
 
   C.Clear();
-  //Lumi.GetYaxis()->SetRangeUser(0.9,1.1);
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.5);
   Lumi.GetXaxis()->SetTitle("lumi section");

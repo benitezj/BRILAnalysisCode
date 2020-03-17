@@ -5,11 +5,18 @@
 #define NBX 3564
 #define NLS 4000
 
-//#define SigmaPCC 5.8e6/(11245.6) // old veto list
-//#define SigmaPCC 5.91e6/(11245.6) // new veto list, Georgios fixed pixel double counting
-//#define SigmaPCC 3.14e6/(11245.6) // for second part of RunD 
-#define SigmaPCC 0.095*3.2e6/(11245.6) // Run2017G (0.095 is for 306550)
 
+float ratiomin=0.9;
+float ratiomax=1.1;
+
+
+//#define SigmaPCC 5.8e6/(11245.6) // old veto list
+#define SigmaPCC 5.91e6/(11245.6) // new veto list, Georgios fixed pixel double counting
+#define SigmaPCC2 3.14e6/(11245.6) // for second part of RunD 
+
+//#define SigmaPCC 0.095*3.2e6/(11245.6) // Run2017G (0.095 is for 306550)
+
+//special studies 
 //#define SigmaPCC 0.0117935*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B1
 //#define SigmaPCC 0.20715*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B2
 //#define SigmaPCC 0.280174*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B3
@@ -28,9 +35,6 @@ TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
 
 
 float modfrac[NLS];//correction to visible crossection for applied Pixel Quality flags
-
-float ratiomin=0.9;
-float ratiomax=1.1;
 
 
 void getRefLumi(TString inputfile){
@@ -74,7 +78,7 @@ void getModFrac(TString inputfile){
 
   ifstream myfile(inputfile.Data());
   if (!myfile.is_open()){
-    std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
+    //std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
     return;
   }
 
@@ -164,7 +168,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
   float maxL=getMaxLumi(infile);
   if(maxL<2) return; //don't create the graph for empty runs
   float MAXPCC=1.3*maxL;
-  cout<<"Max lumi: "<<maxL<<endl;
+  //cout<<"Max lumi: "<<maxL<<endl;
 
 
   ////create output file for runs
@@ -199,7 +203,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
 
   
   ///get the module fraction corrections
-  getModFrac(Path+"/"+Run+"_frac.csv");
+  getModFrac(Path+"/"+Run+".frac");
 
 
   std::string line;
@@ -233,8 +237,10 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     std::getline(iss,token, ',');
     std::stringstream totLiss(token);
     totLiss>>lsL;
-    lsL /= (SigmaPCC*modfrac[ls]);
-
+    
+    if(run>=323700) lsL /= (SigmaPCC2*modfrac[ls]);
+    else 
+      lsL /= (SigmaPCC*modfrac[ls]);
 
     //cout<<run<<" "<<ls<<" "<<lsL<<endl;
 
@@ -261,7 +267,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
 	std::getline(iss,token, ',');
 	std::stringstream bxLiss(token);
 	bxLiss>>bxL;
-	bxL/=(SigmaPCC*23.31);
+	bxL/=(SigmaPCC);
 	HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	HLumiBX.AddBinContent(bx+1,bxL);
       }
@@ -269,7 +275,7 @@ void plotPCCcsv(TString Path,long Run,TString outpath=".",TString ref="",  bool 
     
     if(lsL>1&&ls>maxLS) maxLS=ls;
 
-    lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<setw(5)<<lsL/refLumi[ls]<<std::endl;
+    lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<std::endl;
   }
     
   ///close files
