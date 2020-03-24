@@ -87,7 +87,7 @@ class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
             std::vector<float> correctionScaleFactors_;
 
             std::string corrRootFile_;       // Afterglow corrections from ROOT file
-            TFile * corrFile;
+            TFile * corrFile = NULL;
 
             std::unique_ptr<LumiInfo> outputLumiInfo;
 
@@ -110,7 +110,7 @@ PCCProducer::PCCProducer(const edm::ParameterSet& iConfig)
 
     applySiPixelQual_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("applySiPixelQual",false);
     moduleFractionInputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionInputLabel","");
-    moduleFractionOutputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionOutputLabel","moduleFractionOutputLabel.csv");
+    moduleFractionOutputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionOutputLabel","moduleFraction.csv");
     corrRootFile_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("corrRootFile","");
 
     edm::InputTag PCCInputTag_(pccSource_, prodInst_);
@@ -133,6 +133,7 @@ void PCCProducer::beginJob(){
 
   if(corrRootFile_.compare("")!=0){
     corrFile = new TFile(corrRootFile_.c_str(),"read");
+    if(!corrFile->IsZombie()) std::cout<<  " opened corrRootFile "<<corrRootFile_.c_str()<<std::endl;
   }
 
 
@@ -286,7 +287,7 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
 	  
 	  
 	  correctionScaleFactors_.clear();
-	  for(int b=1;b<=HCORR->GetNbinsX();b++)
+	  for(int b=0;b<HCORR->GetNbinsX();b++)
 	    correctionScaleFactors_.push_back(HCORR->GetBinContent(b));
 	  if(correctionScaleFactors_.size() != LumiConstants::numBX)
 	    throw cms::Exception("PCCProducer:: ") <<" correctionScaleFactors: "<<correctionScaleFactors_.size()
@@ -343,6 +344,7 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
 
     if(saveCSVFile_){
         csvfile<<std::to_string(totalLumi_);
+	//std::cout<<lumiSeg.run()<<","<<lumiSeg.luminosityBlock()<<","<<std::to_string(totalLumi_)<<std::endl;
         
         if(totalLumi_>0){
             for(unsigned int bx=0;bx<LumiConstants::numBX;bx++){

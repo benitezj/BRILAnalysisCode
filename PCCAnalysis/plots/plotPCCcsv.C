@@ -7,8 +7,7 @@ float ratiomin=0.7;
 float ratiomax=1.3;
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
-float modfrac[NLS];//correction to visible crossection for applied Pixel Quality flags
-
+float modfrac[NLS];//correction to visible crossection for applied Pixel Quality flag
 
 void getRefLumi(TString inputfile){
 
@@ -43,8 +42,6 @@ void getRefLumi(TString inputfile){
 void getModFrac(TString inputfile){
 
   for(int i=0;i<NLS;i++) modfrac[i]=1.;
-
-  return;
 
   ifstream myfile(inputfile.Data());
   if (!myfile.is_open()){
@@ -82,45 +79,6 @@ void getModFrac(TString inputfile){
 }
 
 
-float getMaxLumi(TString inputfile){
-    
-  ifstream myfile(inputfile.Data());
-  if (!myfile.is_open()){
-    std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
-    return 0.;
-  }
-
-  std::string line;
-  int run=0;
-  int ls=0;
-  float L=0.;
-  float maxL=0.;
-  while (std::getline(myfile, line)){
-    std::stringstream iss(line);
-    std::string token;
-
-    std::getline(iss,token, ',');
-    std::stringstream runiss(token);
-    runiss>>run;
-
-    std::getline(iss,token, ',');
-    std::stringstream lsiss(token);
-    lsiss>>ls;
-    if(ls>NLS){
-      cout<<"LS larger than maximum"<<endl;
-      return 0.;
-    }
-    
-    std::getline(iss,token, ',');
-    std::stringstream totLiss(token);
-    totLiss>>L;
-    if(L>maxL)maxL=L;
-  }
-  myfile.close();
-
-  return maxL;
-}
-
 
 void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  bool perBXRatioPlots=0){
 
@@ -135,9 +93,6 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     return;
   }
 
-  //float maxL=getMaxLumi(infile)/getSigmaVis(Run);
-  //if(maxL<2) return; //don't create the graph for empty runs
-  //cout<<"Max lumi: "<<maxL<<endl;
 
   ///create output file for lumisections
   TString lsoutfile=outpath+"/ls.dat";

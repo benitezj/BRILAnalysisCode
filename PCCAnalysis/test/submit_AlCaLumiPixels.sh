@@ -9,7 +9,7 @@ action=$2
 
 ##corr: afterglow corrections with Random triggers,
 ##lumi: ZeroBias triggers luminosity 
-jobtype=lumi 
+jobtype=lumi
 
 
 ###########################################################
@@ -268,6 +268,10 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     ## make plots with ROOT
     if [ "$action" == "5" ] && [ -f  $outputdir/${run}.csv ] && [ -f  $outputdir/${run}.${ref} ]; then
 	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",\"${ref}\",0\)
+    fi
+
+    if [ "$action" == "7" ] && [ -f  $outputdir/${run}.root ]; then
+	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/compareRandomRawCorr.C\(\"${outputdir}\",${run},\"${plotsdir}\"\)
     fi
 
     RUNLIST=$RUNLIST,$run

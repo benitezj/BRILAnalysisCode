@@ -74,7 +74,6 @@ process.rawPCCProd = cms.EDProducer("PCCProducer",
         applySiPixelQual = cms.untracked.bool(True),
 #        moduleFractionInputLabel = cms.untracked.string(os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/Module_fraction.txt'),
         moduleFractionInputLabel = cms.untracked.string(os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/Module_fraction_2017G.txt'),
-        moduleFractionOutputLabel = cms.untracked.string('moduleFraction.csv'),
 #        modCountOutLabel = cms.untracked.string("modCount.txt"),
 #        corrRootFile  = cms.untracked.string('/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4/306546.root'),
     )    
