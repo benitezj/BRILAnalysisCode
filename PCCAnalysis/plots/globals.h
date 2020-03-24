@@ -4,6 +4,9 @@
 
 #define NBX 3564
 #define NMOD 2000
+#define ORBITF 11245.6
+#define NLS 3000 //max number of lumi sections for histograms
+#define InstLumiScale (1e30/23.31)/1e34 //brilcalc lumi/lumisection [1/microbarn], 1 barn = 10^-24 cm^2,  y value will be in unites of 1e34
 
 
 #define MAXPCCRUN 5e10
@@ -13,8 +16,6 @@
 long RUNOFFSET=315000;
 
 
-#define NLS 3000 //max number of lumi sections for histograms
-float InstLumiScale=(1e30/23.31)/1e34; //brilcalc lumi/lumisection [1/microbarn], 1 barn = 10^-24 cm^2,  y value will be in unites of 1e34
 
 ////CMS plot labels
 TString InstLumiAxisTitle("HFOC Inst. Luminosity [ E34#scale[1.0]{cm}^{-2} s^{-1} ]");
@@ -31,6 +32,31 @@ void drawCMSPrelim(long year,float xpos=0.2){
   text.SetTextColor(1);
   text.SetTextSize(0.050);
   text.DrawLatexNDC(xpos,0.85,TString("#font[62]{CMS} #font[52]{Preliminary ")+year+"}");
+}
+
+
+///////////crossection
+float getSigmaVis(int run){
+
+  if(run>=323700){
+    return 3.14e6/ORBITF; // for second part of RunD, tighter stability cut ABCD
+
+    //#define SigmaPCC 0.0117935*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B1
+    //#define SigmaPCC 0.20715*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B2
+    //#define SigmaPCC 0.280174*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B3
+    //#define SigmaPCC 0.093988*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk1 Panel1
+    //#define SigmaPCC 0.118907*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk2 Panel1
+    //#define SigmaPCC 0.119082*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk3 Panel1
+
+  }else if(run>=315252){
+    //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
+    return 5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
+  }else if(run>=306473){
+    return 3.2074e6/ORBITF; // Run2017G
+  }
+
+  cout<<"sigma vis not found for run : "<<run<<endl;
+  return 1;
 }
 
 

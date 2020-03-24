@@ -34,7 +34,7 @@ echo "condor queue: $condorqueue"
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags
 ref=hfoc
 echo "reference: $ref"
-goldenjson="-i ~/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
+#goldenjson="-i ~/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
 echo "golden json: $goldenjson"
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 echo "plotsdir: $plotsdir"
@@ -65,8 +65,10 @@ echo "output: $outputdir"
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom/Run2018B_dynamicVeto
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
-if [ "$DBDIR" != "" ]; then
-   echo "corections: $DBDIR"
+#DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
+#DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
+if [ "$DBDIR" != "" ] || [ "$DBROOTDIR" != "" ]; then
+   echo "corections: $DBDIR $DBROOTDIR"
 fi
 
 
@@ -127,6 +129,10 @@ make_sh_script(){
     if [ "$DBDIR" != "" ]; then
 	echo "export DBFILE=${DBDIR}/${run}.db" >> $fullsubmitdir/${run}.sh
     fi
+    if [ "$DBROOTDIR" != "" ]; then
+	echo "export DBROOT=${DBROOTDIR}/${run}.root" >> $fullsubmitdir/${run}.sh
+    fi
+
     echo "export INPUTFILE=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
     
     ###if run.json file is there, this will apply a json when processing  
@@ -221,6 +227,7 @@ export RUNLIST=""
 counter=0
 for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     run=`echo $f | awk -F".txt" '{print $1}'`
+    echo $run
 
     #if [ "$counter" == "2" ]; then break; fi
     #if [ "$run" != "306550" ]; then continue; fi        
@@ -254,6 +261,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     ##get ref data from brilcalc
     if [ "$action" == "4" ] && [ "$ref" != "" ] ; then
 	command="brilcalc lumi -u hz/ub -r $run --byls  --output-style csv --normtag ${normtagdir}/normtag_${ref}.json "
+	#echo $command
 	${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.$ref
     fi
 

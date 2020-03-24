@@ -32,8 +32,10 @@ ________________________________________________________________**/
 
 #include "CondFormats/SiPixelObjects/interface/SiPixelQuality.h"
 #include "CondFormats/DataRecord/interface/SiPixelQualityRcd.h"
+//#include "CondFormats/DataRecord/interface/SiPixelQualityFromDbRcd.h"
 #include "DataFormats/DetId/interface/DetId.h"
-
+#include <TH1F.h>
+#include <TFile.h>
 
 class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
     edm::one::WatchLuminosityBlocks> {
@@ -84,6 +86,9 @@ class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
             bool applyCorr_;
             std::vector<float> correctionScaleFactors_;
 
+            std::string corrRootFile_;       // Afterglow corrections from ROOT file
+            TFile * corrFile;
+
             std::unique_ptr<LumiInfo> outputLumiInfo;
 
             std::ofstream csvfile;
@@ -106,6 +111,7 @@ PCCProducer::PCCProducer(const edm::ParameterSet& iConfig)
     applySiPixelQual_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<bool>("applySiPixelQual",false);
     moduleFractionInputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionInputLabel","");
     moduleFractionOutputLabel_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("moduleFractionOutputLabel","moduleFractionOutputLabel.csv");
+    corrRootFile_ = iConfig.getParameter<edm::ParameterSet>("PCCProducerParameters").getUntrackedParameter<std::string>("corrRootFile","");
 
     edm::InputTag PCCInputTag_(pccSource_, prodInst_);
     clustersPerBXOutput_.resize(LumiConstants::numBX,0);//vector containing clusters per bxid 
@@ -124,6 +130,11 @@ PCCProducer::~PCCProducer(){
 
 //-------------------------------------------------------------------------------------------------
 void PCCProducer::beginJob(){
+
+  if(corrRootFile_.compare("")!=0){
+    corrFile = new TFile(corrRootFile_.c_str(),"read");
+  }
+
 
   if(applySiPixelQual_){
 
@@ -159,6 +170,8 @@ void PCCProducer::beginJob(){
 }
 
 void PCCProducer::endJob(){
+
+  if(corrFile) delete corrFile;
 
   if(applySiPixelQual_)
     modFracOut.close();
@@ -216,6 +229,7 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
     const SiPixelQuality * siPixelQuality = NULL;
     if(applySiPixelQual_){
       iSetup.get< SiPixelQualityRcd >().get(siPixelQualityHandle);
+      //iSetup.get< SiPixelQualityFromDbRcd >().get(siPixelQualityHandle);
       siPixelQuality = siPixelQualityHandle.product();
     }
 
@@ -252,10 +266,40 @@ void PCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const 
     }
 
     if(applyCorr_){
-        edm::ESHandle< LumiCorrections > corrHandle;
-        iSetup.get<LumiCorrectionsRcd>().get(corrHandle);
-        const LumiCorrections *pccCorrections = corrHandle.product();
-        correctionScaleFactors_ = pccCorrections->getCorrectionsBX();
+      if(corrRootFile_.compare("")!=0){
+
+	TIter next(corrFile->GetListOfKeys());
+	TObject* key;
+	while ((key = next())) {
+	  TString kname(key->GetName());//ScaleFactorsAvg_306546_0_1_66
+	  if( ! kname.Contains("ScaleFactorsAvg") ) continue;
+	  TH1F* HCORR = (TH1F*) corrFile->Get(kname);
+	  //std::cout<<kname<<std::endl;
+
+	  TObjArray * a = kname.Tokenize("_");
+	  long r=atoi(((TObjString*)(*a)[1])->GetName());
+	  //long l=atoi(((TObjString*)(*a)[2])->GetName());
+	  long ls1=atoi(((TObjString*)(*a)[3])->GetName());
+	  long ls2=atoi(((TObjString*)(*a)[4])->GetName());
+
+	  if(r!=lumiSeg.run() || lumiSeg.luminosityBlock()<ls1 || lumiSeg.luminosityBlock()>ls2) continue;
+	  
+	  
+	  correctionScaleFactors_.clear();
+	  for(int b=1;b<=HCORR->GetNbinsX();b++)
+	    correctionScaleFactors_.push_back(HCORR->GetBinContent(b));
+	  if(correctionScaleFactors_.size() != LumiConstants::numBX)
+	    throw cms::Exception("PCCProducer:: ") <<" correctionScaleFactors: "<<correctionScaleFactors_.size()
+						   <<" should be "<<LumiConstants::numBX<<std::endl;
+	}
+
+      }else {
+	edm::ESHandle< LumiCorrections > corrHandle;
+	iSetup.get<LumiCorrectionsRcd>().get(corrHandle);
+	const LumiCorrections *pccCorrections = corrHandle.product();
+	correctionScaleFactors_ = pccCorrections->getCorrectionsBX();
+      }
+
     }
 
     for (unsigned int i=0;i<clustersPerBXOutput_.size();i++){

@@ -10,14 +10,17 @@ void plotPCCModules(long Run){
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   gStyle->SetOptStat(0);  
 
-  TString Path="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B_dynamicVeto_modules_v2";
+  //TString Path="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B_dynamicVeto_modules_v2";
+  TString Path="/afs/cern.ch/user/b/benitezj/output/BRIL/CMSSW_10_2_2/src/AlCaLumiPixels_ZeroBias-PromptReco/Run2017G_v4_modfrac";
   cout<<"Reading from: "<< Path<<endl;
 
   OutPath+=TString("/")+Run;
   system(TString("mkdir ")+OutPath);
 
-  readModRPhiZCoordinates();
-  readModVeto("BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt");
+  readModRPhiZCoordinates();//this must be called to set 
+  //readModVeto("BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt");
+  readModVeto("PCCTools/VetoModules/vetoModules_2017.txt");
+
 
   TH1F * GBPIX[4];
   for(int l=0;l<4;l++)
@@ -54,7 +57,7 @@ void plotPCCModules(long Run){
     iss>>mod>>clusters;
     //cout<<mod<<" "<<clusters<<endl;
 
-    if(mod < 30000000) continue;//skip wrong lines
+    //if(mod < 30000000) continue;//skip wrong lines
 
 
     //here apply the veto list
@@ -110,7 +113,7 @@ void plotPCCModules(long Run){
     std::stringstream iss(line);
     iss>>mod>>clusters;
     //cout<<mod<<", "<<clusters<<endl;
-    if(mod < 30000000) continue;//skip wrong lines
+    //if(mod < 30000000) continue;//skip wrong lines
     if(MODVETO[mod]) continue;
 
     fraction = clusters/(double)totclusters;

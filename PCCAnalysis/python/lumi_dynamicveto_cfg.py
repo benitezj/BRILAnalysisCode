@@ -21,7 +21,8 @@ if inputfile != None :
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
 else:    
-    inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
+    #inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
+    inputlist.insert(-1,'file:/eos/cms/store/data/Run2017G/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/306/546/00000/04FC0739-F3C8-E711-B927-02163E019DE3.root')
 
 if len(inputlist) == 0 : sys.exit("No input files")
 print inputlist
@@ -71,23 +72,31 @@ process.rawPCCProd = cms.EDProducer("PCCProducer",
         modVeto=cms.vint32(),
         OutputValue = cms.untracked.string("Average"),
         applySiPixelQual = cms.untracked.bool(True),
-        moduleFractionInputLabel = cms.untracked.string(os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/Module_fraction.txt'),
+#        moduleFractionInputLabel = cms.untracked.string(os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/Module_fraction.txt'),
+        moduleFractionInputLabel = cms.untracked.string(os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/Module_fraction_2017G.txt'),
         moduleFractionOutputLabel = cms.untracked.string('moduleFraction.csv'),
 #        modCountOutLabel = cms.untracked.string("modCount.txt"),
+#        corrRootFile  = cms.untracked.string('/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4/306546.root'),
     )    
 ) 
 print 'PCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.PCCProducerParameters.ApplyCorrections
 
 
+dbroot=os.getenv('DBROOT')
+if dbroot : 
+    print "Afterglow corrections : ", dbroot
+    process.rawPCCProd.PCCProducerParameters.corrRootFile  = cms.untracked.string(dbroot)
+
+
 ###### veto list  
 #vetofilename = None
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/mergedModuleList.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Lo.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Hi.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
 if vetofilename : 
     print 'reading from veto file: ', vetofilename
     vetofile = open(vetofilename,'r')
