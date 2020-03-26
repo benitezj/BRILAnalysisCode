@@ -5,7 +5,7 @@
 #define NBX 3564
 #define NMOD 2000
 #define ORBITF 11245.6
-#define NLS 3000 //max number of lumi sections for histograms
+#define NLS 4000 //max number of lumi sections for histograms
 #define InstLumiScale (1e30/23.31)/1e34 //brilcalc lumi/lumisection [1/microbarn], 1 barn = 10^-24 cm^2,  y value will be in unites of 1e34
 
 

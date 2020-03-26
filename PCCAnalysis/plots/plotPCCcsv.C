@@ -93,7 +93,6 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     return;
   }
 
-
   ///create output file for lumisections
   TString lsoutfile=outpath+"/ls.dat";
   ofstream lsfile(lsoutfile.Data(),std::ofstream::app);
@@ -108,6 +107,18 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   if (!runfile.is_open()){
     cout << "Unable to open output run file"; 
     return;
+  }
+
+
+  //output corrected lumi csv file
+  bool corrCSV=0;
+  ofstream corrfile;
+  if(corrCSV){
+    corrfile.open((inpath+"/"+Run+".csvcorr").Data());
+    if (!corrfile.is_open()){
+      cout << "Unable to open csvcorr file."<<endl; 
+      return;
+    }
   }
 
 
@@ -129,7 +140,9 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   std::string line;
   int run=0;
   int ls=0;
+  double rawL=0.;
   double lsL=0; //lumi for given LS
+  double bxL=0.;
   int maxLS=0;  //find last LS with lumi
   float maxL=0.;
   float runL=0.;
@@ -158,15 +171,17 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     ///read the  Lumi per ls
     std::getline(iss,token, ',');
     std::stringstream totLiss(token);
-    totLiss>>lsL;
+    totLiss>>rawL;
 
-    //cout<<run<<" "<<ls<<" "<<lsL<<endl;
-    //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<lsL/(sigmavis*modfrac[ls])<<std::endl;
+    //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<rawL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<rawL/(sigmavis*modfrac[ls])<<std::endl;
 
-    if(lsL>1 && sigmavis>0 && modfrac[ls]>0)
-      lsL /= (sigmavis*modfrac[ls]);
+    if(sigmavis>0 && modfrac[ls]>0)
+      lsL = rawL/(sigmavis*modfrac[ls]);
+      //lsL = rawL/(sigmavis);
     else lsL=0.;
 
+    if(corrCSV)
+      corrfile<<run<<","<<ls<<","<<((modfrac[ls]>0.) ? rawL/modfrac[ls] : rawL);
 
     runL+=lsL;
 
@@ -183,14 +198,18 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     
     ///fill lumi per BX plots
     if(perBXRatioPlots) { 
-      double bxL=0.;
       for(int bx=0;bx<NBX;bx++){
 	std::getline(iss,token, ',');
 	std::stringstream bxLiss(token);
-	bxLiss>>bxL;
-	bxL/=sigmavis;
+	bxLiss>>rawL;
+	bxL = rawL/(sigmavis*modfrac[ls]);
+	//bxL = rawL/(sigmavis);
 	HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	HLumiBX.AddBinContent(bx+1,bxL);
+
+	if(corrCSV)
+	  corrfile<<","<<((modfrac[ls]>0.) ? rawL/modfrac[ls] : rawL);
+	
       }
     }
     
@@ -198,12 +217,18 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     if(lsL > maxL) maxL=lsL;
 
     lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<std::endl;
+
+
+    if(corrCSV)
+      corrfile<<std::endl;
+
   }
   cout<<"Done processing input file"<<endl;
 
   ///close files
   myfile.close();
   lsfile.close();
+  if(corrCSV) corrfile.close();
 
   //write run lumi
   runfile<<Run<<" "<<runL<<" "<<runLRef<<std::endl;
@@ -300,7 +325,6 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   can_2.Draw();
   C.Print(outpath+"/"+(long)Run+".png");
 
-  return;
   //////////////////////////////////////////
   //// per BX ratio plots, and linearity plots
   //////////////////////////////////////////
