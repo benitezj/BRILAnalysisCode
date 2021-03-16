@@ -44,6 +44,10 @@ void LumiInfo::setErrorLumiAllBX(std::vector<float>& errLumiByBX){
   instLumiStatErrByBX_.assign(errLumiByBX.begin(),errLumiByBX.end());
 }
 
+void LumiInfo::setChannelIDs(std::vector<unsigned int>& channelIDs){
+  channelIDs_.assign(channelIDs.begin(),channelIDs.end());
+}
+
 std::ostream& operator<<(std::ostream& s, const LumiInfo& lumiInfo) {
   s << "\nDumping LumiInfo\n\n";
   s << "  getTotalInstLumi = " << lumiInfo.getTotalInstLumi() << "\n";

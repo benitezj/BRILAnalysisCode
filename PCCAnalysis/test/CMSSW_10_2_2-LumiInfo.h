@@ -114,6 +114,10 @@ class LumiInfo {
      * Livetime fraction (1-deadtime frac)
      */
     float getLiveFraction() const { return 1-deadtimeFraction_; }
+    /** 
+     * Returns list of channel ids used for lumi calculation
+     */
+    const std::vector<unsigned int>& getChannelIDs() const { return channelIDs_; }
   
     
     //
@@ -140,6 +144,10 @@ class LumiInfo {
      *  Set statistical error of instantaneous luminosity for all bunches
      */
     void setErrorLumiAllBX(std::vector<float>& errLumiByBX);
+    /** 
+     *  Set statistical error of instantaneous luminosity for all bunches
+     */
+    void setChannelIDs(std::vector<unsigned int>& channelIDs);
 
   
     /** 
@@ -179,6 +187,7 @@ class LumiInfo {
     float totalInstLumiStatErr_;
     std::vector<float> instLumiByBX_;
     std::vector<float> instLumiStatErrByBX_;
+    std::vector<unsigned int> channelIDs_;
 }; 
 
 std::ostream& operator<<(std::ostream& s, const LumiInfo& lumiInfo);
