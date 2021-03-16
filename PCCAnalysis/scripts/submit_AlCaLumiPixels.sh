@@ -12,6 +12,9 @@ action=$2
 jobtype=lumi
 
 
+baseoutdir=/eos/user/b/benitezj/BRIL/PCC
+plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi
+
 ###########################################################
 ### 
 if [ "$submitdir" == "" ]; then
@@ -36,20 +39,17 @@ ref=hfoc
 echo "reference: $ref"
 #goldenjson="-i ~/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
 echo "golden json: $goldenjson"
-plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
+
+plotsdir=${plotsdir}/$submitdir
 echo "plotsdir: $plotsdir"
 
-
-
 ### full path to output directory
-baseoutdir=""
 if [ "$jobtype" == "lumi" ]; then
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC/ZeroBias
+outputdir=$baseoutdir/ZeroBias/$submitdir
 fi
 if [ $jobtype == "corr" ]; then
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom
+outputdir=$baseoutdir/AlCaPCCRandom/$submitdir
 fi
-outputdir=$baseoutdir/$submitdir
 echo "output: $outputdir"
 
 
