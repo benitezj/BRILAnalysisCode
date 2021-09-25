@@ -151,7 +151,8 @@ PCCLumiAnalyzer::beginLuminosityBlock(const edm::LuminosityBlock& lumiSeg, const
 
 
   if(readChannels_){
-    const std::vector<unsigned int> channelIDs= inLumiOb.getChannelIDs();
+    const std::vector<unsigned int> channelIDs;
+    //channelIDs= inLumiOb.getChannelIDs();
     //std::cout<<lumiSeg.luminosityBlock()<<" ("<<channelIDs.size()<<"):";
     //for(auto & id: channelIDs) std::cout<<", "<<id;
     //std::cout<<std::endl;

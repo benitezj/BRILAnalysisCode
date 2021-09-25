@@ -36,6 +36,9 @@ ________________________________________________________________**/
 #include "DataFormats/DetId/interface/DetId.h"
 #include <TH1F.h>
 #include <TFile.h>
+#include <TString.h>
+#include <TObjString.h>
+
 
 class PCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
     edm::one::WatchLuminosityBlocks> {
