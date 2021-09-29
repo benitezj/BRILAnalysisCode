@@ -2,46 +2,19 @@
 ## standalone config to test PCC modules
 ## Jose Benitez, Attila Radl
 #########################
-import FWCore.ParameterSet.Config as cms
-from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
 
-##process = cms.Process("PCC")
-process = cms.Process('PCC',Run2_2018)
+import FWCore.ParameterSet.Config as cms
+
+process = cms.Process("PCC")
 
 process.source = cms.Source("PoolSource",
-#fileNames = cms.untracked.vstring('file:/eos/cms/store/data/Run2016H/AlCaLumiPixels0/RAW/v1/000/281/601/00000/2C65B0FE-6D8C-E611-8CB6-FA163E00F43A.root')
-fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/b/benitezj/public/BRIL/PCC/Run3Dev/Run2018D-AlCaLumiPixels-RAW-323702-D3FCD0FC-6328-B24E-AD3D-C22C55B968DD.root')
+fileNames = cms.untracked.vstring('file:/eos/cms/store/data/Run2015D/AlCaLumiPixels/ALCARECO/LumiPixels-PromptReco-v4/000/260/039/00000/1CF2A210-5B7E-E511-8F4F-02163E014145.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1000)
 )
 
-
-
-# import of standard configurations
-process.load('Configuration.StandardSequences.Services_cff')
-process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('Configuration.EventContent.EventContent_cff')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
-
-
-from EventFilter.SiPixelRawToDigi.SiPixelRawToDigi_cfi import siPixelDigis
-process.siPixelDigisForLumi = siPixelDigis.cpu.clone(
-   InputLabel = "hltFEDSelectorLumiPixels"
-)
-
-from RecoLocalTracker.SiPixelClusterizer.SiPixelClusterizerPreSplitting_cfi import siPixelClustersPreSplitting
-process.siPixelClustersForLumi = siPixelClustersPreSplitting.cpu.clone(
-    src = "siPixelDigisForLumi"
-)
 
 ################################
 #RECO->ALCAPCC 
@@ -68,7 +41,7 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
         ProdInst = cms.string(""),
         outputProductName = cms.untracked.string("lumiInfo"),
         ApplyCorrections=cms.untracked.bool(False),
-        saveCSVFile=cms.untracked.bool(True),
+        saveCSVFile=cms.untracked.bool(False),
         modVeto=cms.vint32(),
         OutputValue = cms.untracked.string("Average"),
     )
@@ -101,10 +74,9 @@ process.ALCARECOStreamPromptCalibProdPCC = cms.OutputModule("PoolOutputModule",
 
 
 ####################
-### sequences/paths
-process.seqALCARECOPromptCalibProdPCC = cms.Sequence(process.siPixelDigisForLumi+process.siPixelClustersForLumi+process.alcaPCCEventProducer+process.alcaPCCIntegrator+process.rawPCCProd)
-
-
+###sequences/paths
+#process.seqALCARECOPromptCalibProdPCC = cms.Sequence(process.alcaPCCEventProducer+process.alcaPCCIntegrator)
+process.seqALCARECOPromptCalibProdPCC = cms.Sequence(process.alcaPCCEventProducer+process.alcaPCCIntegrator+process.rawPCCProd)
 process.pathALCARECOPromptCalibProdPCC = cms.Path(process.seqALCARECOPromptCalibProdPCC)
 process.ALCARECOStreamPromptCalibProdOutPath = cms.EndPath(process.ALCARECOStreamPromptCalibProdPCC)
 process.schedule = cms.Schedule(*[ process.pathALCARECOPromptCalibProdPCC, process.ALCARECOStreamPromptCalibProdOutPath ])
@@ -118,11 +90,11 @@ process.MessageLogger = cms.Service("MessageLogger",
         ),
         FwkReport = cms.untracked.PSet(
             limit = cms.untracked.int32(10000000),
-            reportEvery = cms.untracked.int32(100)
+            reportEvery = cms.untracked.int32(1000)
         ),
         FwkSummary = cms.untracked.PSet(
             limit = cms.untracked.int32(10000000),
-            reportEvery = cms.untracked.int32(100)
+            reportEvery = cms.untracked.int32(1000)
         ),
         INFO = cms.untracked.PSet(
             limit = cms.untracked.int32(0)
