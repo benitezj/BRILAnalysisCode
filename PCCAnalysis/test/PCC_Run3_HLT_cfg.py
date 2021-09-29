@@ -5,7 +5,6 @@
 import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
 
-##process = cms.Process("PCC")
 process = cms.Process('PCC',Run2_2018)
 
 process.source = cms.Source("PoolSource",
@@ -90,7 +89,7 @@ process.ALCARECOStreamPromptCalibProdPCC = cms.OutputModule("PoolOutputModule",
     outputCommands = cms.untracked.vstring('drop *', 
                                            #'keep *_hltFEDSelectorLumiPixels_*_*',
                                            #'keep *_siPixelDigisForLumi_*_*',
-                                           'keep *_siPixelClustersForLumi_*_*',
+                                           #'keep *_siPixelClustersForLumi_*_*',
                                            'keep *_alcaPCCEventProducer_*_*',
                                            'keep *_alcaPCCIntegrator_*_*',
                                            'keep *_rawPCCProd_*_*'
