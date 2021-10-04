@@ -65,6 +65,7 @@ float getSigmaVis(int run){
 // Module coordinates
 ////////////////////////
 std::map<int,bool> MODVETO;
+std::map<int,bool> BPIXorFPIX; //1 or 2
 
 //BPIX
 std::map<int,int> LY;
@@ -121,6 +122,8 @@ void readModRPhiZCoordinates(){
     NBPIX[ly-1]++;
     
     MODVETO[module]=0;
+    BPIXorFPIX[module]=1;
+    
     counter++;
   }
 
@@ -156,6 +159,8 @@ void readModRPhiZCoordinates(){
     NFPIX[DISK[module]]++;
 
     MODVETO[module]=0;
+    BPIXorFPIX[module]=2;
+
     counter++;
   }
 
