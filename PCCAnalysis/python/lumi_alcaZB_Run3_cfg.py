@@ -16,7 +16,7 @@ inputlist=cms.untracked.vstring()
 
 inputfile=os.getenv('INPUTFILE')
 if inputfile != None : 
-    print 'reading from input file: ', inputfile
+    print('reading from input file: '+inputfile)
     infile = open(inputfile,'r')
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
@@ -25,16 +25,17 @@ else:
     
 
 if len(inputlist) == 0 : sys.exit("No input files")
-print inputlist
+print(inputlist)
 process.source = cms.Source("PoolSource",
     fileNames =     inputlist
 )
 
 jsonfile=os.getenv('JSONFILE')
 if jsonfile != None :
-   print 'will apply json file: ', jsonfile
+   print('will apply json file: '+ jsonfile)
    process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
-   print "LumisToProcess: ", process.source.lumisToProcess
+   print('LumisToProcess: ')
+   print(process.source.lumisToProcess)
 
 #######################################
 #####Setup the conditions database
@@ -48,7 +49,7 @@ process.GlobalTag.DumpStat = cms.untracked.bool( False )
 dbfile=os.getenv('DBFILE')
 #dbfile='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G/AlCaPCCRandom-17Nov2017.db'
 if dbfile != None: 
-    print 'will override DB file: ', dbfile
+    print('will override DB file: '+dbfile)
     process.load("CondCore.CondDB.CondDB_cfi")
     #process.CondDB.connect = 'sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db'
     process.CondDB.connect = 'sqlite_file:'+dbfile
@@ -89,7 +90,7 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
         OutputValue = cms.untracked.string("Average"),
     )    
 ) 
-print 'RawPCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections
+print('RawPCCProducerParameters.ApplyCorrections: ' +process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections)
 
 
 ###### veto list  
@@ -103,13 +104,13 @@ vetofilename = None
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
 
 if vetofilename != None:
-    print 'reading from veto file: ', vetofilename
+    print('reading from veto file: '+vetofilename)
     vetofile = open(vetofilename,'r')
     with vetofile as f:
         for line in f:
             process.rawPCCProd.RawPCCProducerParameters.modVeto.extend([int(line.rstrip())])
     vetofile.close()
-print process.rawPCCProd.RawPCCProducerParameters.modVeto
+print(process.rawPCCProd.RawPCCProducerParameters.modVeto)
 
 
 #process.path1 = cms.Path(process.rawPCCProd)

@@ -16,7 +16,7 @@ inputlist=cms.untracked.vstring()
 
 inputfile=os.getenv('INPUTFILE')
 if inputfile != None : 
-    print 'reading from input file: ', inputfile
+    print('reading from input file: '+inputfile)
     infile = open(inputfile,'r')
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
@@ -25,16 +25,17 @@ else:
     inputlist.insert(-1,'file:/eos/cms/store/data/Run2017G/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/306/546/00000/04FC0739-F3C8-E711-B927-02163E019DE3.root')
 
 if len(inputlist) == 0 : sys.exit("No input files")
-print inputlist
+print(inputlist)
 process.source = cms.Source("PoolSource",
     fileNames =     inputlist
 )
 
 jsonfile=os.getenv('JSONFILE')
 if jsonfile != '' :
-   print 'will apply json file: ', jsonfile
+   print('will apply json file: '+jsonfile)
    process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
-   print "LumisToProcess: ", process.source.lumisToProcess
+   print('LumisToProcess: ')
+   print(process.source.lumisToProcess)
 
 #######################################
 #####Setup the conditions database
@@ -46,7 +47,7 @@ process.GlobalTag.DumpStat = cms.untracked.bool( False )
 dbfile=os.getenv('DBFILE')
 #dbfile='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G/AlCaPCCRandom-17Nov2017.db'
 if dbfile : 
-    print 'will override DB file: ', dbfile
+    print('will override DB file: '+dbfile)
     process.load("CondCore.CondDB.CondDB_cfi")
     #process.CondDB.connect = 'sqlite_file:/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom/316060.db'
     process.CondDB.connect = 'sqlite_file:'+dbfile
@@ -78,12 +79,12 @@ process.rawPCCProd = cms.EDProducer("PCCProducer",
 #        corrRootFile  = cms.untracked.string('/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4/306546.root'),
     )    
 ) 
-print 'PCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.PCCProducerParameters.ApplyCorrections
+print('PCCProducerParameters.ApplyCorrections: '+process.rawPCCProd.PCCProducerParameters.ApplyCorrections)
 
 
 dbroot=os.getenv('DBROOT')
 if dbroot : 
-    print "Afterglow corrections : ", dbroot
+    print('Afterglow corrections : '+dbroot)
     process.rawPCCProd.PCCProducerParameters.corrRootFile  = cms.untracked.string(dbroot)
 
 
@@ -97,15 +98,15 @@ if dbroot :
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
 vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
 if vetofilename : 
-    print 'reading from veto file: ', vetofilename
+    print('reading from veto file: '+vetofilename)
     vetofile = open(vetofilename,'r')
     for line in vetofile:
         process.rawPCCProd.PCCProducerParameters.modVeto.extend([int(line.rstrip())])
     vetofile.close()
 else :
-    print "module veto list is empty"
+    print('module veto list is empty')
 
-print process.rawPCCProd.PCCProducerParameters.modVeto
+print(process.rawPCCProd.PCCProducerParameters.modVeto)
 
 #process.path1 = cms.Path(process.rawPCCProd)
 process.path1 += process.rawPCCProd

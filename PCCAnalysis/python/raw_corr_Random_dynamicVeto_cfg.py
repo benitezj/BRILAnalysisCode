@@ -18,12 +18,12 @@ inputlist=cms.untracked.vstring()
 if len(inputlist) == 0 :
    inputfile=os.getenv('INPUTFILE')
    if inputfile == '' : sys.exit('invalid INPUTFILE')
-   print 'reading from input file: ', inputfile
+   print('reading from input file: '+inputfile)
    infile = open(inputfile,'r')
    inputlist=cms.untracked.vstring(infile.readlines())
    infile.close()
    
-print inputlist
+print(inputlist)
 process.source = cms.Source("PoolSource",
     fileNames =     inputlist
 )
@@ -31,9 +31,10 @@ process.source = cms.Source("PoolSource",
 
 jsonfile=os.getenv('JSONFILE')
 if jsonfile != '' :
-   print 'will apply json file: ', jsonfile
+   print('will apply json file: '+jsonfile)
    process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
-   print "LumisToProcess: ", process.source.lumisToProcess
+   print('LumisToProcess: ')
+   print(process.source.lumisToProcess)
 
 
 #####################
@@ -61,13 +62,13 @@ vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/v
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
-print 'reading from veto file: ', vetofilename
+print('reading from veto file: '+vetofilename)
 vetofile = open(vetofilename,'r')
 with vetofile as f:
    for line in f:
        process.PCCProd.PCCProducerParameters.modVeto.extend([int(line.rstrip())])
 vetofile.close()
-print process.PCCProd.PCCProducerParameters.modVeto
+print(process.PCCProd.PCCProducerParameters.modVeto)
 
 
 
