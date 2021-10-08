@@ -9,23 +9,14 @@ ALCARECOZeroBiasHLT = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
     throw = cms.bool(False) # tolerate triggers stated above, but not available
 )
 
-from EventFilter.SiPixelRawToDigi.SiPixelRawToDigi_cfi import siPixelDigis
-siPixelDigisForLumiZB = siPixelDigis.cpu.clone(
-    InputLabel = "hltFEDSelectorLumiPixels"
-)
-
-from RecoLocalTracker.SiPixelClusterizer.SiPixelClusterizerPreSplitting_cfi import siPixelClustersPreSplitting
-siPixelClustersForLumiZB = siPixelClustersPreSplitting.cpu.clone(
-    src = "siPixelDigisForLumiZB"
-)
-
-alcaPCCProducerZeroBias = cms.EDProducer("AlcaPCCIntegrator",
+alcaPCCIntegratorZeroBias = cms.EDProducer("AlcaPCCIntegrator",
     AlcaPCCIntegratorParameters = cms.PSet(
-        inputPccLabel = cms.string("siPixelClustersForLumiZB"),
-        trigstring = cms.untracked.string(""),
-        ProdInst = cms.string("alcaPCCZeroBias")
+        inputPccLabel = cms.string("alcaPCCEventProducer"),
+        trigstring = cms.untracked.string("alcaPCCEvent"),##input instance
+        ProdInst = cms.string("alcaPCCZeroBias") ##output instance
     ),
 )
 
 # Sequence #
-seqALCARECOAlCaPCCZeroBias = cms.Sequence(ALCARECOZeroBiasHLT + siPixelDigisForLumiZB + siPixelClustersForLumiZB + alcaPCCProducerZeroBias)
+#seqALCARECOAlCaPCCZeroBias = cms.Sequence(ALCARECOZeroBiasHLT + alcaPCCIntegratorZeroBias)
+seqALCARECOAlCaPCCZeroBias = cms.Sequence(alcaPCCIntegratorZeroBias)
