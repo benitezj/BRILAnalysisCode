@@ -11,9 +11,9 @@ ALCARECOZeroBiasHLT = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
 
 alcaPCCIntegratorZeroBias = cms.EDProducer("AlcaPCCIntegrator",
     AlcaPCCIntegratorParameters = cms.PSet(
-        inputPccLabel = cms.string("alcaPCCEventProducer"),
-        trigstring = cms.untracked.string("alcaPCCEvent"),##input instance
-        ProdInst = cms.string("alcaPCCZeroBias") ##output instance
+        inputPccLabel = cms.string("hltAlcaPixelClusterCounts"),
+        trigstring = cms.untracked.string("ZeroBias"),# input path
+        ProdInst = cms.string("ZeroBias") # output path
     ),
 )
 

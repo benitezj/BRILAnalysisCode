@@ -5,7 +5,11 @@
 import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
 
-process = cms.Process('PCC',Run2_2018)
+#switch for ZeroBias vs Random streams
+#stream="ZeroBias"
+stream="Random"
+
+process = cms.Process('hlt',Run2_2018)
 
 process.source = cms.Source("PoolSource",
 #fileNames = cms.untracked.vstring('file:/eos/cms/store/data/Run2016H/AlCaLumiPixels0/RAW/v1/000/281/601/00000/2C65B0FE-6D8C-E611-8CB6-FA163E00F43A.root')
@@ -44,9 +48,9 @@ process.siPixelClustersForLumi = siPixelClustersPreSplitting.cpu.clone(
 
 ################################
 #RECO->ALCAPCC 
-process.alcaPCCEventProducer = cms.EDProducer("AlcaPCCEventProducer",
+process.hltAlcaPixelClusterCounts = cms.EDProducer("AlcaPCCEventProducer",
     pixelClusterLabel = cms.InputTag("siPixelClustersForLumi"),
-    trigstring = cms.untracked.string("alcaPCCEvent") 
+    trigstring = cms.untracked.string(stream) 
 )
 
 
@@ -66,7 +70,7 @@ process.ALCARECOStreamPromptCalibProdPCC = cms.OutputModule("PoolOutputModule",
                                            #'keep *_hltFEDSelectorLumiPixels_*_*',
                                            #'keep *_siPixelDigisForLumi_*_*',
                                            #'keep *_siPixelClustersForLumi_*_*',
-                                           'keep *_alcaPCCEventProducer_*_*'
+                                           'keep *_hltAlcaPixelClusterCounts_*_*'
                                        )
 )
 
@@ -75,8 +79,7 @@ process.ALCARECOStreamPromptCalibProdPCC = cms.OutputModule("PoolOutputModule",
 
 ####################
 ### sequences/paths
-process.seqALCARECOPromptCalibProdPCC = cms.Sequence(process.siPixelDigisForLumi+process.siPixelClustersForLumi+process.alcaPCCEventProducer)
-
+process.seqALCARECOPromptCalibProdPCC = cms.Sequence(process.siPixelDigisForLumi+process.siPixelClustersForLumi+process.hltAlcaPixelClusterCounts)
 
 process.pathALCARECOPromptCalibProdPCC = cms.Path(process.seqALCARECOPromptCalibProdPCC)
 process.ALCARECOStreamPromptCalibProdOutPath = cms.EndPath(process.ALCARECOStreamPromptCalibProdPCC)

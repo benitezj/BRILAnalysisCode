@@ -7,9 +7,9 @@ ALCARECORawPCCProd = cms.EDProducer("RawPCCProducer",
     RawPCCProducerParameters = cms.PSet(
         #Mod factor to count lumi and the string to specify output
         inputPccLabel = cms.string("alcaPCCIntegratorZeroBias"),
-        ProdInst = cms.string("alcaPCCZeroBias"),
+        ProdInst = cms.string("ZeroBias"),
         OutputValue = cms.untracked.string("Average"),
-        outputProductName = cms.untracked.string("rawPCCProd"),
+        outputProductName = cms.untracked.string("ZeroBias"),
         #Below is a list of module IDs that will be ignored in calculation of luminosity
         ApplyCorrections = cms.untracked.bool(True),
         modVeto=cms.vint32()
