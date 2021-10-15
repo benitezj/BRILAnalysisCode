@@ -1,13 +1,10 @@
 #########################
 ## standalone config to test PCC modules
 ## Jose Benitez, Attila Radl
+## configuration based on https://github.com/cms-sw/cmssw/blob/master/HLTrigger/Configuration/python/HLT_PRef_cff.py
 #########################
 import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
-
-#switch for ZeroBias vs Random streams
-#stream="ZeroBias"
-stream="Random"
 
 process = cms.Process('hlt',Run2_2018)
 
@@ -50,7 +47,7 @@ process.siPixelClustersForLumi = siPixelClustersPreSplitting.cpu.clone(
 #RECO->ALCAPCC 
 process.hltAlcaPixelClusterCounts = cms.EDProducer("AlcaPCCEventProducer",
     pixelClusterLabel = cms.InputTag("siPixelClustersForLumi"),
-    trigstring = cms.untracked.string(stream) 
+    trigstring = cms.untracked.string("alcaPCCEvent") 
 )
 
 
@@ -67,6 +64,7 @@ process.ALCARECOStreamPromptCalibProdPCC = cms.OutputModule("PoolOutputModule",
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     fileName = cms.untracked.string('PCC.root'),
     outputCommands = cms.untracked.vstring('drop *', 
+                                           'keep *_TriggerResults_*_*',
                                            #'keep *_hltFEDSelectorLumiPixels_*_*',
                                            #'keep *_siPixelDigisForLumi_*_*',
                                            #'keep *_siPixelClustersForLumi_*_*',
