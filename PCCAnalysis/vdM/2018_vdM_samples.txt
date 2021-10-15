@@ -3,11 +3,6 @@
 /eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias3/crab_CMSSW_10_3_2_ZeroBias3_splitPerBXTrue/190203_194352/0000/           
 /eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias4/crab_CMSSW_10_3_2_ZeroBias4_splitPerBXTrue/190130_015127/0000/             
 /eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias5/crab_CMSSW_10_3_2_ZeroBias5_splitPerBXTrue/190203_194427/0000/                 
-/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias1/crab_CMSSW_10_3_2_ZeroBias1_splitPerBXTrue/190130_015032/0000/              
-/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias2/crab_CMSSW_10_3_2_ZeroBias2_splitPerBXTrue/190130_015051/0000/                  
-/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias3/crab_CMSSW_10_3_2_ZeroBias3_splitPerBXTrue/190203_194352/0000/           
-/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias4/crab_CMSSW_10_3_2_ZeroBias4_splitPerBXTrue/190130_015127/0000/             
-/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias5/crab_CMSSW_10_3_2_ZeroBias5_splitPerBXTrue/190203_194427/0000/                 
 /eos/cms/store/group/phys_top/gkrintir/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias6/crab_CMSSW_10_3_2_ZeroBias6_splitPerBXTrue/190130_015203/0000/      
 /eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias7/crab_CMSSW_10_3_2_ZeroBias7_splitPerBXTrue/190203_194457/0000/               
 /eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias8/crab_CMSSW_10_3_2_ZeroBias8_splitPerBXTrue/190130_015238/0000/
