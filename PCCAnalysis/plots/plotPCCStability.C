@@ -27,6 +27,8 @@ void plotPCCStability(TString inpath, TString ref){
   TGraph Lumi;
   int counterLumi=0;
   
+  std::map<int,int> runlist;
+  int lastrun=0;
 
   std::string line;
   int run=0;
@@ -38,21 +40,29 @@ void plotPCCStability(TString inpath, TString ref){
     std::stringstream iss(line);
     iss>>run>>ls>>totL>>totLRef;
 
+    Lumi.SetPoint(counterLumi,counterLumi,totL);
+    counterLumi++;
+
     float ratio=0;
     if(totLRef>0 ){
       ratio=totL/totLRef;
-      LumiRatio.SetPoint(counterRatio,counterRatio,ratio);
-      counterRatio++;
       HLumiRatio.Fill(ratio);
-      Lumi.SetPoint(counterLumi,counterLumi,totL);
-      counterLumi++;
+
+      LumiRatio.SetPoint(counterRatio,counterRatio,ratio);
+      counterRatio++; 
     }
+
+    if(run>lastrun){
+      runlist[counterLumi]=run;
+      lastrun=run;
+    }
+
   }
     
   myfile.close();
 
 
-  TCanvas C;
+  TCanvas C("C","",1000,600);
 
   gStyle->SetOptStat(111111);
   gStyle->SetOptFit(1);
@@ -82,8 +92,20 @@ void plotPCCStability(TString inpath, TString ref){
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.5);
   Lumi.GetXaxis()->SetTitle("lumi section");
-  Lumi.GetYaxis()->SetTitle(" PCC ");
+  Lumi.GetYaxis()->SetTitle(" PCC Integrated Lumi [#mub^{-1}]");
   Lumi.Draw("ap");
+
+  //draw run separators
+  TLine li;
+  li.SetLineStyle(2);
+  TLatex ltxt;
+  ltxt.SetTextAngle(90);
+  ltxt.SetTextSize(0.03);
+  TString rtxt("");
+  for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
+    li.DrawLine(it->first,0,it->first,0.09);
+    ltxt.DrawLatex(it->first,0.02,rtxt+it->second);
+  }
   C.Print(inpath+"/ls_lumi.png");
 
 
