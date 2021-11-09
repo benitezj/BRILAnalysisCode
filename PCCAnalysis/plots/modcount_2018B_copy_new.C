@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void modcount_2018B_copy() {
+void modcount_2018B_copy_new() {
   
   TString Path1 = "/eos/user/a/asehrawa/modcountgraphs_goodmodules/B/";  
   TCanvas C("C");
@@ -25,9 +25,9 @@ void modcount_2018B_copy() {
   //std::vector<int> run_number = {317080};  
   std::cout<<run_number.size()<<std::endl;
   readModRPhiZCoordinates();
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_first_iteration.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_first_iteration.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_second_iteration.txt");
-  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt");
+  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt");
 
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_Run2018B.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight1.txt");
@@ -789,7 +789,7 @@ void modcount_2018B_copy() {
   
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_2p5sigma"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_newveto(B+A)_Run2018A_update"+".png");
-  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".root");
   
   //P_L2->Draw();  
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_L2"+".png"); 
