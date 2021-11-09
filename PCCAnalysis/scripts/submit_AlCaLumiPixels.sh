@@ -154,7 +154,11 @@ make_sh_script(){
 	echo "cp rawPCC.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
 	echo "cp moduleFraction.csv  $outputdir/${run}.frac " >> $fullsubmitdir/${run}.sh
 	echo "cp modCount.txt  $outputdir/${run}.mod " >> $fullsubmitdir/${run}.sh
+
+	##for ALCARECO jobs
+	echo "cp step5_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
+
 }    
     
 
@@ -266,8 +270,9 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     fi
 
     ## make plots with ROOT
-    if [ "$action" == "5" ] && [ -f  $outputdir/${run}.csv ] && [ -f  $outputdir/${run}.${ref} ]; then
-	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",\"${ref}\",1\)
+    #if [ "$action" == "5" ] && [ -f  $outputdir/${run}.csv ] && [ -f  $outputdir/${run}.${ref} ]; then
+    if [ "$action" == "5" ] ; then
+	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",\"${ref}\",0\)
     fi
 
     if [ "$action" == "7" ] && [ -f  $outputdir/${run}.root ]; then
@@ -283,6 +288,6 @@ echo "Total runs: $counter"
 ## plots for entire period
 if [ "$action" == "6" ] ; then
     root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",\"${ref}\"\)
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\",\"${ref}\"\)
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotModuleFrac.C\(\"${outputdir}\",\"${RUNLIST}\",\"${plotsdir}\"\)
+    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\",\"${ref}\"\)
+    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotModuleFrac.C\(\"${outputdir}\",\"${RUNLIST}\",\"${plotsdir}\"\)
 fi

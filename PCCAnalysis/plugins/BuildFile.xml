@@ -16,6 +16,11 @@
 <flags EDM_PLUGIN="1"/>
 
 
+<library   file="LumiPCCAnalyzer.cc" name="LumiPCCAnalyzer">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
+
 <library   file="PCCLumiAnalyzer.cc" name="PCCLumiAnalyzer">
   <flags   EDM_PLUGIN="1"/>
 </library>
@@ -31,3 +36,5 @@
 <library   file="PCCProducer.cc" name="PCCProducer">
   <flags   EDM_PLUGIN="1"/>
 </library>
+
+

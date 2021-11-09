@@ -191,7 +191,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     HLumiLS.SetBinContent(ls,lsL);
 
     //ratio to ref luminometer
-    if(ref.CompareTo("")!=0 && refLumi[ls]>0){
+    if(refLumi[ls]>0){
       HLumiLSRatio.SetBinContent(ls,(lsL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
       runLRef+=refLumi[ls];
     }
@@ -296,28 +296,27 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   TLine tline;
   TGaxis ratioaxis(maxLS+50,0,maxLS+50,MAXPCC,ratiomin,ratiomax,510,"+L");
 
-  if(ref.CompareTo("")!=0){ 
-    HLumiLSRatio.Scale(MAXPCC);
-    HLumiLSRatio.GetXaxis()->SetTitle("lumi section");
-    HLumiLSRatio.GetYaxis()->SetTitle(TString("PCC/")+ref);
-    HLumiLSRatio.SetMarkerStyle(8);
-    HLumiLSRatio.SetMarkerSize(0.5);
-    HLumiLSRatio.SetMarkerColor(2);
-    HLumiLSRatio.Draw("histpsame");
- 
-    tline.SetLineColor(2);
-    tline.DrawLine(0,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin),maxLS+50,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin));
- 
-    ratioaxis.SetLineColor(kRed);
-    ratioaxis.SetTextColor(kRed);
-    ratioaxis.SetLabelSize(0.07);
-    ratioaxis.SetLabelColor(2);
-    ratioaxis.SetTitleSize(0.08);
-    ratioaxis.SetTitleOffset(0.6);
-    ratioaxis.SetTitle(TString("PCC/")+ref);
-    ratioaxis.SetNdivisions(3);
-    ratioaxis.Draw();
-  }
+  HLumiLSRatio.Scale(MAXPCC);
+  HLumiLSRatio.GetXaxis()->SetTitle("lumi section");
+  HLumiLSRatio.GetYaxis()->SetTitle(TString("PCC/")+ref);
+  HLumiLSRatio.SetMarkerStyle(8);
+  HLumiLSRatio.SetMarkerSize(0.5);
+  HLumiLSRatio.SetMarkerColor(2);
+  HLumiLSRatio.Draw("histpsame");
+  
+  tline.SetLineColor(2);
+  tline.DrawLine(0,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin),maxLS+50,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin));
+  
+  ratioaxis.SetLineColor(kRed);
+  ratioaxis.SetTextColor(kRed);
+  ratioaxis.SetLabelSize(0.07);
+  ratioaxis.SetLabelColor(2);
+  ratioaxis.SetTitleSize(0.08);
+  ratioaxis.SetTitleOffset(0.6);
+  ratioaxis.SetTitle(TString("PCC/")+ref);
+  ratioaxis.SetNdivisions(3);
+  ratioaxis.Draw();
+  
 
 
   C.Clear();
@@ -328,7 +327,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   //////////////////////////////////////////
   //// per BX ratio plots, and linearity plots
   //////////////////////////////////////////
-  if(perBXRatioPlots&&ref.CompareTo("")!=0) {
+  if(perBXRatioPlots) {
 
     int nLSmerge=100;
     HRefLumiBXvsLS.RebinX(nLSmerge); HRefLumiBXvsLS.Scale(1./nLSmerge);
