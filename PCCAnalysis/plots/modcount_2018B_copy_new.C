@@ -8,7 +8,7 @@ void modcount_2018B_copy_new() {
   TCanvas C("C");
   C.cd();
   //C.SetLogy();
-  //C.SetCanvasSize(2000,600); 
+  C.SetCanvasSize(2000,600); 
   //gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
   //gStyle->SetOptStat(1111111);
   
@@ -266,7 +266,9 @@ void modcount_2018B_copy_new() {
   legend->SetFillColor(0);
   legend->SetLineColor(0);
   legend->SetFillColor(0);
+
   for (unsigned int i=0;i<1856;i++){
+  if(LY[modid[i]]==2){
     if(MODVETO[modid[i]]==0){      
       //if(LY[modid[i]]==0){
       //histo_counts[i]->SetTitle(modid[i] + TString(" Side ") + SD[modid[i]] + " FPIX Disk " + DISK[modid[i]] + " Ring " + RING[modid[i]]);
@@ -305,50 +307,51 @@ void modcount_2018B_copy_new() {
 	bincontent = P[i]->GetBinContent(j);
 	binerror = P[i]->GetBinError(j);
 	if(bincontent > 0 && (binerror/bincontent) < 0.05) {
-	  gr[i] ->SetPoint(gr[i]->GetN(), x_value, bincontent/(ProjY[i]->GetMean()));    
+	    gr[i] ->SetPoint(gr[i]->GetN(), x_value, bincontent/(ProjY[i]->GetMean()));    
+	  //std::cout<< P[i]->GetBinContent(j)<<" "<<std::endl;
 	}
-	//std::cout<< P[i]->GetBinContent(j)<<" "<<std::endl;
       }
       
-      //gr[i]->GetXaxis()->SetRangeUser(0, 160000);
-      //gr[i]->GetXaxis()->SetNdivisions(10);                                                                                                
-      //gr[i]->GetYaxis()->SetRangeUser(0.5, 1.5);
-      //gr[i]->SetMarkerStyle(8);  
-      //gr[i]->SetMarkerSize(0.5); 
+      gr[i]->GetXaxis()->SetRangeUser(0, 35000);
+      gr[i]->GetXaxis()->SetNdivisions(10);                                                                                                
+      gr[i]->GetYaxis()->SetRangeUser(0.5, 1.5);
+      gr[i]->SetMarkerStyle(8);  
+      gr[i]->SetMarkerSize(0.5); 
       //gr[i]->SetLineStyle(1);
-      //gr[i]->GetXaxis()->SetTitle("Lumi section");
-      //gr[i]->GetYaxis()->SetTitle("Normalized count");
-      
-      //if(g_count==0){
-      //C.Clear();
-      //legend->Clear();
-      //gr[i]->SetLineColor(g_count+1);
-      //gr[i]->Draw("AL");
-      //legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
-      //g_count++;
-      //} else if(g_count>0&&g_count<19) {
-      //if(g_count<9){
-      //gr[i]->SetLineColor(g_count+1);
-      // }
-      //if(g_count>=9 && g_count<19){
-      //gr[i]->SetLineColor(g_count+20);
-      //}
-      //gr[i]->Draw("LSAME");
-      //legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
-      //g_count++;
-      //} else if(g_count==19) { 
-      //gr[i]->SetLineColor(g_count+27);
-      //gr[i]->Draw("LSAME"); 
-      //legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
-      //legend->Draw("SAME");
-      //char* histname2 = new char[100];
-      //sprintf(histname2, "graph_%d", g_plot++);
-      //legend->Draw("SAME");
-      //C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
+      gr[i]->GetXaxis()->SetTitle("Lumi section");
+      gr[i]->GetYaxis()->SetTitle("Normalized count");
+      if(LY[modid[i]]==2){      
+      if(g_count==0){
+      C.Clear();
+      legend->Clear();
+      gr[i]->SetLineColor(g_count+1);
+      gr[i]->Draw("AL");
+      legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
+      g_count++;
+      } else if(g_count>0&&g_count<19) {
+      if(g_count<9){
+      gr[i]->SetLineColor(g_count+1);
+       }
+      if(g_count>=9 && g_count<19){
+      gr[i]->SetLineColor(g_count+20);
+      }
+      gr[i]->Draw("LSAME");
+      legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
+      g_count++;
+      } else if(g_count==19) { 
+      gr[i]->SetLineColor(g_count+27);
+      gr[i]->Draw("LSAME"); 
+      legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
+      legend->Draw("SAME");
+      char* histname2 = new char[100];
+      sprintf(histname2, "graph_%d", g_plot++);
+      legend->Draw("SAME");
+      C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
       //C.Print(Path1+"Graph1D_test1/"+histname2+".png");
-      //g_count=0;      
-      //}
-      
+      g_count=0;      
+      }
+      }
+
       //if(LY[modid[i]]==0){
       //gr[i]->SetTitle(modid[i]+ TString(" Side ") + SD[modid[i]] +" FPIX Disk " + DISK[modid[i]] + " Ring " + RING[modid[i]]);
       // }
@@ -358,7 +361,16 @@ void modcount_2018B_copy_new() {
       //gr[i]->SetTitle(" Module stability profile ");
       
       //gr[i]->Draw("AP");
-      //char *hist_name = new char[20];
+      //char *hist_name = new char[100];
+      //if(LY[modid[i]]==0){                                                                                                                  
+      //sprintf(hist_name, TString("Graph1D_") + modid[i]+ "_Side_" + SD[modid[i]] +"_Disk_" + DISK[modid[i]] + "_Ring_" + RING[modid[i]]+".png", i);                                                                                                               
+      //}                                                                                                                                    
+      //if(LY[modid[i]]!=0){                                                                                                                 
+      //sprintf(hist_name, TString("Graph1D_") + modid[i]+ "_layer_" + LY[modid[i]] +"_ladder_" + LD[modid[i]] + "_MDnumber_" + MD[modid[i]]+".png", i);                                                                                                            
+      //}   
+      //C.Print(Path1+"Graphs_cut_totcount/"+hist_name+".png"); 
+
+
       //if(modid[i]==344253444){
       //sprintf(hist_name,"Graph1D_%d.png",i);
       //C.Print(Path1+"Graphs_cut_totcount/"+hist_name);
@@ -454,7 +466,7 @@ void modcount_2018B_copy_new() {
       //}
       
       gr8->SetMarkerStyle(8);
-      gr8->SetMarkerSize(0.7);
+      gr8->SetMarkerSize(0.4);
       //gr8->GetYaxis()->SetNdivisions(80);
       gr8->GetYaxis()->SetLabelSize(0.02);
       gr8->GetXaxis()->SetRangeUser(0, 1900);
@@ -484,7 +496,6 @@ void modcount_2018B_copy_new() {
       //}
       
       if(LY[modid[i]]==1 || rms/mean>=0.02){
-	//if(LY[modid[i]]==1){
 	std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
       }
      
@@ -530,14 +541,14 @@ void modcount_2018B_copy_new() {
       //} 
       }
      }
+  }
   
-  
-  //if(g_count!=0){ 
-  //legend->Draw("SAME"); 
-  //char* histname2 = new char[100];
-  //sprintf(histname2, "graph_%d", g_plot++);
-  //C.Print(Path1+"Graph1D_test1/"+histname2+".png");
-  //}
+  if(g_count!=0){ 
+  legend->Draw("SAME"); 
+  char* histname2 = new char[100];
+  sprintf(histname2, "graph_%d", g_plot++);
+  C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
+  }
   
   //gr1->Draw("AP");  
   //C.Print(Path1+"Graphs_cut_totcount/"+"graphprojy1"+".png");
@@ -561,14 +572,14 @@ void modcount_2018B_copy_new() {
   //gr8->SetTitle("              Run2018C (319337-320065)");                                                                            
   //gr8->SetTitle("              Run2018D (320500-325175)");
   //gr8->GetYaxis()->SetRangeUser(0, 0.018);
-  gr8->GetYaxis()->SetRangeUser(0, 0.5);    
+  gr8->GetYaxis()->SetRangeUser(0, 0.2);    
   gr8->Draw("AP");
   TLine *l = new TLine(0,0.03,2050,0.03);                                                                                                
   l->SetLineStyle(2);                                                                                                                    
   //l->Draw("SAME"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_Run2018A_(B+A)veto"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_2p5sigma"+".png"); 
-  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".png");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".png");
   
   //gr9->GetXaxis()->SetTitle("Lumi section");
   //gr9->GetYaxis()->SetTitle("totcount");
@@ -579,26 +590,29 @@ void modcount_2018B_copy_new() {
   
   gr9->GetXaxis()->SetNdivisions(10);
   gr9->GetXaxis()->SetLabelSize(0.03);
+  gr9->SetTitle(" Run2018B (317080-319311)");
+  gr9->GetYaxis()->SetTitle("totcount");
+  gr9->GetXaxis()->SetTitle("Lumi section");
   gr9->Draw("AP");                                                                                                                   
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunA"+".root"); 
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunB_lowlumi"+".root");
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunC"+".root");
-  C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".png");
+  //C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".root");
  
   h->GetXaxis()->SetRangeUser(0, 0.5); 
   //h->GetXaxis()->SetRangeUser(0, 0.018);
   h->GetYaxis()->SetRangeUser(0, 1200);
-  h->Draw();
+  //h->Draw();
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");
-  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
 
   gr_modweight->SetTitle("              Run2018B (317080-319311)");
   gr_modweight->GetXaxis()->SetTitle("module number index");                                                                                 
   gr_modweight->GetYaxis()->SetTitle("module weight");
   gr_modweight->GetXaxis()->SetRangeUser(0,2000);
   gr_modweight->GetYaxis()->SetRangeUser(0, 0.0045);
-  gr_modweight->Draw("AP"); 
-  C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
+  //gr_modweight->Draw("AP"); 
+  //C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
   
   histo_L2->GetXaxis()->SetTitle("Lumi section");
   histo_L2->GetYaxis()->SetTitle("Lumi ratio");
@@ -635,7 +649,7 @@ void modcount_2018B_copy_new() {
   histo_D3S2->Draw("COLZSAME");
   //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_2p5sigma"+".png"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_newveto(B+A)_Run2018A_update"+".png");  
-  C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_testing"+".png");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_testing"+".png");
   
   //histo_L2->Draw("COLZ");
   //C.Print(Path1+"Graph1D_test1/"+"Histo_stabilityL2"+".png"); 
@@ -659,7 +673,7 @@ void modcount_2018B_copy_new() {
   P_L2 = histo_L2->ProfileX();
   //P_L2->SetTitle("BPIX Layer 2");
   ProjY_L2 = histo_L2->ProjectionY(TString("Projection_L2"),0,200);
-  P_L2->GetXaxis()->SetRangeUser(0, 70000);
+  P_L2->GetXaxis()->SetRangeUser(25000, 30000);
   P_L2->GetXaxis()->SetNdivisions(50);
   P_L2->GetYaxis()->SetRangeUser(0, 0.35);
   //P_L2->GetXaxis()->SetNdivisions(7);
@@ -789,7 +803,7 @@ void modcount_2018B_copy_new() {
   
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_2p5sigma"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_newveto(B+A)_Run2018A_update"+".png");
-  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".root");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".root");
   
   //P_L2->Draw();  
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_L2"+".png"); 
