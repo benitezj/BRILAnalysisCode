@@ -2,11 +2,9 @@
 #include <fstream>
 #include <string>
 
-//
 std::vector<long> veto;
 
-
-void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt", int BF=0, int LY=0, int PN=-1){
+void createVetoListPerLayer(string VetoList="module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt", int BF=1, int LY=3, int PN=2){
 
   ///// Parameters:
   //BF: BPIX=0 ,  FPIX=1
@@ -35,7 +33,7 @@ void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_B
 
   
   //// BPIX
-  ifstream cfile_bpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix.txt");
+  ifstream cfile_bpix("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix.txt");
   if (!cfile_bpix.is_open()){
     std::cout << "Unable to open coordinates"<<endl;
     return;
@@ -49,11 +47,13 @@ void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_B
        && std::find(veto.begin(),veto.end(),module) == veto.end()
        )
       o<<module<<std::endl;
-  }
+    //cout<<module<<"  "<<ly<<"  "<<ld<<"  "<<"  "<<mod<<endl;
+    //cout<<module<<"  "<<ly<<endl; 
+ }
   
   
   //// FPIX
-  ifstream cfile_fpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix.txt");
+  ifstream cfile_fpix("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix.txt");
   if (!cfile_fpix.is_open()){
     std::cout << "Unable to open coordinates"<<endl;
     return;
@@ -67,6 +67,8 @@ void createVetoListPerLayer(string VetoList="veto_master_VdM_ABCD_2018_newcuts_B
        && std::find(veto.begin(),veto.end(),module) == veto.end()
        )
       o<<module<<std::endl;
+    //cout<<module<<"  "<<sd<<"  "<<di<<"  "<<"  "<<bl<<"  "<<pn<<endl;
+    //cout<<module<<"  "<<sd<<"  "<<di<<endl;
   }
 
   o.close();

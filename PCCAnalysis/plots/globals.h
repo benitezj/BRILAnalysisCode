@@ -65,7 +65,7 @@ float getSigmaVis(int run){
 // Module coordinates
 ////////////////////////
 std::map<int,bool> MODVETO;
-std::map<int,bool> BPIXorFPIX; //1 or 2
+std::map<int,int> BPIXorFPIX; //1 or 2
 
 //BPIX
 std::map<int,int> LY;
@@ -96,7 +96,7 @@ void readModRPhiZCoordinates(){
   int NFPIX[6]={0,0,0,0,0,0};//modules per disk
 
   //BPix
-  ifstream cfile_bpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");
+  ifstream cfile_bpix("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");
   if (!cfile_bpix.is_open()){
     std::cout << "Unable to open coordinates"<<endl;
     return;
@@ -129,7 +129,7 @@ void readModRPhiZCoordinates(){
 
 
   ////FPIX
-  ifstream cfile_fpix("BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt");
+  ifstream cfile_fpix("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt");
   if (!cfile_fpix.is_open()){
     std::cout << "Unable to open coordinates"<<endl;
     return;
