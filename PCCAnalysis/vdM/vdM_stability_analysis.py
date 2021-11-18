@@ -469,12 +469,14 @@ for iev in range(nentries):  # loop over all runs
     nCluster[0]=pixelCount[0]
     #for layer in range(1,6):
     #    nClusterPerLayer[layer-1]=pixelCount[layer]
-   if LS[0]!=LS_previous:
-       LS_previous=LS[0]
+    for entry in module:
+        if LS[0]!=LS_previous:
+            h_count[entry].Fill(LS, clusters/totclusters)
+            LS_previous=LS[0]
+
+g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
 
 for entry in module:
-    h_count[entry].Fill(LS, clusters/totclusters)
-    g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
     g_weights.SetPoint(module.size(), entry, mod_c[entry]/totclusters) 
     ProjY[entry]=h_count[entry].ProjectionY("Projection_" + entry,0,700);
     float mean=ProjY[entry].GetMean();                                                                                                      
