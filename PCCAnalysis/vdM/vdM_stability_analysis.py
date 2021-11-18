@@ -471,7 +471,7 @@ for iev in range(nentries):  # loop over all runs
     #    nClusterPerLayer[layer-1]=pixelCount[layer]
     for entry in module:
         if LS[0]!=LS_previous:
-            h_count[entry].Fill(LS, clusters/totclusters)
+            h_count[entry].Fill(LS, mod_c[entry]/totclusters)
             LS_previous=LS[0]
 
 g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
