@@ -489,6 +489,7 @@ h_count.Write()
 g_rms_mean.Write()
 h.Write()
 g_weights.Write()
+g_LS_totcount.Write()
 newfile.Write()
 newfile.Close()
 
