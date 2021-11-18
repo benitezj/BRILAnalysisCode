@@ -5,7 +5,10 @@ import numpy
 import array
 import math
 import argparse
+import csv
 
+with open('modulecount_LS.csv', 'w', newline='') as csvfile:
+csv_writer=csv.writer(csvfile, delimiter=',')
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
 parser.add_argument('--pccfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
 parser.add_argument('--inputfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
@@ -201,6 +204,7 @@ timeStamp_end   = array.array( 'l', [ 0 ] )
 bunchCrossing   = array.array( 'l', [ 0 ] )
 nCluster        = array.array( 'd', [ 0 ] )
 nClusterPerLayer= array.array( 'd', 6*[ 0 ] )
+
 
 #######################
 #  Loop over events   #
@@ -471,24 +475,32 @@ for iev in range(nentries):  # loop over all runs
             h_count[entry].Fill(LS, mod_c[entry]/totclusters)
         LS_previous=LS[0]
 
-g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
+#g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
 
-for entry in module:
-    g_weights.SetPoint(module.size(), entry, mod_c[entry]/totclusters) 
-    ProjY[entry]=h_count[entry].ProjectionY("Projection_" + entry,0,700);
-    float mean=ProjY[entry].GetMean();                                                                                                      
-    float rms=ProjY[entry].GetRMS();
-    if mean!=0:                                                                                                                       
-        g_rms_mean.SetPoint(module.size(), entry, rms/mean);                                                                       
-        h.Fill(rms/mean);
+#for entry in module:
+ #   g_weights.SetPoint(module.size(), entry, mod_c[entry]/totclusters) 
+  #  ProjY[entry]=h_count[entry].ProjectionY("Projection_" + entry,0,700);
+   # float mean=ProjY[entry].GetMean();                                                                                                      
+   # float rms=ProjY[entry].GetRMS();
+   # if mean!=0:                                                                                                                       
+    #    g_rms_mean.SetPoint(module.size(), entry, rms/mean);                                                                       
+     #   h.Fill(rms/mean);
             
 print a.size()
 #print module, clusters
-h_count.Write()
-g_rms_mean.Write()
-h.Write()
-g_weights.Write()
-g_LS_totcount.Write()
+#h_count.Write()
+#g_rms_mean.Write()
+#h.Write()
+#g_weights.Write()
+#g_LS_totcount.Write()
+for entry in module:
+    csv_writer.writerow(entry)
+    csv_writer.writerow('\n')
+csv_writer.writerow(run)
+csv_writer.writerow(LS)
+for entry in module:
+    csv_writer.writerow(mod_c[entry])
+csvfile.Write()
 newfile.Write()
 newfile.Close()
 
