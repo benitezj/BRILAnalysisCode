@@ -98,7 +98,6 @@ def GetMeanAndMeanError(list):
     return mean,meanError
 
 
-
 #######################
 #  Setup PCC Ntuples  #
 #######################
@@ -178,7 +177,6 @@ else:
 
 print vetoModules
 
-
 #######################
 # Setup new mini-tree #
 #######################
@@ -203,7 +201,6 @@ timeStamp_end   = array.array( 'l', [ 0 ] )
 bunchCrossing   = array.array( 'l', [ 0 ] )
 nCluster        = array.array( 'd', [ 0 ] )
 nClusterPerLayer= array.array( 'd', 6*[ 0 ] )
-
 
 #######################
 #  Loop over events   #
@@ -447,7 +444,7 @@ for iev in range(nentries):  # loop over all runs
         module=item[0][1]
         layer=tree.layers[module]
         clusters=item[1]
-        mod_c[module]+=clusters    # mod_c contain clusters per module     
+        mod_c[module]+=clusters    # mod_c contain clusters per module per event     
         totclusters=totclusters+clusters  # Is this totclusters really per LS
         #print module
         if module in vetoModules:
@@ -469,10 +466,10 @@ for iev in range(nentries):  # loop over all runs
     nCluster[0]=pixelCount[0]
     #for layer in range(1,6):
     #    nClusterPerLayer[layer-1]=pixelCount[layer]
-    for entry in module:
-        if LS[0]!=LS_previous:
+    if LS[0]!=LS_previous:
+        for entry in module:
             h_count[entry].Fill(LS, mod_c[entry]/totclusters)
-            LS_previous=LS[0]
+        LS_previous=LS[0]
 
 g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
 
