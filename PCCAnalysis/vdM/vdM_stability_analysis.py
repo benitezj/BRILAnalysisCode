@@ -7,8 +7,7 @@ import math
 import argparse
 import csv
 
-with open('modulecount_LS.csv', 'w', newline='') as csvfile:
-csv_writer=csv.writer(csvfile, delimiter=',')
+
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
 parser.add_argument('--pccfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
 parser.add_argument('--inputfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
@@ -22,14 +21,12 @@ f_LHC = 11245.6
 t_LS=math.pow(2,18)/f_LHC
 xsec_mb=80000. #microbarn
 
-
 def is_number(s):
     try:
         float(s)
         return True
     except ValueError:
         return False
-
 
 weightThreshold=1e-5
 
@@ -121,7 +118,6 @@ def GetMeanAndMeanError(list):
 #
 #tree=tfile.Get("lumi/tree")
 
-
 tree=TChain("lumi/tree")
 with open(args.inputfile) as f:
     for line in f:
@@ -144,21 +140,6 @@ tree.SetBranchStatus("layer*",1)
 tree.SetBranchStatus("bunchCrossing",1)
 tree.SetBranchStatus("timeStamp_begin",1)
 tree.SetBranchStatus("timeStamp_end",1)
-
-###
-#Vtx Stuff
-###
-tree.SetBranchStatus("nVtx",1)
-tree.SetBranchStatus("vtx_isGood",1)
-tree.SetBranchStatus("vtx_isFake",1)
-tree.SetBranchStatus("vtx_nTrk",1)
-
-tree.SetBranchStatus("vtx_isValid",1)
-tree.SetBranchStatus("vtx_x",1)
-tree.SetBranchStatus("vtx_y",1)
-tree.SetBranchStatus("vtx_z",1)
-tree.SetBranchStatus("vtx_xError",1)
-tree.SetBranchStatus("vtx_yError",1)
 
 #######################
 # Make mod veto list  #
@@ -205,7 +186,6 @@ bunchCrossing   = array.array( 'l', [ 0 ] )
 nCluster        = array.array( 'd', [ 0 ] )
 nClusterPerLayer= array.array( 'd', 6*[ 0 ] )
 
-
 #######################
 #  Loop over events   #
 #######################
@@ -213,7 +193,6 @@ nentries=tree.GetEntries()
 
 print nentries
 maxNBX=0
-totclusters=0
 pixelcount_LS=0    
 LS_previous=0
 a = set()
@@ -425,14 +404,16 @@ module=[     303042564, 303042568, 303042572, 303042576, 303042580, 303042584, 3
              344908804, 344912900, 344916996, 344921092, 344925188, 344929284, 344933380, 344937476, 344941572, 
              344945668, 344949764]
 
+f = open("modcount.csv", "w")
+for entry in module:
+    f.write(str(entry)+str(","))
+f.write('\n')
+#f.close()
+exit(0)
+
+mod_c={}
 for entry in module:
     mod_c[entry]=0
-    h_count[entry]=ROOT.TH2F("module fraction vs lumi section","vdM run number module fraction", 700,0,35000,300,0,0.016)
-
-g_LS_totcount=ROOT.TGraph()
-g_rms_mean=ROOT.TGraph()
-h=ROOT.TH1D("histo",100,0,0.005)
-g_weights=ROOT.TGraph()
 
 for iev in range(nentries):  # loop over all runs
    tree.GetEntry(iev)
@@ -449,7 +430,6 @@ for iev in range(nentries):  # loop over all runs
         layer=tree.layers[module]
         clusters=item[1]
         mod_c[module]+=clusters    # mod_c contain clusters per module per event     
-        totclusters=totclusters+clusters  # Is this totclusters really per LS
         #print module
         if module in vetoModules:
             #print module
@@ -471,53 +451,22 @@ for iev in range(nentries):  # loop over all runs
     #for layer in range(1,6):
     #    nClusterPerLayer[layer-1]=pixelCount[layer]
     if LS[0]!=LS_previous:
-        for entry in module:
-            h_count[entry].Fill(LS, mod_c[entry]/totclusters)
         LS_previous=LS[0]
+        mod_c=0
 
-#g_LS_totcount.SetPoint(g_LS_totcount.GetN(), LS, totclusters)
+print a.size()
+f.write(run)
+f.write(LS)
+for entry in module: 
+    f.write(mod_c[entry])
+f.close()
+#for key, value in mod_c[module].items():
+#  print (key, value)
 
 #for entry in module:
- #   g_weights.SetPoint(module.size(), entry, mod_c[entry]/totclusters) 
-  #  ProjY[entry]=h_count[entry].ProjectionY("Projection_" + entry,0,700);
-   # float mean=ProjY[entry].GetMean();                                                                                                      
-   # float rms=ProjY[entry].GetRMS();
-   # if mean!=0:                                                                                                                       
-    #    g_rms_mean.SetPoint(module.size(), entry, rms/mean);                                                                       
-     #   h.Fill(rms/mean);
-            
-print a.size()
+#    print mod_c[entry].items()
+
 #print module, clusters
-#h_count.Write()
-#g_rms_mean.Write()
-#h.Write()
-#g_weights.Write()
-#g_LS_totcount.Write()
-for entry in module:
-    csv_writer.writerow(entry)
-    csv_writer.writerow('\n')
-csv_writer.writerow(run)
-csv_writer.writerow(LS)
-for entry in module:
-    csv_writer.writerow(mod_c[entry])
-csvfile.Write()
 newfile.Write()
 newfile.Close()
 
-#TH2F *histo_counts[1856];
-#TGraph *gr8;
-#TGraph *gr9;
-#TH1D *h;
-#TGraph *gr_modweight;
-#gr9->SetPoint(gr9->GetN(), LS, totcount);
-#histo_counts[i]=new TH2F(TString("Histo_counts")+i,"", 700,0,35000,300,0,0.016);
-#ProjY[i] = histo_counts[i]->ProjectionY(TString("Projection_")+i,0,700);
-#gr_modweight->SetPoint(gr_modweight->GetN(), i, ProjY[i]->GetMean());
-#float mean=ProjY[i]->GetMean();
-  #    float rms=ProjY[i]->GetRMS();    
-   #   if(mean!=0){
-  #          gr8->SetPoint(gr8->GetN(), i, rms/mean);
-  #         h->Fill(rms/mean);
-    #          std::cout<<i<<"  "<<rms<<"  "<<mean<<"  "<<rms/mean<<std::endl;
-    #          std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
-  #    }
