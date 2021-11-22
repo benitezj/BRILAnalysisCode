@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void modcount_2018B_copy_new() {
+void modcount_2018B_copy_new_vdM() {
   
   TString Path1 = "/eos/user/a/asehrawa/modcountgraphs_goodmodules/B/";  
   TCanvas C("C");
@@ -11,18 +11,11 @@ void modcount_2018B_copy_new() {
   //C.SetCanvasSize(2000,600); 
   //gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
   //gStyle->SetOptStat(1111111);
+
+  std::vector<string> run_number = {"pcc_Data_PixVtx_Event_90X_1", "pcc_Data_PixVtx_Event_90X_2", "pcc_Data_PixVtx_Event_90X_3", "pcc_Data_PixVtx_Event_90X_4", "pcc_Data_PixVtx_Event_90X_5", "pcc_Data_PixVtx_Event_90X_6", "pcc_Data_PixVtx_Event_90X_7", "pcc_Data_PixVtx_Event_90X_8", "pcc_Data_PixVtx_Event_90X_9", "pcc_Data_PixVtx_Event_90X_10", "pcc_Data_PixVtx_Event_90X_11", "pcc_Data_PixVtx_Event_90X_12", "pcc_Data_PixVtx_Event_90X_13", "pcc_Data_PixVtx_Event_90X_14", "pcc_Data_PixVtx_Event_90X_15", "pcc_Data_PixVtx_Event_90X_16", "pcc_Data_PixVtx_Event_90X_17", "pcc_Data_PixVtx_Event_90X_18", "pcc_Data_PixVtx_Event_90X_19", "pcc_Data_PixVtx_Event_90X_20", "pcc_Data_PixVtx_Event_90X_21", "pcc_Data_PixVtx_Event_90X_22", "pcc_Data_PixVtx_Event_90X_23", "pcc_Data_PixVtx_Event_90X_24", "pcc_Data_PixVtx_Event_90X_25", "pcc_Data_PixVtx_Event_90X_26", "pcc_Data_PixVtx_Event_90X_27", "pcc_Data_PixVtx_Event_90X_28", "pcc_Data_PixVtx_Event_90X_29", "pcc_Data_PixVtx_Event_90X_30", "pcc_Data_PixVtx_Event_90X_31", "pcc_Data_PixVtx_Event_90X_32", "pcc_Data_PixVtx_Event_90X_33", "pcc_Data_PixVtx_Event_90X_34", "pcc_Data_PixVtx_Event_90X_35", "pcc_Data_PixVtx_Event_90X_36", "pcc_Data_PixVtx_Event_90X_37", "pcc_Data_PixVtx_Event_90X_38", "pcc_Data_PixVtx_Event_90X_39", "pcc_Data_PixVtx_Event_90X_40", "pcc_Data_PixVtx_Event_90X_41", "pcc_Data_PixVtx_Event_90X_42", "pcc_Data_PixVtx_Event_90X_43", "pcc_Data_PixVtx_Event_90X_44", "pcc_Data_PixVtx_Event_90X_45", "pcc_Data_PixVtx_Event_90X_46", "pcc_Data_PixVtx_Event_90X_47", "pcc_Data_PixVtx_Event_90X_48", "pcc_Data_PixVtx_Event_90X_49", "pcc_Data_PixVtx_Event_90X_50", "pcc_Data_PixVtx_Event_90X_51", "pcc_Data_PixVtx_Event_90X_52", "pcc_Data_PixVtx_Event_90X_53", "pcc_Data_PixVtx_Event_90X_54", "pcc_Data_PixVtx_Event_90X_55", "pcc_Data_PixVtx_Event_90X_56", "pcc_Data_PixVtx_Event_90X_57", "pcc_Data_PixVtx_Event_90X_58", "pcc_Data_PixVtx_Event_90X_59", "pcc_Data_PixVtx_Event_90X_60", "pcc_Data_PixVtx_Event_90X_61", "pcc_Data_PixVtx_Event_90X_62", "pcc_Data_PixVtx_Event_90X_63", "pcc_Data_PixVtx_Event_90X_64", "pcc_Data_PixVtx_Event_90X_65", "pcc_Data_PixVtx_Event_90X_66", "pcc_Data_PixVtx_Event_90X_67", "pcc_Data_PixVtx_Event_90X_68", "pcc_Data_PixVtx_Event_90X_69", "pcc_Data_PixVtx_Event_90X_70", "pcc_Data_PixVtx_Event_90X_71", "pcc_Data_PixVtx_Event_90X_72", "pcc_Data_PixVtx_Event_90X_73", "pcc_Data_PixVtx_Event_90X_74", "pcc_Data_PixVtx_Event_90X_75", "pcc_Data_PixVtx_Event_90X_76", "pcc_Data_PixVtx_Event_90X_77", "pcc_Data_PixVtx_Event_90X_78", "pcc_Data_PixVtx_Event_90X_79", "pcc_Data_PixVtx_Event_90X_80", "pcc_Data_PixVtx_Event_90X_81", "pcc_Data_PixVtx_Event_90X_82", "pcc_Data_PixVtx_Event_90X_83", "pcc_Data_PixVtx_Event_90X_84", "pcc_Data_PixVtx_Event_90X_85", "pcc_Data_PixVtx_Event_90X_86", "pcc_Data_PixVtx_Event_90X_87", "pcc_Data_PixVtx_Event_90X_88", "pcc_Data_PixVtx_Event_90X_89", "pcc_Data_PixVtx_Event_90X_90", "pcc_Data_PixVtx_Event_90X_91", "pcc_Data_PixVtx_Event_90X_92", "pcc_Data_PixVtx_Event_90X_93", "pcc_Data_PixVtx_Event_90X_94", "pcc_Data_PixVtx_Event_90X_95", "pcc_Data_PixVtx_Event_90X_96", "pcc_Data_PixVtx_Event_90X_97", "pcc_Data_PixVtx_Event_90X_98", "pcc_Data_PixVtx_Event_90X_99", "pcc_Data_PixVtx_Event_90X_100", "pcc_Data_PixVtx_Event_90X_101", "pcc_Data_PixVtx_Event_90X_102", "pcc_Data_PixVtx_Event_90X_103", "pcc_Data_PixVtx_Event_90X_104", "pcc_Data_PixVtx_Event_90X_105", "pcc_Data_PixVtx_Event_90X_106", "pcc_Data_PixVtx_Event_90X_107", "pcc_Data_PixVtx_Event_90X_108", "pcc_Data_PixVtx_Event_90X_109", "pcc_Data_PixVtx_Event_90X_110", "pcc_Data_PixVtx_Event_90X_111", "pcc_Data_PixVtx_Event_90X_112", "pcc_Data_PixVtx_Event_90X_113", "pcc_Data_PixVtx_Event_90X_114", "pcc_Data_PixVtx_Event_90X_115", "pcc_Data_PixVtx_Event_90X_116", "pcc_Data_PixVtx_Event_90X_117", "pcc_Data_PixVtx_Event_90X_118", "pcc_Data_PixVtx_Event_90X_119", "pcc_Data_PixVtx_Event_90X_120", "pcc_Data_PixVtx_Event_90X_121", "pcc_Data_PixVtx_Event_90X_122", "pcc_Data_PixVtx_Event_90X_123", "pcc_Data_PixVtx_Event_90X_124", "pcc_Data_PixVtx_Event_90X_125", "pcc_Data_PixVtx_Event_90X_126", "pcc_Data_PixVtx_Event_90X_127", "pcc_Data_PixVtx_Event_90X_128", "pcc_Data_PixVtx_Event_90X_129", "pcc_Data_PixVtx_Event_90X_130", "pcc_Data_PixVtx_Event_90X_131", "pcc_Data_PixVtx_Event_90X_132", "pcc_Data_PixVtx_Event_90X_133", "pcc_Data_PixVtx_Event_90X_134", "pcc_Data_PixVtx_Event_90X_135", "pcc_Data_PixVtx_Event_90X_136", "pcc_Data_PixVtx_Event_90X_137", "pcc_Data_PixVtx_Event_90X_138", "pcc_Data_PixVtx_Event_90X_139", "pcc_Data_PixVtx_Event_90X_140", "pcc_Data_PixVtx_Event_90X_141", "pcc_Data_PixVtx_Event_90X_142", "pcc_Data_PixVtx_Event_90X_143", "pcc_Data_PixVtx_Event_90X_144", "pcc_Data_PixVtx_Event_90X_145", "pcc_Data_PixVtx_Event_90X_146","pcc_Data_PixVtx_Event_90X_147", "pcc_Data_PixVtx_Event_90X_148", "pcc_Data_PixVtx_Event_90X_149", "pcc_Data_PixVtx_Event_90X_150", "pcc_Data_PixVtx_Event_90X_151", "pcc_Data_PixVtx_Event_90X_152", "pcc_Data_PixVtx_Event_90X_153", "pcc_Data_PixVtx_Event_90X_154", "pcc_Data_PixVtx_Event_90X_155", "pcc_Data_PixVtx_Event_90X_156", "pcc_Data_PixVtx_Event_90X_157", "pcc_Data_PixVtx_Event_90X_158", "pcc_Data_PixVtx_Event_90X_159", "pcc_Data_PixVtx_Event_90X_160", "pcc_Data_PixVtx_Event_90X_161", "pcc_Data_PixVtx_Event_90X_162", "pcc_Data_PixVtx_Event_90X_163", "pcc_Data_PixVtx_Event_90X_164", "pcc_Data_PixVtx_Event_90X_165", "pcc_Data_PixVtx_Event_90X_166", "pcc_Data_PixVtx_Event_90X_167", "pcc_Data_PixVtx_Event_90X_168", "pcc_Data_PixVtx_Event_90X_169", "pcc_Data_PixVtx_Event_90X_170", "pcc_Data_PixVtx_Event_90X_171", "pcc_Data_PixVtx_Event_90X_172", "pcc_Data_PixVtx_Event_90X_173", "pcc_Data_PixVtx_Event_90X_174", "pcc_Data_PixVtx_Event_90X_175", "pcc_Data_PixVtx_Event_90X_176", "pcc_Data_PixVtx_Event_90X_177", "pcc_Data_PixVtx_Event_90X_178", "pcc_Data_PixVtx_Event_90X_179", "pcc_Data_PixVtx_Event_90X_180", "pcc_Data_PixVtx_Event_90X_181", "pcc_Data_PixVtx_Event_90X_182", "pcc_Data_PixVtx_Event_90X_183", "pcc_Data_PixVtx_Event_90X_184", "pcc_Data_PixVtx_Event_90X_185", "pcc_Data_PixVtx_Event_90X_186", "pcc_Data_PixVtx_Event_90X_187", "pcc_Data_PixVtx_Event_90X_188", "pcc_Data_PixVtx_Event_90X_189", "pcc_Data_PixVtx_Event_90X_190", "pcc_Data_PixVtx_Event_90X_191", "pcc_Data_PixVtx_Event_90X_192", "pcc_Data_PixVtx_Event_90X_193", "pcc_Data_PixVtx_Event_90X_194", "pcc_Data_PixVtx_Event_90X_195", "pcc_Data_PixVtx_Event_90X_196","pcc_Data_PixVtx_Event_90X_197","pcc_Data_PixVtx_Event_90X_198","pcc_Data_PixVtx_Event_90X_199", "pcc_Data_PixVtx_Event_90X_200","pcc_Data_PixVtx_Event_90X_201","pcc_Data_PixVtx_Event_90X_202","pcc_Data_PixVtx_Event_90X_203","pcc_Data_PixVtx_Event_90X_204","pcc_Data_PixVtx_Event_90X_205","pcc_Data_PixVtx_Event_90X_206","pcc_Data_PixVtx_Event_90X_207","pcc_Data_PixVtx_Event_90X_208","pcc_Data_PixVtx_Event_90X_209","pcc_Data_PixVtx_Event_90X_210","pcc_Data_PixVtx_Event_90X_211","pcc_Data_PixVtx_Event_90X_212","pcc_Data_PixVtx_Event_90X_213","pcc_Data_PixVtx_Event_90X_214","pcc_Data_PixVtx_Event_90X_215", "pcc_Data_PixVtx_Event_90X_216","pcc_Data_PixVtx_Event_90X_217","pcc_Data_PixVtx_Event_90X_218","pcc_Data_PixVtx_Event_90X_219","pcc_Data_PixVtx_Event_90X_220","pcc_Data_PixVtx_Event_90X_221","pcc_Data_PixVtx_Event_90X_222","pcc_Data_PixVtx_Event_90X_223","pcc_Data_PixVtx_Event_90X_224","pcc_Data_PixVtx_Event_90X_225","pcc_Data_PixVtx_Event_90X_226","pcc_Data_PixVtx_Event_90X_227","pcc_Data_PixVtx_Event_90X_228","pcc_Data_PixVtx_Event_90X_229","pcc_Data_PixVtx_Event_90X_230","pcc_Data_PixVtx_Event_90X_231","pcc_Data_PixVtx_Event_90X_232","pcc_Data_PixVtx_Event_90X_233","pcc_Data_PixVtx_Event_90X_234","pcc_Data_PixVtx_Event_90X_235","pcc_Data_PixVtx_Event_90X_236","pcc_Data_PixVtx_Event_90X_237","pcc_Data_PixVtx_Event_90X_238","pcc_Data_PixVtx_Event_90X_239","pcc_Data_PixVtx_Event_90X_240","pcc_Data_PixVtx_Event_90X_241","pcc_Data_PixVtx_Event_90X_242","pcc_Data_PixVtx_Event_90X_243","pcc_Data_PixVtx_Event_90X_244","pcc_Data_PixVtx_Event_90X_245","pcc_Data_PixVtx_Event_90X_246","pcc_Data_PixVtx_Event_90X_247","pcc_Data_PixVtx_Event_90X_248","pcc_Data_PixVtx_Event_90X_249","pcc_Data_PixVtx_Event_90X_250","pcc_Data_PixVtx_Event_90X_251","pcc_Data_PixVtx_Event_90X_252","pcc_Data_PixVtx_Event_90X_253","pcc_Data_PixVtx_Event_90X_254","pcc_Data_PixVtx_Event_90X_255","pcc_Data_PixVtx_Event_90X_256","pcc_Data_PixVtx_Event_90X_257","pcc_Data_PixVtx_Event_90X_258","pcc_Data_PixVtx_Event_90X_259","pcc_Data_PixVtx_Event_90X_260","pcc_Data_PixVtx_Event_90X_261","pcc_Data_PixVtx_Event_90X_262","pcc_Data_PixVtx_Event_90X_263","pcc_Data_PixVtx_Event_90X_264","pcc_Data_PixVtx_Event_90X_265","pcc_Data_PixVtx_Event_90X_266","pcc_Data_PixVtx_Event_90X_267","pcc_Data_PixVtx_Event_90X_268","pcc_Data_PixVtx_Event_90X_269","pcc_Data_PixVtx_Event_90X_270","pcc_Data_PixVtx_Event_90X_271","pcc_Data_PixVtx_Event_90X_272","pcc_Data_PixVtx_Event_90X_273","pcc_Data_PixVtx_Event_90X_274","pcc_Data_PixVtx_Event_90X_275","pcc_Data_PixVtx_Event_90X_276","pcc_Data_PixVtx_Event_90X_277","pcc_Data_PixVtx_Event_90X_278","pcc_Data_PixVtx_Event_90X_279","pcc_Data_PixVtx_Event_90X_280","pcc_Data_PixVtx_Event_90X_281","pcc_Data_PixVtx_Event_90X_282","pcc_Data_PixVtx_Event_90X_283","pcc_Data_PixVtx_Event_90X_284","pcc_Data_PixVtx_Event_90X_285","pcc_Data_PixVtx_Event_90X_286","pcc_Data_PixVtx_Event_90X_287","pcc_Data_PixVtx_Event_90X_288","pcc_Data_PixVtx_Event_90X_289","pcc_Data_PixVtx_Event_90X_290","pcc_Data_PixVtx_Event_90X_291","pcc_Data_PixVtx_Event_90X_292","pcc_Data_PixVtx_Event_90X_293","pcc_Data_PixVtx_Event_90X_294","pcc_Data_PixVtx_Event_90X_295","pcc_Data_PixVtx_Event_90X_296","pcc_Data_PixVtx_Event_90X_297","pcc_Data_PixVtx_Event_90X_298","pcc_Data_PixVtx_Event_90X_299","pcc_Data_PixVtx_Event_90X_300","pcc_Data_PixVtx_Event_90X_301","pcc_Data_PixVtx_Event_90X_302","pcc_Data_PixVtx_Event_90X_303","pcc_Data_PixVtx_Event_90X_304","pcc_Data_PixVtx_Event_90X_305","pcc_Data_PixVtx_Event_90X_306","pcc_Data_PixVtx_Event_90X_307","pcc_Data_PixVtx_Event_90X_308","pcc_Data_PixVtx_Event_90X_309","pcc_Data_PixVtx_Event_90X_310","pcc_Data_PixVtx_Event_90X_311","pcc_Data_PixVtx_Event_90X_312","pcc_Data_PixVtx_Event_90X_313","pcc_Data_PixVtx_Event_90X_314","pcc_Data_PixVtx_Event_90X_315","pcc_Data_PixVtx_Event_90X_316","pcc_Data_PixVtx_Event_90X_317","pcc_Data_PixVtx_Event_90X_318","pcc_Data_PixVtx_Event_90X_319","pcc_Data_PixVtx_Event_90X_320","pcc_Data_PixVtx_Event_90X_321","pcc_Data_PixVtx_Event_90X_322","pcc_Data_PixVtx_Event_90X_323","pcc_Data_PixVtx_Event_90X_324","pcc_Data_PixVtx_Event_90X_325","pcc_Data_PixVtx_Event_90X_326","pcc_Data_PixVtx_Event_90X_327","pcc_Data_PixVtx_Event_90X_328","pcc_Data_PixVtx_Event_90X_329","pcc_Data_PixVtx_Event_90X_330","pcc_Data_PixVtx_Event_90X_331",
+"pcc_Data_PixVtx_Event_90X_332","pcc_Data_PixVtx_Event_90X_333","pcc_Data_PixVtx_Event_90X_334","pcc_Data_PixVtx_Event_90X_335","pcc_Data_PixVtx_Event_90X_336","pcc_Data_PixVtx_Event_90X_337","pcc_Data_PixVtx_Event_90X_338","pcc_Data_PixVtx_Event_90X_339","pcc_Data_PixVtx_Event_90X_340","pcc_Data_PixVtx_Event_90X_341","pcc_Data_PixVtx_Event_90X_342","pcc_Data_PixVtx_Event_90X_343","pcc_Data_PixVtx_Event_90X_344","pcc_Data_PixVtx_Event_90X_345","pcc_Data_PixVtx_Event_90X_346","pcc_Data_PixVtx_Event_90X_347","pcc_Data_PixVtx_Event_90X_348","pcc_Data_PixVtx_Event_90X_349","pcc_Data_PixVtx_Event_90X_350","pcc_Data_PixVtx_Event_90X_351","pcc_Data_PixVtx_Event_90X_352","pcc_Data_PixVtx_Event_90X_353","pcc_Data_PixVtx_Event_90X_354","pcc_Data_PixVtx_Event_90X_355","pcc_Data_PixVtx_Event_90X_356","pcc_Data_PixVtx_Event_90X_357","pcc_Data_PixVtx_Event_90X_358","pcc_Data_PixVtx_Event_90X_359","pcc_Data_PixVtx_Event_90X_360","pcc_Data_PixVtx_Event_90X_361","pcc_Data_PixVtx_Event_90X_362","pcc_Data_PixVtx_Event_90X_363","pcc_Data_PixVtx_Event_90X_364","pcc_Data_PixVtx_Event_90X_365","pcc_Data_PixVtx_Event_90X_366","pcc_Data_PixVtx_Event_90X_367","pcc_Data_PixVtx_Event_90X_368","pcc_Data_PixVtx_Event_90X_369","pcc_Data_PixVtx_Event_90X_370","pcc_Data_PixVtx_Event_90X_371","pcc_Data_PixVtx_Event_90X_372","pcc_Data_PixVtx_Event_90X_373","pcc_Data_PixVtx_Event_90X_374","pcc_Data_PixVtx_Event_90X_375",
+"pcc_Data_PixVtx_Event_90X_376","pcc_Data_PixVtx_Event_90X_377","pcc_Data_PixVtx_Event_90X_378","pcc_Data_PixVtx_Event_90X_379","pcc_Data_PixVtx_Event_90X_380","pcc_Data_PixVtx_Event_90X_381","pcc_Data_PixVtx_Event_90X_382","pcc_Data_PixVtx_Event_90X_383","pcc_Data_PixVtx_Event_90X_384","pcc_Data_PixVtx_Event_90X_385","pcc_Data_PixVtx_Event_90X_386","pcc_Data_PixVtx_Event_90X_387","pcc_Data_PixVtx_Event_90X_388","pcc_Data_PixVtx_Event_90X_389","pcc_Data_PixVtx_Event_90X_390","pcc_Data_PixVtx_Event_90X_391","pcc_Data_PixVtx_Event_90X_392","pcc_Data_PixVtx_Event_90X_393","pcc_Data_PixVtx_Event_90X_394","pcc_Data_PixVtx_Event_90X_395","pcc_Data_PixVtx_Event_90X_396","pcc_Data_PixVtx_Event_90X_397","pcc_Data_PixVtx_Event_90X_398","pcc_Data_PixVtx_Event_90X_399","pcc_Data_PixVtx_Event_90X_400","pcc_Data_PixVtx_Event_90X_401","pcc_Data_PixVtx_Event_90X_402","pcc_Data_PixVtx_Event_90X_403","pcc_Data_PixVtx_Event_90X_404","pcc_Data_PixVtx_Event_90X_405","pcc_Data_PixVtx_Event_90X_406","pcc_Data_PixVtx_Event_90X_407","pcc_Data_PixVtx_Event_90X_408","pcc_Data_PixVtx_Event_90X_409","pcc_Data_PixVtx_Event_90X_410","pcc_Data_PixVtx_Event_90X_411","pcc_Data_PixVtx_Event_90X_412","pcc_Data_PixVtx_Event_90X_413","pcc_Data_PixVtx_Event_90X_414","pcc_Data_PixVtx_Event_90X_415","pcc_Data_PixVtx_Event_90X_416","pcc_Data_PixVtx_Event_90X_417","pcc_Data_PixVtx_Event_90X_418","pcc_Data_PixVtx_Event_90X_419"};
   
-  //std::vector<int> run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
-  
-  std::vector<int> run_number = {317080, 317087, 317088, 317089, 317170, 317182, 317212, 317213, 317239, 317279,317291, 317292, 317295, 317296, 317297, 317319, 317320,317338, 317339, 317340, 317382, 317383, 317391, 317392, 317434, 317435, 317438, 317475, 317478, 317479, 317480, 317481, 317482, 317484, 317488, 317509, 317510, 317511, 317512, 317527, 317580, 317591, 317626, 317640, 317641, 317648,317649, 317650, 317661, 317663, 317683, 317696, 318070, 318622, 318653, 318661, 318662, 318663, 318667, 318669, 318670, 318675, 318712,318714, 318733, 318734, 318785,318816, 318817, 318819, 318820, 318828, 318834, 318836, 318837, 318872, 318874, 318876, 318877, 318939, 318944, 318945, 318953, 318980, 318981, 318982, 318983, 318984, 318992, 319006, 319011, 319015, 319016, 319018, 319019, 319077, 319097, 319098, 319099, 319100, 319101, 319103, 319104, 319124, 319125, 319159, 319160, 319173, 319174, 319175, 319176, 319177, 319190, 319222, 319223, 319254, 319255, 319256, 319260, 319262, 319263, 319264, 319265, 319266, 319267, 319268, 319270, 319273, 319274, 319300, 319310, 319311};
-  
-  //std::vector<int> run_number_vdM2018 = {318976, 318977, 318978, 318979, 318980, 318981, 318982, 318983, 318984, 318992, 319006, 319010, 319011, 319015, 319016, 319018, 319019, 319021};  
-  
-  //std::vector<int> run_number = {319337, 319347, 319348, 319349, 319449, 319450, 319452, 319456, 319459, 319460, 319462, 319463, 319464, 319466, 319467, 319468, 319469, 319470, 319471, 319472, 319486, 319488, 319503, 319506, 319524, 319525, 319526, 319528, 319579, 319606, 319625, 319639, 319656, 319657, 319658, 319659, 319678, 319687, 319697, 319698, 319756, 319840, 319841, 319847, 319848, 319849, 319851, 319852, 319853, 319854, 319908, 319909, 319910, 319912, 319913, 319914, 319915, 319928, 319941, 319942, 319950, 319991, 319992, 319993, 320002, 320003, 320006, 320007, 320008, 320009, 320010, 320011, 320012, 320023, 320024, 320025, 320026, 320038, 320039, 320040, 320058, 320059, 320060, 320061, 320062, 320063, 320064, 320065};
-  
-  //std::vector<int> run_number= {320500, 320569, 320570, 320571, 320612, 320617, 320654, 320673, 320674, 320688, 320712, 320757, 320804, 320807, 320809, 320821, 320822, 320823, 320824, 320838, 320840, 320841, 320853, 320854, 320855, 320856, 320857, 320858, 320859, 320887, 320888, 320917, 320920, 320933, 320934, 320936, 320941, 320980, 320995, 320996, 321004, 321005, 321006, 321007, 321009, 321010, 321011, 321012, 321051, 321055, 321067, 321068, 321069, 321078, 321119, 321121, 321122, 321123, 321124, 321126, 321134, 321138, 321140, 321149, 321162, 321164, 321165, 321166, 321167, 321177, 321178, 321218, 321219, 321221, 321230, 321231, 321232, 321233, 321261, 321262, 321283, 321294, 321295, 321296, 321305, 321310, 321311, 321312, 321313, 321383, 321386, 321388, 321393, 321396, 321397, 321414, 321415, 321431, 321432, 321433, 321434, 321436, 321457, 321461, 321475, 321528, 321536, 321586, 321607, 321636, 321640, 321650, 321652, 321653, 321665, 321710, 321712, 321730, 321731, 321732, 321735, 321755, 321758, 321759, 321760, 321773, 321774, 321775, 321776, 321777, 321778, 321780, 321781, 321794, 321796, 321813, 321815, 321817, 321818, 321819, 321820, 321831, 321832, 321833, 321834, 321879, 321880, 321887, 321908, 321909, 321917, 321919, 321933, 321949, 321960, 321961, 321973, 321975, 321988, 321990, 322013, 322014, 322022, 322040, 322049, 322057, 322068, 322079, 322088, 322106, 322113, 322118, 322165, 322167, 322179, 322201, 322204, 322222, 322252, 322317, 322319, 322322, 322324, 322332, 322348, 322355, 322356, 322381, 322407, 322430, 322431, 322480, 322483, 322484, 322485, 322487, 322492, 322510, 322599, 322602, 322603, 322605, 322616, 322617, 322625, 322633, 322958, 322959, 322961, 322963, 322964, 323363, 323364, 323365, 323367, 323368, 323369, 323370, 323371, 323373, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323396, 323397, 323398, 323399, 323414, 323415, 323416, 323417, 323418, 323419, 323420, 323421, 323422, 323423, 323470, 323471, 323472, 323473, 323474, 323475, 323487, 323488, 323492, 323493, 323495, 323524, 323525, 323526, 323693, 323696, 323698, 323699, 323700, 323702, 323725, 323726, 323727, 323755, 323775, 323778, 323790, 323794, 323841, 323857, 323940, 323954, 323976, 323978, 323980, 323983, 323997, 324021, 324022, 324077, 324078, 324201, 324202, 324205, 324206, 324207, 324209, 324237, 324245, 324293, 324315, 324318, 324420, 324564, 324571, 324612, 324729, 324747, 324764, 324765, 324769, 324772, 324785, 324791, 324835, 324840, 324841, 324846, 324878, 324897, 324970, 324980, 324997, 324998, 324999, 325000, 325001, 325022, 325057, 325097, 325098, 325099, 325100, 325101, 325110, 325111, 325113, 325114, 325117, 325159, 325168, 325169, 325170, 325172, 325175};
-  
-  //std::vector<int> run_number = {317080};  
   std::cout<<run_number.size()<<std::endl;
   readModRPhiZCoordinates();
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_first_iteration.txt");
@@ -98,7 +91,7 @@ void modcount_2018B_copy_new() {
   gr7=new TGraph();
   gr8=new TGraph();
   gr9=new TGraph();
-  h=new TH1D("histo1D", "rms/mean",100,0,0.5);
+  h=new TH1D("histo1D", "rms/mean",100,0,2);
   gr_modweight=new TGraph();
   
   histo_L2=new TH2F("Histo_Layer2","",200,0,35000,300,0,0.35);
@@ -118,7 +111,7 @@ void modcount_2018B_copy_new() {
   
   int modid[1856];
   for (unsigned int j=0;j<run_number.size();j++){
-    TString Path = "/eos/user/a/asehrawa/BRIL-PCC_25Sep2021/ZeroBias/Run2018B"; 
+    TString Path = "/eos/user/a/asehrawa/vdM_files/vdMMiniTree_2018"; 
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
     std::cout<< run_number.at(j)<<std::endl;  
     
@@ -176,10 +169,10 @@ void modcount_2018B_copy_new() {
 	m_count[i]=count;        
 	if(MODVETO[modid[i]]==0){                                                                               
 	  totcount+=count;
-	  if(BPIXorFPIX[modid[i]]==1){	
+	  if(BPIXorFPIX[modid[i]]==1){
 	    if(LY[modid[i]]==2){
 	      count_L2+=count;
-	    }	    
+	    }    
 	    if(LY[modid[i]]==3){
 	      count_L3+=count;
 	    }
@@ -191,22 +184,22 @@ void modcount_2018B_copy_new() {
 	  if(BPIXorFPIX[modid[i]]==2){
 	    if(DISK[modid[i]]==2){
 	      count_D1S1+=count;
-	    }	    
+	    }    
 	    if(DISK[modid[i]]==1){
 	      count_D2S1+=count;
 	    } 
 	    if(DISK[modid[i]]==0){
 	      count_D3S1+=count;
-	    } 	    
+	    }     
 	    if(DISK[modid[i]]==3){
 	      count_D1S2+=count;
-	    }	    
+	    }    
 	    if(DISK[modid[i]]==4){
 	      count_D2S2+=count;
 	    }    
 	    if(DISK[modid[i]]==5){
 	      count_D3S2+=count;
-	      
+	            
 	    }
 	  }  
 	}
@@ -216,18 +209,18 @@ void modcount_2018B_copy_new() {
       
       //loop over modules
       for (unsigned int i=0;i<1856;i++){
-	if(totcount > 100000000){
+	//if(totcount > 100000000){
 	  if(MODVETO[modid[i]]==0){
 	    histo_counts[i]->Fill(LS, m_count[i]/totcount);
 	    //std::cout<<i<<" "<<countsum[i]<<" "<<totcountsum<<" "<<countsum[i]/totcountsum<<std::endl; 
 	    //std::cout<<i<<" "<<m_count[i]/totcount<<std::endl;  
-	  }
+	    //}
 	}
       }
       
       
       
-      if(totcount > 100000000){
+      //if(totcount > 100000000){
 	histo_L2->Fill(LS, count_L2/totcount);
 	histo_L3->Fill(LS, count_L3/totcount);
 	histo_L4->Fill(LS, count_L4/totcount);
@@ -239,8 +232,8 @@ void modcount_2018B_copy_new() {
 	histo_D3S2->Fill(LS, count_D3S2/totcount);
 	gr9->SetPoint(gr9->GetN(), LS, totcount);
 	//std::cout<<LS<<" "<< totcount<<std::endl;
-	//std::cout<<run_number.at(j)<<std::endl;	
-      }
+	//std::cout<<run_number.at(j)<<std::endl;
+	//}
       
       //if(totcount > 10000000) {
       //std::cout<<run_number.at(j)<<std::endl;
@@ -307,51 +300,50 @@ void modcount_2018B_copy_new() {
 	bincontent = P[i]->GetBinContent(j);
 	binerror = P[i]->GetBinError(j);
 	if(bincontent > 0 && (binerror/bincontent) < 0.05) {
-	    gr[i] ->SetPoint(gr[i]->GetN(), x_value, bincontent/(ProjY[i]->GetMean()));    
-	    //std::cout<< P[i]->GetBinContent(j)<<" "<<std::endl;
+	  gr[i] ->SetPoint(gr[i]->GetN(), x_value, bincontent/(ProjY[i]->GetMean()));    
+	  //std::cout<< P[i]->GetBinContent(j)<<" "<<std::endl;
 	}
       }
       
-      gr[i]->GetXaxis()->SetRangeUser(0, 35000);
-      gr[i]->GetXaxis()->SetNdivisions(10);                                                                                                
-      gr[i]->GetYaxis()->SetRangeUser(0.5, 1.5);
-      gr[i]->SetMarkerStyle(8);  
-      gr[i]->SetMarkerSize(0.5); 
-      gr[i]->SetLineStyle(1);
-      gr[i]->GetXaxis()->SetTitle("Lumi section");
-      gr[i]->GetYaxis()->SetTitle("Normalized count");
-      if(LY[modid[i]]==2){
-	//if(DISK[modid[i]]==2 || DISK[modid[i]]==3){      
-      if(g_count==0){
-      C.Clear();
-      legend->Clear();
-      gr[i]->SetLineColor(g_count+1);
-      gr[i]->Draw("AL");
-      legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
-      g_count++;
-      } else if(g_count>0&&g_count<19) {
-      if(g_count<9){
-      gr[i]->SetLineColor(g_count+1);
-      }
-      if(g_count>=9 && g_count<19){
-      gr[i]->SetLineColor(g_count+20);
-      }
-      gr[i]->Draw("LSAME");
-      legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
-      g_count++;
-      } else if(g_count==19) { 
-      gr[i]->SetLineColor(g_count+27);
-      gr[i]->Draw("LSAME"); 
-      legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
-      legend->Draw("SAME");
-      char* histname2 = new char[100];
-      sprintf(histname2, "graph_%d", g_plot++);
-      legend->Draw("SAME");
-      C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
-      C.Print(Path1+"Graph1D_test1/"+histname2+".png");
-      g_count=0;      
-      }
-      }
+      //gr[i]->GetXaxis()->SetRangeUser(0, 35000);
+      //gr[i]->GetXaxis()->SetNdivisions(10);                                                                                                
+      //gr[i]->GetYaxis()->SetRangeUser(0.5, 1.5);
+      //gr[i]->SetMarkerStyle(8);  
+      //gr[i]->SetMarkerSize(0.5); 
+      //gr[i]->SetLineStyle(1);
+      //gr[i]->GetXaxis()->SetTitle("Lumi section");
+      //gr[i]->GetYaxis()->SetTitle("Normalized count");
+      //if(DISK[modid[i]]==2 || DISK[modid[i]]==3){      
+      //if(g_count==0){
+      //C.Clear();
+      //legend->Clear();
+      //gr[i]->SetLineColor(g_count+1);
+      //gr[i]->Draw("AL");
+      //legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
+      //g_count++;
+      //} else if(g_count>0&&g_count<19) {
+      //if(g_count<9){
+      //gr[i]->SetLineColor(g_count+1);
+      //}
+      //if(g_count>=9 && g_count<19){
+      //gr[i]->SetLineColor(g_count+20);
+      //}
+      //gr[i]->Draw("LSAME");
+      //legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
+      //g_count++;
+      //} else if(g_count==19) { 
+      //gr[i]->SetLineColor(g_count+27);
+      //gr[i]->Draw("LSAME"); 
+      //legend->AddEntry(gr[i], TString("modid ")+modid[i], "l");
+      //legend->Draw("SAME");
+      //char* histname2 = new char[100];
+      //sprintf(histname2, "graph_%d", g_plot++);
+      //legend->Draw("SAME");
+      //C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
+      //C.Print(Path1+"Graph1D_test1/"+histname2+".png");
+      //g_count=0;      
+      //}
+      //}
 
       //if(LY[modid[i]]==0){
       //gr[i]->SetTitle(modid[i]+ TString(" Side ") + SD[modid[i]] +" FPIX Disk " + DISK[modid[i]] + " Ring " + RING[modid[i]]);
@@ -471,7 +463,7 @@ void modcount_2018B_copy_new() {
       gr8->GetYaxis()->SetLabelSize(0.02);
       gr8->GetXaxis()->SetRangeUser(0, 1900);
       //gr8->GetYaxis()->SetRangeUser(0, 0.1);
-      gr8->SetTitle(" Run2018B (317080-319311)");
+      //gr8->SetTitle(" Run2018B (317080-319311)");
       gr8->GetYaxis()->SetTitle("RMS/Mean");
       gr8->GetXaxis()->SetTitle("module number index");
   
@@ -490,17 +482,18 @@ void modcount_2018B_copy_new() {
       if(mean!=0){
 	//if(BPIXorFPIX[modid[i]]==2){
 	  //if(LY[modid[i]]==2 || LY[modid[i]]==3 || LY[modid[i]]==4){
-	gr8->SetPoint(gr8->GetN(), i, rms/mean);
-	h->Fill(rms/mean);	
-	//std::cout<<i<<"  "<<rms<<"  "<<mean<<"  "<<rms/mean<<std::endl;
-	//std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
-	//}
-    }
+	  gr8->SetPoint(gr8->GetN(), i, rms/mean);
+	  h->Fill(rms/mean);
+	  //std::cout<<i<<"  "<<rms<<"  "<<mean<<"  "<<rms/mean<<std::endl;
+	  //std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
+	  //}
+      }
       //}
       
-      //if(LY[modid[i]]==1 || rms/mean>=0.02){
-      //std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
-      //}
+      if(rms/mean>=0.4){
+	//std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
+	std::cout<<modid[i]<<std::endl;
+      }
       
       //gr11->SetPoint(gr11->GetN(), i, summodcount/totmodcount); 
       //std::cout<<summodcount<<" "<<totmodcount<<"  "<< summodcount/totmodcount<<std::endl;    
@@ -516,7 +509,7 @@ void modcount_2018B_copy_new() {
 
       //if((rms_mean==0) || (0.4*(rms_mean-h_mean)>= h_rms)) {
       //std::cout<<modid[i]<<std::endl;
-	//std::cout<<i<<" "<<modid[i]<<std::endl;
+      //std::cout<<i<<" "<<modid[i]<<std::endl;
       //}
 
       //ProjY[i]->GetXaxis()->SetRangeUser(0.002, 0.004);
@@ -546,12 +539,12 @@ void modcount_2018B_copy_new() {
     }
   }
   
-  if(g_count!=0){ 
-  legend->Draw("SAME"); 
-  char* histname2 = new char[100];
-  sprintf(histname2, "graph_%d", g_plot++);
-  C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
-  }
+  //if(g_count!=0){ 
+  //legend->Draw("SAME"); 
+  //char* histname2 = new char[100];
+  //sprintf(histname2, "graph_%d", g_plot++);
+  //C.Print(Path1+"Graphs_cut_totcount/"+histname2+".png");
+  //}
   
   //gr1->Draw("AP");  
   //C.Print(Path1+"Graphs_cut_totcount/"+"graphprojy1"+".png");
@@ -571,18 +564,19 @@ void modcount_2018B_copy_new() {
   //C.Print(Path1+"Graph1D_test1/"+"graph_disk_z"+".png");
   
   //gr8->SetTitle("                Run2018A (315252-316995)");
-  gr8->SetTitle("              Run2018B (317080-319311)");                                                                            
+  //gr8->SetTitle("              Run2018B (317080-319311)"); 
+  gr8->SetTitle("              vdM (318983, 318984, 319018, 319019)");                                       
   //gr8->SetTitle("              Run2018C (319337-320065)");                                                                            
   //gr8->SetTitle("              Run2018D (320500-325175)");
   //gr8->GetYaxis()->SetRangeUser(0, 0.018);
-  gr8->GetYaxis()->SetRangeUser(0, 0.2);    
-  //gr8->Draw("AP");
+  gr8->GetYaxis()->SetRangeUser(0, 2);    
+  gr8->Draw("AP");
   //TLine *l = new TLine(0,0.03,2050,0.03);                                                                                                
   //l->SetLineStyle(2);                                                                                                                    
   //l->Draw("SAME"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_Run2018A_(B+A)veto"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_2p5sigma"+".png"); 
-  //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".png");
   
   //gr9->GetXaxis()->SetTitle("Lumi section");
   //gr9->GetYaxis()->SetTitle("totcount");
@@ -593,35 +587,39 @@ void modcount_2018B_copy_new() {
   
   gr9->GetXaxis()->SetNdivisions(10);
   gr9->GetXaxis()->SetLabelSize(0.03);
-  gr9->SetTitle(" Run2018B (317080-319311)");
+  //gr9->SetTitle(" Run2018B (317080-319311)");
+  gr9->SetTitle("              vdM (318983, 318984, 319018, 319019)");
   gr9->GetYaxis()->SetTitle("totcount");
   gr9->GetXaxis()->SetTitle("Lumi section");
-  //gr9->Draw("AP");                                                                                                                   
+  gr9->Draw("AP");                                                                                                                   
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunA"+".root"); 
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunB_lowlumi"+".root");
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunC"+".root");
-  //C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".png");
+  C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".root");
   
-  h->GetXaxis()->SetRangeUser(0, 0.5); 
+  h->SetTitle("              vdM (318983, 318984, 319018, 319019)");
+  h->GetXaxis()->SetRangeUser(0, 2); 
   //h->GetXaxis()->SetRangeUser(0, 0.018);
-  h->GetYaxis()->SetRangeUser(0, 1200);
-  //h->Draw();
+  h->GetYaxis()->SetRangeUser(0, 500);
+  h->Draw();
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");
-  //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
-  
-  gr_modweight->SetTitle("              Run2018B (317080-319311)");
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".png");
+
+  gr_modweight->SetTitle("              vdM (318983, 318984, 319018, 319019)");
+  //gr_modweight->SetTitle("              Run2018B (317080-319311)");
   gr_modweight->GetXaxis()->SetTitle("module number index");                                                                                 
   gr_modweight->GetYaxis()->SetTitle("module weight");
-  gr_modweight->GetXaxis()->SetRangeUser(0,2000);
-  gr_modweight->GetYaxis()->SetRangeUser(0, 0.0045);
-  //gr_modweight->Draw("AP"); 
-  //C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
+  gr_modweight->GetXaxis()->SetRangeUser(0, 2000);
+  gr_modweight->GetYaxis()->SetRangeUser(0, 0.005);
+  gr_modweight->Draw("AP"); 
+  C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
   
   histo_L2->GetXaxis()->SetTitle("Lumi section");
   histo_L2->GetYaxis()->SetTitle("Lumi ratio");
-  histo_L2->GetXaxis()->SetRangeUser(0,70000);
+  histo_L2->GetXaxis()->SetRangeUser(0,5000);
   //histo_L2->SetTitle("              Run2018A (315252-316995)");
-  histo_L2->SetTitle("              Run2018B (317080-319311)");                                                                          
+  //histo_L2->SetTitle("              Run2018B (317080-319311)");                
+  histo_L2->SetTitle("              vdM (318983, 318984, 319018, 319019)");                                                          
   //histo_L2->SetTitle("              Run2018C (319337-320065)"); 
   //histo_L2->SetTitle("            Run2018D (320500-325175)");
   histo_L3->GetXaxis()->SetTitle("Lumi section");
@@ -652,7 +650,7 @@ void modcount_2018B_copy_new() {
   histo_D3S2->Draw("COLZSAME");
   //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_2p5sigma"+".png"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_newveto(B+A)_Run2018A_update"+".png");  
-  //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_testing"+".root");
   
   //histo_L2->Draw("COLZ");
   //C.Print(Path1+"Graph1D_test1/"+"Histo_stabilityL2"+".png"); 
@@ -676,7 +674,7 @@ void modcount_2018B_copy_new() {
   P_L2 = histo_L2->ProfileX();
   //P_L2->SetTitle("BPIX Layer 2");
   ProjY_L2 = histo_L2->ProjectionY(TString("Projection_L2"),0,200);
-  P_L2->GetXaxis()->SetRangeUser(0, 35000);
+  P_L2->GetXaxis()->SetRangeUser(0, 5000);
   P_L2->GetXaxis()->SetNdivisions(50);
   P_L2->GetYaxis()->SetRangeUser(0, 0.35);
   //P_L2->GetXaxis()->SetNdivisions(7);
@@ -684,8 +682,10 @@ void modcount_2018B_copy_new() {
   P_L2->GetXaxis()->SetTitle("Lumi section");
   P_L2->GetYaxis()->SetTitle("Lumi fraction (per 350 lumi section)");
   //P_L2->SetTitle("              Run2018A (315252-316995)");
-  P_L2->SetTitle("              Run2018B (317080-319311)");
-  //P_L2->SetTitle("              Run2018C (319337-320065)");
+  //P_L2->SetTitle("              Run2018B (317080-319311)");
+  P_L2->SetTitle("              vdM (318983, 318984, 319018, 319019)");
+ 
+ //P_L2->SetTitle("              Run2018C (319337-320065)");
   //P_L2->SetTitle("            Run2018D (320500-325175)");
   P_L3 = histo_L3->ProfileX();
   P_L3->GetYaxis()->SetRangeUser(0, 0.35);
@@ -806,7 +806,7 @@ void modcount_2018B_copy_new() {
   
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_2p5sigma"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_newveto(B+A)_Run2018A_update"+".png");
-  //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".root");
   
   //P_L2->Draw();  
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_L2"+".png"); 
