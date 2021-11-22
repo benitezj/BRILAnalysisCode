@@ -8,114 +8,9 @@ import argparse
 import csv
 
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
-parser.add_argument('--pccfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
 parser.add_argument('--inputfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
-parser.add_argument('--label', type=str, default="", help="Label for output file")
-parser.add_argument('--vetoModules', type=str, default="/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt", help="Text file containing list of pixel modules to veto (default: vetoModules.txt)")
-parser.add_argument('--outputDir', type=str, default="pccVdmMiniTree.root", help="Directory to save file in (default:  local path)")
 
 args = parser.parse_args()
-
-f_LHC = 11245.6
-t_LS=math.pow(2,18)/f_LHC
-xsec_mb=80000. #microbarn
-
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
-weightThreshold=1e-5
-
-def AverageWithWeight(list):
-    sumValue=0
-    sumWeight=0
-    for value,weight in list:
-        sumValue=sumValue+value
-        sumWeight=sumWeight+weight
-
-    if sumWeight>0:
-        return float(sumValue)/sumWeight
-
-def GetWeightedValues(list):
-    count=0
-    sumOfWeights=0
-    sumOfWeights2=0
-    weightedSum=0
-
-    for value,weight in list:
-        #print value,weight
-        if weight<weightThreshold:
-            continue
-        count=count+1
-        sumOfWeights=sumOfWeights+weight
-        sumOfWeights2=sumOfWeights2+math.pow(weight,2)
-        weightedSum=weightedSum+weight*value
-
-    return count,sumOfWeights,sumOfWeights2,weightedSum
-
-
-def GetMean(list):
-    #print "list length",len(list)
-    count,sumOfWeights,sumOfWeights2,weightedSum=GetWeightedValues(list)
-    mean=GetMeanFromWeightedValues(sumOfWeights,weightedSum)
-    return mean
-
-
-def GetMeanFromWeightedValues(sumOfWeights,weightedSum):
-    mean=0
-    if sumOfWeights>0:
-        mean=weightedSum/sumOfWeights
-    return mean
-
-
-def GetMeanAndMeanError(list):
-    count,sumOfWeights,sumOfWeights2,weightedSum=GetWeightedValues(list)
-    if sumOfWeights2==0:
-        return -99,-99
-    neff=math.pow(sumOfWeights,2)/sumOfWeights
-    mean=GetMeanFromWeightedValues(sumOfWeights,weightedSum)
-
-    #print neff,count,sumOfWeights
-    
-    weightedSumDiffFromAve2=0
-    for value,weight in list:
-        if weight<weightThreshold:
-            continue
-        weightedSumDiffFromAve2=weightedSumDiffFromAve2+weight*math.pow(value-mean,2) 
-
-    stddev=0
-    meanError=0
-    if count>2:
-        stddev=math.sqrt( weightedSumDiffFromAve2 / (sumOfWeights))
-        meanError=stddev/math.sqrt(neff)
-
-    #print "stddev",stddev
-
-    return mean,meanError
-
-
-#######################
-#  Setup PCC Ntuples  #
-#######################
-#if args.pccfile=="":
-#    print "pccfile is not given"
-#    sys.exit(1)
-#
-#filename=args.pccfile
-#
-##if filename.find("/store")==0: # file is in eos
-##    filename="/eos/cms"+filename
-#
-#try:
-#    tfile=ROOT.TFile.Open(filename)
-#except:
-#    print filename,"failed to open properly"
-#    sys.exit(1)
-#
-#tree=tfile.Get("lumi/tree")
 
 tree=TChain("lumi/tree")
 with open(args.inputfile) as f:
@@ -132,71 +27,27 @@ print tree.GetEntries()
 tree.SetBranchStatus("*",0)
 tree.SetBranchStatus("run",1)
 tree.SetBranchStatus("LS",1)
-tree.SetBranchStatus("LN",1)
+#tree.SetBranchStatus("LN",1)
 tree.SetBranchStatus("event",1)
 tree.SetBranchStatus("nPixelClusters",1)
-tree.SetBranchStatus("layer*",1)
-tree.SetBranchStatus("bunchCrossing",1)
-tree.SetBranchStatus("timeStamp_begin",1)
-tree.SetBranchStatus("timeStamp_end",1)
+#tree.SetBranchStatus("layer*",1)
+#tree.SetBranchStatus("bunchCrossing",1)
+#tree.SetBranchStatus("timeStamp_begin",1)
+#tree.SetBranchStatus("timeStamp_end",1)
 
 #######################
 # Make mod veto list  #
 #######################
-vetoModules=[]
-
-if os.path.isfile(args.vetoModules):
-    vetoFile=open(args.vetoModules)
-    lines = vetoFile.readlines()
-    for line in lines:
-        for mod in line.split(","):
-            try:
-                vetoModules.append(int(mod))
-            except:
-                print "Error reading: ",mod,"in",line
-
-else:
-    print "Veto list does not exist... not vetoing anything."
-
-print vetoModules
-
-#######################
-# Setup new mini-tree #
-#######################
-#newfilename=filename.split("/")[-1].split(".")[0]+"_"+args.label+".root"
-
-if args.outputDir != "":
-    if args.outputDir.find("/store")==0:
-        args.outputDir="root://eoscms//eos/cms"+args.outputDir
-    newfilename=args.outputDir#+"/"+newfilename
-
-newfile=ROOT.TFile.Open(newfilename,"recreate")
-newtree=ROOT.TTree("pccminitree","pcc vdm scan data")
-
-run             = array.array( 'l', [ 0 ] )
-LS              = array.array( 'l', [ 0 ] )
-LN              = array.array( 'l', [ 0 ] )
-event           = array.array( 'l', [ 0 ] )
-#timeStamp       = array.array( 'l', [ 0 ] )
-timeStamp_begin = array.array( 'l', [ 0 ] )
-timeStamp_end   = array.array( 'l', [ 0 ] )
-#BXid            = array.array( 'l', [ 0 ] )
-bunchCrossing   = array.array( 'l', [ 0 ] )
-nCluster        = array.array( 'd', [ 0 ] )
-nClusterPerLayer= array.array( 'd', 6*[ 0 ] )
 
 #######################
 #  Loop over events   #
 #######################
 nentries=tree.GetEntries()
-
 print nentries
-maxNBX=0
-pixelcount_LS=0    
 LS_previous=0
 a = set()
 
-module = [     303042564, 303042568, 303042572, 303042576, 303042580, 303042584, 303042588, 303042592, 303046660, 
+module = [ 303042564, 303042568, 303042572, 303042576, 303042580, 303042584, 303042588, 303042592, 303046660, 
                303046664, 303046668, 303046672, 303046676, 303046680, 303046684, 303046688, 303050756, 303050760,
                303050764, 303050768, 303050772, 303050776, 303050780, 303050784, 303054852, 303054856, 303054860, 
                303054864, 303054868, 303054872, 303054876, 303054880, 303058948, 303058952, 303058956, 303058960, 
@@ -404,74 +255,35 @@ module = [     303042564, 303042568, 303042572, 303042576, 303042580, 303042584,
                344908804, 344912900, 344916996, 344921092, 344925188, 344929284, 344933380, 344937476, 344941572, 
                344945668, 344949764]
 
+print len(module)
 f = open("modcount.csv", "w")
-for entry in module:
-    f.write(str(entry)+str(","))
+for i in range(len(module)):
+    f.write(str(module[i])+str(","))
 f.write('\n')
-#f.close()
-#exit(0)
 mod_c={}
-for entry in module:
-    mod_c[entry]=0
-    #print entry, mod_c[entry]
-    #mod_c[entry]=mod_c[entry]+1
-    #print mod_c[entry]
-#exit(0)
+for i in range(len(module)):
+    mod_c[module[i]]=0
 
 for iev in range(nentries):  # loop over all runs
-   tree.GetEntry(iev)
-   if (True):#(tree.timeStamp_begin>=1530412500 and tree.timeStamp_end<=1530412800) or (tree.timeStamp_begin>=1530427080 and tree.timeStamp_end<=1530427440)):
-    if iev%30000==0:
-        print "iev,",iev
-        print "(tree.run,tree.LS)",tree.LS
-   
-    pixelCount=[0]*26
-
+    tree.GetEntry(iev)
+    if iev%50000==0:
+        print iev
     for item in tree.nPixelClusters:  # loop over all modules
-        bxid=item[0][0]
-        module=item[0][1]
-        #print module
-        layer=tree.layers[module]
-        clusters=item[1]
-        mod_c[module]+=clusters    # mod_c contain clusters per module per event 
-        print module, mod_c[module]
-        #exit(0)    
-        if module in vetoModules:
-            #print module
-            continue
-        a.add(module)
-        pixelCount[0]=pixelCount[0]+clusters   # total number of clusters per event
-    pixelcount_LS+=pixelCount[0]                 # total number of clusters per LS
+        modid=item[0][1]
+        clusters=item[1]               # clusters per module per event
+        mod_c[modid]+=clusters    # mod_c contain clusters per module per event 
 
-    run[0]=tree.run
-    LS[0]=tree.LS
-    LN[0]=tree.LN
-    event[0]=tree.event
-    #timeStamp[0]=tree.timeStamp_begin
-    timeStamp_begin[0]=tree.timeStamp_begin
-    timeStamp_end[0]=tree.timeStamp_end
-    #BXid[0]=tree.bunchCrossing
-    bunchCrossing[0]=bxid#tree.bunchCrossing
-    nCluster[0]=pixelCount[0]
-    #for layer in range(1,6):
-    #    nClusterPerLayer[layer-1]=pixelCount[layer]
-    if LS[0]!=LS_previous:
-        LS_previous=LS[0]
-        mod_c=0
-
-#print a
-#f.write(str(run)+str(","))
-#f.write(str(LS)+str(","))
-#for entry in module: 
-#    f.write(mod_c[entry])
+    if tree.LS!=LS_previous:
+        if LS_previous > 0:
+            print tree.run, tree.LS
+            f.write(str(tree.run)+str(","))
+            f.write(str(LS_previous)+str(","))
+            for i in range(len(module)):
+                f.write(str(mod_c[module[i]])+str(","))
+            f.write('\n')
+        for i in range(len(module)):
+            mod_c[module[i]]=0
+            LS_previous=tree.LS
+        
 f.close()
-#for key, value in mod_c[module].items():
-#  print (key, value)
-
-#for entry in module:
-#    print mod_c[entry].items()
-
-#print module, clusters
-newfile.Write()
-newfile.Close()
 
