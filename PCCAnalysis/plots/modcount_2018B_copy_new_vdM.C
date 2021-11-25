@@ -23,6 +23,9 @@ void modcount_2018B_copy_new_vdM() {
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt");
   readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration_vdM.txt");
 
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/only_vdM_modules.txt");
+
+
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_Run2018B.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight1.txt");
   
@@ -91,7 +94,7 @@ void modcount_2018B_copy_new_vdM() {
   gr7=new TGraph();
   gr8=new TGraph();
   gr9=new TGraph();
-  h=new TH1D("histo1D", "rms/mean",100,0,2);
+  h=new TH1D("histo1D", "rms/mean",60,0,0.3);
   gr_modweight=new TGraph();
   
   histo_L2=new TH2F("Histo_Layer2","",200,0,35000,300,0,0.35);
@@ -209,18 +212,18 @@ void modcount_2018B_copy_new_vdM() {
       
       //loop over modules
       for (unsigned int i=0;i<1856;i++){
-	//if(totcount > 100000000){
+	if(totcount > 3000000){
 	  if(MODVETO[modid[i]]==0){
 	    histo_counts[i]->Fill(LS, m_count[i]/totcount);
 	    //std::cout<<i<<" "<<countsum[i]<<" "<<totcountsum<<" "<<countsum[i]/totcountsum<<std::endl; 
 	    //std::cout<<i<<" "<<m_count[i]/totcount<<std::endl;  
-	    //}
+	    }
 	}
       }
       
       
       
-      //if(totcount > 100000000){
+      if(totcount > 3000000){
 	histo_L2->Fill(LS, count_L2/totcount);
 	histo_L3->Fill(LS, count_L3/totcount);
 	histo_L4->Fill(LS, count_L4/totcount);
@@ -233,7 +236,7 @@ void modcount_2018B_copy_new_vdM() {
 	gr9->SetPoint(gr9->GetN(), LS, totcount);
 	//std::cout<<LS<<" "<< totcount<<std::endl;
 	//std::cout<<run_number.at(j)<<std::endl;
-	//}
+	}
       
       //if(totcount > 10000000) {
       //std::cout<<run_number.at(j)<<std::endl;
@@ -490,7 +493,7 @@ void modcount_2018B_copy_new_vdM() {
       }
       //}
       
-      if(rms/mean>=0.4){
+      if(rms/mean>=0.04){
 	//std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
 	std::cout<<modid[i]<<std::endl;
       }
@@ -569,15 +572,16 @@ void modcount_2018B_copy_new_vdM() {
   //gr8->SetTitle("              Run2018C (319337-320065)");                                                                            
   //gr8->SetTitle("              Run2018D (320500-325175)");
   //gr8->GetYaxis()->SetRangeUser(0, 0.018);
-  gr8->GetYaxis()->SetRangeUser(0, 2);    
+  gr8->GetYaxis()->SetRangeUser(0, 0.3);    
   gr8->Draw("AP");
   //TLine *l = new TLine(0,0.03,2050,0.03);                                                                                                
   //l->SetLineStyle(2);                                                                                                                    
   //l->Draw("SAME"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_Run2018A_(B+A)veto"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_2p5sigma"+".png"); 
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".root");
   C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".png");
-  
+
   //gr9->GetXaxis()->SetTitle("Lumi section");
   //gr9->GetYaxis()->SetTitle("totcount");
   //gr9->SetTitle("              Run2018A (315252-316995)");
@@ -598,12 +602,14 @@ void modcount_2018B_copy_new_vdM() {
   C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".root");
   
   h->SetTitle("              vdM (318983, 318984, 319018, 319019)");
-  h->GetXaxis()->SetRangeUser(0, 2); 
+  h->GetXaxis()->SetRangeUser(0, 0.3); 
   //h->GetXaxis()->SetRangeUser(0, 0.018);
-  h->GetYaxis()->SetRangeUser(0, 500);
+  h->GetYaxis()->SetRangeUser(0, 600);
   h->Draw();
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
   C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".png");
+
 
   gr_modweight->SetTitle("              vdM (318983, 318984, 319018, 319019)");
   //gr_modweight->SetTitle("              Run2018B (317080-319311)");
@@ -616,7 +622,7 @@ void modcount_2018B_copy_new_vdM() {
   
   histo_L2->GetXaxis()->SetTitle("Lumi section");
   histo_L2->GetYaxis()->SetTitle("Lumi ratio");
-  histo_L2->GetXaxis()->SetRangeUser(0,5000);
+  histo_L2->GetXaxis()->SetRangeUser(0, 3000);
   //histo_L2->SetTitle("              Run2018A (315252-316995)");
   //histo_L2->SetTitle("              Run2018B (317080-319311)");                
   histo_L2->SetTitle("              vdM (318983, 318984, 319018, 319019)");                                                          
@@ -674,7 +680,7 @@ void modcount_2018B_copy_new_vdM() {
   P_L2 = histo_L2->ProfileX();
   //P_L2->SetTitle("BPIX Layer 2");
   ProjY_L2 = histo_L2->ProjectionY(TString("Projection_L2"),0,200);
-  P_L2->GetXaxis()->SetRangeUser(0, 5000);
+  P_L2->GetXaxis()->SetRangeUser(0, 3000);
   P_L2->GetXaxis()->SetNdivisions(50);
   P_L2->GetYaxis()->SetRangeUser(0, 0.35);
   //P_L2->GetXaxis()->SetNdivisions(7);
@@ -807,7 +813,7 @@ void modcount_2018B_copy_new_vdM() {
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_2p5sigma"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_newveto(B+A)_Run2018A_update"+".png");
   C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".root");
-  
+  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".png");
   //P_L2->Draw();  
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_L2"+".png"); 
   //P_L3->Draw();
