@@ -3,7 +3,7 @@ import tables as t, pandas as pd, pylab as py, sys, numpy, math, os, Queue, csv
 import struct
 import os,sys
 
-output_path = '.'
+output_path = './'
 numBunchesLHC = 3564
 k = 11246.
 
@@ -22,39 +22,29 @@ class Lumitable(t.IsDescription):
 
 
 
-input_path = '/brildata/'+str(year)+'/'+str(fill)+'/'
+if not os.path.exists(output_path):
+ os.makedirs(output_path)
+file='pcc.hd5'
+h5out = t.open_file(output_path+file,mode='w')
 
-outtablename = 'pltlumizero'
+outtablename = 'pcclumi'
 compr_filter = t.Filters(complevel=9, complib='blosc')
 chunkshape=(100,)
-
-output_path_ = output_path
-if not os.path.exists(output_path_):
- os.makedirs(output_path_)
- 
-  
-#h5in = t.open_file(input_path+file,mode='r')
-#table = h5in.root.pltaggzero
-#for row in table.iterrows(): 
-#h5in.close()
-
-h5out = t.open_file(output_path_+file,mode='w')
 outtable = h5out.create_table('/',outtablename,Lumitable,filters=compr_filter,chunkshape=chunkshape)
 rownew = outtable.row
 
 
-
- rownew['fillnum'] = oldrow['fillnum'] 
- rownew['runnum'] = oldrow['runnum']
- rownew['lsnum'] = row['lsnum']
- rownew['nbnum'] = row['nbnum']
- rownew['timestampsec'] = oldrow['timestampsec']
- rownew['timestampmsec'] = oldrow['timestampmsec']
- rownew['totsize'] = oldrow['totsize'] 
- rownew['publishnnb'] = oldrow['publishnnb'] 
- rownew['avg'] = lumi_orbit_avg_w_ 
- rownew['bx'] = sbil_avg_w
- rownew.append()
+# rownew['fillnum'] = oldrow['fillnum'] 
+# rownew['runnum'] = oldrow['runnum']
+# rownew['lsnum'] = row['lsnum']
+# rownew['nbnum'] = row['nbnum']
+# rownew['timestampsec'] = oldrow['timestampsec']
+# rownew['timestampmsec'] = oldrow['timestampmsec']
+# rownew['totsize'] = oldrow['totsize'] 
+# rownew['publishnnb'] = oldrow['publishnnb'] 
+# rownew['avg'] = lumi_orbit_avg_w_ 
+# rownew['bx'] = sbil_avg_w
+# rownew.append()
  
 
 h5out.close()
