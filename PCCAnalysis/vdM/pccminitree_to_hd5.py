@@ -1,4 +1,5 @@
-
+import ROOT
+from ROOT import TFile, TTree, TChain
 import tables as t, pandas as pd, pylab as py, sys, numpy, math, os, Queue, csv
 import struct
 import os,sys
@@ -6,6 +7,9 @@ import os,sys
 output_path = './'
 numBunchesLHC = 3564
 k = 11246.
+
+fill = 6868
+input_file = '/eos/user/g/gkrintir/ZeroBias/ZeroBias.root'
 
 
 class Lumitable(t.IsDescription):
@@ -22,30 +26,61 @@ class Lumitable(t.IsDescription):
 
 
 
+##open the output file
 if not os.path.exists(output_path):
  os.makedirs(output_path)
 file='pcc.hd5'
 h5out = t.open_file(output_path+file,mode='w')
 
+## create the table
 outtablename = 'pcclumi'
 compr_filter = t.Filters(complevel=9, complib='blosc')
 chunkshape=(100,)
 outtable = h5out.create_table('/',outtablename,Lumitable,filters=compr_filter,chunkshape=chunkshape)
 rownew = outtable.row
 
+####Open the input file and get the tree
+tree=TChain("pccminitree")
+tree.Add(input_file)
+print 'tree entries: ', tree.GetEntries()
 
-# rownew['fillnum'] = oldrow['fillnum'] 
-# rownew['runnum'] = oldrow['runnum']
-# rownew['lsnum'] = row['lsnum']
-# rownew['nbnum'] = row['nbnum']
-# rownew['timestampsec'] = oldrow['timestampsec']
-# rownew['timestampmsec'] = oldrow['timestampmsec']
-# rownew['totsize'] = oldrow['totsize'] 
-# rownew['publishnnb'] = oldrow['publishnnb'] 
-# rownew['avg'] = lumi_orbit_avg_w_ 
-# rownew['bx'] = sbil_avg_w
-# rownew.append()
+tree.SetBranchStatus("*",0)
+tree.SetBranchStatus("run",1)
+tree.SetBranchStatus("LS",1)
+tree.SetBranchStatus("LN",1)
+tree.SetBranchStatus("event",1)
+tree.SetBranchStatus("timeStamp",1)
+tree.SetBranchStatus("nCluster",1)
+tree.SetBranchStatus("BXid",1)
+
+
+nentries=tree.GetEntries()
+LS_prev = 0
+pcc = 0
+for iev in range(10000):
+ if iev%1000==0:
+  print "Processing event ",iev
  
+ tree.GetEntry(iev)
+ #print iev, tree.run, tree.LS, tree.LN, tree.BXid, tree.timeStamp, tree.nCluster
+ 
+ #pcc+=tree.nCluster
+
+ #step 0: create pcc_LN[64] que va integrar nCluster para cada LN
+
+ if LS_prev!=tree.LS:
+  #step 1: creat pcc_NB4[16] ,  loop sobre pcc_LN and fill pcc_NB4 
+  
+  #step 2: loop over pcc_NB4 and fill rownew and write to file
+  rownew['fillnum'] = fill
+  rownew['runnum'] = tree.run
+  rownew['lsnum'] = tree.LS
+  rownew['nbnum'] = NB_prev
+  rownew['timestampsec'] = tree.timeStamp
+  rownew['avg'] = pcc
+  rownew.append()
+  NB_prev=tree.LN
+  
 
 h5out.close()
 
