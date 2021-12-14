@@ -20,10 +20,9 @@ class Lumitable(t.IsDescription):
  timestampsec = t.UInt32Col(shape=(), dflt=0, pos=4)
  timestampmsec = t.UInt32Col(shape=(), dflt=0, pos=5)
  totsize = t.UInt32Col(shape=(), dflt=0, pos=6)
- publishnnb = t.UInt8Col(shape=(), dflt=0, pos=7)
- avg = t.Float32Col(shape=(), dflt=0.0, pos=14)
- bx = t.Float32Col(shape=(3564,), dflt=0.0, pos=16)
-
+# publishnnb = t.UInt8Col(shape=(), dflt=0, pos=7)
+# avg = t.Float32Col(shape=(), dflt=0.0, pos=14)
+ bx = t.Float32Col(shape=(3564,), dflt=0.0, pos=7)
 
 
 ##open the output file
@@ -56,14 +55,31 @@ tree.SetBranchStatus("BXid",1)
 
 nentries=tree.GetEntries()
 LS_prev = 0
+NB_prev= 0
 pcc = 0
-for iev in range(10000):
+
+#Previous arrays
+#PCC_NB= [numpy.zeros(3564) for i in range(64)] #integral por cada NB
+#PCC_NB4= [numpy.zeros(3564) for i in range(16)] #integral por cada NB4
+
+
+#"Updated" arrays:
+#j,i
+PCC_NB= [numpy.zeros(64) for n in range(3564)] #
+PCC_NB4= [numpy.zeros(16) for n in range(3564)] #
+#loop indices: [numpy.zeros(j) for n in range(i)] ; i=numb. bunch
+#e.g.: [numpy.zeros(2) for i in range(3)] -> [[0,0] , [0,0], [0,0] ]
+
+
+for iev in range(100):#00):
  if iev%1000==0:
   print "Processing event ",iev
  
  tree.GetEntry(iev)
  #print iev, tree.run, tree.LS, tree.LN, tree.BXid, tree.timeStamp, tree.nCluster
  
+ PCC_NB[tree.BXid][tree.LN]=  tree.nCluster + PCC_NB[tree.BXid][tree.LN]
+
  #pcc+=tree.nCluster
 
  #step 0: create pcc_LN[64] que va integrar nCluster para cada LN
@@ -71,15 +87,29 @@ for iev in range(10000):
  if LS_prev!=tree.LS:
   #step 1: creat pcc_NB4[16] ,  loop sobre pcc_LN and fill pcc_NB4 
   
+  for i in range(3564): #loop numb. bunch; i= 0,1,2,..., 3562,3563.
+   x=0
+   for j in range(64): #loop LN ; j=0,1,2,..., 62,63.
+    x= x + PCC_NB[i][j]
+    
+    if (j+1)%4==0: #block of code applied when j=3, 7,..,63.
+     PCC_NB4[i][int(j/4)] = x #when j=3: j/4=0 ; when j=7: j/4=1; ... ; when j=63: j/4=15.  
+     x=0  #calcular j* adecuadamente, empiece en 0 y termine en 15
+    
+  
+  #loop de 1 a 16 copiar todo el vector, asignar el valor a la var.
   #step 2: loop over pcc_NB4 and fill rownew and write to file
-  rownew['fillnum'] = fill
-  rownew['runnum'] = tree.run
-  rownew['lsnum'] = tree.LS
-  rownew['nbnum'] = NB_prev
-  rownew['timestampsec'] = tree.timeStamp
-  rownew['avg'] = pcc
-  rownew.append()
-  NB_prev=tree.LN
+  #loop 16 dentro de LS; 
+  for m in range(16):  
+   rownew['fillnum'] = fill
+   rownew['runnum'] = tree.run
+   rownew['lsnum'] = tree.LS
+   rownew['nbnum'] = NB_prev
+   rownew['timestampsec'] = tree.timeStamp
+   #rownew['bx'] = pcc #y un indice de 1 a 3564# meter vector de val de la matriz; de 0-3564;
+   rownew['bx'] = PCC_NB4[0][m]
+   rownew.append()
+   NB_prev=tree.LN
   
 
 h5out.close()
