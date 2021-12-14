@@ -58,27 +58,27 @@ LS_prev = 0
 NB_prev= 0
 pcc = 0
 
-#Previous arrays
-#PCC_NB= [numpy.zeros(3564) for i in range(64)] #integral por cada NB
-#PCC_NB4= [numpy.zeros(3564) for i in range(16)] #integral por cada NB4
+#j,i ; NB[lumi_slice][bunch_num]
+PCC_NB= [numpy.zeros(3564) for i in range(64)] #integral por cada NB
+PCC_NB4= [numpy.zeros(3564) for i in range(16)] #integral por cada NB4
 
 
-#"Updated" arrays:
+#
 #j,i
-PCC_NB= [numpy.zeros(64) for n in range(3564)] #
-PCC_NB4= [numpy.zeros(16) for n in range(3564)] #
+#PCC_NB= [numpy.zeros(64) for n in range(3564)] #
+#PCC_NB4= [numpy.zeros(16) for n in range(3564)] #
 #loop indices: [numpy.zeros(j) for n in range(i)] ; i=numb. bunch
 #e.g.: [numpy.zeros(2) for i in range(3)] -> [[0,0] , [0,0], [0,0] ]
 
 
-for iev in range(100):#00):
+for iev in range(10000):
  if iev%1000==0:
   print "Processing event ",iev
  
  tree.GetEntry(iev)
  #print iev, tree.run, tree.LS, tree.LN, tree.BXid, tree.timeStamp, tree.nCluster
  
- PCC_NB[tree.BXid][tree.LN]=  tree.nCluster + PCC_NB[tree.BXid][tree.LN]
+ PCC_NB[tree.LN][tree.BXid]=  tree.nCluster + PCC_NB[tree.LN][tree.BXid]
 
  #pcc+=tree.nCluster
 
@@ -87,17 +87,17 @@ for iev in range(100):#00):
  if LS_prev!=tree.LS:
   #step 1: creat pcc_NB4[16] ,  loop sobre pcc_LN and fill pcc_NB4 
   
-  for i in range(3564): #loop numb. bunch; i= 0,1,2,..., 3562,3563.
+  for j in range(3564): #loop numb. bunch; j= 0,1,2,..., 3562,3563.
    x=0
-   for j in range(64): #loop LN ; j=0,1,2,..., 62,63.
+   for i in range(64): #loop LN ; i=0,1,2,..., 62,63.
     x= x + PCC_NB[i][j]
     
-    if (j+1)%4==0: #block of code applied when j=3, 7,..,63.
-     PCC_NB4[i][int(j/4)] = x #when j=3: j/4=0 ; when j=7: j/4=1; ... ; when j=63: j/4=15.  
-     x=0  #calcular j* adecuadamente, empiece en 0 y termine en 15
+    if (i+1)%4==0: #block of code applied when i=3, 7,..,63.
+     PCC_NB4[int(i/4)][j] = x #when i=3: i/4=0 ; when i=7: i/4=1; ... ; when i=63: i/4=15.  
+     x=0  
     
   
-  #loop de 1 a 16 copiar todo el vector, asignar el valor a la var.
+  
   #step 2: loop over pcc_NB4 and fill rownew and write to file
   #loop 16 dentro de LS; 
   for m in range(16):  
@@ -107,7 +107,7 @@ for iev in range(100):#00):
    rownew['nbnum'] = NB_prev
    rownew['timestampsec'] = tree.timeStamp
    #rownew['bx'] = pcc #y un indice de 1 a 3564# meter vector de val de la matriz; de 0-3564;
-   rownew['bx'] = PCC_NB4[0][m]
+   rownew['bx'] = PCC_NB4[m]
    rownew.append()
    NB_prev=tree.LN
   
