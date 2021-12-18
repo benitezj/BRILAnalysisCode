@@ -10,7 +10,7 @@ void modcount_2018B_copy_new() {
   //C.SetLogy();
   //C.SetCanvasSize(2000,600); 
   //gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
-  //gStyle->SetOptStat(1111111);
+  gStyle->SetOptStat(1111111);
   
   //std::vector<int> run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
   
@@ -25,13 +25,19 @@ void modcount_2018B_copy_new() {
   //std::vector<int> run_number = {317080};  
   std::cout<<run_number.size()<<std::endl;
   readModRPhiZCoordinates();
+
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_first_iteration.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_second_iteration.txt");
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration_vdM.txt");
   
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_Run2018B.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight1.txt");
-  
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration_vdM.txt");
+
+  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018A_vetolist_second_iteration.txt");
+
   int LS=0;
   int run=0;
   int ls=0;
@@ -49,10 +55,12 @@ void modcount_2018B_copy_new() {
   TGraph *gr8;
   TGraph *gr9;  
   TH1D *h;
+  TH1D *h1;
   TGraph *gr_modweight;
   
   TH2F *histo_counts[1856];
   
+  TH2F *histo_L1;
   TH2F *histo_L2;
   TH2F *histo_L3;
   TH2F *histo_L4;
@@ -63,6 +71,8 @@ void modcount_2018B_copy_new() {
   TH2F *histo_D2S2;
   TH2F *histo_D3S2;
   
+
+  TProfile *P_L1;
   TProfile *P_L2;
   TProfile *P_L3;
   TProfile *P_L4;
@@ -99,8 +109,11 @@ void modcount_2018B_copy_new() {
   gr8=new TGraph();
   gr9=new TGraph();
   h=new TH1D("histo1D", "rms/mean",100,0,0.5);
+  h1=new TH1D("weight_AonB", "weights",50,0,0.007);
+
   gr_modweight=new TGraph();
   
+  histo_L1=new TH2F("Histo_Layer1","",200,0,35000,300,0,0.35);
   histo_L2=new TH2F("Histo_Layer2","",200,0,35000,300,0,0.35);
   histo_L3=new TH2F("Histo_Layer3","",200,0,35000,300,0,0.35);
   histo_L4=new TH2F("Histo_Layer4","",200,0,35000,300,0,0.35);
@@ -118,6 +131,7 @@ void modcount_2018B_copy_new() {
   }
   
   int modid[1856];
+  float integrated_lumi=0;
   for (unsigned int j=0;j<run_number.size();j++){
     TString Path = "/eos/user/a/asehrawa/BRIL-PCC_25Sep2021/ZeroBias/Run2018B"; 
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
@@ -143,6 +157,7 @@ void modcount_2018B_copy_new() {
     
     int lumisec_count=0;
     while (std::getline(myfile, line)){
+      int count_L1=0;
       int count_L2=0;
       int count_L3=0;
       int count_L4=0;
@@ -177,7 +192,10 @@ void modcount_2018B_copy_new() {
 	m_count[i]=count;        
 	if(MODVETO[modid[i]]==0){                                                                               
 	  totcount+=count;
-	  if(BPIXorFPIX[modid[i]]==1){	
+	  if(BPIXorFPIX[modid[i]]==1){
+	    if(LY[modid[i]]==1){
+              count_L1+=count;
+            }
 	    if(LY[modid[i]]==2){
 	      count_L2+=count;
 	    }	    
@@ -213,22 +231,22 @@ void modcount_2018B_copy_new() {
 	}
       }
       
-      
-      
+         
       //loop over modules
       for (unsigned int i=0;i<1856;i++){
 	if(totcount > 100000000){
-	if(MODVETO[modid[i]]==0){
+	  if(MODVETO[modid[i]]==0){
 	    histo_counts[i]->Fill(LS, m_count[i]/totcount);
 	    //std::cout<<i<<" "<<countsum[i]<<" "<<totcountsum<<" "<<countsum[i]/totcountsum<<std::endl; 
 	    //std::cout<<i<<" "<<m_count[i]/totcount<<std::endl;  
-	    }
-	   }
+	  }
+	}
       }
       
       
       
       if(totcount > 100000000){
+	histo_L1->Fill(LS, count_L1/totcount);
 	histo_L2->Fill(LS, count_L2/totcount);
 	histo_L3->Fill(LS, count_L3/totcount);
 	histo_L4->Fill(LS, count_L4/totcount);
@@ -239,6 +257,7 @@ void modcount_2018B_copy_new() {
 	histo_D2S2->Fill(LS, count_D2S2/totcount);
 	histo_D3S2->Fill(LS, count_D3S2/totcount);
 	gr9->SetPoint(gr9->GetN(), LS, totcount);
+	integrated_lumi+=(totcount*1902.80879865)*23.1;
 	//std::cout<<LS<<" "<< totcount<<std::endl;
 	//std::cout<<run_number.at(j)<<std::endl;	
 	}
@@ -253,6 +272,7 @@ void modcount_2018B_copy_new() {
     myfile.close();    
     
   }
+  //std::cout<< integrated_lumi;
   
   
   TProfile* P[1856];
@@ -280,11 +300,11 @@ void modcount_2018B_copy_new() {
       histo_counts[i]->GetXaxis()->SetTitle("Lumi section");
       histo_counts[i]->GetYaxis()->SetTitle("Normalized count");
       //histo_counts[i]->Draw("COLZ");                                                                                                   
-      //char *hist_name1 = new char[20];                                                     
-      //if(modid[i]==344253444){                                                
-      //sprintf(hist_name1,"histo2D_%d.png",i);                                                                                              
+      //char *hist_name10 = new char[20];                                                     
+      //if(i==1845){                                                
+      //sprintf(hist_name10,"histo2D_%d.png",i);                                                                                              
       //C.Print(Path1 + "Graph1D_test1/"+hist_name1);    
-      //C.Print(Path1+"Graphs_cut_totcount/"+hist_name1);      
+      //C.Print(Path1+"Graphs_cut_totcount/"+hist_name10);      
       //}
       
       //if(MODVETO[modid[i]]==0){
@@ -292,12 +312,21 @@ void modcount_2018B_copy_new() {
       ProjY[i] = histo_counts[i]->ProjectionY(TString("Projection_")+i,0,700);
       //if(BPIXorFPIX[modid[i]]==2){
 	//if(LY[modid[i]]==2 || LY[modid[i]]==3 || LY[modid[i]]==4){
+      //if(LY[modid[i]]==4 && ProjY[i]->GetMean() < 0.0003){
 	gr_modweight->SetPoint(gr_modweight->GetN(), i, ProjY[i]->GetMean());
+	h1->Fill(ProjY[i]->GetMean());
+	//std::cout<<i<<"  "<< ProjY[i]->GetMean()<<std::endl;
+	//std::cout<<i<<",";
+	//std::cout<<ProjY[i]->GetMean()<<",";
+	//}
+	//std::cout<<modid[i]<<std::endl;
 	//}
       //ProjY1[i] = histo_counts[i]->ProjectionY(TString("Projection1_")+i,0,250);
       //ProjY2[i] = histo_counts[i]->ProjectionY(TString("Projection2_")+i,330,430);
       //} 
       
+      
+
       //P[i]->GetXaxis()->SetRangeUser(0, 70000);
       //copy content of TProfile into TGraph by looping over bin content of TProfile
       int x_value;
@@ -360,9 +389,9 @@ void modcount_2018B_copy_new() {
       //if(LY[modid[i]]!=0){
       //gr[i]->SetTitle(modid[i]+ TString(" BPIX layer ") + LY[modid[i]] +" ladder " + LD[modid[i]] + " MD " + MD[modid[i]]);
       // }
-      gr[i]->SetTitle(" Module stability profile ");
-      gr[i]->Draw("AP");
-      char *hist_name = new char[100];
+      //gr[i]->SetTitle(" Module stability profile ");
+      //gr[i]->Draw("AP");
+      //char *hist_name = new char[100];
       //if(LY[modid[i]]==0){                                                                                                                 
       //sprintf(hist_name, TString("Graph1D_") + modid[i]+ "_Side_" + SD[modid[i]] +"_Disk_" + DISK[modid[i]] + "_Ring_" + RING[modid[i]]+".png", i);                                                                                                               
       //}                                                                                                                                    
@@ -372,13 +401,13 @@ void modcount_2018B_copy_new() {
       //C.Print(Path1+"Graphs_cut_totcount/"+hist_name+".png"); 
 
       //if(modid[i]==344253444){
-      if(i==1845 || i==1293){
-      sprintf(hist_name,"Graph1D_%d.png",i);
+      //if(i==1845){
+      //sprintf(hist_name,"Graph1D_%d.png",i);
       //sprintf(hist_name,"Graph1D_%d.root",i);
-      C.Print(Path1+"Graphs_cut_totcount/"+hist_name);
+      //C.Print(Path1+"Graphs_cut_totcount/"+hist_name);
       //}
       //C.Print(Path1 + "Graph1D_test1/"+hist_name);
-      }
+      //}
       //float p1=ProjY1[i]->GetMean();
       //float p2= ((ProjY2[i]->GetMean())-(ProjY1[i]->GetMean()))/p1;
       //gr1->SetPoint(gr1->GetN(), i, p1);
@@ -402,12 +431,16 @@ void modcount_2018B_copy_new() {
       //if(LY[modid[i]]!=0){
       //P[i]->SetTitle(modid[i]+ TString(" BPIX layer ") + LY[modid[i]] +" ladder " + LD[modid[i]] + " MD " + MD[modid[i]]);
       //}   
-      //P[i]->SetTitle(" Module count distribution ");
+      //P[i]->SetTitle(" Profile X ");
+      //P[i]->GetXaxis()->SetTitle("Lumi section");
+      //P[i]->GetYaxis()->SetTitle("Module Profile X");
       //P[i]->Draw();
       //char* hist_name1 = new char[100];
-      //sprintf(hist_name1,"ProfileX_%d.png",i);                                                                                            
-      //C.Print(Path1 + "Graph1D_test1/"+hist_name1);
-      
+      //if(i==1845){
+      //sprintf(hist_name1,"ProfileX_%d.png",i); 
+      //sprintf(hist_name1,"ProfileX_%d.root",i);                                                                                           
+      //C.Print(Path1 + "Graphs_cut_totcount/"+hist_name1);
+      //}
       //if(LY[modid[i]]==0){
       //sprintf(histname1, TString("ProfileX_Forward_Disk_Modid_") + modid[i]+ "_Side_" + SD[modid[i]] +"_Disk_" + DISK[modid[i]] + "_Ring_" + RING[modid[i]]+".png", i);
       // }
@@ -521,7 +554,7 @@ void modcount_2018B_copy_new() {
 	//std::cout<<i<<" "<<modid[i]<<std::endl;
       //}
 
-      ProjY[i]->GetXaxis()->SetRangeUser(0, 0.0015);
+      //ProjY[i]->GetXaxis()->SetRangeUser(0, 0.0015);
       //if(LY[modid[i]]==0){
       //ProjY[i]->SetTitle(modid[i]+ TString(" Side ") + SD[modid[i]] +" FPIX Disk " + DISK[modid[i]] + " Ring " + RING[modid[i]]);
       //}
@@ -530,17 +563,17 @@ void modcount_2018B_copy_new() {
       //}
       //ProjY[i]->SetTitle(TString(" ProjectionY of TH2F histogram "));
       
-      ProjY[i]->GetYaxis()->SetTitle(" ");
-      ProjY[i]->GetXaxis()->SetTitle("module weight");
-      ProjY[i]->SetTitle("Module count distribution");
-      ProjY[i]->Draw();
-      char* hist_name3 = new char[100];
+      //ProjY[i]->GetYaxis()->SetTitle(" ");
+      //ProjY[i]->GetXaxis()->SetTitle("module weight");
+      //ProjY[i]->SetTitle("Module count distribution");
+      //ProjY[i]->Draw();
+      //char* hist_name3 = new char[100];
       //if(modid[i]==344253444){
-      if(i==1293 || i==1845){
-      sprintf(hist_name3,"ProjectionY_%d.root",i);
+      //if(i==1845){
       //sprintf(hist_name3,"ProjectionY_%d.root",i);
-      C.Print(Path1 + "Graphs_cut_totcount/"+hist_name3);
-      }
+      //sprintf(hist_name3,"ProjectionY_%d.root",i);
+      //C.Print(Path1 + "Graphs_cut_totcount/"+hist_name3);
+      //}
       //}      
       //if(LY[modid[i]]==0){
       //sprintf(histname3, TString("ProjectionY_Forward_Disk_Modid_") + modid[i]+ "_Side_" + SD[modid[i]] +"_Disk_" + DISK[modid[i]] + "_Ring_" + RING[modid[i]]+".png", i);
@@ -550,7 +583,7 @@ void modcount_2018B_copy_new() {
       
       //} 
       //}
-      }
+    }
   }
   
   //if(g_count!=0){ 
@@ -601,13 +634,14 @@ void modcount_2018B_copy_new() {
   gr9->GetXaxis()->SetNdivisions(10);
   gr9->GetXaxis()->SetLabelSize(0.03);
   gr9->SetTitle(" Run2018B (317080-319311)");
-  gr9->GetYaxis()->SetTitle("Total PCC / LS");
+  //gr9->GetYaxis()->SetTitle("Total PCC / LS");
+  gr9->GetYaxis()->SetTitle("L_inst [ 1/b*s]");
   gr9->GetXaxis()->SetTitle("Lumi section");
   gr9->Draw("AP");                                                                                                                   
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunA"+".root"); 
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunB_lowlumi"+".root");
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunC"+".root");
-  C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".root");
+  C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".png");
   
   h->GetXaxis()->SetRangeUser(0, 0.5); 
   //h->GetXaxis()->SetRangeUser(0, 0.018);
@@ -616,14 +650,26 @@ void modcount_2018B_copy_new() {
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");
   C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
   
-  gr_modweight->SetTitle("              Run2018B (317080-319311)");
+  //gr_modweight->SetTitle("              Run2018B (317080-319311)");
+  gr_modweight->SetTitle("              module weights_AonB");
+
   gr_modweight->GetXaxis()->SetTitle("module number index");                                                                                 
   gr_modweight->GetYaxis()->SetTitle("module weight");
   gr_modweight->GetXaxis()->SetRangeUser(0,2000);
-  gr_modweight->GetYaxis()->SetRangeUser(0, 0.0045);
+  gr_modweight->GetYaxis()->SetRangeUser(0, 0.007);
   gr_modweight->Draw("AP"); 
-  C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_AonB_testing"+".png");
+
   
+  h1->GetXaxis()->SetRangeUser(0, 0.006);
+  //h->GetXaxis()->SetRangeUser(0, 0.018);                                                                                                   
+  h1->GetYaxis()->SetRangeUser(0, 200);
+  h1->Draw();
+  //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");                                                                  
+  C.Print(Path1+"Graphs_cut_totcount/"+"AonB_histo_testing"+".png");
+
+
   histo_L2->GetXaxis()->SetTitle("Lumi section");
   histo_L2->GetYaxis()->SetTitle("Lumi ratio");
   histo_L2->GetXaxis()->SetRangeUser(0,70000);
@@ -647,8 +693,9 @@ void modcount_2018B_copy_new() {
   histo_D2S2->GetYaxis()->SetTitle("Lumi ratio");
   histo_D3S2->GetXaxis()->SetTitle("Lumi section");
   histo_D3S2->GetYaxis()->SetTitle("Lumi ratio");
-  
-  histo_L2->Draw("COLZ"); 
+
+  histo_L2->Draw("COLZ");  
+  histo_L2->Draw("COLZSAME"); 
   histo_L3->Draw("COLZSAME");
   histo_L4->Draw("COLZSAME");
   histo_D1S1->Draw("COLZSAME");
@@ -680,12 +727,22 @@ void modcount_2018B_copy_new() {
   //histo_D3S2->Draw("COLZ");
   //C.Print(Path1+"Graph1D_test1/"+"Histo_stabilityD3S2"+".png");
   
+  P_L1 = histo_L1->ProfileX();
+  P_L1->GetXaxis()->SetTitle("Lumi section");
+  P_L1->GetYaxis()->SetTitle("Lumi fraction (per 350 lumi section)");
+  P_L1->GetXaxis()->SetRangeUser(0, 35000);
+  //P_L1->GetXaxis()->SetNdivisions(50);
+  P_L1->GetYaxis()->SetRangeUser(0, 0.35);
+
+  //P_L2->SetTitle("              Run2018A (315252-316995)");                                                                                                                                         
+  P_L1->SetTitle("              Run2018B (317080-319311)");
+
   P_L2 = histo_L2->ProfileX();
   //P_L2->SetTitle("BPIX Layer 2");
   ProjY_L2 = histo_L2->ProjectionY(TString("Projection_L2"),0,200);
-  P_L2->GetXaxis()->SetRangeUser(0, 35000);
-  P_L2->GetXaxis()->SetNdivisions(50);
-  P_L2->GetYaxis()->SetRangeUser(0, 0.35);
+  //P_L2->GetXaxis()->SetRangeUser(0, 35000);
+  //P_L2->GetXaxis()->SetNdivisions(50);
+  //P_L2->GetYaxis()->SetRangeUser(0, 0.35);
   //P_L2->GetXaxis()->SetNdivisions(7);
   
   P_L2->GetXaxis()->SetTitle("Lumi section");
@@ -766,6 +823,9 @@ void modcount_2018B_copy_new() {
   std::cout<<ProjY_D2S2->GetMean()<<std::endl;
   std::cout<<ProjY_D3S2->GetMean()<<std::endl;
   
+
+  P_L1->SetLineColor(28);
+  P_L1->SetMarkerColor(28);
   P_L2->SetLineColor(1);
   P_L2->SetMarkerColor(1);
   P_L3->SetLineColor(2);
@@ -784,8 +844,9 @@ void modcount_2018B_copy_new() {
   P_D2S2->SetMarkerColor(8);
   P_D3S2->SetLineColor(9);
   P_D3S2->SetMarkerColor(9);
-  
-  P_L2->Draw();
+
+  P_L1->Draw();  
+  P_L2->Draw("SAME");
   P_L3->Draw("SAME");
   P_L4->Draw("SAME");
   P_D1S1->Draw("SAME");
@@ -797,6 +858,7 @@ void modcount_2018B_copy_new() {
     
   auto legend1 = new TLegend(0.91,0.15,1,0.9);
   //auto legend1 = new TLegend(0.7,0.35,0.85,0.8);
+  legend1->AddEntry(P_L1,"Layer 1","l");
   legend1->AddEntry(P_L2,"B1","l");
   legend1->AddEntry(P_L3,"B2","l");
   legend1->AddEntry(P_L4,"B3","l");

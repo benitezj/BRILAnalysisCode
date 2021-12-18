@@ -24,8 +24,6 @@ void modcount_2018B_copy_new_vdM() {
   readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration_vdM.txt");
 
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/only_vdM_modules.txt");
-
-
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_Run2018B.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight1.txt");
   
@@ -493,10 +491,10 @@ void modcount_2018B_copy_new_vdM() {
       }
       //}
       
-      if(rms/mean>=0.04){
+      //if(rms/mean>=0.035){
 	//std::cout<<modid[i]<<" "<<rms/mean<<std::endl;
-	std::cout<<modid[i]<<std::endl;
-      }
+	//std::cout<<modid[i]<<std::endl;
+      //}
       
       //gr11->SetPoint(gr11->GetN(), i, summodcount/totmodcount); 
       //std::cout<<summodcount<<" "<<totmodcount<<"  "<< summodcount/totmodcount<<std::endl;    
@@ -579,8 +577,8 @@ void modcount_2018B_copy_new_vdM() {
   //l->Draw("SAME"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_Run2018A_(B+A)veto"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_2p5sigma"+".png"); 
-  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".root");
-  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing"+".png");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing_vdM"+".root");
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_testing_vdM"+".png");
 
   //gr9->GetXaxis()->SetTitle("Lumi section");
   //gr9->GetYaxis()->SetTitle("totcount");
@@ -599,7 +597,7 @@ void modcount_2018B_copy_new_vdM() {
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunA"+".root"); 
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunB_lowlumi"+".root");
   //C.Print(Path1 + "Graph1D_test1/"+"LStot_RunC"+".root");
-  C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing"+".root");
+  C.Print(Path1 + "Graphs_cut_totcount/"+"LStot_RunB_testing_vdM"+".root");
   
   h->SetTitle("              vdM (318983, 318984, 319018, 319019)");
   h->GetXaxis()->SetRangeUser(0, 0.3); 
@@ -607,8 +605,8 @@ void modcount_2018B_copy_new_vdM() {
   h->GetYaxis()->SetRangeUser(0, 600);
   h->Draw();
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");
-  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
-  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing_vdM"+".root");
+  C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing_vdM"+".png");
 
 
   gr_modweight->SetTitle("              vdM (318983, 318984, 319018, 319019)");
@@ -618,7 +616,7 @@ void modcount_2018B_copy_new_vdM() {
   gr_modweight->GetXaxis()->SetRangeUser(0, 2000);
   gr_modweight->GetYaxis()->SetRangeUser(0, 0.005);
   gr_modweight->Draw("AP"); 
-  C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing_vdM"+".png");
   
   histo_L2->GetXaxis()->SetTitle("Lumi section");
   histo_L2->GetYaxis()->SetTitle("Lumi ratio");
@@ -656,7 +654,7 @@ void modcount_2018B_copy_new_vdM() {
   histo_D3S2->Draw("COLZSAME");
   //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_2p5sigma"+".png"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_newveto(B+A)_Run2018A_update"+".png");  
-  C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_testing"+".root");
+  C.Print(Path1+"Graphs_cut_totcount/"+"Histo_stability_combined_testing_vdM"+".png");
   
   //histo_L2->Draw("COLZ");
   //C.Print(Path1+"Graph1D_test1/"+"Histo_stabilityL2"+".png"); 
@@ -812,8 +810,8 @@ void modcount_2018B_copy_new_vdM() {
   
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_2p5sigma"+".png");
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_newveto(B+A)_Run2018A_update"+".png");
-  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".root");
-  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing"+".png");
+  //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing_vdM"+".root");
+  C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_combined_testing_vdM"+".png");
   //P_L2->Draw();  
   //C.Print(Path1+"Graphs_cut_totcount/"+"ProfileX_L2"+".png"); 
   //P_L3->Draw();
