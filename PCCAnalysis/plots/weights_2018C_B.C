@@ -103,7 +103,7 @@ void weights_2018C_B() {
     if(MODVETO[modid[i]]==0){ 
       ProjY[i] = histo_counts[i]->ProjectionY(TString("Projection_")+i,0,1400);
       g1->SetPoint(g1->GetN(), i, ProjY[i]->GetMean());
-      std::cout<<g1->GetN()<<" "<<i<<" "<<ProjY[i]->GetMean()<<std::endl;
+      //std::cout<<g1->GetN()<<" "<<i<<" "<<ProjY[i]->GetMean()<<std::endl;
     }
   }
   
@@ -201,7 +201,7 @@ void weights_2018C_B() {
     if(MODVETO[modid1[i]]==0){ 
       ProjY1[i] = RunB_histo[i]->ProjectionY(TString("RunB_Projection_")+i,0,700);
       g2->SetPoint(g2->GetN(), i, ProjY1[i]->GetMean());
-      std::cout<<g2->GetN()<<" "<<i<<" "<<ProjY1[i]->GetMean()<<std::endl;
+      //std::cout<<g2->GetN()<<" "<<i<<" "<<ProjY1[i]->GetMean()<<std::endl;
     }
   }
   
@@ -212,14 +212,14 @@ void weights_2018C_B() {
   for (unsigned int i=0;i<1856;i++){
     if(MODVETO[modid1[i]]==0){
       g3->SetPoint(g3->GetN(), i, ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean()));
-      std::cout<<g3->GetN()<<" "<<i<<" "<<((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<<std::endl;
+      //std::cout<<g3->GetN()<<" "<<i<<" "<<((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<<std::endl;
       h->Fill(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean()));
     }
   }
   
   for (unsigned int i=0;i<1856;i++){
     if(MODVETO[modid1[i]]==0){
-      if(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<-0.01 || ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())>0.01){
+      if(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<-0.005 || ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())>0.005){
 	std::cout<<modid1[i]<<std::endl;
       }
     }
@@ -244,12 +244,12 @@ void weights_2018C_B() {
   h->GetYaxis()->SetTitle("entries");
   g1->Draw("AP");
   g2->Draw("PSAME");
-  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_A_B_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_C_B_testing"+".png");
 
   g3->Draw("AP");
-  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_(A-B)_B_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_(C-B)_B_testing"+".png");
   
   h->Draw();
-  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_(A-B)_B_histogram_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_(C-B)_B_histogram_testing"+".png");
   
 }

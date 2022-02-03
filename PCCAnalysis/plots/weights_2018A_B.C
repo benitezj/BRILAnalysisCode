@@ -13,8 +13,8 @@ void weights_2018A_B() {
   
   std::cout<<run_number.size()<<std::endl;
   
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018A_vetolist_second_iteration.txt");
-  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/empty_veto.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018A_vetolist_second_iteration.txt");
+  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/RunA_veto_tight_totcount_cut.txt");
   
   int LS=0;
   int run=0;
