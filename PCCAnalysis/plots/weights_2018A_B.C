@@ -14,8 +14,9 @@ void weights_2018A_B() {
   std::cout<<run_number.size()<<std::endl;
   
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018A_vetolist_second_iteration.txt");
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/RunA_veto_tight_totcount_cut.txt");
-  
+  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunA_0p02_3sigma_weight_cut.txt");
+
+
   int LS=0;
   int run=0;
   int ls=0;
@@ -104,7 +105,7 @@ void weights_2018A_B() {
     if(MODVETO[modid[i]]==0){ 
       ProjY[i] = histo_counts[i]->ProjectionY(TString("Projection_")+i,0,1400);
       g1->SetPoint(g1->GetN(), i, ProjY[i]->GetMean());
-      std::cout<<g1->GetN()<<" "<<i<<" "<<ProjY[i]->GetMean()<<std::endl;
+      //std::cout<<g1->GetN()<<" "<<i<<" "<<ProjY[i]->GetMean()<<std::endl;
     }
   }
   
@@ -202,7 +203,7 @@ void weights_2018A_B() {
     if(MODVETO[modid1[i]]==0){ 
       ProjY1[i] = RunB_histo[i]->ProjectionY(TString("RunB_Projection_")+i,0,700);
       g2->SetPoint(g2->GetN(), i, ProjY1[i]->GetMean());
-      std::cout<<g2->GetN()<<" "<<i<<" "<<ProjY1[i]->GetMean()<<std::endl;
+      //std::cout<<g2->GetN()<<" "<<i<<" "<<ProjY1[i]->GetMean()<<std::endl;
     }
   }
   
@@ -213,7 +214,7 @@ void weights_2018A_B() {
   for (unsigned int i=0;i<1856;i++){
     if(MODVETO[modid1[i]]==0){
       g3->SetPoint(g3->GetN(), i, ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean()));
-      std::cout<<g3->GetN()<<" "<<i<<" "<<((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<<std::endl;
+      //std::cout<<g3->GetN()<<" "<<i<<" "<<((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<<std::endl;
       h->Fill(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean()));
     }
   }
@@ -221,10 +222,21 @@ void weights_2018A_B() {
   for (unsigned int i=0;i<1856;i++){
     if(MODVETO[modid1[i]]==0){
       if(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<-0.01 || ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())>0.01){
-  	std::cout<<modid1[i]<<std::endl;
+  	//std::cout<<modid1[i]<<std::endl;
       }
     }
   }
+
+
+  for (unsigned int i=0;i<1856;i++){
+    if(MODVETO[modid1[i]]==0){
+      if(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<6.97110e-04-3*2.70604e-03 || ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())>6.97110e-04+3*2.70604e-03){
+        std::cout<<modid1[i]<<std::endl;                                                                                                    
+      }
+    }
+  }
+
+
   
   g1->SetMarkerStyle(8);
   g1->SetMarkerSize(0.4);

@@ -13,7 +13,10 @@ void weights_2018C_B() {
   
   std::cout<<run_number.size()<<std::endl;
   
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018C_vetolist.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018C_vetolist.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018C_0p02.txt");
+  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018C_0p02_3sigma_weights_cut.txt");
+
   
   int LS=0;
   int run=0;
@@ -220,11 +223,21 @@ void weights_2018C_B() {
   for (unsigned int i=0;i<1856;i++){
     if(MODVETO[modid1[i]]==0){
       if(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<-0.005 || ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())>0.005){
-	std::cout<<modid1[i]<<std::endl;
+	//std::cout<<modid1[i]<<std::endl;
       }
     }
   }
   
+
+  for (unsigned int i=0;i<1856;i++){
+    if(MODVETO[modid1[i]]==0){
+      if(((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())<4.97936e-04-3*2.30851e-03 || ((ProjY[i]->GetMean())-(ProjY1[i]->GetMean()))/(ProjY1[i]->GetMean())>4.97936e-04+3*2.30851e-03){
+        std::cout<<modid1[i]<<std::endl;                                                                                                    
+      }
+    }
+  }
+
+
   g1->SetMarkerStyle(8);
   g1->SetMarkerSize(0.4);
   g1->SetMarkerColor(1);
@@ -244,7 +257,7 @@ void weights_2018C_B() {
   h->GetYaxis()->SetTitle("entries");
   g1->Draw("AP");
   g2->Draw("PSAME");
-  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_C_B_testing"+".png");
+  C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_C_B_testing"+".root");
 
   g3->Draw("AP");
   C.Print(Path1+"Graphs_cut_totcount/"+"module_weight_(C-B)_B_testing"+".png");
