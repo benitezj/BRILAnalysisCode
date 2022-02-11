@@ -2,12 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step5 --process RECO --conditions auto:run3_data --scenario pp -s ALCAPRODUCER:AlCaPCCZeroBias+RawPCCProducer --datatier ALCARECO --filein file:/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsPrompt/RAW/v1/000/346/512/00000/237b5f81-adab-4529-a571-41b3a26ab24c.root --data --eventcontent ALCARECO --era Run3 --no_exec -n 1000
+# with command line options: step3 -s ALCAOUTPUT:AlCaPCCRandom,ALCA:PromptCalibProdLumiPCC --conditions auto:run3_data --era Run3 --datatier ALCARECO --eventcontent ALCARECO --triggerResultsProcess RECO --filein file:/afs/cern.ch/user/b/benitezj/output/BRIL/CMSSW_12_1_0_pre4/src/step2_Express_PCCRandom_ALCAPRODUCER.root -n 100 --no_exec
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_cff import Run3
 
-process = cms.Process('RECO',Run3)
+process = cms.Process('ALCA',Run3)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -17,7 +17,7 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
+process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
@@ -25,11 +25,9 @@ process.maxEvents = cms.untracked.PSet(
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
-
-
 # Input source
 #process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring('file:/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsPrompt/RAW/v1/000/346/512/00000/237b5f81-adab-4529-a571-41b3a26ab24c.root'),
+#    fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/b/benitezj/output/BRIL/CMSSW_12_1_0_pre4/src/step2_Express_PCCRandom_ALCAPRODUCER.root'),
 #    secondaryFileNames = cms.untracked.vstring()
 #)
 
@@ -80,49 +78,58 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('step5 nevts:1000'),
+    annotation = cms.untracked.string('step3 nevts:100'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
 
 # Output definition
 
-process.ALCARECOoutput = cms.OutputModule("PoolOutputModule",
+# Additional output definition
+process.ALCARECOStreamAlCaPCCRandom = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOAlCaPCCRandom:RECO')
+    ),
     dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('ALCARECO'),
-        filterName = cms.untracked.string('StreamALCACombined')
+        filterName = cms.untracked.string('AlCaPCCRandom')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    fileName = cms.untracked.string('step5_ALCAPRODUCER.root'),
-    outputCommands = process.ALCARECOEventContent.outputCommands,
-    splitLevel = cms.untracked.int32(0)
+    fileName = cms.untracked.string('AlCaPCCRandom.root'),
+    outputCommands = cms.untracked.vstring(
+        'drop *',
+        'keep *_alcaPCCIntegratorRandom_alcaPCCRandom_*'
+    )
+)
+process.ALCARECOStreamPromptCalibProdLumiPCC = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOPromptCalibProdLumiPCC')
+    ),
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('ALCARECO'),
+        filterName = cms.untracked.string('PromptCalibProdLumiPCC')
+    ),
+    eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
+    fileName = cms.untracked.string('PromptCalibProdLumiPCC.root'),
+    outputCommands = cms.untracked.vstring(
+        'drop *',
+        'keep *_rawPCCProd_*_*',
+        'keep *_corrPCCProd_*_*'
+    )
 )
 
-# Additional output definition
-
 # Other statements
-process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECOAlCaPCCZeroBias_noDrop.outputCommands)
-process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECORawPCCProducer_noDrop.outputCommands)
+process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECOAlCaPCCRandom_noDrop.outputCommands)
+process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECOPromptCalibProdLumiPCC_noDrop.outputCommands)
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data', '')
 
-###replace the Conditions database if DBFILE is set in enviroment
-dbfile=os.getenv('DBFILE')
-if dbfile :
-    print('will override DB file: '+ dbfile)
-    process.load("CondCore.CondDB.CondDB_cfi")
-    process.CondDB.connect = 'sqlite_file:'+dbfile
-    process.GlobalTag = cms.ESSource("PoolDBESSource",process.CondDB,DumpStat=cms.untracked.bool(True),toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),tag = cms.string('LumiPCCCorrections_pcl'))),)
-
-
-
-
 # Path and EndPath definitions
-process.endjob_step = cms.EndPath(process.endOfProcess)
-process.ALCARECOoutput_step = cms.EndPath(process.ALCARECOoutput)
+process.ALCARECOStreamAlCaPCCRandomOutPath = cms.EndPath(process.ALCARECOStreamAlCaPCCRandom)
+process.ALCARECOStreamPromptCalibProdLumiPCCOutPath = cms.EndPath(process.ALCARECOStreamPromptCalibProdLumiPCC)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.pathALCARECOAlCaPCCZeroBias,process.pathALCARECORawPCCProducer,process.endjob_step,process.ALCARECOoutput_step)
+process.schedule = cms.Schedule(process.pathALCARECOPromptCalibProdLumiPCC,process.ALCARECOStreamAlCaPCCRandomOutPath,process.ALCARECOStreamPromptCalibProdLumiPCCOutPath)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 

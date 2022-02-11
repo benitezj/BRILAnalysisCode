@@ -82,7 +82,7 @@ void getModFrac(TString inputfile){
 
 void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  bool perBXRatioPlots=0){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
 
   ///Open the lumi csv file
@@ -168,6 +168,8 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
       return;
     }
 
+    cout<<","<<ls;
+
     ///read the  Lumi per ls
     std::getline(iss,token, ',');
     std::stringstream totLiss(token);
@@ -223,6 +225,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
       corrfile<<std::endl;
 
   }
+  cout<<endl;
   cout<<"Done processing input file"<<endl;
 
   ///close files

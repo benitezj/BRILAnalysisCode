@@ -1,7 +1,9 @@
 #!/bin/bash
 
 #/eos/cms/tier0/store/data/Commissioning2021/AlCaLumiPixelsCountsPrompt
-eospath=$1
+#eospath=/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsExpress
+eospath=/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsPrompt
+#eospath=$1
 if [ "$eospath" == "" ]; then
 	echo "no run period specified."
 	return

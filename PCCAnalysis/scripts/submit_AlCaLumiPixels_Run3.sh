@@ -7,12 +7,11 @@ submitdir=$1
 action=$2
 ## arg 3 needed for action 0 below
 
-##corr: afterglow corrections with Random triggers,
-##lumi: ZeroBias triggers luminosity 
-jobtype=lumi
+##step2, step3, step4, step5
+jobtype=step5
 
 
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC
+baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi
 
 ###########################################################
@@ -44,29 +43,15 @@ plotsdir=${plotsdir}/$submitdir
 echo "plotsdir: $plotsdir"
 
 ### full path to output directory
-if [ "$jobtype" == "lumi" ]; then
-outputdir=$baseoutdir/ZeroBias/$submitdir
-fi
-if [ $jobtype == "corr" ]; then
-outputdir=$baseoutdir/AlCaPCCRandom/$submitdir
-fi
+outputdir=$baseoutdir/$submitdir
 echo "output: $outputdir"
 
 
 ##############################################################
 ## directory containing the Afterglow corrections if computed privately
 #DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
-#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels011_AlCaPCCRandom_Nov22/Commissioning2018
-#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E
-#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-Express/Run2018E_10LS_F3P2
-#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G
-#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
-#DBDIR=/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
-#DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom/Run2018B_dynamicVeto
-#DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
-#DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
-#DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
 #DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 if [ "$DBDIR" != "" ] || [ "$DBROOTDIR" != "" ]; then
    echo "corections: $DBDIR $DBROOTDIR"
 fi
@@ -125,6 +110,8 @@ make_sh_script(){
     echo "cd \$TMPDIR  "   >> $fullsubmitdir/${run}.sh
     echo "pwd  "   >> $fullsubmitdir/${run}.sh
 
+    echo "export INPUTFILE=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+
     ###if DBDIR is set this will override the Afterglow corrections 
     if [ "$DBDIR" != "" ]; then
 	echo "export DBFILE=${DBDIR}/${run}.db" >> $fullsubmitdir/${run}.sh
@@ -132,32 +119,42 @@ make_sh_script(){
     if [ "$DBROOTDIR" != "" ]; then
 	echo "export DBROOT=${DBROOTDIR}/${run}.root" >> $fullsubmitdir/${run}.sh
     fi
-
-    echo "export INPUTFILE=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
     
     ###if run.json file is there, this will apply a json when processing  
     if [ -f ${fullsubmitdir}/${run}.json ]; then
 	echo "export JSONFILE=${fullsubmitdir}/${run}.json" >> $fullsubmitdir/${run}.sh
     fi
     
+    ##print all environment into log file right before executing
     echo "env" >> $fullsubmitdir/${run}.sh
-    
+
+    ### cmsRun 
     echo "cmsRun  ${fullsubmitdir}/cfg.py" >> $fullsubmitdir/${run}.sh
+
+    ###product that should be saved to output
+    if [ "$jobtype" == "step2" ] ; then
+	echo "cp step2_ALCAPRODUCER.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+    fi
+
+    if [ "$jobtype" == "step3" ] ; then
+	echo "cp PromptCalibProdLumiPCC.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+    fi
     
-    if [ "$jobtype" == "corr" ] ; then
-	echo "cp PCC_Corr.db $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
+    if [ "$jobtype" == "step4" ] ; then
+	echo "cp promptCalibConditions.db $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
 	echo "cp CorrectionHisto.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
-    
-    if [ "$jobtype" == "lumi" ] ; then
-	echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
-	echo "cp rawPCC.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
-	echo "cp moduleFraction.csv  $outputdir/${run}.frac " >> $fullsubmitdir/${run}.sh
-	echo "cp modCount.txt  $outputdir/${run}.mod " >> $fullsubmitdir/${run}.sh
 
-	##for ALCARECO jobs
+    if [ "$jobtype" == "step5" ] ; then
 	echo "cp step5_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
+
+#    if [ "$jobtype" == "lumi" ] ; then
+#	echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
+#	echo "cp rawPCC.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
+#	echo "cp moduleFraction.csv  $outputdir/${run}.frac " >> $fullsubmitdir/${run}.sh
+#	echo "cp modCount.txt  $outputdir/${run}.mod " >> $fullsubmitdir/${run}.sh
+#    fi
 
 }    
     
@@ -213,7 +210,7 @@ check_log(){
     
     
     ### error check for corrections jobs
-    if [ "$jobtype" == "corr" ] && [ "$fail" == "0" ] ; then
+    if [ "$jobtype" == "step4" ] && [ "$fail" == "0" ] ; then
 	if [ ! -f $outputdir/${run}.db ]; then
 	    echo "no db"
 	    fail=1
