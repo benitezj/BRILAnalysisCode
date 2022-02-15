@@ -8,6 +8,8 @@ process = cms.Process("LUMI")
 #    output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 #)
 
+process.MessageLogger.cerr.FwkSummary.reportEvery = cms.untracked.int32(100000)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100000)
 
 inputlist=cms.untracked.vstring()
 

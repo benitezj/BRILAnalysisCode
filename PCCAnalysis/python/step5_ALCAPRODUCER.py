@@ -34,8 +34,8 @@ process.maxEvents = cms.untracked.PSet(
 #)
 
 import os,sys
-process.MessageLogger.cerr.FwkSummary.reportEvery = cms.untracked.int32(1000)
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
+process.MessageLogger.cerr.FwkSummary.reportEvery = cms.untracked.int32(10000)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10000)
 
 inputlist=cms.untracked.vstring()
 inputfile=os.getenv('INPUTFILE')

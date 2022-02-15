@@ -1,24 +1,21 @@
 #!/bin/bash
 
-## path to submission directory
-submitdir=$1 
-
-## option for: 0=create scripts, 1=submit, 2=check
-action=$2
-## arg 3 needed for action 0 below
-
-##step2, step3, step4, step5
-jobtype=step5
+submitdir=$1 ## path to submission directory
+action=$2 ## option for: 0=create scripts, 1=submit, 2=check
+cfg=$3  ## only for action=0
+jobtype=step5 ##step2, step3, step4, step5 , csv
 
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
-plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi
+condorqueue=workday  #microcentury , workday, testmatch
+
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 
 ###########################################################
 ### 
 if [ "$submitdir" == "" ]; then
     echo "invalid submitdir"
-    return
+    exit
 fi
 fullsubmitdir=`readlink -f $submitdir`
 echo "fullsubmitdir: $fullsubmitdir"
@@ -26,21 +23,11 @@ echo "fullsubmitdir: $fullsubmitdir"
 INSTALLATION=${CMSSW_BASE}/src
 if [ "$INSTALLATION" == "/src" ]; then
     echo "invalid INSTALLATION"
-    return
+    exit
 fi
 echo "INSTALLATION: $INSTALLATION"
 
-condorqueue=workday  #microcentury , workday, testmatch
 echo "condor queue: $condorqueue"
-
-normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags
-ref=hfoc
-echo "reference: $ref"
-#goldenjson="-i ~/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
-echo "golden json: $goldenjson"
-
-plotsdir=${plotsdir}/$submitdir
-echo "plotsdir: $plotsdir"
 
 ### full path to output directory
 outputdir=$baseoutdir/$submitdir
@@ -49,19 +36,14 @@ echo "output: $outputdir"
 
 ##############################################################
 ## directory containing the Afterglow corrections if computed privately
-#DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
-#DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
-DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 if [ "$DBDIR" != "" ] || [ "$DBROOTDIR" != "" ]; then
    echo "corections: $DBDIR $DBROOTDIR"
 fi
 
 
-
 #####################################################
 ## copy the cfg
 if [ "$action" == "0" ]; then 
-    cfg=$3
     if [ "$cfg" == "" ]; then
 	echo "No cfg provided\n"
 	exit;
@@ -80,7 +62,6 @@ if [ "$action" == "5" ] ; then
     rm -rf $plotsdir
     mkdir -p $plotsdir
 fi
-
 
 
 ##################################################
@@ -149,13 +130,9 @@ make_sh_script(){
 	echo "cp step5_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
 
-#    if [ "$jobtype" == "lumi" ] ; then
-#	echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
-#	echo "cp rawPCC.err  $outputdir/${run}.err " >> $fullsubmitdir/${run}.sh
-#	echo "cp moduleFraction.csv  $outputdir/${run}.frac " >> $fullsubmitdir/${run}.sh
-#	echo "cp modCount.txt  $outputdir/${run}.mod " >> $fullsubmitdir/${run}.sh
-#    fi
-
+    if [ "$jobtype" == "csv" ] ; then
+	echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
+    fi
 }    
     
 
@@ -230,9 +207,6 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     run=`echo $f | awk -F".txt" '{print $1}'`
     echo $run
 
-    #if [ "$counter" == "2" ]; then break; fi
-    #if [ "$run" != "306550" ]; then continue; fi        
-
     ##create the scripts
     if [ "$action" == "0" ]; then
 	make_sh_script $run
@@ -259,32 +233,6 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	fi   
     fi
 
-    ##get ref data from brilcalc
-    if [ "$action" == "4" ] && [ "$ref" != "" ] ; then
-	command="brilcalc lumi -u hz/ub -r $run --byls  --output-style csv --normtag ${normtagdir}/normtag_${ref}.json "
-	#echo $command
-	${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.$ref
-    fi
-
-    ## make plots with ROOT
-    #if [ "$action" == "5" ] && [ -f  $outputdir/${run}.csv ] && [ -f  $outputdir/${run}.${ref} ]; then
-    if [ "$action" == "5" ] ; then
-	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",\"${ref}\",0\)
-    fi
-
-    if [ "$action" == "7" ] && [ -f  $outputdir/${run}.root ]; then
-	root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/compareRandomRawCorr.C\(\"${outputdir}\",${run},\"${plotsdir}\"\)
-    fi
-
-    RUNLIST=$RUNLIST,$run
     counter=`echo $counter | awk '{print $1+1}'`
 done
 echo "Total runs: $counter"
-
-
-## plots for entire period
-if [ "$action" == "6" ] ; then
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",\"${ref}\"\)
-    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\",\"${ref}\"\)
-    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotModuleFrac.C\(\"${outputdir}\",\"${RUNLIST}\",\"${plotsdir}\"\)
-fi

@@ -168,7 +168,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
       return;
     }
 
-    cout<<","<<ls;
+    //cout<<","<<ls;
 
     ///read the  Lumi per ls
     std::getline(iss,token, ',');

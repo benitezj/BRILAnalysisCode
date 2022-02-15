@@ -1,5 +1,11 @@
 #!/bin/bash
 
+##instructions:
+##- first create a txt file with a table of payloads:
+## conddb list -L 10 SiPixelQuality_byPCL_stuckTBM_v1 | grep : | sed 's/(/ /g' | sed 's/)/ /g' | awk -F" " '{print $1" "$3" "$4" "$5" "$6}' > SiPixelQuality_byPCL_stuckTBM_v1.txt 
+##- then feed this txt file to this script:
+## dumpSiPixelFlagsPerIOV.sh SiPixelQuality_byPCL_stuckTBM_v1.txt
+
 if [ "$1" == "" ]; then
 echo "no input file provided";
 return;
