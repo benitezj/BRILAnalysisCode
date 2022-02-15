@@ -1,11 +1,13 @@
 #recipe to run the analyzer:
 
+
 cmsrel CMSSW_12_2_1
 cd CMSSW_12_2_1/src
 cmsenv
 git cms-addpkg CondTools/BeamSpot
 scram b -j 8
 cd CondTools/BeamSpot/test
+
 
 # edit BeamSpotRcdRead_cfg.py in:
 # line 15: change starting run (Period A, C, early D and late D)
