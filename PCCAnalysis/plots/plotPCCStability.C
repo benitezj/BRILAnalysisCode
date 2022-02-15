@@ -103,8 +103,8 @@ void plotPCCStability(TString inpath, TString ref){
   ltxt.SetTextSize(0.03);
   TString rtxt("");
   for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-    li.DrawLine(it->first,0,it->first,0.09);
-    ltxt.DrawLatex(it->first,0.02,rtxt+it->second);
+    li.DrawLine(it->first,0,it->first,0.4);
+    //ltxt.DrawLatex(it->first,0.02,rtxt+it->second);
   }
   C.Print(inpath+"/ls_lumi.png");
 

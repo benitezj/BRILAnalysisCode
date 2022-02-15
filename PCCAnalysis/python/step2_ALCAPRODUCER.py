@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step5 --process RECO --conditions auto:run3_data --scenario pp -s ALCAPRODUCER:AlCaPCCZeroBias+RawPCCProducer --datatier ALCARECO --filein file:/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsPrompt/RAW/v1/000/346/512/00000/237b5f81-adab-4529-a571-41b3a26ab24c.root --data --eventcontent ALCARECO --era Run3 --no_exec -n 1000
+# with command line options: step2 --conditions auto:run3_data -s ALCAPRODUCER:AlCaPCCRandom --process RECO --data --eventcontent ALCARECO --scenario pp --datatier ALCARECO --era Run3 --filein file:/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsExpress/RAW/v1/000/346/512/00000/fc13125c-7f0a-4140-9e26-18eb085e7c4c.root --no_exec -n 1000
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_cff import Run3
@@ -25,11 +25,9 @@ process.maxEvents = cms.untracked.PSet(
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
-
-
 # Input source
 #process.source = cms.Source("PoolSource",
-#    fileNames = cms.untracked.vstring('file:/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsPrompt/RAW/v1/000/346/512/00000/237b5f81-adab-4529-a571-41b3a26ab24c.root'),
+#    fileNames = cms.untracked.vstring('file:/eos/cms/store/data/Commissioning2021/AlCaLumiPixelsCountsExpress/RAW/v1/000/346/512/00000/fc13125c-7f0a-4140-9e26-18eb085e7c4c.root'),
 #    secondaryFileNames = cms.untracked.vstring()
 #)
 
@@ -80,7 +78,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('step5 nevts:1000'),
+    annotation = cms.untracked.string('step2 nevts:1000'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
@@ -93,7 +91,7 @@ process.ALCARECOoutput = cms.OutputModule("PoolOutputModule",
         filterName = cms.untracked.string('StreamALCACombined')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    fileName = cms.untracked.string('step5_ALCAPRODUCER.root'),
+    fileName = cms.untracked.string('step2_ALCAPRODUCER.root'),
     outputCommands = process.ALCARECOEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
@@ -101,28 +99,16 @@ process.ALCARECOoutput = cms.OutputModule("PoolOutputModule",
 # Additional output definition
 
 # Other statements
-process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECOAlCaPCCZeroBias_noDrop.outputCommands)
-process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECORawPCCProducer_noDrop.outputCommands)
+process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECOAlCaPCCRandom_noDrop.outputCommands)
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data', '')
-
-###replace the Conditions database if DBFILE is set in enviroment
-dbfile=os.getenv('DBFILE')
-if dbfile :
-    print('will override DB file: '+ dbfile)
-    process.load("CondCore.CondDB.CondDB_cfi")
-    process.CondDB.connect = 'sqlite_file:'+dbfile
-    process.GlobalTag = cms.ESSource("PoolDBESSource",process.CondDB,DumpStat=cms.untracked.bool(True),toGet = cms.VPSet(cms.PSet(record = cms.string('LumiCorrectionsRcd'),tag = cms.string('LumiPCCCorrections_pcl'))),)
-
-
-
 
 # Path and EndPath definitions
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.ALCARECOoutput_step = cms.EndPath(process.ALCARECOoutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.pathALCARECOAlCaPCCZeroBias,process.pathALCARECORawPCCProducer,process.endjob_step,process.ALCARECOoutput_step)
+process.schedule = cms.Schedule(process.pathALCARECOAlCaPCCRandom,process.endjob_step,process.ALCARECOoutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
