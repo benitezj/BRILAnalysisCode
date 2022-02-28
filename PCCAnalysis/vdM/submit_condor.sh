@@ -7,8 +7,8 @@ submitdir=$1
 action=$2
 
 
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
-
+#baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
+baseoutdir=/eos/user/j/jmorenoc/BRIL/PCC/VDM
 
 #python makeVdMMiniTree.py --pccfile=/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias8/crab_CMSSW_10_3_2_ZeroBias8_splitPerBXTrue/211021_070146/0000/pcc_Data_PixVtx_Event_90X_3.root --vetoModules=vetoModules_2018.txt --outputDir=skimPCCjobs_test/output/Data_3.root
 
@@ -76,9 +76,14 @@ make_sh_script(){
     echo "env" >> $fullsubmitdir/${run}.sh
     
     echo "python  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
-    
-    echo "cp pccVdmMiniTree.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
 
+    echo "python  /afs/cern.ch/user/j/jmorenoc/CMSSW_10_6_29/src/BRILAnalysisCode/PCCAnalysis/vdM/pccminitree_to_hd5.py --minitreefile=./pccVdmMiniTree.root" >> $fullsubmitdir/${run}.sh
+ 
+#Using new veto:   
+    #echo "python  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/Veto-2018-B-vdM.txt --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+    
+    #echo "cp pccVdmMiniTree.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+    echo "cp pcc_ZB.hd5  $outputdir/${run}.hd5 " >> $fullsubmitdir/${run}.sh
 }    
     
 

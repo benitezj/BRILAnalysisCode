@@ -3,18 +3,24 @@ from ROOT import TFile, TTree, TChain
 import tables as t, pandas as pd, pylab as py, sys, numpy, math, os, Queue, csv
 import struct
 import os,sys
+import argparse
 
-#output_path = './'
-#output_path = '/eos/user/j/jmorenoc/pcc_hd5/6868/'
-output_path = '/eos/user/j/jmorenoc/pcc_hd5/6868/PLTreprocessed/6868/'
+parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
+
+parser.add_argument('--minitreefile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
+
+
+args = parser.parse_args()
+
+output_path = './'
+
 numBunchesLHC = 3564
 k = 11246.
 
 fill = 6868
-#input_file = '/eos/user/g/gkrintir/ZeroBias/ZeroBias.root'
-input_file = '/eos/user/j/jmorenoc/BRIL/PCC/VDM/vdMMiniTreesJobs/vdMMT_2018_New_Veto_2-1_100factor/ZeroBias.root'
-#input_file = '/eos/user/j/jmorenoc/BRIL/PCC/VDM/vdMMiniTreesJobs/vdMMT_2018_New_Veto_2-1_10fctr/ZeroBias.root'
-#input_file = '/eos/user/j/jmorenoc/BRIL/PCC/VDM/vdMMiniTreesJobs/vdMMT_2018_NEW_Veto2_FS/ZeroBias_NV2_FS.root'
+
+
+input_file=args.minitreefile
 
 class Lumitable(t.IsDescription):
  fillnum = t.UInt32Col(shape=(), dflt=0, pos=0)
@@ -37,7 +43,9 @@ class Lumitable(t.IsDescription):
 ##open the output file
 if not os.path.exists(output_path):
  os.makedirs(output_path)
-file='6868_318984_1806301122_1806301215.hd5' #filename similar to the PLT reprocessed files
+
+file='pcc_ZB.hd5' 
+
 h5out = t.open_file(output_path+file,mode='w')
 
 ## create the table
@@ -65,18 +73,23 @@ tree.SetBranchStatus("BXid",1)
 
 nentries=tree.GetEntries()
 
+
+
 #j,i ; NB[lumi_slice][bunch_num]
 PCC_NB= [numpy.zeros(3564) for i in range(64)] #NB
 PCC_NB4= [numpy.zeros(3564) for i in range(16)] # NB4
 
 time_count= [numpy.zeros(3564) for i in range(64)]
-time_countNB4= [numpy.zeros(3564) for i in range(16)]#
+time_countNB4= [numpy.zeros(3564) for i in range(16)]
 
 ev_count= [numpy.zeros(3564) for i in range(64)]
 ev_countNB4= [numpy.zeros(3564) for i in range(16)]
 
+time_count_NB4avg= numpy.zeros(16)
+
 #loop indices: [numpy.zeros(j) for n in range(i)] ; i=numb. bunch
 #e.g.: [numpy.zeros(2) for i in range(3)] -> [[0,0] , [0,0], [0,0] ]
+
 
 tree.GetEntry(0)
 LS_prev=tree.LS
@@ -86,53 +99,53 @@ for iev in range(nentries):
   print "Processing event ",iev ," Total events: ",nentries ," ; Remaining events: ", nentries-iev
  
  tree.GetEntry(iev)
- #print iev, tree.run, tree.LS, tree.LN, tree.BXid, tree.timeStamp, tree.nCluster
- if tree.timeStamp>=1530358110 and tree.timeStamp<=1530360510: #vdM1
-  if iev%100000==0:
-   print "ievent to hd5:", iev, "  Total events: ",nentries ," ; Remaining events: ", nentries-iev
-  PCC_NB[tree.LN][tree.BXid]+=  tree.nCluster
+ #if tree.timeStamp>=1530358110 and tree.timeStamp<=1530360523: #vdM1
+
+ if iev%100000==0:
+  print "ievent to hd5:", iev, "  Total events: ",nentries ," ; Remaining events: ", nentries-iev
+ PCC_NB[tree.LN][tree.BXid]+=  tree.nCluster
   
-  time_count[tree.LN][tree.BXid]+= tree.timeStamp
+ time_count[tree.LN][tree.BXid]+= tree.timeStamp
   
-  ev_count[tree.LN][tree.BXid]+=1
+ ev_count[tree.LN][tree.BXid]+=1
   
 
-  
-  if LS_prev!=tree.LS:
-   #loop over LN 
-   
-   for j in range(3564): 
-    x=0
-    y=0
-    z=0
-    for i in range(64): 
-     x+= PCC_NB[i][j]
-     y+= time_count[i][j]
-     z+= ev_count[i][j]
-     if (i+1)%4==0: 
-      PCC_NB4[int(i/4)][j] = x 
-      time_countNB4[int(i/4)][j] = y
-      ev_countNB4[int(i/4)][j] = z
+ if LS_prev!=tree.LS or iev==nentries-1:
+  if iev==nentries-1:
+   print("last entry")
+
+  for j in range(3564):
+    for i in range(64):
+     PCC_NB4[int(i/4)][j] +=PCC_NB[i][j]
+     time_countNB4[int(i/4)][j]+=time_count[i][j]
+     ev_countNB4[int(i/4)][j] += ev_count[i][j]
+     
       
-      x=0  
-      y=0
-      z=0
-      
-   for l in range(3564):##
+  for l in range(3564):
     for k in range(16):
      if ev_countNB4[k][l]!=0:
       time_countNB4[k][l]/=ev_countNB4[k][l]
-      PCC_NB4[k][l]/=ev_countNB4[k][l]#new
-      
-   bxsum=0
-   
-   for m in range(16):  
+      PCC_NB4[k][l]/=ev_countNB4[k][l]
+
+  for r in range(16):
+    count_nonzero=0
+    for q in range(3564):
+      if ev_countNB4[r][q]!=0:
+       count_nonzero+=1
+       time_count_NB4avg[r]+=time_countNB4[r][q]
+
+    if count_nonzero!=0:
+       time_count_NB4avg[r]=time_count_NB4avg[r]/count_nonzero
+
+  for m in range(16):  
     rownew['fillnum'] = fill
     rownew['runnum'] = tree.run
     rownew['lsnum'] = LS_prev 
     rownew['nbnum'] = m #0 to 15
-    #rownew['timestampsec'] = time_countNB4[m]  #prev
-    rownew['timestampsec'] = time_countNB4[m][3380]  #new
+    #rownew['timestampsec'] = time_countNB4[m] 
+    #rownew['timestampsec'] = time_countNB4[m][3380]  
+    rownew['timestampsec'] = time_count_NB4avg[m] 
+    bxsum=0
     for b in range(3564):
      bxsum= bxsum+PCC_NB4[m][b]
     rownew['avgraw'] = bxsum
@@ -140,17 +153,25 @@ for iev in range(nentries):
     rownew['bxraw'] = PCC_NB4[m]
     rownew['bx'] = PCC_NB4[m]
     rownew.append()
-    
-   for j in range(3564):
+    outtable.flush() 
+  for j in range(3564):
     for i in range(64):
      PCC_NB[i][j]= 0.
   
      time_count[i][j]= 0
   
      ev_count[i][j]=0
+  for p in range(16):  
+     time_count_NB4avg[p]=0     
+
+  for i in range(16):
+    for j in range(3564):
+     PCC_NB4[i][j]=0
+     time_countNB4[i][j]=0
+     ev_countNB4[i][j] =0
+
+ LS_prev=tree.LS
    
-   LS_prev=tree.LS
 
 h5out.close()
-
 print "Done"
