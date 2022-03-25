@@ -7,14 +7,14 @@ void comparelsdotdatfiles() {
   TString Path="/eos/user/a/asehrawa/BRIL-new";
   
   
-  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB";
- //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018A/Run2018A";
+  TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB";
+ TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018A/Run2018A";
 
   //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018B/Run2018B_ZB";
   //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018B/Run2018B";
 
-  TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C/Run2018C_ZB";
-  TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C/Run2018C";
+  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C/Run2018C_ZB";
+  //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C/Run2018C";
   
   
   gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/rootlogon.C");
@@ -38,8 +38,8 @@ void comparelsdotdatfiles() {
   ///create histogram
   int Lumicounter=0;
 
-  TH2F H("H (Old veto)","", 200,0,25000,700,0,35000);
-  TH2F H1("H1 (New veto)","", 200,0,25000,700,0,35000);
+  TH2F H("H (New veto)","", 200,0,25000,700,0,35000);
+  TH2F H1("H1 (Old veto)","", 200,0,25000,700,0,35000);
   
   std::string line;
   std::string line1;
@@ -144,7 +144,7 @@ void comparelsdotdatfiles() {
 
 
 
-  TH1* h = new TH1D("h", "PCC count per ls ratio", 200, 0.0, 30000); // the histogram (you should set the number of bins, the title etc)
+  TH1* h = new TH1D("h", "PCC count per ls (new)", 200, 0.0, 30000); // the histogram (you should set the number of bins, the title etc)
   auto nPoints = gr->GetN(); // number of points in your TGraph
   for(int i=0; i < nPoints; ++i) {
     double x,y;
@@ -153,7 +153,7 @@ void comparelsdotdatfiles() {
   }
 
 
-  TH1* h1 = new TH1D("h1", "PCC count per ls (new)", 200, 0.0, 30000); // the histogram (you should set the number of bins, the title etc)                                                                
+  TH1* h1 = new TH1D("h1", "PCC count per ls (old)", 200, 0.0, 30000); // the histogram (you should set the number of bins, the title etc)                                                                
   auto nPoints1 = gr1->GetN(); // number of points in your TGraph                                                                             
   for(int j=0; j < nPoints1; ++j) {
     double x1,y1;
