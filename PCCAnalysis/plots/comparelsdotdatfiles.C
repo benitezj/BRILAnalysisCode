@@ -6,14 +6,16 @@ void comparelsdotdatfiles() {
 
   TString Path="/eos/user/a/asehrawa/BRIL-new";
   
-  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018A/Run2018A";
-  //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB";
- 
-  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018B/Run2018B";
-  //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018B/Run2018B_ZB";
+  
+  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB";
+ //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018A/Run2018A";
 
-  TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C/Run2018C";
-  TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C/Run2018C_ZB";
+  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018B/Run2018B_ZB";
+  //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018B/Run2018B";
+
+  TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C/Run2018C_ZB";
+  TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C/Run2018C";
+  
   
   gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/rootlogon.C");
   
@@ -103,10 +105,10 @@ void comparelsdotdatfiles() {
 
   P->GetYaxis()->SetRangeUser(0, 35000);
   P->SetMarkerColor(1);
-  P->SetLineColor(2);
+  P->SetLineColor(1);
 
   P1->GetYaxis()->SetRangeUser(0, 35000);
-  P1->SetLineColor(1);
+  P1->SetLineColor(2);
   P1->SetLineColor(2);
 
   TGraph *gr;
@@ -185,7 +187,7 @@ void comparelsdotdatfiles() {
   
   //TCanvas C11;
   //h1->Draw("hist");
-  C10.Print(Path+"/histo_old_new_RunB_divide.png");
+  C10.Print(Path+"/histo_old_new_RunB_divide.root");
 
   TCanvas C2;
   P->Draw();

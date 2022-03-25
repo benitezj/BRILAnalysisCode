@@ -102,6 +102,8 @@ void compare_old_reprocessed_data(){
   //TString CSV="/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018C_newveto/ZeroBias/Run2018C_ZB/319639.csv";
   //TString CSV1="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018C/319639.csv";
 
+  gStyle->SetOptStat(0);
+
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   TCanvas C("C","",1200,500);
     
@@ -117,11 +119,11 @@ void compare_old_reprocessed_data(){
     HCSV->SetMarkerColor(1);
     HCSV->SetMarkerSize(0.5);
     HCSV->GetXaxis()->SetTitle("bx");
-    //HCSV->GetYaxis()->SetTitle("PCC Count");
-    HCSV->GetYaxis()->SetTitle("New/Old");
+    HCSV->GetYaxis()->SetTitle("PCC Count");
+    //HCSV->GetYaxis()->SetTitle("New/Old");
     //HCSV->GetYaxis()->SetRangeUser(0, 1400000);
     
-    HCSV->GetYaxis()->SetRangeUser(0.5, 1);
+    //HCSV->GetYaxis()->SetRangeUser(0.5, 1);
     HCSV->SetTitle("Zero Bias data with afterglow corrections (run number 316110)");
     //HCSV->SetTitle("Run Number 317696");
     //HCSV->SetTitle("Run Number 319696");
@@ -135,19 +137,23 @@ void compare_old_reprocessed_data(){
     HCSV1->GetYaxis()->SetTitle("PCC Count");
     gStyle->SetOptStat(0);    
     
-    HCSV->Divide(HCSV1);
+    //HCSV->Divide(HCSV1);
     HCSV->Draw("p");
-    //HCSV1->Draw("psame");
+    HCSV1->Draw("psame");
 
     auto legend = new TLegend(0.75, 0.75, 0.88, 0.88);
-    legend->AddEntry(HCSV, "New PCC Count", "l");
-    legend->AddEntry(HCSV1, "Old PCC Count", "l");
+    //legend->AddEntry(HCSV, "New PCC Count", "l");
+    //legend->AddEntry(HCSV1, "Old PCC Count", "l");
+
+    legend->AddEntry(HCSV, "New veto", "l");
+    legend->AddEntry(HCSV1, "Old veto", "l");
+
     legend->SetFillColor(0);
     legend->SetLineColor(0);
     legend->SetFillColor(0);
-    //legend->Draw("same");
+    legend->Draw("same");
 
-    C.Print(Path+TString("csv_file_lumi_comparison_RunA_ratio")+".root");
+    C.Print(Path+TString("csv_file_lumi_comparison_RunA")+".root");
     
   gROOT->ProcessLine(".q");
 }
