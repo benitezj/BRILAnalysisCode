@@ -56,10 +56,12 @@ void PCC_scalefactors() {
 
   gStyle->SetOptStat(0);
   H1->GetXaxis()->SetTitle("bx");
-  //H1->GetYaxis()->SetTitle("background correction");
-  H1->GetYaxis()->SetTitle("new/old");
-  H1->SetTitle("Scale factors ratio for colliding bunches (run 316110 LS block 52)");
-  //H1->SetTitle("Scale factors (run 317696 LS block 85)");
+  H1->GetYaxis()->SetTitle("background correction");
+  //H1->GetYaxis()->SetTitle("new/old");
+  //H1->SetTitle("Scale factors ratio for colliding bunches (run 316110 LS block 52)");
+  H1->SetTitle("Scale factors (run 316110 LS block 52)"); 
+
+ //H1->SetTitle("Scale factors (run 317696 LS block 85)");
   //H1->SetTitle("Scale factors (run 319639 LS block 78)"); 
 
 
@@ -87,21 +89,26 @@ void PCC_scalefactors() {
   }
 
 
-  H1->GetYaxis()->SetRangeUser(0.9, 1);
-  if((bincontent > 0.8) && (bincontent1 > 0.8)){
-    H1->Divide(H2);
-  }
+  //H1->GetYaxis()->SetRangeUser(0.9, 1);
+
+  //if((bincontent > 0.8) && (bincontent1 > 0.8)){
+    //H1->Divide(H2);
+    //}
     H1->Draw("p");
-  
-  //H2->Draw("psame");
-  
+    H2->Draw("psame");
+    //}
+
   auto legend = new TLegend(0.75, 0.75, 0.88, 0.88);
-  legend->AddEntry(H1, "New (AS)", "l");
-  legend->AddEntry(H2, "Old (JB)", "l");
+  //legend->AddEntry(H1, "New (AS)", "l");
+  //legend->AddEntry(H2, "Old (JB)", "l");
+
+  legend->AddEntry(H1, "New veto", "l");
+  legend->AddEntry(H2, "Old veto", "l");
+
   legend->SetFillColor(0);
   legend->SetLineColor(0);
   legend->SetFillColor(0);
-  //legend->Draw("same");
+  legend->Draw("same");
   
-  C->Print("/eos/user/a/asehrawa/BRIL-new/scalefactors_old_new_as_jb_RunA_ratio.png");
+  C->Print("/eos/user/a/asehrawa/BRIL-new/scalefactors_old_new_as_jb_RunA.png");
 }
