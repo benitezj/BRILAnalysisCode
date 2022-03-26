@@ -81,21 +81,21 @@ void comparelsdotdatfiles() {
  
   H.GetXaxis()->SetTitle(" lumi sections ");
   H.GetYaxis()->SetTitle(" PCC count ");
-  //H.SetTitle("Run2018A (315255 - 316995)");
-  H.SetTitle("Run2018B (317080 - 319311)");
+  H.SetTitle("Run2018A (315255 - 316995)");
+  //H.SetTitle("Run2018B (317080 - 319311)");
   //H.SetTitle("Run2018C (319337 - 320065)");
   H.Draw("colz");
-  C.Print(Path+"/compare_lsdotdatfiles_H_RunB.png");
+  C.Print(Path+"/compare_lsdotdatfiles_H_RunA.png");
 
   TCanvas C1;
 
   H1.GetXaxis()->SetTitle(" lumi sections ");
   H1.GetYaxis()->SetTitle(" PCC count ");
-  //H1.SetTitle("Run2018A (315255 - 316995)");
-  H1.SetTitle("Run2018B (317080 - 319311)");                                                                                               
+  H1.SetTitle("Run2018A (315255 - 316995)");
+  //H1.SetTitle("Run2018B (317080 - 319311)");                                                                                               
   //H1.SetTitle("Run2018C (319337 - 320065)");    
   H1.Draw("colz");
-  C1.Print(Path+"/compare_lsdotdatfiles_H1_RunB.png");  
+  C1.Print(Path+"/compare_lsdotdatfiles_H1_RunA.png");  
 
   gStyle->SetOptStat(0);
 
@@ -116,8 +116,8 @@ void comparelsdotdatfiles() {
   TGraph *gr1;
   gr1=new TGraph();
 
-  TGraph *gr2;
-  gr2=new TGraph();
+  //TGraph *gr2;
+  //gr2=new TGraph();
 
   
   int x_value;
@@ -142,22 +142,21 @@ void comparelsdotdatfiles() {
   }
 
 
-
-  TH1* h = new TH1D("h", "PCC count per ls (new)", 200, 0.0, 30000); // the histogram (you should set the number of bins, the title etc)
-  auto nPoints = gr->GetN(); // number of points in your TGraph
+  TH1* h = new TH1D("h", "PCC count per ls (new)", 200, 0.0, 30000); 
+  auto nPoints = gr->GetN(); 
   for(int i=0; i < nPoints; ++i) {
     double x,y;
     gr->GetPoint(i, x, y);
-    h->Fill(x,y); // ?
+    h->Fill(x,y); 
   }
 
 
-  TH1* h1 = new TH1D("h1", "PCC count per ls (old)", 200, 0.0, 30000); // the histogram (you should set the number of bins, the title etc)                                                                
-  auto nPoints1 = gr1->GetN(); // number of points in your TGraph                                                                             
+  TH1* h1 = new TH1D("h1", "PCC count per ls (old)", 200, 0.0, 30000); 
+  auto nPoints1 = gr1->GetN();                                                                        
   for(int j=0; j < nPoints1; ++j) {
     double x1,y1;
     gr1->GetPoint(j, x1, y1);
-    h1->Fill(x1,y1); // ?                                                                                                                    
+    h1->Fill(x1,y1);                                                                                                               
   }
 
   h->GetXaxis()->SetTitle(" lumi sections ");
@@ -173,8 +172,6 @@ void comparelsdotdatfiles() {
   h1->SetLineColor(1);
   h1->SetMarkerColor(1);
   h1->SetMarkerSize(0.5);
-
-
 
   TCanvas C10;
   
@@ -220,20 +217,21 @@ void comparelsdotdatfiles() {
   gr1->SetTitle("Run2018B (317080 - 319311)");                                                                                             
   //gr1->SetTitle("Run2018C (319337 - 320065)");
 
-  gr2->SetMarkerStyle(8);
-  gr2->SetMarkerColor(2);
-  gr2->SetLineColor(2);
-  gr2->SetMarkerSize(0.5);
-  gr2->GetXaxis()->SetTitle("lumi section");
-  gr2->GetYaxis()->SetTitle("PCC count (Zero Bias)");
+  //gr2->SetMarkerStyle(8);
+  //gr2->SetMarkerColor(2);
+  //gr2->SetLineColor(2);
+  //gr2->SetMarkerSize(0.5);
+  //gr2->GetXaxis()->SetTitle("lumi section");
+  //gr2->GetYaxis()->SetTitle("PCC count (Zero Bias)");
   //gr2->SetTitle("Run2018A (315255 - 316995)");                                                                                             
-  gr2->SetTitle("Run2018B (317080 - 319311)");                                                                                             
+  //gr2->SetTitle("Run2018B (317080 - 319311)");                                                                                             
   //gr2->SetTitle("Run2018C (319337 - 320065)");
 
   TCanvas C5;
 
-  gr->Draw("AP");
-  //gr->Divide(gr1);  
+
+  gr->Draw("AP"); 
+  //gr->Divide(gr1); 
   gr1->Draw("Psame");
   //gr2->Draw("AP");
 
