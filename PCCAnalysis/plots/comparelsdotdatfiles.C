@@ -181,7 +181,7 @@ void comparelsdotdatfiles() {
   h->Draw("*histp");
   
   //TCanvas C11;
-  //h1->Draw("hist");
+  //h1->Draw("histpsame");
   C10.Print(Path+"/histo_old_new_RunB_divide.root");
 
   TCanvas C2;
@@ -234,8 +234,8 @@ void comparelsdotdatfiles() {
   //gr2->Draw("AP");
   
   auto* legend = new TLegend(0.77,0.77,0.89,0.89);                                                                                           
-  legend->AddEntry(gr,"old veto","l");
-  legend->AddEntry(gr1,"new veto","l");  
+  legend->AddEntry(gr,"new veto","l");
+  legend->AddEntry(gr1,"old veto","l");  
   legend->SetFillColor(0);
   legend->SetLineColor(0);
   legend->SetFillColor(0);
