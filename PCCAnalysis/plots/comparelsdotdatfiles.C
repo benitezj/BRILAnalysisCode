@@ -34,8 +34,6 @@ void comparelsdotdatfiles() {
   cout<<"opened "<<(inpath1+"/ls.dat")<<std::endl;
 
   ///create histogram
-  int Lumicounter=0;
-  
   TH2F H("H (New veto)","", 200,0,25000,700,0,35000);
   TH2F H1("H1 (Old veto)","", 200,0,25000,700,0,35000);
   
@@ -43,14 +41,18 @@ void comparelsdotdatfiles() {
   std::string line1;
   
   int run=0;
+  int run1=0;
   int ls=0;
+  int ls1=0;
   
   double totL=0;   //lumi for given LS
   double totL1=0;
   
+  //int Lumicounter=0;
+  //int Lumicounter1=0;
   while (std::getline(myfile, line) || std::getline(myfile1, line1)){
     
-    cout<<"new "<<line<<endl;
+    //cout<<"new "<<line<<endl;
     
     std::getline(myfile, line);
     std::stringstream iss(line);
@@ -58,26 +60,29 @@ void comparelsdotdatfiles() {
     
     std::getline(myfile1, line1);
     std::stringstream iss1(line1);
-    iss1>>run>>ls>>totL1;
+    iss1>>run1>>ls1>>totL1;
     
-    cout<<"old "<<line1<<endl;
-
+    //cout<<"old "<<line1<<endl;
+    
     float count=0;
     float count1=0;
     
     count=totL;
     count1=totL1;
     
-    H.Fill(Lumicounter,count);
-    H1.Fill(Lumicounter,count1);
+    H.Fill(ls, count);
+    cout<<"new "<<run<<"  "<<ls<<"  "<<count<<endl;
+    H1.Fill(ls1, count1);
+    cout<<"old "<<run1<<"  "<<ls1<<"  "<<count1<<endl;
     
-    Lumicounter++;
+    //Lumicounter+=ls;
+    //Lumicounter1+=ls1;
     
   }
   
   myfile.close(); 
   myfile1.close();
- 
+  
   TCanvas C;
   
   H.GetXaxis()->SetTitle(" lumi sections ");
@@ -103,11 +108,11 @@ void comparelsdotdatfiles() {
   TProfile* P = H.ProfileX();
   TProfile* P1 = H1.ProfileX();
   
-  P->GetYaxis()->SetRangeUser(0, 35000);
+  //P->GetYaxis()->SetRangeUser(0, 35000);
   P->SetMarkerColor(1);
   P->SetLineColor(1);
   
-  P1->GetYaxis()->SetRangeUser(0, 35000);
+  //P1->GetYaxis()->SetRangeUser(0, 35000);
   P1->SetLineColor(2);
   P1->SetLineColor(2);
   
@@ -179,29 +184,31 @@ void comparelsdotdatfiles() {
   //C10.Print(Path+"/histo_old_RunB.png");
   
   //gStyle->SetErrorX(0);
-  h->Divide(h1);
+  if(ls==ls1){
+    h->Divide(h1);
+  }
   h->Draw("*histp");
   
   //TCanvas C11;
   //h1->Draw("histpsame");
-  C10.Print(Path+"/histo_old_new_RunB_divide.root");
+  C10.Print(Path+"/histo_old_new_RunA_divide.png");
 
   TCanvas C2;
   P->Draw();
-  C2.Print(Path+"/compare_lsdotdatfiles_profileX_RunB.png");
+  C2.Print(Path+"/compare_lsdotdatfiles_profileX_RunA.png");
   
   TCanvas C3;
   P1->Draw();
-  C3.Print(Path+"/compare_lsdotdatfiles_profileX_RunB1.png");
+  C3.Print(Path+"/compare_lsdotdatfiles_profileX_RunA1.png");
 
   gr->SetMarkerStyle(8);
   gr->SetLineColor(1);
   gr->SetMarkerColor(1);
   gr->SetMarkerSize(0.5);
   gr->GetXaxis()->SetTitle("lumi section");
-  gr->GetYaxis()->SetTitle("PCC count (Zero Bias)");
-  //gr->SetTitle("Run2018A (315255 - 316995)");                                                                                              
-  gr->SetTitle("Run2018B (317080 - 319311)");                                                                                              
+  gr->GetYaxis()->SetTitle("PCC");
+  gr->SetTitle("Run2018A (315255 - 316995)");                                                                                              
+  //gr->SetTitle("Run2018B (317080 - 319311)");                                                                                              
   //gr->SetTitle("Run2018C (319337 - 320065)");
   
   //TCanvas C4;
@@ -213,9 +220,9 @@ void comparelsdotdatfiles() {
   gr1->SetLineColor(2);
   gr1->SetMarkerSize(0.5);
   gr1->GetXaxis()->SetTitle("lumi section");
-  gr1->GetYaxis()->SetTitle("PCC count (Zero Bias)");
-  //gr1->SetTitle("Run2018A (315255 - 316995)");                                                                                             
-  gr1->SetTitle("Run2018B (317080 - 319311)");                                                                                             
+  gr1->GetYaxis()->SetTitle("PCC");
+  gr1->SetTitle("Run2018A (315255 - 316995)");                                                                                             
+  //gr1->SetTitle("Run2018B (317080 - 319311)");                                                                                             
   //gr1->SetTitle("Run2018C (319337 - 320065)");
   
   //gr2->SetMarkerStyle(8);
@@ -243,7 +250,7 @@ void comparelsdotdatfiles() {
   legend->SetFillColor(0);
   legend->Draw("same");       
   
-  C5.Print(Path+"/compare_tgraph_countsperls_tgraph_RunB_ratio.root");
+  C5.Print(Path+"/compare_tgraph_countsperls_tgraph_RunA_ratio.png");
   
   gROOT->ProcessLine(".q");
 
