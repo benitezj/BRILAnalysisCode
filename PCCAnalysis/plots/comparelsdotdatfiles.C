@@ -50,16 +50,18 @@ void comparelsdotdatfiles() {
   
   while (std::getline(myfile, line)){
     
-    //cout<<line;
+    cout<<"new "<<line<<endl;
     
     std::getline(myfile, line);
     std::stringstream iss(line);
     iss>>run>>ls>>totL;
     
-    std::getline(myfile1, line);
-    std::stringstream iss1(line);
+    std::getline(myfile1, line1);
+    std::stringstream iss1(line1);
     iss1>>run>>ls>>totL1;
     
+    cout<<"old "<<line1<<endl;
+
     float count=0;
     float count1=0;
     
