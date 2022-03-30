@@ -48,7 +48,7 @@ void comparelsdotdatfiles() {
   double totL=0;   //lumi for given LS
   double totL1=0;
   
-  while (std::getline(myfile, line)){
+  while (std::getline(myfile, line) || std::getline(myfile1, line1)){
     
     cout<<"new "<<line<<endl;
     
