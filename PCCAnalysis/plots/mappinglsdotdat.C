@@ -7,7 +7,7 @@ void mappinglsdotdat() {
   std::ifstream myfile("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018A/Run2018A/ls.dat"); 
   
   if (!myfile) { 
-    std::cout << "Error, could not open old lsdodat file." << std::endl; 
+    std::cout << "Error, could not open old veto lsdodat file." << std::endl; 
     return;
   }
   
@@ -35,7 +35,7 @@ void mappinglsdotdat() {
   for(auto & outer_map_pair : cluster_count) {
     cout << outer_map_pair.first << " contains: " << endl;
     for(auto & inner_map_pair : outer_map_pair.second) {
-      cout << "old "<<inner_map_pair.first << " " << inner_map_pair.second<<endl;
+      //cout << "old "<<inner_map_pair.first << " " << inner_map_pair.second<<endl;
     }
   }
 
@@ -47,7 +47,7 @@ void mappinglsdotdat() {
   std::ifstream myfile1("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB/ls.dat"); 
   
   if (!myfile1) { 
-    std::cout << "Error, could not open new lsdotdat file." << std::endl; 
+    std::cout << "Error, could not open new veto lsdotdat file." << std::endl; 
     return;
   }
   
@@ -75,7 +75,7 @@ void mappinglsdotdat() {
   for(auto & outer_map_pair1 : cluster_count1) {
     cout << outer_map_pair1.first << " contains: " << endl;
     for(auto & inner_map_pair1 : outer_map_pair1.second) {
-      cout << "new "<<inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
+      //cout << "new "<<inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
     }
   }
 
