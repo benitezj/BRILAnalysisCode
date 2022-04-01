@@ -18,7 +18,7 @@ void mappinglsdotdat() {
   
   // Read the file and load the data:
   int run, ls;
-  double count;
+  float count;
  
   while (std::getline(myfile, line)){
     
@@ -56,7 +56,7 @@ void mappinglsdotdat() {
   
   // Read the file and load the data:
   int run1, ls1;
-  double count1;
+  float count1;
  
   while (std::getline(myfile1, line1)){
     
