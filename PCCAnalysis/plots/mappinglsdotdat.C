@@ -32,11 +32,13 @@ void mappinglsdotdat() {
   }
   
 
-  for(auto it = cluster_count.begin(); it != cluster_count.end(); ++it)
-  {
-    std::cout << "old "<<it->first<<"\n";
+  for(auto & outer_map_pair : cluster_count) {
+    cout << outer_map_pair.first << " contains: " << endl;
+    for(auto & inner_map_pair : outer_map_pair.second) {
+      cout << "old "<<inner_map_pair.first << ": " << inner_map_pair.second << endl;
+    }
   }
-  
+
 
   myfile.close();  
   
@@ -74,11 +76,14 @@ void mappinglsdotdat() {
   }
   
 
-  for(auto it1 = cluster_count1.begin(); it1 != cluster_count1.end(); ++it1)
-    {
-      std::cout << "new "<< it1->first<<"\n";
+  for(auto & outer_map_pair1 : cluster_count1) {
+    cout << outer_map_pair1.first << " contains: " << endl;
+    for(auto & inner_map_pair1 : outer_map_pair1.second) {
+      cout << "new "<<inner_map_pair1.first << ": " << inner_map_pair1.second << endl;
     }
-  
+  }
+
+
 
   myfile1.close();  
   
