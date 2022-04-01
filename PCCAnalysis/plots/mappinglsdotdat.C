@@ -66,10 +66,6 @@ void mappinglsdotdat() {
     std::stringstream iss1(line1);
     iss1>>run1>>ls1>>count1;
    
-    //cluster_count.insert(std::pair<int, int> (ls, run), count);
-    //cout<<run<< " "<<ls << "  "<<count<<endl;      
-    //cluster_count.find(ls)->second = count;
-    
     cluster_count1[run1][ls1]=count1;
 
     //std::cout<<run<<" "<<ls<<"  "<<cluster_count[run][ls]<<std::endl;
@@ -82,8 +78,6 @@ void mappinglsdotdat() {
       cout << "new "<<inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
     }
   }
-
-
 
   myfile1.close();  
   
