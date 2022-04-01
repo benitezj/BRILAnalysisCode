@@ -18,7 +18,7 @@ void mappinglsdotdat() {
   
   // Read the file and load the data:
   int run, ls;
-  float count;
+  double count;
  
   while (std::getline(myfile, line)){
     
@@ -27,22 +27,20 @@ void mappinglsdotdat() {
     iss>>run>>ls>>count;
       
     cluster_count[run][ls]=count;
-
     //std::cout<<run<<" "<<ls<<"  "<<cluster_count[run][ls]<<std::endl;
   }
   
 
   for(auto & outer_map_pair : cluster_count) {
-    cout << outer_map_pair.first << " contains: " << endl;
+    //cout << outer_map_pair.first << " ";
     for(auto & inner_map_pair : outer_map_pair.second) {
-      //cout << "old "<<inner_map_pair.first << " " << inner_map_pair.second<<endl;
+      cout << "old "<<outer_map_pair.first << " "<<inner_map_pair.first << " " << inner_map_pair.second<<endl;
     }
   }
 
 
   myfile.close();  
   
-
 
   std::ifstream myfile1("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB/ls.dat"); 
   
@@ -58,7 +56,7 @@ void mappinglsdotdat() {
   
   // Read the file and load the data:
   int run1, ls1;
-  float count1;
+  double count1;
  
   while (std::getline(myfile1, line1)){
     
@@ -67,15 +65,14 @@ void mappinglsdotdat() {
     iss1>>run1>>ls1>>count1;
    
     cluster_count1[run1][ls1]=count1;
-
     //std::cout<<run<<" "<<ls<<"  "<<cluster_count[run][ls]<<std::endl;
   }
   
 
   for(auto & outer_map_pair1 : cluster_count1) {
-    cout << outer_map_pair1.first << " contains: " << endl;
+    //cout << outer_map_pair1.first << "  ";
     for(auto & inner_map_pair1 : outer_map_pair1.second) {
-      //cout << "new "<<inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
+      cout << "new "<<outer_map_pair1.first << "  "<< inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
     }
   }
 
