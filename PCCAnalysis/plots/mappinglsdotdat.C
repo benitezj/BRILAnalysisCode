@@ -33,7 +33,6 @@ void mappinglsdotdat() {
   }
   
   for(auto & outer_map_pair : cluster_count) {
-    cout << outer_map_pair.first << " ";
     for(auto & inner_map_pair : outer_map_pair.second) {
       cout << "old "<<outer_map_pair.first << " "<<inner_map_pair.first << " " << inner_map_pair.second<<endl;
     }
@@ -72,7 +71,6 @@ void mappinglsdotdat() {
   }
   
   for(auto & outer_map_pair1 : cluster_count1) {
-    cout << outer_map_pair1.first << "  ";
     for(auto & inner_map_pair1 : outer_map_pair1.second) {
       cout << "new "<<outer_map_pair1.first << "  "<< inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
     }
