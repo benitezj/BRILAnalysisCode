@@ -9,8 +9,10 @@ void PCCperrun() {
   //TGraph * g = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018B/Run2018B_ZB/runs.dat");
   TGraph * g = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C/Run2018C_ZB/runs.dat");
 
+  //TH1* h = new TH1D("h", "PCC per run ratio", 146, 315252, 316995); 
+  //TH1* h = new TH1D("h", "PCC per run ratio", 132, 317080, 319311);
+  TH1* h = new TH1D("h", "PCC per run ratio", 88, 319337, 320065);
 
-  TH1* h = new TH1D("h", "PCC per run (new veto)", 200, 0.0, 30000); 
   auto nPoints = g->GetN(); 
   for(int i=0; i < nPoints; ++i) {
     double x,y;
@@ -18,8 +20,11 @@ void PCCperrun() {
     h->Fill(x,y); 
   }
 
-
-
+  h->SetMarkerColor(1);
+  h->SetLineColor(1);
+  //h->GetYaxis()->SetRangeUser(0.3, 0.8);
+  //h->GetYaxis()->SetRangeUser(0.8, 1.8);
+  h->GetYaxis()->SetRangeUser(1, 1.2);
   g->SetMarkerStyle(20);
   g->SetMarkerSize(0.5);
   g->SetMarkerColor(1);
@@ -27,7 +32,7 @@ void PCCperrun() {
   g->SetTitle("PCC per run");
   g->GetXaxis()->SetTitle("run number");
   g->GetYaxis()->SetTitle("PCC");
-  g->Draw("ap");
+  //g->Draw("ap");
   //C.Print(Path+"PCCperrun_newveto_RunA"+".png");
   
  
@@ -36,7 +41,10 @@ void PCCperrun() {
   TGraph * g1 = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C/Run2018C/runs.dat");
 
 
-  TH1* h1 = new TH1D("h1", "PCC per run (old veto)", 200, 0.0, 30000); 
+  //TH1* h1 = new TH1D("h1", "PCC per run (old veto)", 146, 315252, 316995);
+  //TH1* h1 = new TH1D("h1", "PCC per run (old veto)", 132, 317080, 319311);
+  TH1* h1 = new TH1D("h1", "PCC per run (old veto)", 88, 319337, 320065);
+ 
   auto nPoints1 = g1->GetN();                                                                        
   for(int j=0; j < nPoints1; ++j) {
     double x1,y1;
@@ -44,6 +52,8 @@ void PCCperrun() {
     h1->Fill(x1,y1);                                                                                                               
   }
   
+  h1->SetMarkerColor(2);
+  h1->SetLineColor(2);
 
 
   g1->SetMarkerStyle(20);
@@ -53,7 +63,7 @@ void PCCperrun() {
   g1->SetTitle("PCC per run (old veto)");
   g1->GetXaxis()->SetTitle("run number");
   g1->GetYaxis()->SetTitle("PCC");
-  g1->Draw("psame");
+  //g1->Draw("psame");
 
 
   auto* legend = new TLegend(0.77,0.77,0.89,0.89);                                                                                           
@@ -62,8 +72,14 @@ void PCCperrun() {
   legend->SetFillColor(0);
   legend->SetLineColor(0);
   legend->SetFillColor(0);
-  legend->Draw("same");    
+  //legend->Draw("same");    
 
   C.Print(Path+"PCCperrun_old_new_veto_RunC"+".png");
+
+  h->Divide(h1);
+  h->Draw("histp");
+  //h1->Draw("histsame");
   
+  C.Print(Path+"PCCperrun_histo_old_new_veto_RunC"+".png");
+
 }
