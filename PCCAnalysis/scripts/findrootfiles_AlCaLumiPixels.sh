@@ -1,43 +1,40 @@
 #!/bin/bash
 
+eospath=/eos/cms/store
 
 #########################################
-## * script to search for files of this form:
-##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/559/00000/3A1948E7-B85C-E811-BE2E-FA163E2965C4.root
-##     /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/316/060/00000/1AAF584E-0956-E811-B8CF-FA163E73FFA8.root
-##     /eos/cms/store/data/Run2018D/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/323/513/00000
-#       /eos/cms/store/data/Run2018B/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/318/817/00000/3E2614B5-077C-E811-BFC1-FA163EA4131C.root
-## * this script takes no arguments
+## * script to search for files in eos
 ## * output are files with runnumber.txt with list of root files 
+## * this script takes no arguments, need to set options below
 #######################################
 
-period=$1 #Run2018A
+period=Run2018A
 
-######################################
-###search files for all streams in the run period
-######################################
-if [ "$period" == "" ]; then
-	echo "no run period specified."
-	return
-fi
-
-eospath=/eos/cms/store/data/$period
-echo $eospath
-
-################
-#### options ###
-#eos=/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select
-eosls='/bin/ls'
-specialRun=0  #0 -> AlCaLumiPixels  ,  1 -> merge AlCaLumiPixels0-N , not set merges all including Express
-
-#ZBorRdm=ZeroBias-PromptReco
-#ZBorRdm=AlCaPCCRandom-PromptReco
-#ZBorRdm=AlCaPCCRandom-02May2018
-#ZBorRdm=AlCaPCCRandom-17Nov2017
-ZBorRdm=AlCaPCCZeroBias-17Nov2017
+########
+## choose type of data: 
+#1 -> /eos/cms/store/express/Run2018D/StreamALCALUMIPIXELSEXPRESS/ALCARECO/AlCaPCCRandom-Express-v1/000/320/500/00000/2C216013-EE93-E811-967D-FA163ECC5F9A.root
+datatype=1
+dataset=AlCaPCCRandom-Express 
 
 
-##all run files are cleaned out
+#2 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/239/00000/0CEC4AA3-1259-E811-9384-02163E01A168.root
+#datatype=2
+#dataset=AlCaPCCZeroBias-PromptReco
+
+
+#3 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels0/RAW/v1/000/316/524/00000/
+#datatype=3
+#dataset=v1
+
+echo $period
+echo $datatype
+echo $dataset
+######## ##########################################
+
+
+
+#################
+##clean out old files
 rm -rf ./$period
 mkdir ./$period
 rm -f ./$period/*.txt
@@ -47,58 +44,38 @@ rm -f ./$period/*.txt
 ##search files for a given stream in a given period
 ###################################
 search(){
-
-    local stream=$1
-    local path=$eospath/$stream/ALCARECO
-    #echo "path: $path"
-    for v in `$eosls ${path} | grep ${ZBorRdm}`; do 
-	local pathv=$path/$v
-	#echo "pathv: $pathv"
-	for vN in `$eosls ${pathv}`; do
-	    local path1=$pathv/$vN 
-	    #echo "path1: $path1"
-            for r1 in `$eosls ${path1} | grep -v .root`; do
-		local path2=$path1/$r1
-		#echo "path2: $path2"
-		for r2 in `$eosls ${path2}`; do 
-		    ### for PromptReco need to go further
-		    local path3=$path2/$r2/00000
-		    #echo "path3: $path3" 
-		    for f in `$eosls ${path3} | grep .root`; do 
-			echo "file:$path3/$f" >> ./$period/$r1$r2.txt  
-		    done
+    local path1=$1
+    #echo "path1: $path1"
+    for tag1 in `/bin/ls ${path1} | grep ${dataset}`; do 
+	local path2=$path1/$tag1/000
+        for r1 in `/bin/ls ${path2}`; do
+	    local path3=$path2/$r1
+	    for r2 in `/bin/ls ${path3}`; do 
+		local path4=$path3/$r2/00000
+		echo "path4: $path4" 
+		for f in `/bin/ls ${path4} | grep .root`; do 
+		    echo "file:$path4/$f" >> ./$period/$r1$r2.txt  
 		done
 	    done
-
-
-	    for f in `$eosls ${path1} | grep .root`; do 
-		echo "file:$path1/$f" >> ./${period}/${ZBorRdm}.txt  
-	    done
-
 	done
     done
 }
 
 
 
-### loop over the streams
-for s in `/bin/ls $eospath | grep AlCaLumiPixels`; do 
 
-	idx=`echo $s  | awk -F"AlCaLumiPixels" '{print $2}'`
+if [ "$datatype" == "1" ] ; then
+    search ${eospath}/express/${period}/StreamALCALUMIPIXELSEXPRESS/ALCARECO
+fi
 
-	if [ "$specialRun" == "1" ] && [ "$idx" == "" ]; then
-            # only process "AlCaLumiPixels[0-N]" 
-	    continue
-	fi
+if [ "$datatype" == "2" ] ; then
+    search ${eospath}/data/${period}/AlCaLumiPixels/ALCARECO
+fi
 
-	if [ "$specialRun" == "0" ] && [ "$idx" != "" ]; then
-            # only process "AlCaLumiPixels"
-	    continue
-	fi
-
-	echo $s
-	search $s
-
-done    
+if [ "$datatype" == "3" ] ; then
+    for i in 0 1 2 3 4 5 6 7 8 9 10 11 ; do
+	search ${eospath}/data/${period}/AlCaLumiPixels${i}/RAW
+    done
+fi
 
 
