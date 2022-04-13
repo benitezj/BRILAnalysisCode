@@ -84,7 +84,7 @@ void comparelsdotdat_express() {
    
   TCanvas C;
   
-  graph->SetTitle("PCC per lumi section");
+  graph->SetTitle("PCC per lumi section (new veto)");
   graph->GetXaxis()->SetTitle("lumi section");
   graph->GetYaxis()->SetTitle("PCC");
   graph->SetMarkerColor(1);
@@ -94,7 +94,7 @@ void comparelsdotdat_express() {
 
   C.Print(Path+"/compare_lsdotdat_Run2018A_newveto.root");
   
-  graph1->SetTitle("PCC per lumi section");
+  graph1->SetTitle("PCC per lumi section (old veto)");
   graph1->GetXaxis()->SetTitle("lumi section");
   graph1->GetYaxis()->SetTitle("PCC");
   graph1->SetMarkerColor(2);
