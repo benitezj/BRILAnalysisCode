@@ -19,7 +19,7 @@ void comparelsdotdat_express() {
 
   cout<<"opened "<<(inpath+"/ls.dat")<<std::endl;
   
-  TGraph* graph = new TGraph(59103);
+  TGraph* graph = new TGraph(59708);
    
   std::string line;
 
