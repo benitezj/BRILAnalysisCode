@@ -7,6 +7,8 @@ void comparelsdotdat_express() {
   TString Path="/eos/user/a/asehrawa/BRIL-new";
   
   TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC/EXPRESS_datasets/Run2018_ZB_test/Run2018A";
+  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC/EXPRESS_datasets/Run2018_ZB_test/Run2018B";
+  //TString inpath="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC/EXPRESS_datasets/Run2018_ZB_test/Run2018C";
   
   gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/rootlogon.C");
   
@@ -47,7 +49,7 @@ void comparelsdotdat_express() {
 
 
 
-  TH1* h = new TH1D("h", "new/old", 59708, 0.0, 30000); 
+  TH1* h = new TH1D("h", "new/old", 59708, 0.0, 59708); 
   auto nPoints = graph->GetN(); 
   for(int i=0; i < nPoints; ++i) {
     double x,y;
@@ -56,9 +58,10 @@ void comparelsdotdat_express() {
   }
   
 
-
   TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018A/Run2018A";
-    
+  //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018B/Run2018B";
+  //TString inpath1="/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C/Run2018C";    
+
   ifstream myfile1((inpath1+"/ls.dat").Data());
   if (!myfile1.is_open()){
     cout << "Unable to open file";
@@ -94,7 +97,7 @@ void comparelsdotdat_express() {
   myfile1.close(); 
 
 
-  TH1* h1 = new TH1D("h1", "PCC count per ls (old)", 59708, 0.0, 30000); 
+  TH1* h1 = new TH1D("h1", "PCC count per ls (old)", 59708, 0.0, 59708); 
   auto nPoints1 = graph1->GetN();                                                                        
   for(int j=0; j < nPoints1; ++j) {
     double x1,y1;
@@ -113,8 +116,7 @@ void comparelsdotdat_express() {
   graph->SetMarkerSize(0.5);
   graph->SetMarkerStyle(8); 
   graph->Draw("AP");  
-
-  C.Print(Path+"/compare_lsdotdat_Run2018A_newveto.png");
+  //C.Print(Path+"/compare_lsdotdat_Run2018A_newveto.root");
   
   graph1->SetTitle("PCC per lumi section (old veto)");
   graph1->GetXaxis()->SetTitle("lumi section");
@@ -122,11 +124,12 @@ void comparelsdotdat_express() {
   graph1->SetMarkerColor(2);
   graph1->SetMarkerSize(0.5);
   graph1->SetMarkerStyle(8);
-  graph1->Draw("AP");
+  //graph1->Draw("AP");
+  graph1->Draw("PSAME");
+  //C.Print(Path+"/compare_lsdotdat_Run2018A_oldveto.root");
+  C.Print(Path+"/compare_lsdotdat_Run2018A_old_new.png");
 
-  C.Print(Path+"/compare_lsdotdat_Run2018A_oldveto.png");
-
-  h->GetYaxis()->SetRangeUser(0, 3);
+  //h->GetYaxis()->SetRangeUser(0, 3);
   h->GetXaxis()->SetTitle("lumi section");
   h->GetYaxis()->SetTitle("new/old");
   h->SetMarkerColor(1);
@@ -138,7 +141,7 @@ void comparelsdotdat_express() {
   }
   h->Draw("histp");
   
-  C.Print(Path+"/compare_lsdotdat_hist_Run2018A_newveto_ratio.png");
+  C.Print(Path+"/compare_lsdotdat_hist_Run2018A_newveto_ratio.root");
 
   //h1->Draw("histp");
   //C.Print(Path+"/compare_lsdotdat_hist_Run2018A_oldveto.png");
