@@ -4,7 +4,11 @@
 void compareCSVfiles(TString newF, TString refF){
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
-  TGraph LumiFrame;
+  bool plotbx=0;
+  
+
+  TGraph LumiNew;
+  TGraph LumiRef;
   TGraph LumiRatio;
 
 
@@ -47,8 +51,8 @@ void compareCSVfiles(TString newF, TString refF){
     std::stringstream lumiiss(token);
     lumiiss>>Lumi;
 
-    cout<<run<<" "<<ls<<" "<<Lumi<<": "<<endl;
-
+    //cout<<newF<<" "<<ls<<" "<<Lumi<<": "<<endl;
+    LumiNew.SetPoint(LumiNew.GetN(),LumiNew.GetN(),Lumi);
 
     //read the   reference
     std::getline(reffile,refline);
@@ -67,51 +71,51 @@ void compareCSVfiles(TString newF, TString refF){
     std::stringstream reflumiiss(reftoken);
     reflumiiss>>refLumi;
 
-    cout<<refrun<<" "<<refls<<" "<<refLumi<<": "<<endl;
+    //cout<<refF<<" "<<refls<<" "<<refLumi<<": "<<endl;
+    LumiRef.SetPoint(LumiRef.GetN(),LumiRef.GetN(),refLumi);
 
-    for(int b=1;b<=3564;b++){
-      std::getline(iss,token, ',');
-      std::stringstream biss(token);
-      biss>>Lumi;
-
-      std::getline(refiss,reftoken, ',');
-      std::stringstream refbiss(reftoken);
-      refbiss>>refLumi;
-
-      if(Lumi>0)cout<<b<<":"<<Lumi<<"/"<<refLumi<<"="<<Lumi/refLumi<<endl;
+    //fill the ratio
+    if(run==refrun && ls==refls){
+      if(refLumi>0)
+	LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),Lumi/refLumi);
+      else if(Lumi==0.)
+	LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),1);
+      else LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),-1);
+      
     }
-    cout<<endl;
+
+
+    //per bx comparisons
+    if(plotbx){
+      for(int b=1;b<=3564;b++){
+	std::getline(iss,token, ',');
+	std::stringstream biss(token);
+	biss>>Lumi;
+	
+	std::getline(refiss,reftoken, ',');
+	std::stringstream refbiss(reftoken);
+	refbiss>>refLumi;
+	
+	if(refLumi>0) 
+	  //cout<<b<<":"<<Lumi<<"/"<<refLumi<<"="<<Lumi/refLumi<<endl;
+      }
+      //cout<<endl;
+    }
 
   }
+  reffile.close();
   newfile.close();
-
-  // //fix boundaries
-  // LumiFrame.SetPoint(0,firstrun-RUNOFFSET,0);
-  // LumiFrame.SetPoint(1,lastrun-RUNOFFSET,0);
-  // LumiFrame.GetXaxis()->SetTitle(TString("run - ")+RUNOFFSET);
-  // LumiFrame.GetYaxis()->SetTitle("new lumi / old lumi");
+  
 
 
   gStyle->SetOptStat(0);
 
   TCanvas C;
-
-  //LumiRatio.GetYaxis()->SetRangeUser(PCCZEROLUMI,MAXPCCRUN);
-
-  // LumiFrame.GetYaxis()->SetRangeUser(0.9,1.1);
-  // LumiFrame.GetXaxis()->SetRangeUser(firstrun,lastrun);
-  // LumiFrame.SetMarkerSize(0.1);
-  // LumiFrame.Draw("ap");
-
-
-  //LumiRatio.GetYaxis()->SetRangeUser(0,2);
-  //LumiRatio.GetXaxis()->SetRangeUser(firstrun,lastrun);
+  LumiRatio.GetYaxis()->SetRangeUser(0,2);
   LumiRatio.SetMarkerStyle(8);
   LumiRatio.SetMarkerSize(0.5);
-  LumiRatio.Draw("ape");
-
-  
-  C.Print("compareCSVfiles.png");
+  LumiRatio.Draw("ap");
+  C.Print("compareCSVfiles_ratio.png");
 
   gROOT->ProcessLine(".q");
 }
