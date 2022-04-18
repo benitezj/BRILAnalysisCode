@@ -18,7 +18,6 @@ void PCC_afterglow() {
   TH1F * H1 = NULL;
   TH1F * H2 = NULL;
   
-
   H1 = (TH1F*)f->Get("RawLumiAvg_315690_10_513_563;1");
   H1->SetLineColor(1);
   H1->SetMarkerColor(1);
@@ -34,74 +33,40 @@ void PCC_afterglow() {
     return;
   }
 
+  int x_value[4000];
+  float bincontent[4000];
+  for(int j = 1; j <= H1->GetNbinsX(); j++) {
+    x_value[j] =  H1->GetBinCenter(j);
+    bincontent[j] = H1->GetBinContent(j); 
+    if (bincontent[j] >= 500){
+      std::cout<<"new "<<x_value[j]<<" "<<bincontent[j]<<std::endl;
+      H1->Draw("p");
+    }
+  }
 
+  int x_value1[4000];
+  float bincontent1[4000];
+  for(int k = 1; k <= H2->GetNbinsX(); k++) {
+    x_value1[k] =  H2->GetBinCenter(k);
+    bincontent1[k] = H2->GetBinContent(k);
+    if (bincontent1[k] >=500){
+      std::cout<<"old "<<x_value1[k]<<" "<<bincontent1[k]<<std::endl;
+      H2->Draw("psame");
+    }
+  }
 
-
-
-  //H1 = (TH2F*)f->Get("RawLumiAvg_316110_0_1_52;1"); 
-  //H1->SetLineColor(1);
-  //H1->SetMarkerColor(1);
-  //if (H1==NULL){
-  //return;
-  //}
-  
-  //H2 = (TH2F*)f1->Get("RawLumiAvg_316110_0_1_52;1");  
-  //H2->SetLineColor(2);
-  //H2->SetMarkerColor(2);
-  
-  //if (H2==NULL){
-  //return;
-  //}
-  
-  //H1 = (TH2F*)f->Get("RawLumiAvg_317696_0_1_85;1");
-  //H1->SetLineColor(1);
-  //if (H1==NULL){
-  //return;
-  //}
-  
-  //H2 = (TH2F*)f->Get("CorrectedLumiAvg_317696_0_1_85;1");
-  //H2->SetLineColor(2);
-  //if (H2==NULL){
-  //return;
-  //}
-  
-  
-  //H1 = (TH2F*)f->Get("RawLumiAvg_319639_0_1_78;1");
-  //H1->SetLineColor(1);
-  //if (H1==NULL){
-  //return;
-  //}
-  
-  //H2 = (TH2F*)f->Get("CorrectedLumiAvg_319639_0_1_78;1");
-  //H2->SetLineColor(2);
-  //if (H2==NULL){
-  //return;
-  //}
-
-  
   gStyle->SetOptStat(0);
-  H1->SetTitle("Raw histograms run number 315690 lumi block 563");
-  //H1->SetTitle("New (AS) run number 316110 lumi block 52");
-  
-  //H1->SetTitle("Old (JB) run number 317696 lumi block 85");                                                                                
-  //H1->SetTitle("New (AS) run number 317696 lumi block 85");  
-  
-  //H1->SetTitle("Old (JB) run number 319639 lumi block 78");
-  //H1->SetTitle("New (AS) run number 319639 lumi block 78");     
-  
+  H1->SetTitle("Raw histograms run number 315690 lumi block 10 (513-563)");  
   H1->GetXaxis()->SetTitle("bx");
   H1->GetYaxis()->SetTitle("PCC");
   //H1->GetYaxis()->SetTitle("New/Old");
   H1->GetYaxis()->SetRangeUser(0, 2500);
   //H1->GetYaxis()->SetRangeUser(0.8, 1); 
   //H1->Divide(H2);
-  H1->Draw("p");
-  H2->Draw("psame");
-  
+
   auto legend = new TLegend(0.75, 0.75, 0.88, 0.88);
   //legend->AddEntry(H1, "Raw Histo ", "l");
   //legend->AddEntry(H2, "Corr Histo ", "l");
-  
   legend->AddEntry(H1, "New veto", "l");
   legend->AddEntry(H2, "Old veto", "l");
   legend->SetFillColor(0);
@@ -109,8 +74,8 @@ void PCC_afterglow() {
   legend->SetFillColor(0);
   legend->Draw("same");
   
+  C->Print("/eos/user/a/asehrawa/BRIL-new/raw_old_new.png");
   //C->Print("/eos/user/a/asehrawa/BRIL-new/Raw_histogram_old_jb_RunA_ratio.png");
-  C->Print("/eos/user/a/asehrawa/BRIL-new/Raw__histogram_new_old_RunA.png");
-  
+
 }
 
