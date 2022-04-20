@@ -24,12 +24,12 @@ void compareCSVfiles_express() {
   
   int LS=0;
   int previousrunlumisec_count=0;
-
+  
   int LS1=0;
   int previousrunlumisec_count1=0;
-
+  
   std::map<int, float> cluster_count;
-
+  
   for (unsigned int j=0;j<run_number.size();j++){
     TString Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018A";
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
@@ -40,7 +40,7 @@ void compareCSVfiles_express() {
       cout << "Unable to open new file: "<<infile.Data()<<endl; 
       return;
     }    
-        
+    
     TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
     TString infile1=Path1+"/"+run_number.at(j)+".csv";
     //std::cout<< run_number1.at(j)<<std::endl;                                                                                               
@@ -66,16 +66,16 @@ void compareCSVfiles_express() {
       std::getline(iss,token, ',');
       std::stringstream lsiss(token);
       lsiss>>ls;
-
+      
       lumisec_count++;      
       LS = previousrunlumisec_count + ls;      
-
+      
       std::getline(iss,token, ',');
       std::stringstream lumiiss(token);
       lumiiss>>LumiLS;
       cluster_count[ls]=LumiLS;
       //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;   
-
+      
       LumiperLS->Fill(LS, LumiLS);
       std::cout<<"old veto "<<run<< "  "<<LS<<"  "<<LumiLS<<std::endl;
       
@@ -83,7 +83,7 @@ void compareCSVfiles_express() {
     
     previousrunlumisec_count+=lumisec_count; 
     myfile.close();     
-
+    
     std::string line1;  
     int run1=0;
     int ls1=0;
@@ -103,7 +103,7 @@ void compareCSVfiles_express() {
       
       lumisec_count1++;
       LS1 = previousrunlumisec_count1 + ls1;
-
+      
       std::getline(iss1,token1, ',');
       std::stringstream lumiiss1(token1);
       lumiiss1>>LumiLS1;
@@ -126,22 +126,21 @@ void compareCSVfiles_express() {
     
   }
   
-
-    LumiperLS->Draw("histp");
-    C->Print(Path1+"Lumiperls_oldveto"+".png");
-
-    LumiperLS1->Draw("histp");
-    C->Print(Path1+"Lumiperls_newveto"+".png");
-
-    LumiLSratio ->SetTitle("Run2018A (315252-316995)");
-    //LumiLSratio ->SetTitle("run number 316186");
-    LumiLSratio ->GetXaxis()->SetTitle("Lumi section");                                                                                 
-    LumiLSratio ->GetYaxis()->SetTitle("Lumiratio");
-    LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);
-    //LumiLSratio ->GetYaxis()->SetRangeUser(0.6, 0.8);
-    LumiLSratio ->Draw("AP"); 
-    C->Print(Path1+"Lumiratio"+".png");
-    
-
+  
+  LumiperLS->Draw("histp");
+  C->Print(Path1+"Lumiperls_oldveto"+".png");
+  
+  LumiperLS1->Draw("histp");
+  C->Print(Path1+"Lumiperls_newveto"+".png");
+  
+  LumiLSratio ->SetTitle("Run2018A (315252-316995)");
+  //LumiLSratio ->SetTitle("run number 316186");
+  LumiLSratio ->GetXaxis()->SetTitle("Lumi section");                                                                                 
+  LumiLSratio ->GetYaxis()->SetTitle("Lumiratio");
+  LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);
+  //LumiLSratio ->GetYaxis()->SetRangeUser(0.6, 0.8);
+  LumiLSratio ->Draw("AP"); 
+  C->Print(Path1+"Lumiratio"+".png");
+     
 }
   
