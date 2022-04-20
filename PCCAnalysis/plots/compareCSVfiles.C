@@ -1,15 +1,41 @@
 #include "globals.h"
 
+#include "../test_Run3/verifyT0ReplayDBUploads.C"
 
-void compareCSVfiles(TString path,TString newF, TString refF){
+
+void compareCSVfiles(){
+
+  TString path="./verify-T0Replay-ZB";
+  
+  TString refF="rawPCC-step5_onlyRawPCCProducer_ALCAPRODUCER-correctGT-fromT0ReplayALCARECO-UnCorr.csv";
+  TString newF="rawPCC-step5_onlyRawPCCProducer_ALCAPRODUCER-correctGT-fromT0ReplayALCARECO.csv";
+  
+  //TString refF="rawPCC-fromT0ReplayRawPCCProducer-UnCorr.csv";
+  //TString newF="rawPCC-fromT0ReplayRawPCCProducer.csv";
+
+  cout<<"Ref file: "<<refF<<endl;
+  cout<<"New file: "<<newF<<endl;
+  
+  int plotbx=600; //select one bx to compare lumi vs bcid
+  
+  //////////////////////////////
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
-  bool plotbx=0;
+  gStyle->SetOptStat(0);
+
 
   TGraph LumiNew;
   TGraph LumiRef;
   TGraph LumiRatio;
+  TGraph LumiRefCorr;
+  TGraph LumiRatioCorr;
 
+  
+  TGraph LumiNewBX;
+  TGraph LumiRefBX;
+  TGraph LumiRatioBX;
+  TGraph LumiRefBXCorr;
+  TGraph LumiRatioBXCorr;
 
   ifstream newfile((path+"/"+newF).Data());
   if (!newfile.is_open()){
@@ -24,17 +50,21 @@ void compareCSVfiles(TString path,TString newF, TString refF){
   }
 
   std::string line;
-  std::string refline;
   int run=0;
   int ls=0;
+  int bx=0;
+  float LumiLS = 0.;
+  float LumiBX = 0.;
+  float maxLumiLS=0.;
+  float maxLumiBX=0;
+
+  std::string refline;
   int refrun=0;
   int refls=0;
-  int bx=0;
   int refbx=0;
-  float Lumi = 0.;
-  float refLumi = 0.;
-  float maxLumi=0.;
-  int counter=0;
+  float refLumiLS = 0.;
+  float refLumiBX = 0.;
+
   while (std::getline(newfile,line)){
     std::stringstream iss(line);
     std::string token;
@@ -49,12 +79,11 @@ void compareCSVfiles(TString path,TString newF, TString refF){
 
     std::getline(iss,token, ',');
     std::stringstream lumiiss(token);
-    lumiiss>>Lumi;
+    lumiiss>>LumiLS;
 
-    //cout<<newF<<" "<<ls<<" "<<Lumi<<endl;
-    LumiNew.SetPoint(LumiNew.GetN(),LumiNew.GetN(),Lumi);
 
-    //read the   reference
+    
+    ///////////// read the   reference
     std::getline(reffile,refline);
     std::stringstream refiss(refline);
     std::string reftoken;
@@ -69,36 +98,75 @@ void compareCSVfiles(TString path,TString newF, TString refF){
 
     std::getline(refiss,reftoken, ',');
     std::stringstream reflumiiss(reftoken);
-    reflumiiss>>refLumi;
+    reflumiiss>>refLumiLS;
 
-    //cout<<refF<<" "<<refls<<" "<<refLumi<<endl;
-    LumiRef.SetPoint(LumiRef.GetN(),LumiRef.GetN(),refLumi);
     
-    if(maxLumi<Lumi) maxLumi = Lumi;
-    if(maxLumi<refLumi) maxLumi = refLumi;
     
-    //fill the ratio
+    
     if(run==refrun && ls==refls){
-      if(refLumi>0)
-	LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),Lumi/refLumi);
-      else if(Lumi==0.)
-	LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),1);
-      else LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),-1);
-    }
+      //////////Fill per LS plots
+      LumiNew.SetPoint(LumiNew.GetN(),LumiNew.GetN(),LumiLS);
+      LumiRef.SetPoint(LumiRef.GetN(),LumiRef.GetN(),refLumiLS);
+      
+      if(refLumiLS!=0.)   LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),LumiLS/refLumiLS);
+      else if(LumiLS==0.) LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),1);
+      else                LumiRatio.SetPoint(LumiRatio.GetN(),LumiRatio.GetN(),-0.5);
+      
+      if(maxLumiLS<LumiLS) maxLumiLS = LumiLS;
+      if(maxLumiLS<refLumiLS) maxLumiLS = refLumiLS;
 
 
-    //per bx comparisons
-    if(plotbx){
-      for(int b=1;b<=3564;b++){
+      //////////////////////////////////
+      /// Read per bx lumi
+      
+      //read the Afterglow factors from CONDDB payload
+      float SF[NBX];
+      readPayload_csv(inputPath,ls,SF);
+      float refLumiBX_corr=0.;
+      float refLumiLS_corr=0.;
+	
+      for(int b=1;b<=NBX;b++){
 	std::getline(iss,token, ',');
 	std::stringstream biss(token);
-	biss>>Lumi;
+	biss>>LumiBX;
 	
 	std::getline(refiss,reftoken, ',');
 	std::stringstream refbiss(reftoken);
-	refbiss>>refLumi;
+	refbiss>>refLumiBX;
+
 	
+	//apply Payload correction factor
+	refLumiBX_corr = refLumiBX * SF[b-1];
+	refLumiLS_corr += refLumiBX_corr;
+	
+	//per bx comparisons only for selected LS
+	if(ls==plotbx){
+	    LumiNewBX.SetPoint(LumiNewBX.GetN(),b,LumiBX);
+	    LumiRefBX.SetPoint(LumiRefBX.GetN(),b,refLumiBX);
+
+	    if(refLumiBX!=0.)       LumiRatioBX.SetPoint(LumiRatioBX.GetN(),b,LumiBX/refLumiBX);
+	    else if(refLumiBX==0.)  LumiRatioBX.SetPoint(LumiRatioBX.GetN(),b,1);
+	    else                    LumiRatioBX.SetPoint(LumiRatioBX.GetN(),b,-0.5);
+	    
+	    if(LumiBX>maxLumiBX) maxLumiBX=LumiBX;
+	    if(refLumiBX>maxLumiBX) maxLumiBX=refLumiBX;
+
+
+	    LumiRefBXCorr.SetPoint(LumiRefBXCorr.GetN(),b,refLumiBX_corr);	    	    
+	    if(refLumiBX_corr!=0.) LumiRatioBXCorr.SetPoint(LumiRatioBXCorr.GetN(),b,LumiBX/refLumiBX_corr);
+	    else if(refLumiBX==0.) LumiRatioBXCorr.SetPoint(LumiRatioBXCorr.GetN(),b,1);
+	    else                   LumiRatioBXCorr.SetPoint(LumiRatioBXCorr.GetN(),b,-0.5);
+
+	}
       }
+
+
+      
+      LumiRefCorr.SetPoint(LumiRefCorr.GetN(),LumiRefCorr.GetN(),refLumiLS_corr);
+      if(refLumiLS_corr!=0.)	LumiRatioCorr.SetPoint(LumiRatioCorr.GetN(),LumiRatioCorr.GetN(),LumiLS/refLumiLS_corr);
+      else if(LumiLS==0.) 	LumiRatioCorr.SetPoint(LumiRatioCorr.GetN(),LumiRatioCorr.GetN(),1);
+      else               	LumiRatioCorr.SetPoint(LumiRatioCorr.GetN(),LumiRatioCorr.GetN(),-0.5);
+      
     }
 
   }
@@ -106,41 +174,117 @@ void compareCSVfiles(TString path,TString newF, TString refF){
   newfile.close();
   
 
-
-  gStyle->SetOptStat(0);
-
   TCanvas C;
-
-  C.Clear();
-  LumiNew.GetYaxis()->SetRangeUser(-0.1*maxLumi,1.1*maxLumi);
-  LumiNew.SetMarkerStyle(3);
-  LumiNew.SetMarkerSize(0.2);
-  LumiNew.SetMarkerColor(4);
-  LumiNew.GetXaxis()->SetTitle("lumi section");
-  LumiNew.GetYaxis()->SetTitle("PCC");
-  LumiNew.Draw("ap");
-
-  LumiRef.SetMarkerStyle(3);
-  LumiRef.SetMarkerSize(0.2);
-  LumiRef.SetMarkerColor(2);
-  LumiRef.Draw("psame");
-  
   TLatex text;
   text.SetTextSize(0.025);
+
+  ///per LS
+  C.Clear();
+  LumiNew.GetYaxis()->SetRangeUser(-0.1*maxLumiLS,1.1*maxLumiLS);
+  LumiNew.SetMarkerStyle(8);
+  LumiNew.SetMarkerSize(0.5);
+  LumiNew.SetMarkerColor(4);
+  LumiNew.GetXaxis()->SetTitle("lumi section");
+  LumiNew.GetYaxis()->SetTitle(TString("Run ")+refrun+"   PCC");
+  LumiNew.Draw("apl");
+
+  LumiRef.SetMarkerStyle(8);
+  LumiRef.SetMarkerSize(0.4);
+  LumiRef.SetMarkerColor(2);
+  LumiRef.Draw("plsame");
+  
   text.SetTextColor(4);
   text.DrawLatexNDC(0.05,0.97,newF.Data());
   text.SetTextColor(2);
   text.DrawLatexNDC(0.05,0.94,refF.Data());
-  C.Print(path+"/compareCSVfiles.png");
+  C.Print(path+"/compareCSVfiles_LS.png");
   
   C.Clear();
-  LumiRatio.GetYaxis()->SetRangeUser(-0.01,2);
+  LumiRatio.GetYaxis()->SetRangeUser(-0.51,2);
   LumiRatio.GetXaxis()->SetTitle("lumi section");
-  LumiRatio.GetYaxis()->SetTitle("ratio");
+  LumiRatio.GetYaxis()->SetTitle(TString("Run ")+refrun+"   PCC ratio");
   LumiRatio.SetMarkerStyle(8);
-  LumiRatio.SetMarkerSize(0.5);
-  LumiRatio.Draw("ap");
-  C.Print(path+"/compareCSVfiles_ratio.png");
+  LumiRatio.SetMarkerSize(0.4);
+  LumiRatio.SetMarkerColor(1);
+  LumiRatio.Draw("alp");
+  C.Print(path+"/compareCSVfiles_LS_ratio.png");
 
+  
+  ////per bcid for one LS
+  C.Clear();
+  LumiNewBX.SetTitle(TString("PCC for LS = ") + plotbx);
+  LumiNewBX.GetYaxis()->SetRangeUser(-0.1*maxLumiBX,1.1*maxLumiBX);
+  LumiNewBX.GetXaxis()->SetTitle("bx");
+  LumiNewBX.GetYaxis()->SetTitle(TString("Run ")+refrun+"   PCC");
+  LumiNewBX.SetMarkerStyle(8);
+  LumiNewBX.SetMarkerSize(0.5);
+  LumiNewBX.SetMarkerColor(4);
+  LumiNewBX.Draw("ap");
+  LumiRefBX.SetMarkerStyle(8);
+  LumiRefBX.SetMarkerSize(0.4);
+  LumiRefBX.SetMarkerColor(2);
+  LumiRefBX.Draw("psame");
+  C.Print(path+"/compareCSVfiles_BX.png");
+ 
+  
+  C.Clear();
+  LumiRatioBX.SetTitle(TString("PCC ratio  for LS = ") + plotbx);
+  LumiRatioBX.GetYaxis()->SetRangeUser(-0.5,2);
+  LumiRatioBX.GetXaxis()->SetTitle("bx");
+  LumiRatioBX.GetYaxis()->SetTitle(TString("Run ")+refrun+"   PCC ratio");
+  LumiRatioBX.SetMarkerStyle(8);
+  LumiRatioBX.SetMarkerSize(0.4);
+  LumiRatioBX.SetMarkerColor(1);
+  LumiRatioBX.Draw("alp");
+  C.Print(path+"/compareCSVfiles_BX_ratio.png");
+
+
+
+  //////////////////////////////////////////////
+  ////corrected per LS
+  C.Clear();
+  LumiNew.Draw("ap");
+  LumiRefCorr.SetMarkerStyle(8);
+  LumiRefCorr.SetMarkerSize(0.4);
+  LumiRefCorr.SetMarkerColor(2);
+  LumiRefCorr.Draw("psame");
+  text.SetTextColor(4);
+  text.DrawLatexNDC(0.05,0.97,newF.Data());
+  text.SetTextColor(2);
+  text.DrawLatexNDC(0.05,0.94,refF.Data());
+  C.Print(path+"/compareCSVfiles_LS_corr.png");
+  
+  C.Clear();
+  LumiRatioCorr.GetYaxis()->SetRangeUser(-0.5,2);
+  LumiRatioCorr.GetXaxis()->SetTitle("lumi section");
+  LumiRatioCorr.GetYaxis()->SetTitle(TString("Run ")+refrun+"   PCC ratio");
+  LumiRatioCorr.SetMarkerStyle(8);
+  LumiRatioCorr.SetMarkerSize(0.4);
+  LumiRatioCorr.SetMarkerColor(1);
+  LumiRatioCorr.Draw("alp");
+  C.Print(path+"/compareCSVfiles_LS_ratio_corr.png");
+  
+
+  //per bcid
+  C.Clear();
+  LumiNewBX.Draw("ap");
+  LumiRefBXCorr.SetMarkerStyle(8);
+  LumiRefBXCorr.SetMarkerSize(0.4);
+  LumiRefBXCorr.SetMarkerColor(2);
+  LumiRefBXCorr.Draw("psame");
+  C.Print(path+"/compareCSVfiles_BX_corr.png");
+ 
+  
+  C.Clear();
+  LumiRatioBXCorr.SetTitle(TString("PCC ratio  for LS = ") + plotbx);
+  LumiRatioBXCorr.GetYaxis()->SetRangeUser(-0.5,2);
+  LumiRatioBXCorr.GetXaxis()->SetTitle("bx");
+  LumiRatioBXCorr.GetYaxis()->SetTitle(TString("Run ")+refrun+"   PCC ratio");
+  LumiRatioBXCorr.SetMarkerStyle(8);
+  LumiRatioBXCorr.SetMarkerSize(0.4);
+  LumiRatioBXCorr.SetMarkerColor(1);
+  LumiRatioBXCorr.Draw("alp");
+  C.Print(path+"/compareCSVfiles_BX_ratio_corr.png");
+  
   gROOT->ProcessLine(".q");
 }
