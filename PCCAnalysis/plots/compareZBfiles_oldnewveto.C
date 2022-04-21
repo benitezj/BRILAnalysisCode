@@ -9,7 +9,7 @@ void compareZBfiles_oldnewveto() {
 
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
   
-  std::vector<int> run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
+  //std::vector<int> run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
 
   //std::vector<int> run_number = {317080, 317087, 317088, 317089, 317170, 317182, 317212, 317213, 317239, 317279,317291, 317292, 317295, 317296, 317297, 317319, 317320,317338, 317339, 317340, 317382, 317383, 317391, 317392, 317434, 317435, 317438, 317475, 317478, 317479, 317480, 317481, 317482, 317484, 317488, 317509, 317510, 317511, 317512, 317527, 317580, 317591, 317626, 317640, 317641, 317648,317649, 317650, 317661, 317663, 317683, 317696, 318070, 318622, 318653, 318661, 318662, 318663, 318667, 318669, 318670, 318675, 318712,318714, 318733, 318734, 318785,318816, 318817, 318819, 318820, 318828, 318834, 318836, 318837, 318872, 318874, 318876, 318877, 318939, 318944, 318945, 318953, 318980, 318981, 318982, 318983, 318984, 318992, 319006, 319011, 319015, 319016, 319018, 319019, 319077, 319097, 319098, 319099, 319100, 319101, 319103, 319104, 319124, 319125, 319159, 319160, 319173, 319174, 319175, 319176, 319177, 319190, 319222, 319223, 319254, 319255, 319256, 319260, 319262, 319263, 319264, 319265, 319266, 319267, 319268, 319270, 319273, 319274, 319300, 319310, 319311};
 
@@ -19,21 +19,22 @@ void compareZBfiles_oldnewveto() {
 
   //std::vector<int> run_number= {321710, 321712, 321730, 321731, 321732, 321735, 321755, 321758, 321759, 321760, 321773, 321774, 321775, 321776, 321777, 321778, 321780, 321781, 321794, 321796, 321813, 321815, 321817, 321818, 321819, 321820, 321831, 321832, 321833, 321834, 321879, 321880, 321887, 321908, 321909, 321917, 321919, 321933, 321949, 321960, 321961, 321973, 321975, 321988, 321990, 322013, 322014, 322022, 322040, 322049, 322057, 322068, 322079, 322088, 322106, 322113, 322118, 322165, 322167, 322179, 322201, 322204, 322222, 322252, 322317, 322319, 322322, 322324, 322332, 322348, 322355, 322356, 322381, 322407, 322430, 322431, 322480, 322483, 322484, 322485, 322487, 322492, 322510, 322599, 322602, 322603, 322605, 322616, 322617, 322625, 322633, 322958, 322959, 322961, 322963, 322964}; 
 
-  //std::vector<int> run_number={323363, 323364, 323365, 323367, 323368, 323369, 323370, 323371, 323373, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323396, 323397, 323398, 323399, 323414, 323415, 323416, 323417, 323418, 323419, 323420, 323421, 323422, 323423, 323470, 323471, 323472, 323473, 323474, 323475, 323487, 323488, 323492, 323493, 323495, 323524, 323525, 323526, 323693, 323696, 323698, 323699, 323700, 323702, 323725, 323726, 323727, 323755, 323775, 323778, 323790, 323794, 323841, 323857, 323940, 323954, 323976, 323978, 323980, 323983, 323997, 324021, 324022, 324077, 324078, 324201, 324202, 324205, 324206, 324207, 324209, 324237, 324245, 324293, 324315, 324318, 324420};
+  //std::vector<int> run_number={323363, 323364, 323365, 323367, 323368, //323369, 
+  //323370, 323371, 323373, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323396, 323397, 323398, 323399, 323414, 323415, 323416, 323417, 323418, 323419, 323420, 323421, 323422, 323423, 323470, 323471, 323472, 323473, 323474, 323475, 323487, 323488, 323492, 323493, 323495, 323524, 323525, 323526, 323693, 323696, 323698, 323699, 323700, 323702, 323725, 323726, 323727, 323755, 323775, 323778, 323790, 323794, 323841, 323857, 323940, 323954, 323976, 323978, 323980, 323983, 323997, 324021, 324022, 324077, 324078, 324201, 324202, 324205, 324206, 324207, 324209, 324237, 324245, 324293, 324315, 324318, 324420};
 
-  //std::vector<int> run_number={324564, 324571, 324612, 324729, 324747, 324764, 324765, 324769, 324772, 324785, 324791, 324835, 324840, 324841, 324846, 324878, 324897, 324970, 324980, 324997, 324998, 324999, 325000, 325001, 325022, 325057, 325097, 325098, 325099, 325100, 325101, 325110, 325111, 325113, 325114, 325117, 325159, 325168, 325169, 325170, 325172, 325175};
+  std::vector<int> run_number={324564, 324571, 324612, 324729, 324747, 324764, 324765, 324769, 324772, 324785, 324791, 324835, 324840, 324841, 324846, 324878, 324897, 324970, 324980, 324997, 324998, 324999, 325000, 325001, 325022, 325057, 325097, 325098, 325099, 325100, 325101, 325110, 325111, 325113, 325114, 325117, 325159, 325168, 325169, 325170, 325172, 325175};
 
   //std::vector<int> run_number = {316186};
-  //std::cout<< run_number.size()<<std::endl;
+  std::cout<< run_number.size()<<std::endl;
   
   TH1F *LumiperLS;
-  LumiperLS=new TH1F("h", "histogram_per_ls_oldveto", 59708, 0.0, 59708);
+  LumiperLS=new TH1F("h", "PCC_per_ls_oldveto", 59708, 0.0, 59708);
   
   TGraph *LumiLSratio;
   LumiLSratio=new TGraph();
   
   TH1F *LumiperLS1;
-  LumiperLS1=new TH1F("h1", "histogram_per_ls_newveto", 59708, 0.0, 59708); 
+  LumiperLS1=new TH1F("h1", "PCC_per_ls_newveto", 59708, 0.0, 59708); 
   
   int LS=0;
   int previousrunlumisec_count=0;
@@ -41,9 +42,16 @@ void compareZBfiles_oldnewveto() {
   int LS1=0;
   int previousrunlumisec_count1=0;
   
-  std::map<int, float> cluster_count;  
+  std::map<int, float> cluster_count; 
+ 
   for (unsigned int j=0;j<run_number.size();j++){
-    TString Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018A";
+    //TString Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018A";
+    //TString Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B";
+    //TString Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018C";
+    //TString Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018D";
+    TString Path ="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_Dec21_LateRunD/Run2018D";
+    //TString Path ="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018D_mergeLateRunD/";
+
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
     //std::cout<< run_number.at(j)<<std::endl;  
     
@@ -53,7 +61,14 @@ void compareZBfiles_oldnewveto() {
       return;
     }    
     
-    TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
+    //TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
+    //TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018B";
+    //TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018C";
+    //TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D1";
+    //TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D2";
+    //TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D3";
+    TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D4";
+
     TString infile1=Path1+"/"+run_number.at(j)+".csv";
     //std::cout<< run_number.at(j)<<std::endl;                                                                                               
     ifstream myfile1 (infile1.Data());
@@ -89,8 +104,11 @@ void compareZBfiles_oldnewveto() {
       //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;   
       
       LumiperLS->Fill(LS, LumiLS);
-      std::cout<<"old veto "<<run<< "  "<<LS<<"  "<<LumiLS<<std::endl;
+      //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       
+      //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
+
+
     }
     
     previousrunlumisec_count+=lumisec_count; 
@@ -121,35 +139,59 @@ void compareZBfiles_oldnewveto() {
       lumiiss1>>LumiLS1;
       
       LumiperLS1->Fill(LS1, LumiLS1);
-      std::cout<<"newveto "<<run1<< "  "<<LS1<<"  "<<LumiLS1<<std::endl;
+      //std::cout<<"newveto "<<run1<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
       
       if((run==run1) && (ls==ls1)){
-	if (LumiLS>=2200000 && LumiLS1>=1900000){
+	//if (LumiLS>=2200000 && LumiLS1>=1900000){
+	//if (LumiLS>=3000000 && LumiLS1>=4000000){
+	//if (LumiLS>=1000000 && LumiLS1>=1000000){
+	//if (LumiLS>=2000000 && LumiLS1>=2000000){
+	//if (LumiLS>=3000000 && LumiLS1>=2000000){
+	//if (LumiLS>=2000000 && LumiLS1>=2000000){
+	//if (LumiLS>=1000000 && LumiLS1>=3000000){ 
 	  if(LumiLS!=0){
 	    LumiLSratio->SetPoint(LumiLSratio->GetN(), ls, LumiLS1/LumiLS);
-	    std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;
+	    //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;
 	  }
-	}
+	  //}
       }
+      //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
     }
+
     
     previousrunlumisec_count1+=lumisec_count1;    
     myfile1.close();
     
+    
   }
-  
+
+  LumiperLS->GetXaxis()->SetTitle("Lumi section");
+  LumiperLS->GetYaxis()->SetTitle("PCC");  
   LumiperLS->Draw("histp");
-  C->Print(Path1+"Lumiperls_oldveto"+".png");
+  C->Print(Path1+"Lumiperls_oldveto_Run2018A"+".root");
+
+  LumiperLS1->GetXaxis()->SetTitle("Lumi section");
+  LumiperLS1->GetYaxis()->SetTitle("PCC");
   LumiperLS1->Draw("histp");
-  C->Print(Path1+"Lumiperls_newveto"+".png");
+  C->Print(Path1+"Lumiperls_newveto_Run2018A"+".root");
+
   LumiLSratio ->SetTitle("Run2018A (315252-316995)");
-  //LumiLSratio ->SetTitle("run number 316186");
-  LumiLSratio ->GetXaxis()->SetTitle("Lumi section");                                                                                 
-  LumiLSratio ->GetYaxis()->SetTitle("Lumiratio");
-  LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);
-  //LumiLSratio ->GetYaxis()->SetRangeUser(0.6, 0.8);
+  //LumiLSratio->SetTitle("Run2018B (317080-319311)");
+  //LumiLSratio->SetTitle("Run2018C (319337-320065)");
+  //LumiLSratio->SetTitle("Run2018D (320500-321665)");
+  //LumiLSratio->SetTitle("Run2018D (321710-322964)");
+  //LumiLSratio->SetTitle("Run2018D (323363-324420)");
+  //LumiLSratio->SetTitle("Run2018D (324564-325175)");
+  LumiLSratio->GetXaxis()->SetTitle("Lumi section");                                                                                 
+  LumiLSratio->GetYaxis()->SetTitle("Lumiratio");
+  //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);
+  //LumiLSratio ->GetYaxis()->SetRangeUser(0.75, 0.95);
+  //LumiLSratio ->GetYaxis()->SetRangeUser(1.5, 1.6);
+  //LumiLSratio ->GetYaxis()->SetRangeUser(1, 1.15);
+  //LumiLSratio ->GetYaxis()->SetRangeUser(0.8, 0.9);
+  //LumiLSratio ->GetYaxis()->SetRangeUser(2.05, 2.2);
   LumiLSratio ->Draw("AP"); 
-  C->Print(Path1+"Lumiratio"+".png");
+  C->Print(Path1+"Lumiratio_Run2018A"+".png");
      
 }
   
