@@ -14,13 +14,13 @@ void compareCSVfiles_express() {
   //std::cout<< run_number.size()<<std::endl;
   
   TH1F *LumiperLS;
-  LumiperLS=new TH1F("h", "histogram_per_ls", 59708, 0.0, 59708);
+  LumiperLS=new TH1F("h", "histogram_per_ls_oldveto", 59708, 0.0, 59708);
   
   TGraph *LumiLSratio;
   LumiLSratio=new TGraph();
   
   TH1F *LumiperLS1;
-  LumiperLS1=new TH1F("h1", "histogram_per_ls1", 59708, 0.0, 59708); 
+  LumiperLS1=new TH1F("h1", "histogram_per_ls_newveto", 59708, 0.0, 59708); 
   
   int LS=0;
   int previousrunlumisec_count=0;
@@ -43,7 +43,7 @@ void compareCSVfiles_express() {
     
     TString Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
     TString infile1=Path1+"/"+run_number.at(j)+".csv";
-    //std::cout<< run_number1.at(j)<<std::endl;                                                                                               
+    //std::cout<< run_number.at(j)<<std::endl;                                                                                               
     ifstream myfile1 (infile1.Data());
     if (!myfile1.is_open()){
       cout << "Unable to open old file: "<<infile1.Data()<<endl;
