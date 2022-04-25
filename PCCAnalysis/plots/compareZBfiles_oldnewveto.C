@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='G') {
+void compareZBfiles_oldnewveto(char run_period='D') {
   
   TCanvas*C = new TCanvas("Luminosity ratio (new old veto)","");
   C->cd();
