@@ -8,7 +8,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   C->cd();
 
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
-  
+  TString Path, Path2; 
 
   std::vector<int> run_number;
   if(run_period=='A'){
@@ -28,6 +28,8 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     run_number = {319337, 319347, 319348, 319349, 319449, 319450, 319452, 319456, 319459, 319460, 319462, 319463, 319464, 319466, 319467, 319468, 319469, 319470, 319471, 319472, 319486, 319488, 319503, 319506, 319524, 319525, 319526, 319528, 319579, 319606, 319625, 319639, 319656, 319657, 319658, 319659, 319678, 319687, 319697, 319698, 319756, 319840, 319841, 319847, 319848, 319849, 319851, 319852, 319853, 319854, 319908, 319909, 319910, 319912, 319913, 319914, 319915, 319928, 319941, 319942, 319950, 319991, 319992, 319993, 320002, 320003, 320006, 320007, 320008, 320009, 320010, 320011, 320012, 320023, 320024, 320025, 320026, 320038, 320039, 320040, 320058, 320059, 320060, 320061, 320062, 320063, 320064, 320065};
   }
   
+  //D1=D, D2=E, D3=F,D4=G
+
   if(run_period=='D'){
     run_number= {320500, 320569, 320570, 320571, 320612, 320617, 320654, 320673, 320674, 320688, 320712, 320757, 320804, 320807, 320809, 320821, 320822, 320823, 320824, 320838, 320840, 320841, 320853, 320854, 320855, 320856, 320857, 320858, 320859, 320887, 320888, 320917, 320920, 320933, 320934, 320936, 320941, 320980, 320995, 320996, 321004, 321005, 321006, 321007, 321009, 321010, 321011, 321012, 321051, 321055, 321067, 321068, 321069, 321078, 321119, 321121, 321122, 321123, 321124, 321126, 321134, 321138, 321140, 321149, 321162, 321164, 321165, 321166, 321167, 321177, 321178, 321218, 321219, 321221, 321230, 321231, 321232, 321233, 321261, 321262, 321283, 321294, 321295, 321296, 321305, 321310, 321311, 321312, 321313, 321383, 321386, 321388, 321393, 321396, 321397, 321414, 321415, 321431, 321432, 321433, 321434, 321436, 321457, 321461, 321475, 321528, 321536, 321586, 321607, 321636, 321640, 321650, 321652, 321653, 321665};
     
@@ -46,7 +48,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     run_number={324564, 324571, 324612, 324729, 324747, 324764, 324765, 324769, 324772, 324785, 324791, 324835, 324840, 324841, 324846, 324878, 324897, 324970, 324980, 324997, 324998, 324999, 325000, 325001, 325022, 325057, 325097, 325098, 325099, 325100, 325101, 325110, 325111, 325113, 325114, 325117, 325159, 325168, 325169, 325170, 325172, 325175};  
   }
   
-  //D1=D, D2=E, D3=F,D4=G
+  
   //std::vector<int> run_number = {316186};
   std::cout<< run_number.size()<<std::endl;
   
@@ -61,16 +63,13 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   
   int LS=0;
   int previousrunlumisec_count=0;
-  
   int LS1=0;
   int previousrunlumisec_count1=0;
   
   std::map<int, float> cluster_count; 
-  std::map<int, float> cluster_count1;
- 
 
-  TString Path, Path2;
   for (unsigned int j=0;j<run_number.size();j++){
+
     if(run_period=='A'){
        Path = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018A";
     }  
@@ -101,36 +100,6 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     }    
     
     
-    if(run_period=='A'){
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
-    }
-    if(run_period=='B'){
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018B";
-    }
-    if(run_period=='C'){
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018C";
-    } 
-    if(run_period=='D'){
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D1";
-    }
-    if(run_period=='E'){   
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D2";
-    }
-    if(run_period=='F'){
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D3";
-    }
-    if(run_period=='G'){    
-      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D4";
-    }
-
-
-    TString infile1=Path2+"/"+run_number.at(j)+".csv";
-    //std::cout<< run_number.at(j)<<std::endl;                                                                                               
-    ifstream myfile1 (infile1.Data());
-    if (!myfile1.is_open()){
-      cout << "Unable to open old file: "<<infile1.Data()<<endl;
-      return;
-    }
     
     std::string line;
     int run=0;
@@ -165,9 +134,41 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     
     previousrunlumisec_count+=lumisec_count; 
     myfile.close();     
-    
+
+
+    if(run_period=='A'){
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
+    }
+    if(run_period=='B'){
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018B";
+    }
+    if(run_period=='C'){
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018C";
+    } 
+    if(run_period=='D'){
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D1";
+    }
+    if(run_period=='E'){   
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D2";
+    }
+    if(run_period=='F'){
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D3";
+    }
+    if(run_period=='G'){    
+      Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D4";
+    }
+
+
+    TString infile1=Path2+"/"+run_number.at(j)+".csv";
+    //std::cout<< run_number.at(j)<<std::endl;                                                                                               
+    ifstream myfile1 (infile1.Data());
+    if (!myfile1.is_open()){
+      cout << "Unable to open old file: "<<infile1.Data()<<endl;
+      return;
+    }
+
+
     std::string line1;  
-    //int run1=0;
     int ls1=0;
     float LumiLS1=0;
     int lumisec_count1=0;
@@ -181,7 +182,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       
       std::getline(iss1,token1, ',');
       std::stringstream lsiss1(token1);
-      lsiss1>>ls;
+      lsiss1>>ls1;
       
       lumisec_count1++;
       LS1 = previousrunlumisec_count1 + ls1;
@@ -189,7 +190,6 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       std::getline(iss1,token1, ',');
       std::stringstream lumiiss1(token1);
       lumiiss1>>LumiLS1;
-      cluster_count1[ls1]=LumiLS1;
       
       LumiperLS1->Fill(LS1, LumiLS1);
       //std::cout<<"newveto "<<run1<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
@@ -199,12 +199,10 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     previousrunlumisec_count1+=lumisec_count1;    
     myfile1.close();
   
-    //if(ls==ls1){
-      //if((run==run1) && (lumisec_count==lumisec_count1)){
 	if (run_period=='A' && LumiLS>=2200000 && LumiLS1>=1900000){
 	  if(cluster_count[ls]!=0){
-	    LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count1[ls1]/cluster_count[ls]);
-            std::cout<< "ratio "<<LS1<<"  "<< cluster_count1[ls1]/cluster_count[ls] <<std::endl;                                             
+	    LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, LumiLS1/cluster_count[ls]);
+            std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/cluster_count[ls] <<std::endl;                                             
 	  }
 	}
 	if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
