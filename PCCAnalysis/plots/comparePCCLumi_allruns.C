@@ -1,5 +1,5 @@
 #include "globals.h"
-void comparePCCLumi_allruns(int option=1, char run_period='G'){
+void comparePCCLumi_allruns(int option=2, char run_period='G'){
   
   TString Path="/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto/";
   
@@ -188,7 +188,7 @@ void comparePCCLumi_allruns(int option=1, char run_period='G'){
     //HCSV->GetYaxis()->SetRangeUser(0,4000000);
     //HCSV->SetTitle("Run2018A (315255 - 316995)");
     if(run_period=='A'){
-      //HCSV->SetTitle("run number 315690");
+      HCSV->SetTitle("run number 315690");
     }
     if(run_period=='B'){
       HCSV->SetTitle("run number 317511");
