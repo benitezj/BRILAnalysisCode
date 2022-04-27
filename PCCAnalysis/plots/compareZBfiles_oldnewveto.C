@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='B') {
+void compareZBfiles_oldnewveto(char run_period='G') {
   
   TCanvas*C = new TCanvas("Luminosity ratio (new old veto)","");
   C->cd();
@@ -206,42 +206,42 @@ void compareZBfiles_oldnewveto(char run_period='B') {
         
       if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
 	if(LumiLS!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='C' && LumiLS>=1000000 && LumiLS1>=1000000){
 	if(LumiLS!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
 	if(LumiLS!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
 	if(LumiLS!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
 	if(LumiLS!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
 	if(LumiLS!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
@@ -352,22 +352,22 @@ void compareZBfiles_oldnewveto(char run_period='B') {
   }
   
   if(run_period=='B'){
-    C->Print(Path1+"Lumiratio_Run2018B"+".root");
+    C->Print(Path1+"Lumiratio_Run2018B"+".png");
   }
   if(run_period=='C'){
-    C->Print(Path1+"Lumiratio_Run2018C"+".root");
+    C->Print(Path1+"Lumiratio_Run2018C"+".png");
   }
   if(run_period=='D'){
-    C->Print(Path1+"Lumiratio_Run2018D1"+".root");
+    C->Print(Path1+"Lumiratio_Run2018D1"+".png");
   }
   if(run_period=='E'){
-    C->Print(Path1+"Lumiratio_Run2018D2"+".root");
+    C->Print(Path1+"Lumiratio_Run2018D2"+".png");
   }
   if(run_period=='F'){
-    C->Print(Path1+"Lumiratio_Run2018D3"+".root");
+    C->Print(Path1+"Lumiratio_Run2018D3"+".png");
   }
   if(run_period=='G'){
-    C->Print(Path1+"Lumiratio_Run2018D4"+".root");
+    C->Print(Path1+"Lumiratio_Run2018D4"+".png");
   }
   
  
