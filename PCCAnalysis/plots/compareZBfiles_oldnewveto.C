@@ -124,10 +124,6 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       cluster_count[ls]=LumiLS;
       //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;   
 
-      for(std::map<int,int>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
-	std::cout << "Key: " << it->first << " Value: " << it->second << std::endl;
-      }  
-
     
       LumiperLS->Fill(LS, LumiLS);
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
@@ -137,6 +133,11 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     previousrunlumisec_count+=lumisec_count; 
     myfile.close();     
 
+   
+    for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
+      std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
+    }  
+    
 
     if(run_period=='A'){
       Path2 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
@@ -168,7 +169,6 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       cout << "Unable to open old file: "<<infile1.Data()<<endl;
       return;
     }
-
 
     std::string line1;  
     int ls1=0;
@@ -243,13 +243,11 @@ void compareZBfiles_oldnewveto(char run_period='A') {
 	    //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;
 	  }
 	}
-	//}
     
       //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
   }
     
     
-
   LumiperLS->GetXaxis()->SetTitle("Lumi section");
   LumiperLS->GetYaxis()->SetTitle("PCC");  
   LumiperLS->Draw("histp");
