@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='A') {
+void compareZBfiles_oldnewveto(char run_period='B') {
   
   TCanvas*C = new TCanvas("Luminosity ratio (new old veto)","");
   C->cd();
@@ -205,23 +205,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       }
 
 
-    }
-
-    //previousrunlumisec_count1+=lumisec_count1;    
-    myfile1.close();
-  
-    for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
-      //std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
-    }
-
-
-    //if (run_period=='A' && LumiLS>=2200000 && LumiLS1>=1900000){
-    //if(cluster_count[ls]!=0){
-    //	LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, LumiLS1/cluster_count[ls]);
-    //	std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/cluster_count[ls] <<std::endl;                                             
-    //}
-    //}
-    if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
+ if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
       if(LumiLS!=0){
 	LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
 	//std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;                                                                  
@@ -257,6 +241,16 @@ void compareZBfiles_oldnewveto(char run_period='A') {
 	//std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;
       }
     }
+
+    }
+
+    //previousrunlumisec_count1+=lumisec_count1;    
+    myfile1.close();
+  
+    for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
+      //std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
+    }
+
     
     //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
   }
