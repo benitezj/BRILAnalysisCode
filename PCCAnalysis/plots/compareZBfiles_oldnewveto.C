@@ -203,47 +203,46 @@ void compareZBfiles_oldnewveto(char run_period='B') {
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
-      
-      
+        
       if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
 	if(LumiLS!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
-	  //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;                                                                  
+	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='C' && LumiLS>=1000000 && LumiLS1>=1000000){
 	if(LumiLS!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
-	  //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;                                                                  
+	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
 	if(LumiLS!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
-	  //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;                                                                  
+	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
 	if(LumiLS!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
-	  //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;                                                                  
+	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
 	if(LumiLS!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
-	  //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;                                                                  
+	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
 
       if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
 	if(LumiLS!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS, LumiLS1/LumiLS);
-	  //std::cout<< "ratio "<<LS1<<"  "<< LumiLS1/LumiLS <<std::endl;
+	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
