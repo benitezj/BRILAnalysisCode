@@ -121,10 +121,8 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       std::getline(iss,token, ',');
       std::stringstream lumiiss(token);
       lumiiss>>LumiLS;
-      cluster_count[ls]=LumiLS;
-      //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;   
-
-    
+      cluster_count[ls]=LumiLS;    // map contain old ls and PCC values
+      //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;       
       LumiperLS->Fill(LS, LumiLS);
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
@@ -133,7 +131,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     previousrunlumisec_count+=lumisec_count; 
     myfile.close();     
 
-   
+    //checking map content
     for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
       std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
     }  
