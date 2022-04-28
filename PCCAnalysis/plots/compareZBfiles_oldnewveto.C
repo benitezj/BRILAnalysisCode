@@ -2,12 +2,12 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='A') {
+void compareZBfiles_oldnewveto(char run_period='B') {
   
   TCanvas*C = new TCanvas("Luminosity (new old veto)");
   C->cd();
   C->SetLogy();
-
+  
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
   TString Path, Path2; 
   
@@ -52,7 +52,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   std::cout<< run_number.size()<<std::endl;
   
   TH1F *LumiperLS;
-  LumiperLS=new TH1F("h", "PCC_per_ls_oldveto", 59708, 0.0, 59708);
+  LumiperLS=new TH1F("h", "PCC_per_ls_old_newveto", 59708, 0.0, 59708);
   
   TGraph *LumiLSratio;
   LumiLSratio=new TGraph();
@@ -199,49 +199,49 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       //std::cout<<"newveto "<<run<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
       
       if (run_period=='A' && LumiLS>=2200000 && LumiLS1>=1900000){
-	if(cluster_count[ls]!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
-        
+      
       if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
-	if(LumiLS!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
-
+      
       if (run_period=='C' && LumiLS>=1000000 && LumiLS1>=1000000){
-	if(LumiLS!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
-	if(LumiLS!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
-
+      
       if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
-	if(LumiLS!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
-
+      
       if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
-	if(LumiLS!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
-
+      
       if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
-	if(LumiLS!=0){
+	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
@@ -253,126 +253,123 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     myfile1.close();
     
     //for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
-      //std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
+    //std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
     //}
-        
+    
     //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
   }
-  
-  
+    
   LumiperLS->GetXaxis()->SetTitle("Lumi section");
   LumiperLS->GetYaxis()->SetTitle("PCC");
+  LumiperLS->GetYaxis()->SetRangeUser(1, 100000000);
   LumiperLS->SetMarkerStyle(8);
   LumiperLS->SetMarkerColor(2);  
   LumiperLS->SetMarkerSize(0.4);   
   LumiperLS->Draw("histp");
-
+  
   if(run_period=='A'){
-  LumiperLS->GetYaxis()->SetRangeUser(1, 100000000);
-  C->Print(Path1+"Lumiperls_oldveto_Run2018A"+".png");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018A"+".png");
   }
   if(run_period=='B'){
-    C->Print(Path1+"Lumiperls_oldveto_Run2018B"+".root");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018B"+".png");
   }
   if(run_period=='C'){
-    C->Print(Path1+"Lumiperls_oldveto_Run2018C"+".root");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018C"+".png");
   }
   if(run_period=='D'){
-    C->Print(Path1+"Lumiperls_oldveto_Run2018D1"+".root");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018D1"+".png");
   }
   if(run_period=='E'){
-    C->Print(Path1+"Lumiperls_oldveto_Run2018D2"+".root");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018D2"+".png");
   }
   if(run_period=='F'){
-    C->Print(Path1+"Lumiperls_oldveto_Run2018D3"+".root");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018D3"+".png");
   }
   if(run_period=='G'){
-    C->Print(Path1+"Lumiperls_oldveto_Run2018D4"+".root");
+    C->Print(Path1+"Lumiperls_oldveto_Run2018D4"+".png");
   }
-    
+  
   LumiperLS1->GetXaxis()->SetTitle("Lumi section");
   LumiperLS1->GetYaxis()->SetTitle("PCC");
   LumiperLS1->SetMarkerStyle(8);
   LumiperLS1->SetMarkerColor(1);
   LumiperLS1->SetMarkerSize(0.4);
   LumiperLS1->Draw("histp");
-  //LumiperLS1->Draw("histpsame");
+  LumiperLS1->GetYaxis()->SetRangeUser(1, 100000000);
   
-  if(run_period=='A'){
-    LumiperLS1->GetYaxis()->SetRangeUser(1, 100000000);
+  if(run_period=='A'){    
     C->Print(Path1+"Lumiperls_newveto_Run2018A"+".png");
   }
   if(run_period=='B'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018B"+".root");
+    C->Print(Path1+"Lumiperls_newveto_Run2018B"+".png");
   }
   if(run_period=='C'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018C"+".root");
+    C->Print(Path1+"Lumiperls_newveto_Run2018C"+".png");
   }
   if(run_period=='D'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D1"+".root");
+    C->Print(Path1+"Lumiperls_newveto_Run2018D1"+".png");
   }
   if(run_period=='E'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D2"+".root");
+    C->Print(Path1+"Lumiperls_newveto_Run2018D2"+".png");
   }
   if(run_period=='F'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D3"+".root");
+    C->Print(Path1+"Lumiperls_newveto_Run2018D3"+".png");
   }
   if(run_period=='G'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D4"+".root");
+    C->Print(Path1+"Lumiperls_newveto_Run2018D4"+".png");
   }
   
-
+  
   TCanvas*C1 = new TCanvas("Luminosity new old veto on same canvas");
   C1->cd();
   C1->SetLogy();
-
+  
+  LumiperLS->GetXaxis()->SetTitle("Lumi section");
+  LumiperLS->GetYaxis()->SetTitle("PCC");
+  LumiperLS->GetYaxis()->SetRangeUser(1, 10000000000);
+  LumiperLS->SetMarkerStyle(8);
+  LumiperLS->SetLineColor(2);
+  LumiperLS->SetMarkerColor(2);
+  LumiperLS->SetMarkerSize(0.4);
+  LumiperLS1->GetXaxis()->SetTitle("Lumi section");
+  LumiperLS1->GetYaxis()->SetTitle("PCC");
+  LumiperLS1->GetYaxis()->SetRangeUser(1, 10000000000);
+  LumiperLS1->SetMarkerStyle(8);
+  LumiperLS1->SetLineColor(1);
+  LumiperLS1->SetMarkerColor(1);
+  LumiperLS1->SetMarkerSize(0.4);
+  LumiperLS->Draw("histp");
+  LumiperLS1->Draw("histpsame");
+  
+  auto legend1 = new TLegend(0.75, 0.75, 0.88, 0.88);
+  legend1->AddEntry(LumiperLS1, "New veto", "l");
+  legend1->AddEntry(LumiperLS, "Old veto", "l");
+  legend1->SetFillColor(0);
+  legend1->SetLineColor(0);
+  legend1->SetFillColor(0);
+  legend1->Draw("same");
+  
   if(run_period=='A'){
-    LumiperLS->GetXaxis()->SetTitle("Lumi section");
-    LumiperLS->GetYaxis()->SetTitle("PCC");
-    LumiperLS->GetYaxis()->SetRangeUser(1, 10000000000);
-    LumiperLS->SetMarkerStyle(8);
-    LumiperLS->SetLineColor(2);
-    LumiperLS->SetMarkerColor(2);
-    LumiperLS->SetMarkerSize(0.4);
-    LumiperLS1->GetXaxis()->SetTitle("Lumi section");
-    LumiperLS1->GetYaxis()->SetTitle("PCC");
-    LumiperLS1->GetYaxis()->SetRangeUser(1, 10000000000);
-    LumiperLS1->SetMarkerStyle(8);
-    LumiperLS1->SetLineColor(1);
-    LumiperLS1->SetMarkerColor(1);
-    LumiperLS1->SetMarkerSize(0.4);
-    LumiperLS->Draw("histp");
-    LumiperLS1->Draw("histpsame");
-
-    auto legend1 = new TLegend(0.75, 0.75, 0.88, 0.88);
-    legend1->AddEntry(LumiperLS1, "New veto", "l");
-    legend1->AddEntry(LumiperLS, "Old veto", "l");
-    legend1->SetFillColor(0);
-    legend1->SetLineColor(0);
-    legend1->SetFillColor(0);
-    legend1->Draw("same");
-
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018A"+".png");
   }
   if(run_period=='B'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018B"+".root");
+    C1->Print(Path1+"Lumiperls_oldnewveto_Run2018B"+".png");
   }
   if(run_period=='C'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018C"+".root");
+    C1->Print(Path1+"Lumiperls_oldnewveto_Run2018C"+".png");
   }
   if(run_period=='D'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D1"+".root");
+    C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D1"+".png");
   }
   if(run_period=='E'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D2"+".root");
+    C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D2"+".png");
   }
   if(run_period=='F'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D3"+".root");
+    C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D3"+".png");
   }
   if(run_period=='G'){
-    C->Print(Path1+"Lumiperls_newveto_Run2018D4"+".root");
+    C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D4"+".png");
   }
-
 
   TCanvas*C2 = new TCanvas("Luminosity ratio (new old veto)");
   C2->cd();
