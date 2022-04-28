@@ -106,15 +106,4 @@ void PCC_afterglow(int option=1) {
 
   }
 
-  gStyle->SetOptStat(0);
- 
-  if(option==2){
-    H_new_colliding_bx->GetXaxis()->SetTitle("bx");
-    H_new_colliding_bx->GetYaxis()->SetTitle("new/old");
-  //H_new_colliding_bx->GetYaxis()->SetRangeUser(0.8, 1); 
-  H_new_colliding_bx->Divide(H_old_colliding_bx);
-  H_new_colliding_bx->Draw("histp");
-  C->Print("/eos/user/a/asehrawa/BRIL-new/raw_old_new_ratio.png");
-  }
 }
-
