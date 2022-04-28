@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='A') {
+void compareZBfiles_oldnewveto(char run_period='G') {
   
   TCanvas*C = new TCanvas("Luminosity (new old veto)");
   C->cd();
@@ -508,6 +508,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   }
   if(run_period=='G'){
     Lumisectionratio->SetTitle("Run2018D (324564-325175)");
+    Lumisectionratio->GetYaxis()->SetRangeUser(0, 1.1);
     C3->Print(Path1+"Lumisectionratio_Run2018D4"+".png");
   }
 
@@ -567,8 +568,8 @@ void compareZBfiles_oldnewveto(char run_period='A') {
     C4->Print(Path1+"Lumisection_run_oldnewveto_Run2018D3"+".png");
   }
   if(run_period=='G'){
-    //LumiperLS->GetXaxis()->SetRangeUser(0, 25000);
-    //LumiperLS1->GetXaxis()->SetRangeUser(0, 25000);
+    Lumisection_perrun->GetXaxis()->SetRangeUser(0, 60);
+    Lumisection_perrun1->GetXaxis()->SetRangeUser(0, 60);
     C4->Print(Path1+"Lumisection_run_oldnewveto_Run2018D4"+".png");
   }
 
