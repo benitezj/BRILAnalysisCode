@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='B') {
+void compareZBfiles_oldnewveto(char run_period='G') {
   
   TCanvas*C = new TCanvas("Luminosity (new old veto)");
   C->cd();
@@ -52,13 +52,13 @@ void compareZBfiles_oldnewveto(char run_period='B') {
   std::cout<< run_number.size()<<std::endl;
   
   TH1F *LumiperLS;
-  LumiperLS=new TH1F("h", "PCC_per_ls_old_newveto", 59708, 0.0, 59708);
+  LumiperLS=new TH1F("h", "PCC_per_ls_old_newveto", 70000, 0.0, 70000);
   
   TGraph *LumiLSratio;
   LumiLSratio=new TGraph();
   
   TH1F *LumiperLS1;
-  LumiperLS1=new TH1F("h1", "PCC_per_ls_newveto", 59708, 0.0, 59708); 
+  LumiperLS1=new TH1F("h1", "PCC_per_ls_newveto", 70000, 0.0, 70000); 
   
   int LS=0;
   int previousrunlumisec_count=0;
@@ -350,34 +350,47 @@ void compareZBfiles_oldnewveto(char run_period='B') {
   legend1->Draw("same");
   
   if(run_period=='A'){
+    LumiperLS->GetXaxis()->SetRangeUser(0, 70000);
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 70000);
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018A"+".png");
   }
   if(run_period=='B'){
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018B"+".png");
   }
   if(run_period=='C'){
+    LumiperLS->GetXaxis()->SetRangeUser(0, 35000);
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 35000);
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018C"+".png");
   }
   if(run_period=='D'){
+    LumiperLS->GetXaxis()->SetRangeUser(0, 50000);
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 50000);
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D1"+".png");
   }
   if(run_period=='E'){
+    LumiperLS->GetXaxis()->SetRangeUser(0, 45000);
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 45000);
+    
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D2"+".png");
   }
   if(run_period=='F'){
+    LumiperLS->GetXaxis()->SetRangeUser(0, 30000);
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 30000);
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D3"+".png");
   }
   if(run_period=='G'){
+    LumiperLS->GetXaxis()->SetRangeUser(0, 25000);
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 25000);
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D4"+".png");
   }
 
   TCanvas*C2 = new TCanvas("Luminosity ratio (new old veto)");
   C2->cd();
-
+  
   if(run_period=='A'){
     LumiLSratio ->SetTitle("Run2018A (315252-316995)");
     LumiLSratio ->GetYaxis()->SetRangeUser(0.6, 0.8);
- 
+    
   }
   if(run_period=='B'){
     LumiLSratio->SetTitle("Run2018B (317080-319311)");
@@ -402,7 +415,7 @@ void compareZBfiles_oldnewveto(char run_period='B') {
     LumiLSratio->SetTitle("Run2018D (324564-325175)");
     LumiLSratio ->GetYaxis()->SetRangeUser(2.05, 2.2); 
   }
-
+  
   
   LumiLSratio->GetXaxis()->SetTitle("Lumi section");                                                                                 
   LumiLSratio->GetYaxis()->SetTitle("new data/old data");
