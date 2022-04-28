@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='A') {
+void compareZBfiles_oldnewveto(char run_period='G') {
   
   TCanvas*C = new TCanvas("Luminosity (new old veto)");
   C->cd();
@@ -221,42 +221,42 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
-	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='C' && LumiLS>=1000000 && LumiLS1>=1000000){
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
-	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
-	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
-	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
-	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
       if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
-	  std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	}
       }
       
@@ -386,8 +386,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   }
   if(run_period=='E'){
     LumiperLS->GetXaxis()->SetRangeUser(0, 45000);
-    LumiperLS1->GetXaxis()->SetRangeUser(0, 45000);
-    
+    LumiperLS1->GetXaxis()->SetRangeUser(0, 45000);    
     C1->Print(Path1+"Lumiperls_oldnewveto_Run2018D2"+".png");
   }
   if(run_period=='F'){
@@ -472,24 +471,31 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   Lumisectionratio->Draw("AP");
   
   if(run_period=='A'){
+    Lumisectionratio->SetTitle("Run2018A (315252-316995)");
     C3->Print(Path1+"Lumisectionratio_Run2018A"+".png");
   }
   if(run_period=='B'){
+    Lumisectionratio->SetTitle("Run2018B (317080-319311)");
     C3->Print(Path1+"Lumisectionratio_Run2018B"+".png");
   }
   if(run_period=='C'){
+    Lumisectionratio->SetTitle("Run2018C (319337-320065)");
     C3->Print(Path1+"Lumisectionratio_Run2018C"+".png");
   }
   if(run_period=='D'){
+    Lumisectionratio->SetTitle("Run2018D (320500-321665)");
     C3->Print(Path1+"Lumisectionratio_Run2018D1"+".png");
   }
   if(run_period=='E'){
+    Lumisectionratio->SetTitle("Run2018D (321710-322964)");
     C3->Print(Path1+"Lumisectionratio_Run2018D2"+".png");
   }
   if(run_period=='F'){
+    Lumisectionratio->SetTitle("Run2018D (323363-324420)");
     C3->Print(Path1+"Lumisectionratio_Run2018D3"+".png");
   }
   if(run_period=='G'){
+    Lumisectionratio->SetTitle("Run2018D (324564-325175)");
     C3->Print(Path1+"Lumisectionratio_Run2018D4"+".png");
   }
 
