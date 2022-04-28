@@ -23,6 +23,10 @@ void PCC_afterglow(int option=1) {
   TH1F *H_old_colliding_bx;
   H_old_colliding_bx=new TH1F("h_old_colliding_bx", "old veto Raw PCC collding bunches", 3500, 0.0, 3500);
 
+  TGraph *H_old_new_ratio;
+  H_old_new_ratio=new TGraph();
+
+  std::map<int, float> count_bx;
 
   H1 = (TH1F*)f->Get("RawLumiAvg_315690_10_513_563;1");
   H1->SetLineColor(1);
@@ -54,6 +58,7 @@ void PCC_afterglow(int option=1) {
     if (bincontent>=500){
       H_new_colliding_bx->Fill(x_value, bincontent);
       std::cout<<"new "<<x_value<<" "<<bincontent<<std::endl;
+      count_bx[x_value]=bincontent;
       }
   }
   
@@ -64,7 +69,8 @@ void PCC_afterglow(int option=1) {
     bincontent1 = H2->GetBinContent(k);
     if (bincontent1>=500){
       H_old_colliding_bx->Fill(x_value1, bincontent1);
-      std::cout<<"old "<<x_value1<<" "<<bincontent1<<std::endl;      
+      std::cout<<"old "<<x_value1<<" "<<bincontent1<<std::endl;
+      H_old_new_ratio->SetPoint(H_old_new_ratio->GetN(), x_value1, count_bx[x_value1]/bincontent1);      
       //std::cout<<x_value<<"  "<<bincontent<<"  "<<x_value1<<" "<<bincontent1<<std::endl;      
 }
   }
@@ -88,6 +94,16 @@ void PCC_afterglow(int option=1) {
   legend->SetFillColor(0);
   legend->Draw("same");
   C->Print("/eos/user/a/asehrawa/BRIL-new/raw_pcc_old_new.png");
+
+
+  H_old_new_ratio->SetTitle("run number 315690 lumi block 10 (513-563)");
+  H_old_new_ratio->GetXaxis()->SetTitle("bx");
+  H_old_new_ratio->GetYaxis()->SetTitle("new/old");
+
+  H_old_new_ratio->GetYaxis()->SetRangeUser(0.8, 1);
+  H_old_new_ratio->Draw("AP");
+  C->Print("/eos/user/a/asehrawa/BRIL-new/raw_pcc_old_new_ratio.png");
+
   }
 
   gStyle->SetOptStat(0);
