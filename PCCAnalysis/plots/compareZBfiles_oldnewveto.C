@@ -166,8 +166,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
     }
-    Lumisection_perrun->Fill(run, lumisec_count_perrun);
-    std::cout<<run<<"  "<<lumisec_count_perrun<<std::endl;      
+
     //previousrunlumisec_count+=lumisec_count; 
     myfile.close();     
     
@@ -262,11 +261,15 @@ void compareZBfiles_oldnewveto(char run_period='A') {
       }
       
     }
-    Lumisection_perrun1->Fill(run, lumisec_count_perrun1);
-    std::cout<<run<<"  "<<lumisec_count_perrun1<<std::endl;
     
     //previousrunlumisec_count1+=lumisec_count1;    
     myfile1.close();
+
+    Lumisection_perrun->Fill(run, lumisec_count_perrun);
+    std::cout<<run<<"  "<<lumisec_count_perrun<<std::endl;      
+
+    Lumisection_perrun1->Fill(run, lumisec_count_perrun1);
+    std::cout<<run<<"  "<<lumisec_count_perrun1<<std::endl;
     
     Lumisectionratio->SetPoint(Lumisectionratio->GetN(), run, lumisec_count_perrun1/lumisec_count_perrun);
     //std::cout <<run << "  " << lumisec_count_perrun1/lumisec_count_perrun << std::endl; 
@@ -464,6 +467,47 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   
 
 
+
+
+  TCanvas*C3 = new TCanvas("Lumi section ratio (new old veto)");
+  C3->cd();
+
+  Lumisectionratio->GetXaxis()->SetTitle("run number");
+  Lumisectionratio->GetYaxis()->SetTitle("new ls/old ls");
+  Lumisectionratio->SetTitle("Lumi section ratio per run");
+  //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);                                                                                          
+  Lumisectionratio->Draw("AP");
+  
+  if(run_period=='A'){
+    Lumisectionratio->SetTitle("Run2018A (315252-316995)");
+    C3->Print(Path1+"Lumisectionratio_Run2018A"+".png");
+  }
+  if(run_period=='B'){
+    Lumisectionratio->SetTitle("Run2018B (317080-319311)");
+    C3->Print(Path1+"Lumisectionratio_Run2018B"+".png");
+  }
+  if(run_period=='C'){
+    Lumisectionratio->SetTitle("Run2018C (319337-320065)");
+    C3->Print(Path1+"Lumisectionratio_Run2018C"+".png");
+  }
+  if(run_period=='D'){
+    Lumisectionratio->SetTitle("Run2018D (320500-321665)");
+    C3->Print(Path1+"Lumisectionratio_Run2018D1"+".png");
+  }
+  if(run_period=='E'){
+    Lumisectionratio->SetTitle("Run2018D (321710-322964)");
+    C3->Print(Path1+"Lumisectionratio_Run2018D2"+".png");
+  }
+  if(run_period=='F'){
+    Lumisectionratio->SetTitle("Run2018D (323363-324420)");
+    C3->Print(Path1+"Lumisectionratio_Run2018D3"+".png");
+  }
+  if(run_period=='G'){
+    Lumisectionratio->SetTitle("Run2018D (324564-325175)");
+    C3->Print(Path1+"Lumisectionratio_Run2018D4"+".png");
+  }
+
+
   TCanvas*C4 = new TCanvas("Lumisection vs run number new old veto on same canvas");
   C4->cd();
   
@@ -528,50 +572,6 @@ void compareZBfiles_oldnewveto(char run_period='A') {
 
 
 
-
-
-
-
-
-
-
-  TCanvas*C3 = new TCanvas("Lumi section ratio (new old veto)");
-  C3->cd();
-
-  Lumisectionratio->GetXaxis()->SetTitle("run number");
-  Lumisectionratio->GetYaxis()->SetTitle("new ls/old ls");
-  Lumisectionratio->SetTitle("Lumi section ratio per run");
-  //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);                                                                                          
-  Lumisectionratio->Draw("AP");
-  
-  if(run_period=='A'){
-    Lumisectionratio->SetTitle("Run2018A (315252-316995)");
-    C3->Print(Path1+"Lumisectionratio_Run2018A"+".png");
-  }
-  if(run_period=='B'){
-    Lumisectionratio->SetTitle("Run2018B (317080-319311)");
-    C3->Print(Path1+"Lumisectionratio_Run2018B"+".png");
-  }
-  if(run_period=='C'){
-    Lumisectionratio->SetTitle("Run2018C (319337-320065)");
-    C3->Print(Path1+"Lumisectionratio_Run2018C"+".png");
-  }
-  if(run_period=='D'){
-    Lumisectionratio->SetTitle("Run2018D (320500-321665)");
-    C3->Print(Path1+"Lumisectionratio_Run2018D1"+".png");
-  }
-  if(run_period=='E'){
-    Lumisectionratio->SetTitle("Run2018D (321710-322964)");
-    C3->Print(Path1+"Lumisectionratio_Run2018D2"+".png");
-  }
-  if(run_period=='F'){
-    Lumisectionratio->SetTitle("Run2018D (323363-324420)");
-    C3->Print(Path1+"Lumisectionratio_Run2018D3"+".png");
-  }
-  if(run_period=='G'){
-    Lumisectionratio->SetTitle("Run2018D (324564-325175)");
-    C3->Print(Path1+"Lumisectionratio_Run2018D4"+".png");
-  }
 
 
 
