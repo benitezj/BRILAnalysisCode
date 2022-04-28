@@ -60,7 +60,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   LumiperLS1=new TH1F("h1", "PCC_per_ls_newveto", 70000, 0.0, 70000); 
   
   TH1F *Lumisection_perrun;
-  Lumisection_perrun=new TH1F("h_lr", "Lumi sections vs run number", 150, 0, 150);
+  Lumisection_perrun=new TH1F("h_lr", "# of Lumi sections vs run number", 150, 0, 150);
 
   TH1F *Lumisection_perrun1;
   Lumisection_perrun1=new TH1F("h_lr1", "Lumi sections1 vs run number", 150, 0.0, 150);
@@ -473,15 +473,13 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   
 
 
-
-
   TCanvas*C3 = new TCanvas("Lumi section ratio (new old veto)");
   C3->cd();
 
   Lumisectionratio->GetXaxis()->SetTitle("run number");
   Lumisectionratio->GetYaxis()->SetTitle("new ls/old ls");
   Lumisectionratio->SetTitle("Lumi section ratio per run");
-  //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);                                                                                          
+  //Lumisectionratio->GetYaxis()->SetRangeUser(0,2500);                                                                                      
   Lumisectionratio->Draw("AP");
   
   if(run_period=='A'){
@@ -518,44 +516,31 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   C4->cd();
   
   Lumisection_perrun->GetXaxis()->SetTitle("run");
-  Lumisection_perrun->GetYaxis()->SetTitle("lumi section");
-  //Lumisection_perrun->GetYaxis()->SetRangeUser(0, 2000);
+  Lumisection_perrun->GetYaxis()->SetTitle("# of lumi section");
+  Lumisection_perrun->GetYaxis()->SetRangeUser(0, 2500);
   Lumisection_perrun->SetMarkerStyle(8);
   Lumisection_perrun->SetLineColor(2);
   Lumisection_perrun->SetMarkerColor(2);
   Lumisection_perrun->SetMarkerSize(0.5);
   Lumisection_perrun1->GetXaxis()->SetTitle("run");
-  Lumisection_perrun1->GetYaxis()->SetTitle("lumi section");
-  //Lumisection_perrun1->GetYaxis()->SetRangeUser(0, 2000);
+  Lumisection_perrun1->GetYaxis()->SetTitle("# of lumi section");
+  Lumisection_perrun1->GetYaxis()->SetRangeUser(0, 2500);
   Lumisection_perrun1->SetMarkerStyle(8);
   Lumisection_perrun1->SetLineColor(1);
   Lumisection_perrun1->SetMarkerColor(1);
-  Lumisection_perrun1->SetMarkerSize(0.5);
-  //Lumisection_perrun->Draw("histp");
-  //Lumisection_perrun1->Draw("histpsame");
+  Lumisection_perrun1->SetMarkerSize(0.4);
+  Lumisection_perrun->Draw("histp");
+  Lumisection_perrun1->Draw("histpsame");
   
-  //auto legend2 = new TLegend(0.75, 0.75, 0.88, 0.88);
-  //legend2->AddEntry(Lumisection_perrun1, "New veto", "l");
-  //legend2->AddEntry(Lumisection_perrun, "Old veto", "l");
-  //legend2->SetFillColor(0);
-  //legend2->SetLineColor(0);
-  //legend2->SetFillColor(0);
-  //legend2->Draw("same");
+  auto legend2 = new TLegend(0.75, 0.75, 0.88, 0.88);
+  legend2->AddEntry(Lumisection_perrun1, "New veto", "l");
+  legend2->AddEntry(Lumisection_perrun, "Old veto", "l");
+  legend2->SetFillColor(0);
+  legend2->SetLineColor(0);
+  legend2->SetFillColor(0);
+  legend2->Draw("same");
   
   if(run_period=='A'){
-    //LumiperLS->GetXaxis()->SetRangeUser(0, 70000);
-    //LumiperLS1->GetXaxis()->SetRangeUser(0, 70000);
-    Lumisection_perrun->Draw("histp");
-    Lumisection_perrun1->Draw("histpsame");
-
-    auto legend2 = new TLegend(0.75, 0.75, 0.88, 0.88);
-    legend2->AddEntry(Lumisection_perrun1, "New veto", "l");
-    legend2->AddEntry(Lumisection_perrun, "Old veto", "l");
-    legend2->SetFillColor(0);
-    legend2->SetLineColor(0);
-    legend2->SetFillColor(0);
-    legend2->Draw("same");
-
     C4->Print(Path1+"Lumisection_run_oldnewveto_Run2018A"+".png");
   }
   if(run_period=='B'){
