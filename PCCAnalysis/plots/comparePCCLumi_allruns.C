@@ -1,5 +1,5 @@
 #include "globals.h"
-void comparePCCLumi_allruns(int option=2, char run_period='G'){
+void comparePCCLumi_allruns(int option=2, char run_period='A'){
   
   TString Path="/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto/";
   
@@ -10,16 +10,16 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
     run_number = {315690};
   }
   if(run_period=='B'){
-   run_number = {317511};
+    run_number = {317511};
   }      
   if(run_period=='C'){
     run_number = {319486};
   }
-
+  
   if(run_period=='D'){
     run_number= {321124};
   }
-
+  
   if(run_period=='E'){
     run_number= {321988};
   }
@@ -27,7 +27,7 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
   if(run_period=='F'){
     run_number={323727};
   }
-
+  
   if(run_period=='G'){
     run_number={324878};
   }
@@ -41,21 +41,20 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
   
   TH1F*HCSV;   //new veto PCC per bx
   TH1F*HCSV1;  //old veto PCC per bx
-
+  
   for (unsigned int j=0;j<run_number.size();j++){
   
     std::cout<<run_number.at(j)<<std::endl;
-  
+    
     TString Path1;
     if(run_period=='A'){
-    Path1="/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
+      Path1="/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
     }
-
     if(run_period=='B'){
-    Path1="/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018B";
+      Path1="/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018B";
     }
     if(run_period=='C'){
-    Path1="/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018C";
+      Path1="/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018C";
     }
     if(run_period=='D'){
       Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D1";
@@ -69,10 +68,10 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
     if(run_period=='G'){
       Path1 = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D4";
     }
-
-
+    
+    
     TString CSV=Path1+"/"+run_number.at(j)+".csv";
-        
+    
     HCSV = new TH1F(TString("HCSV_")+j,"",NBX,0.5,NBX+0.5);
     
     ifstream csvfile(CSV.Data());
@@ -98,28 +97,29 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
       std::stringstream lumiiss(token);
       lumiiss>>Lumi;
       
-      //cout<<"new "<<run<<" "<<ls<<" "<<Lumi<<": "<<endl;
+      cout<<"new "<<run<<" "<<ls<<" "<<Lumi<<": "<<endl;
       
       for(int b=1;b<=NBX;b++){
 	std::getline(iss,token, ',');
 	std::stringstream biss(token);
 	biss>>Lumi;
+	if(ls>=513 && ls<=563){
 	HCSV->AddBinContent(b,Lumi);
       }
-      
+      }
     }
     
     csvfile.close();
     
     TString Path2;
     if(run_period=='A'){
-    Path2="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018A";
+      Path2="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018A";
     }
     if(run_period=='B'){
-    Path2="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B";
+      Path2="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018B";
     }
     if(run_period=='C'){
-    Path2="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018C";
+      Path2="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018C";
     }
     if(run_period=='D' || run_period=='E'){
       Path2 = "/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_21Sep2018VdmVeto/Run2018D";
@@ -131,8 +131,8 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
     if(run_period=='G'){
       Path2 ="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_Dec21_LateRunD/Run2018D";
     }
-
-
+    
+    
     TString CSV1=Path2+"/"+run_number.at(j)+".csv";
     
     HCSV1 = new TH1F(TString("HCSV1_")+j,"",NBX,0.5,NBX+0.5);
@@ -160,80 +160,80 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
       std::stringstream lumiiss1(token1);
       lumiiss1>>Lumi1;
       
-      //cout<<"old "<<run1<<" "<<ls1<<" "<<Lumi1<<": "<<endl;
+      cout<<"old "<<run1<<" "<<ls1<<" "<<Lumi1<<": "<<endl;
       
       for(int b1=1;b1<=NBX;b1++){
 	std::getline(iss1,token1, ',');
 	std::stringstream biss1(token1);
 	biss1>>Lumi1;
+	if(ls1>=513 && ls1<=563){
 	HCSV1->AddBinContent(b1,Lumi1);
       }
-      
+      }
     }
     
     csvfile1.close();
     
   }
-
-    gStyle->SetOptStat(0);
+  
+  gStyle->SetOptStat(0);
+  
+  //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  TCanvas C("C","",1200,500);
+  
+  //C.Clear();
+  HCSV->SetMarkerStyle(8);
+  HCSV->SetLineColor(1);
+  HCSV->SetMarkerColor(1);
+  HCSV->SetMarkerSize(0.5);
+  //HCSV->GetYaxis()->SetRangeUser(0,4000000);
+  //HCSV->SetTitle("Run2018A (315255 - 316995)");
+  if(run_period=='A'){
+    HCSV->SetTitle("run number 315690 LS (513-563)");
+  }
+  if(run_period=='B'){
+    HCSV->SetTitle("run number 317511");
+  }
+  if(run_period=='C'){
+    HCSV->SetTitle("run number 319486");
+  }
+  if(run_period=='D'){
+    HCSV->SetTitle("run number 321124");
+  }
+  if(run_period=='E'){
+    HCSV->SetTitle("run number 321988");                                                                                                 
+  }
+  if(run_period=='F'){
+    HCSV->SetTitle("run number 323727");
+  }
+  if(run_period=='G'){
+    HCSV->SetTitle("run number 324878");
+  }
     
-    //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
-    TCanvas C("C","",1200,500);
+  //HCSV->SetTitle("Run2018B (317080 - 319311)");                                                                                         
+  //HCSV->SetTitle("Run2018C (319337 - 320065)"); 
+  HCSV->GetXaxis()->SetTitle("bx");
+  if(option==1){
+      HCSV->GetYaxis()->SetTitle("PCC");
+  }
+  if(option==2){
+    HCSV->GetYaxis()->SetTitle("new data/old data");
+  }
+  //HCSV->GetYaxis()->SetRangeUser(0, 70000);
+  //HCSV->GetYaxis()->SetRangeUser(0.716, 0.73);
+  //HCSV->SetTitle("Zero Bias data with afterglow corrections (run number 316110)");
+  //HCSV->SetTitle("Run Number 317696");
+  //HCSV->SetTitle("Run Number 319696");
+  
+  HCSV1->SetMarkerStyle(8);
+  HCSV1->SetLineColor(2);
+  HCSV1->SetMarkerColor(2);
+  HCSV1->SetMarkerSize(0.5);
+  HCSV1->GetXaxis()->SetTitle("bx");
+  //HCSV1->GetYaxis()->SetTitle("PCC");
+  gStyle->SetOptStat(0);    
     
-    //C.Clear();
-    HCSV->SetMarkerStyle(8);
-    HCSV->SetLineColor(1);
-    HCSV->SetMarkerColor(1);
-    HCSV->SetMarkerSize(0.5);
-    //HCSV->GetYaxis()->SetRangeUser(0,4000000);
-    //HCSV->SetTitle("Run2018A (315255 - 316995)");
-    if(run_period=='A'){
-      HCSV->SetTitle("run number 315690");
-    }
-    if(run_period=='B'){
-      HCSV->SetTitle("run number 317511");
-    }
-    
-    if(run_period=='C'){
-      HCSV->SetTitle("run number 319486");
-    }
-    if(run_period=='D'){
-      HCSV->SetTitle("run number 321124");
-    }
-    if(run_period=='E'){
-      HCSV->SetTitle("run number 321988");                                                                                                 
-    }
-    if(run_period=='F'){
-      HCSV->SetTitle("run number 323727");
-    }
-    if(run_period=='G'){
-      HCSV->SetTitle("run number 324878");
-    }
-    
-    //HCSV->SetTitle("Run2018B (317080 - 319311)");                                                                                         
-    //HCSV->SetTitle("Run2018C (319337 - 320065)"); 
-    HCSV->GetXaxis()->SetTitle("bx");
-    if(option==1){
-    HCSV->GetYaxis()->SetTitle("PCC");
-    }
-    if(option==2){
-    HCSV->GetYaxis()->SetTitle("PCCratio");
-    }
-    //HCSV->GetYaxis()->SetRangeUser(0, 70000);
-    //HCSV->GetYaxis()->SetRangeUser(0.716, 0.73);
-    //HCSV->SetTitle("Zero Bias data with afterglow corrections (run number 316110)");
-    //HCSV->SetTitle("Run Number 317696");
-    //HCSV->SetTitle("Run Number 319696");
-    
-    HCSV1->SetMarkerStyle(8);
-    HCSV1->SetLineColor(2);
-    HCSV1->SetMarkerColor(2);
-    HCSV1->SetMarkerSize(0.5);
-    HCSV1->GetXaxis()->SetTitle("bx");
-    //HCSV1->GetYaxis()->SetTitle("PCC");
-    gStyle->SetOptStat(0);    
-    
-    if(option==1){
+  if(option==1){
     HCSV->Draw("p");
     HCSV1->Draw("psame");
     
@@ -244,16 +244,18 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
     legend->SetLineColor(0);
     legend->SetFillColor(0);
     legend->Draw("same");
-  
+    
     if(run_period=='A'){
-      C.Print(Path+TString("csv_file_lumi_comparison_RunB_315690")+".root");
+      HCSV->GetYaxis()->SetRangeUser(0, 200000);
+      HCSV1->GetYaxis()->SetRangeUser(0, 2000000);
+      C.Print(Path+TString("csv_file_lumi_comparison_RunA_315690")+".png");
     }
-
+    
     if(run_period=='B'){
-    C.Print(Path+TString("csv_file_lumi_comparison_RunB_317511")+".root");
+      C.Print(Path+TString("csv_file_lumi_comparison_RunB_317511")+".root");
     }
-
-
+    
+    
     if(run_period=='C'){
       C.Print(Path+TString("csv_file_lumi_comparison_RunC_319486")+".root");
     }
@@ -261,57 +263,58 @@ void comparePCCLumi_allruns(int option=2, char run_period='G'){
     if(run_period=='D'){
       C.Print(Path+TString("csv_file_lumi_comparison_RunD1_321124")+".root");
     }
-
+    
     if(run_period=='E'){
       C.Print(Path+TString("csv_file_lumi_comparison_RunD2_321988")+".root");
     }
-
-
+    
+    
     if(run_period=='F'){
       C.Print(Path+TString("csv_file_lumi_comparison_RunD3_323727")+".root");
     }
-
+    
     if(run_period=='G'){
       C.Print(Path+TString("csv_file_lumi_comparison_RunD4_324878")+".root");
     }
+  }
+  
+  if(option==2){
+    HCSV->Divide(HCSV1);
+    HCSV->Draw("p");
+      
+    if(run_period=='A'){
+      HCSV->GetYaxis()->SetRangeUser(0.7, 0.75);
+      C.Print(Path+TString("csv_file_lumi_comparison_RunA_ratio_315690")+".png");
     }
-
-    if(option==2){
-      HCSV->Divide(HCSV1);
-      HCSV->Draw("p");
-
-      if(run_period=='A'){
-	C.Print(Path+TString("csv_file_lumi_comparison_RunB_ratio_315690")+".root");
-      }
-
-      if(run_period=='B'){
-      C.Print(Path+TString("csv_file_lumi_comparison_RunB_ratio_317511")+".root");
-      }
-
-      if(run_period=='C'){
-	C.Print(Path+TString("csv_file_lumi_comparison_RunC_ratio_319486")+".root");
-      }
-
-      if(run_period=='D'){
-	C.Print(Path+TString("csv_file_lumi_comparison_RunD1_ratio_321124")+".root");
-      }
-
-      if(run_period=='E'){
-	C.Print(Path+TString("csv_file_lumi_comparison_RunD2_ratio_321988")+".root");
-      }
-
-
-      if(run_period=='F'){
-	C.Print(Path+TString("csv_file_lumi_comparison_RunD3_ratio_323727")+".root");
-      }
-
-      if(run_period=='G'){
-	C.Print(Path+TString("csv_file_lumi_comparison_RunD4_ratio_324878")+".root");
-      }
-
-
-    }
-    //gROOT->ProcessLine(".q");
     
+    if(run_period=='B'){
+      C.Print(Path+TString("csv_file_lumi_comparison_RunB_ratio_317511")+".root");
+    }
+    
+    if(run_period=='C'){
+      C.Print(Path+TString("csv_file_lumi_comparison_RunC_ratio_319486")+".root");
+    }
+    
+    if(run_period=='D'){
+      C.Print(Path+TString("csv_file_lumi_comparison_RunD1_ratio_321124")+".root");
+    }
+    
+    if(run_period=='E'){
+      C.Print(Path+TString("csv_file_lumi_comparison_RunD2_ratio_321988")+".root");
+    }
+    
+    
+    if(run_period=='F'){
+      C.Print(Path+TString("csv_file_lumi_comparison_RunD3_ratio_323727")+".root");
+    }
+    
+    if(run_period=='G'){
+      C.Print(Path+TString("csv_file_lumi_comparison_RunD4_ratio_324878")+".root");
+      }
+    
+    
+  }
+    //gROOT->ProcessLine(".q");
+  
 }
 
