@@ -479,15 +479,15 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   LumiLSratiospread->SetLineColor(1);
   LumiLSratiospread->SetMarkerColor(1);
   LumiLSratiospread->SetMarkerSize(0.5);
-  //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);  
-  //LumiLSratio->Draw("AP"); 
+  LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);  
+  LumiLSratio->Draw("AP"); 
   //LumiLSratiospread->Draw("AP");
 
   if(run_period=='A'){
     LumiLSratio->Draw("AP");
     C2->Print(Path1+"Lumiratio_Run2018A"+".png");
-    LumiLSratiospread->Draw("AP");
-    C2->Print(Path1+"Lumiratiospread_Run2018A"+".png");
+    //LumiLSratiospread->Draw("AP");
+    //C2->Print(Path1+"Lumiratiospread_Run2018A"+".png");
   }  
   if(run_period=='B'){
     C2->Print(Path1+"Lumiratio_Run2018B"+".png");
