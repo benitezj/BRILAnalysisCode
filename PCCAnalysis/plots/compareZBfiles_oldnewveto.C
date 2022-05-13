@@ -2,16 +2,17 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='G') {
+void compareZBfiles_oldnewveto(char run_period='A') {
   
   TCanvas*C = new TCanvas("Luminosity (new old veto)");
   C->cd();
   C->SetLogy();
-  
+  //gStyle->SetOptStat(1111111);  
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
   TString Path, Path2; 
   
   std::vector<int> run_number;
+
   if(run_period=='A'){
     run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
 
@@ -38,8 +39,8 @@ void compareZBfiles_oldnewveto(char run_period='G') {
   }
   
   if(run_period=='F'){
-    run_number={323363, 323364, 323365, 323367, 323368, //323369, 
-		323370, 323371, 323373, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323396, 323397, 323398, 323399, 323414, 323415, 323416, 323417, 323418, 323419, 323420, 323421, 323422, 323423, 323470, 323471, 323472, 323473, 323474, 323475, 323487, 323488, 323492, 323493, 323495, 323524, 323525, 323526, 323693, 323696, 323698, 323699, 323700, 323702, 323725, 323726, 323727, 323755, 323775, 323778, 323790, 323794, 323841, 323857, 323940, 323954, 323976, 323978, 323980, 323983, 323997, 324021, 324022, 324077, 324078, 324201, 324202, 324205, 324206, 324207, 324209, 324237, 324245, 324293, 324315, 324318, 324420};
+    run_number={323363, 323364, 323365, 323367, 323368, //323369,  
+323370, 323371, 323373, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323396, 323397, 323398, 323399, 323414, 323415, 323416, 323417, 323418, 323419, 323420, 323421, 323422, 323423, 323470, 323471, 323472, 323473, 323474, 323475, 323487, 323488, 323492, 323493, 323495, 323524, 323525, 323526, 323693, 323696, 323698, 323699, 323700, 323702, 323725, 323726, 323727, 323755, 323775, 323778, 323790, 323794, 323841, 323857, 323940, 323954, 323976, 323978, 323980, 323983, 323997, 324021, 324022, 324077, 324078, 324201, 324202, 324205, 324206, 324207, 324209, 324237, 324245, 324293, 324315, 324318, 324420};
   }
   
   if(run_period=='G'){
@@ -68,13 +69,18 @@ void compareZBfiles_oldnewveto(char run_period='G') {
   TGraph *Lumisectionratio;
   Lumisectionratio=new TGraph();
 
+  TH1* h = new TH1D("h_spread", "Spread of ratio plot", 59070, 0.0, 59070); 
+
+  TGraph *LumiLSratiospread;
+  LumiLSratiospread=new TGraph();
+
   int LS=0;
   int previousrunlumisec_count=0;
   int LS1=0;
   int previousrunlumisec_count1=0;
   int lumisec_count=0;
   int lumisec_count1=0;
-    int run_counter=0;
+  int run_counter=0;
   
   std::map<int, float> cluster_count; 
   
@@ -163,8 +169,7 @@ void compareZBfiles_oldnewveto(char run_period='G') {
       lumiiss>>LumiLS;
       cluster_count[ls]=LumiLS;    // map contain old ls and PCC values
       //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;  
-      //Lumisection_perrun->Fill(run_counter, lumisec_count_perrun);
-      
+      //Lumisection_perrun->Fill(run_counter, lumisec_count_perrun);      
       LumiperLS->Fill(lumisec_count, LumiLS);
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
@@ -177,8 +182,7 @@ void compareZBfiles_oldnewveto(char run_period='G') {
     //for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
     //std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
     //}  
-    
-    
+        
     TString infile1=Path2+"/"+run_number.at(j)+".csv";
     //std::cout<< run_number.at(j)<<std::endl;                                                                                               
     ifstream myfile1 (infile1.Data());
@@ -220,8 +224,12 @@ void compareZBfiles_oldnewveto(char run_period='G') {
 	if(cluster_count[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
+	  
+
 	}
       }
+
+
       
       if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
 	if(cluster_count[ls1]!=0){
@@ -267,26 +275,44 @@ void compareZBfiles_oldnewveto(char run_period='G') {
       
     }
     
+
+
     //previousrunlumisec_count1+=lumisec_count1;    
     myfile1.close();
 
     run_counter++; 
     Lumisection_perrun->Fill(run_counter, lumisec_count_perrun);
-    std::cout<<run_counter<<"  "<<lumisec_count_perrun<<std::endl;      
+    //std::cout<<"old "<<run_counter<<"  "<<run<<"  "<<lumisec_count_perrun<<std::endl;      
 
     Lumisection_perrun1->Fill(run_counter, lumisec_count_perrun1);
-    std::cout<<run_counter<<"  "<<lumisec_count_perrun1<<std::endl;
+    //std::cout<<"new "<<run_counter<<"  "<<run<<"  "<<lumisec_count_perrun1<<std::endl;
     
     Lumisectionratio->SetPoint(Lumisectionratio->GetN(), run_counter, lumisec_count_perrun1/lumisec_count_perrun);
-    //std::cout <<run << "  " << lumisec_count_perrun1/lumisec_count_perrun << std::endl; 
+    //std::cout <<run_counter<<"  "<<run<< "  " << lumisec_count_perrun1/lumisec_count_perrun << std::endl; 
 
+    if(lumisec_count_perrun1/lumisec_count_perrun!=1){
+      //std::cout <<run<< "  " << lumisec_count_perrun<<"       "<<lumisec_count_perrun1<<"         "<<lumisec_count_perrun1/lumisec_count_perrun << std::endl;
+      //std::cout <<run<<".log ";
+
+    }
     //for(std::map<int,float>::iterator it = cluster_count.begin(); it != cluster_count.end(); ++it) {
     //std::cout <<run<< " Key: " << it->first << " Value: " << it->second << std::endl;
     //} 
     //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
 
- }
-    
+  }
+
+  auto nPoints =  LumiLSratio->GetN();                                                                        
+  for(int k=0; k < nPoints; ++k) {
+    double x,y;
+    LumiLSratio->GetPoint(k, x, y);
+    h->Fill(x,y);
+    //std::cout<<k<<"  "<<x<<"  "<<y<<std::endl;                                                                                              
+    LumiLSratiospread->SetPoint(LumiLSratiospread->GetN(), x, (h->GetRMS())/(h->GetMean()));
+    std::cout<<x<<"  "<<(h->GetRMS())/(h->GetMean())<<std::endl;
+  }
+  
+  
   LumiperLS->GetXaxis()->SetTitle("Lumi section");
   LumiperLS->GetYaxis()->SetTitle("PCC");
   LumiperLS->GetYaxis()->SetRangeUser(1, 100000000);
@@ -294,6 +320,7 @@ void compareZBfiles_oldnewveto(char run_period='G') {
   LumiperLS->SetMarkerColor(2);  
   LumiperLS->SetMarkerSize(0.4);   
   LumiperLS->Draw("histp");
+
   
   if(run_period=='A'){
     C->Print(Path1+"Lumiperls_oldveto_Run2018A"+".png");
@@ -417,7 +444,6 @@ void compareZBfiles_oldnewveto(char run_period='G') {
   if(run_period=='A'){
     LumiLSratio ->SetTitle("Run2018A (315252-316995)");
     LumiLSratio ->GetYaxis()->SetRangeUser(0.6, 0.8);
-    
   }
   if(run_period=='B'){
     LumiLSratio->SetTitle("Run2018B (317080-319311)");
@@ -437,6 +463,7 @@ void compareZBfiles_oldnewveto(char run_period='G') {
   }
   if(run_period=='F'){
     LumiLSratio->SetTitle("Run2018D (323363-324420)");
+    LumiLSratio ->GetYaxis()->SetRangeUser(1.85, 2);
   }
   if(run_period=='G'){   
     LumiLSratio->SetTitle("Run2018D (324564-325175)");
@@ -446,11 +473,21 @@ void compareZBfiles_oldnewveto(char run_period='G') {
   
   LumiLSratio->GetXaxis()->SetTitle("Lumi section");                                                                                 
   LumiLSratio->GetYaxis()->SetTitle("new data/old data");
+  LumiLSratiospread->GetXaxis()->SetTitle(" lumi sections ");
+  LumiLSratiospread->GetYaxis()->SetTitle(" rms/mean ");
+  LumiLSratiospread->SetMarkerStyle(8);
+  LumiLSratiospread->SetLineColor(1);
+  LumiLSratiospread->SetMarkerColor(1);
+  LumiLSratiospread->SetMarkerSize(0.5);
   //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);  
-  LumiLSratio->Draw("AP"); 
+  //LumiLSratio->Draw("AP"); 
+  //LumiLSratiospread->Draw("AP");
 
   if(run_period=='A'){
+    LumiLSratio->Draw("AP");
     C2->Print(Path1+"Lumiratio_Run2018A"+".png");
+    LumiLSratiospread->Draw("AP");
+    C2->Print(Path1+"Lumiratiospread_Run2018A"+".png");
   }  
   if(run_period=='B'){
     C2->Print(Path1+"Lumiratio_Run2018B"+".png");
@@ -471,7 +508,6 @@ void compareZBfiles_oldnewveto(char run_period='G') {
     C2->Print(Path1+"Lumiratio_Run2018D4"+".png");
   }
   
-
 
   TCanvas*C3 = new TCanvas("Lumi section ratio (new old veto)");
   C3->cd();
