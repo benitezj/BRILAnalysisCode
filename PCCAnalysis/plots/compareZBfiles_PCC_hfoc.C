@@ -145,6 +145,29 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     
     
     f=new TFile(TString("/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018A/")+run_number.at(j)+TString(".root"));
+   
+    
+    TH1F * H_type1 = NULL;
+    TH1F * H_type2 = NULL;
+    
+    float type1_mean=0;
+    float type2_mean=0;
+
+    for(int num=120;num>=1;num--){
+      H_type1 = (TH1F*)f->Get(TString("type1;")+num);
+      H_type1->SetLineColor(1);
+      H_type1->SetMarkerColor(1);
+      if (H_type1==NULL){
+	return;
+      }
+      
+      H_type2 = (TH1F*)f->Get(TString("type2;")+num);
+      H_type2->SetLineColor(2);
+      H_type2->SetMarkerColor(2);
+      if (H_type2==NULL){
+	return;
+      }
+    }
     
     std::string line;
     int run=0;
@@ -152,12 +175,6 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     float LumiLS=0;
     float Lumi = 0.;
     float lumisec_count_perrun=0;
-    TH1F * H_type1 = NULL;
-    TH1F * H_type2 = NULL;
-    
-    float type1_mean=0;
-    float type2_mean=0;
-    
     while (std::getline(myfile, line)){
       std::stringstream iss(line);
       std::string token;
@@ -184,24 +201,9 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
       
-      for(int num=120;num>=1;num--){
-	H_type1 = (TH1F*)f->Get(TString("type1;")+num);
-	H_type1->SetLineColor(1);
-	H_type1->SetMarkerColor(1);
-	if (H_type1==NULL){
-	  return;
-	}
-	
-	H_type2 = (TH1F*)f->Get(TString("type2;")+num);
-	H_type2->SetLineColor(2);
-	H_type2->SetMarkerColor(2);
-	if (H_type2==NULL){
-	  return;
-	}
-	
-	type1_mean=H_type1->GetMean();
-	type2_mean=H_type2->GetMean();
-      }
+      type1_mean=H_type1->GetMean();
+      type2_mean=H_type2->GetMean();
+      
       
       residualvslumi_type1->SetPoint(residualvslumi_type1->GetN(), cluster_count[ls]/sigmavis, type1_mean);
       residualvslumi_type2->SetPoint(residualvslumi_type2->GetN(), cluster_count[ls]/sigmavis, type2_mean);
