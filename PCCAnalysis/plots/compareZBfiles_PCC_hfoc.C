@@ -84,14 +84,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   
   h_ratio = new TH2F("h_ratio", "lumi ratio vs lumi section histogram", 200, 0.0, 70000, 300, 0.0, 4);
   h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 200, 0.0, 23000, 300, 0.0, 4);
-  
-  
-  TH1F * H_type1 = NULL;
-  TH1F * H_type2 = NULL;
-  
-  float type1_mean=0;
-  float type2_mean=0;
-  
+    
   TGraph *residualvslumi_type1;
   residualvslumi_type1=new TGraph();
   
@@ -99,6 +92,8 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   residualvslumi_type2=new TGraph();
   
   TFile*f;
+
+  TH1F*HCSV;
   
   int LS=0;
   int previousrunlumisec_count=0;
@@ -135,9 +130,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     Path = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018D4";
   }
   
+
   for (unsigned int j=0;j<run_number.size();j++){  
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
     //std::cout<< run_number.at(j)<<std::endl;  
+
+    HCSV = new TH1F(TString("HCSV_")+j,"",NBX,0.5,NBX+0.5);
     
     ifstream myfile (infile.Data());    
     if (!myfile.is_open()){
@@ -152,7 +150,14 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     int run=0;
     int ls=0;
     float LumiLS=0;
+    float Lumi = 0.;
     float lumisec_count_perrun=0;
+    TH1F * H_type1 = NULL;
+    TH1F * H_type2 = NULL;
+    
+    float type1_mean=0;
+    float type2_mean=0;
+    
     while (std::getline(myfile, line)){
       std::stringstream iss(line);
       std::string token;
@@ -179,7 +184,6 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
       
-      
       for(int num=120;num>=1;num--){
 	H_type1 = (TH1F*)f->Get(TString("type1;")+num);
 	H_type1->SetLineColor(1);
@@ -197,11 +201,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
 	
 	type1_mean=H_type1->GetMean();
 	type2_mean=H_type2->GetMean();
-	residualvslumi_type1->SetPoint(residualvslumi_type1->GetN(), cluster_count[ls]/sigmavis, type1_mean);
-	residualvslumi_type2->SetPoint(residualvslumi_type2->GetN(), cluster_count[ls]/sigmavis, type2_mean);
-	//std::cout<<run_number.at(j)<<"  "<<cluster_count[ls]/sigmavis<<"  "<<type1_mean<<"  "<<type2_mean<<std::endl;	
-	
-      }  
+      }
+      
+      residualvslumi_type1->SetPoint(residualvslumi_type1->GetN(), cluster_count[ls]/sigmavis, type1_mean);
+      residualvslumi_type2->SetPoint(residualvslumi_type2->GetN(), cluster_count[ls]/sigmavis, type2_mean);
+      std::cout<<run_number.at(j)<<"  "<<cluster_count[ls]/sigmavis<<"  "<<type1_mean<<"  "<<type2_mean<<std::endl;	
+      
     }
     
     myfile.close();     
@@ -731,6 +736,8 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   residualvslumi_type2->GetYaxis()->SetTitle("type 2 residual");
   residualvslumi_type1->SetTitle("Run2018A (315252-316995)");
   residualvslumi_type2->SetTitle("Run2018A (315252-316995)");
+  residualvslumi_type1->GetYaxis()->SetRangeUser(0, 0.04);
+  residualvslumi_type2->GetYaxis()->SetRangeUser(0, 0.04);
   residualvslumi_type1->SetMarkerStyle(8);
   residualvslumi_type1->SetLineColor(1);
   residualvslumi_type1->SetMarkerColor(1);
@@ -758,7 +765,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     ProjY_h_ratiovsHF->Draw("histp");
     C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_projectionY_Run2018A"+".png");
     residualvslumi_type1->Draw("AP");
-    C5->Print(Path1+"type1afterglow_resvslumi_Run2018A"+".png");
+    C5->Print(Path1+"type1afterglow_residualvslumi_Run2018A"+".png");
     residualvslumi_type2->Draw("AP");
     C5->Print(Path1+"type2afterglow_residualvslumi_Run2018A"+".png");
     
