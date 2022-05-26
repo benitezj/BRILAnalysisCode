@@ -2,12 +2,12 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_PCC_hfoc(char run_period='C') {
+void compareZBfiles_PCC_hfoc(char run_period='A') {
   
   TCanvas*C = new TCanvas("Luminosity (PCC hfoc data)");
   C->cd();
   C->SetLogy();
-  //gStyle->SetOptStat(1111111);  
+  gStyle->SetOptStat(1111111);  
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
   TString Path; 
   
@@ -15,7 +15,9 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   
   if(run_period=='A'){
     run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
-  }
+
+    //run_number = {316380}; 
+ }
   
   if(run_period=='B'){
     run_number = {317080, 317087, 317088, 317089, 317170, 317182, 317212, 317213, 317239, 317279,317291, 317292, 317295, 317296, 317297, 317319, 317320,317338, 317339, 317340, 317382, 317383, 317391, 317392, 317434, 317435, 317438, 317475, 317478, 317479, 317480, 317481, 317482, 317484, 317488, 317509, 317510, 317511, 317512, 317527, 317580, 317591, 317626, 317640, 317641, 317648,317649, 317650, 317661, 317663, 317683, 317696, 318070, 318622, 318653, 318661, 318662, 318663, 318667, 318669, 318670, 318675, 318712,318714, 318733, 318734, 318785,318816, 318817, 318819, 318820, 318828, 318834, 318836, 318837, 318872, 318874, 318876, 318877, 318939, 318944, 318945, 318953, 318980, 318981, 318982, 318983, 318984, 318992, 319006, 319011, 319015, 319016, 319018, 319019, 319077, 319097, 319098, 319099, 319100, 319101, 319103, 319104, 319124, 319125, 319159, 319160, 319173, 319174, 319175, 319176, 319177, 319190, 319222, 319223, 319254, 319255, 319256, 319260, 319262, 319263, 319264, 319265, 319266, 319267, 319268, 319270, 319273, 319274, 319300, 319310, 319311};
@@ -62,12 +64,27 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   
   TGraph *Lumisectionratio;
   Lumisectionratio=new TGraph();
-  
+
+  TGraph *LumiratiovsHF;
+  LumiratiovsHF=new TGraph();
+
+  TGraph *PCCvsHF;
+  PCCvsHF=new TGraph();
+
+  TGraph *PCCvsHF_residual;
+  PCCvsHF_residual=new TGraph();
+
   TH1* h = new TH1D("h_spread", "Spread of ratio plot", 59070, 0.0, 59070); 
   
   TGraph *LumiLSratiospread;
   LumiLSratiospread=new TGraph();
-  
+
+  TH2F* h_ratio;
+  TH2F* h_ratiovsHF;
+
+  h_ratio = new TH2F("h_ratio", "lumi ratio vs lumi section histogram", 200, 0.0, 70000, 300, 0.0, 50);
+  h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 200, 0.0, 23000, 300, 0.0, 50);
+
   int LS=0;
   int previousrunlumisec_count=0;
   int LS1=0;
@@ -75,9 +92,12 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   int lumisec_count=0;
   int lumisec_count1=0;
   int run_counter=0;
-  
+  float sigmavis=0;
   std::map<int, float> cluster_count; 
-  
+ 
+  float refLumi[NLS];
+  for(int i=0;i<NLS;i++)  refLumi[i]=0.;
+
   if(run_period=='A'){
     Path = "/eos/user/a/asehrawa/PCC/EXPRESS_datasets/ZeroBias/Run2018_ZB_test/Run2018A";
   }
@@ -136,16 +156,17 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
       lumiiss>>LumiLS;
       cluster_count[ls]=LumiLS;    // map contain old ls and PCC values
       //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;  
-      //Lumisection_perrun->Fill(run_counter, lumisec_count_perrun);      
-      LumiperLS->Fill(lumisec_count, LumiLS);
+      //Lumisection_perrun->Fill(run_counter, lumisec_count_perrun);
+      sigmavis=getSigmaVis(run);      
+      LumiperLS->Fill(lumisec_count, LumiLS/sigmavis);
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
     }
     
     myfile.close();     
     
-    float refLumi[NLS];
-    for(int i=0;i<NLS;i++)  refLumi[i]=0.;
+    //float refLumi[NLS];
+    //for(int i=0;i<NLS;i++)  refLumi[i]=0.;
     
     TString infile1=Path+"/"+run_number.at(j)+".hfoc";
     //std::cout<< run_number.at(j)<<std::endl;                                                                                               
@@ -183,50 +204,53 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
       //std::cout<<"hfoc "<<run<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
       //std::cout<<lumiBX<<std::endl; 
       
-      //if (run_period=='A' && LumiLS>=2200000 && LumiLS1>=1900000){
-      if(run_period=='A'){
-	if(refLumi[ls1]!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;
+      if (run_period=='A'){ //&& cluster_count[ls1]/sigmavis>=4000 && refLumi[ls1]>=4000){
+	if(sigmavis>0 && refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
+	  h_ratio->Fill(lumisec_count1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;
 	}
       }
       
-      if (run_period=='B'){// && LumiLS>=3000000 && LumiLS1>=4000000){
-	if(refLumi[ls1]!=0){
-	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-	}
-      }
-      
-      if (run_period=='C'){ //&& LumiLS>=1000000 && LumiLS1>=1000000){
+      if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
 	if(refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
 	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
 	}
       }
       
-      if (run_period=='D'){// && LumiLS>=2000000 && LumiLS1>=2000000){
+      if (run_period=='C' && LumiLS>=1000000 && LumiLS1>=1000000){
 	if(refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
 	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
 	}
       }
       
-      if (run_period=='E'){// && LumiLS>=3000000 && LumiLS1>=2000000){
+      if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
 	if(refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
 	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
 	}
       }
       
-      if (run_period=='F'){// &&  LumiLS>=2000000 && LumiLS1>=2000000){
+      if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
 	if(refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
 	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
 	}
       }
       
-      if (run_period=='G'){// &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
+      if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
+	if(refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
+	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
+	}
+      }
+      
+      if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
 	if(refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
 	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
@@ -254,15 +278,62 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
     //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
     
   }
+  
+  TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,22000);
+  PCCvsHF->Fit("fitfn");
+  
+  for (unsigned int j=0;j<run_number.size();j++){
+    TString infile1=Path+"/"+run_number.at(j)+".hfoc";
+    //std::cout<< run_number.at(j)<<std::endl;                                                                                               
+    ifstream myfile1 (infile1.Data());
+    if (!myfile1.is_open()){
+      cout << "Unable to open new file: "<<infile1.Data()<<endl;
+      return;
+  }
+    
+        
+    std::string line1;
+    int ls1=0;
+    int run1=0;
+    string tmp;
+    float lumiBX;
+    float LumiLS1=0;
+    int lumisec_count_fit=0;
+    while (std::getline(myfile1, line1)){
+      std::stringstream iss(line1);
+      //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...                                  
+      iss>>run1>>tmp>>ls1>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;                                                                   
+      iss>>refLumi[ls1];
+      iss>>tmp>>tmp;                                                                           
+      lumisec_count_fit++;
+      if(fitfn->Eval(ls1)>0){
+	PCCvsHF_residual->SetPoint(PCCvsHF_residual->GetN(), refLumi[ls1], ((cluster_count[ls1]/sigmavis)-fitfn->Eval(ls1))/fitfn->Eval(ls1));
+	//std::cout<<refLumi[ls1]<<"  "<<(cluster_count[ls1]/sigmavis)<<"  "<<((cluster_count[ls1]/sigmavis)-fitfn->Eval(ls1))/fitfn->Eval(ls1)<<std::endl;
+  
+      }
+    }
+  }
+
+  h_ratio->GetXaxis()->SetTitle("Lumi section");
+  h_ratio->GetYaxis()->SetTitle("PCC/HFOC");
+  h_ratiovsHF->GetXaxis()->SetTitle("HFOC");
+  h_ratiovsHF->GetYaxis()->SetTitle("PCC/HFOC");
+
+  TH1D* ProjY_h_ratio;
+  ProjY_h_ratio=h_ratio->ProjectionY("ProjY_ratio_ls", 0, 70000);
+  //ProjY_h_ratio=h_ratio->ProjectionY();
+
+  TH1D* ProjY_h_ratiovsHF;
+  //ProjY_h_ratiovsHF=h_ratiovsHF->ProjectionY();
+  ProjY_h_ratiovsHF=h_ratiovsHF->ProjectionY("ProjY_ratio_HF",0, 70000);
  
   LumiperLS->GetXaxis()->SetTitle("Lumi section");
   LumiperLS->GetYaxis()->SetTitle("PCC");
-  LumiperLS->GetYaxis()->SetRangeUser(1, 100000000);
+  LumiperLS->GetYaxis()->SetRangeUser(1, 1000000);
   LumiperLS->SetMarkerStyle(8);
   LumiperLS->SetMarkerColor(2);  
   LumiperLS->SetMarkerSize(0.4);   
   LumiperLS->Draw("histp");
-  
   
   if(run_period=='A'){
     C->Print(Path1+"Lumiperls_PCC_Run2018A"+".png");
@@ -292,7 +363,7 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   LumiperLS1->SetMarkerColor(1);
   LumiperLS1->SetMarkerSize(0.4);
   LumiperLS1->Draw("histp");
-  LumiperLS1->GetYaxis()->SetRangeUser(1, 100000000);
+  LumiperLS1->GetYaxis()->SetRangeUser(1, 1000000);
   
   if(run_period=='A'){    
     C->Print(Path1+"Lumiperls_hfoc_Run2018A"+".png");
@@ -323,14 +394,14 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   
   LumiperLS->GetXaxis()->SetTitle("Lumi section");
   LumiperLS->GetYaxis()->SetTitle("PCC or HFOC");
-  LumiperLS->GetYaxis()->SetRangeUser(1, 10000000000);
+  LumiperLS->GetYaxis()->SetRangeUser(1, 1000000);
   LumiperLS->SetMarkerStyle(8);
   LumiperLS->SetLineColor(2);
   LumiperLS->SetMarkerColor(2);
   LumiperLS->SetMarkerSize(0.4);
   LumiperLS1->GetXaxis()->SetTitle("Lumi section");
   LumiperLS1->GetYaxis()->SetTitle("PCC or HFOC");
-  LumiperLS1->GetYaxis()->SetRangeUser(1, 10000000000);
+  LumiperLS1->GetYaxis()->SetRangeUser(1, 1000000);
   LumiperLS1->SetMarkerStyle(8);
   LumiperLS1->SetLineColor(1);
   LumiperLS1->SetMarkerColor(1);
@@ -387,7 +458,7 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   if(run_period=='A'){
     LumiLSratio ->SetTitle("Run2018A (315252-316995)");
     LumiLSratio->GetXaxis()->SetRangeUser(0, 70000);
-    LumiLSratio ->GetYaxis()->SetRangeUser(350, 450);
+    LumiLSratio ->GetYaxis()->SetRangeUser(0, 2);
   }
   if(run_period=='B'){
     LumiLSratio->SetTitle("Run2018B (317080-319311)");
@@ -550,4 +621,89 @@ void compareZBfiles_PCC_hfoc(char run_period='C') {
   }
   
   
+
+  TCanvas*C5 = new TCanvas("Luminosity ratio PCC/HFOC vs HF");
+  C5->cd();
+  
+  if(run_period=='A'){
+    LumiratiovsHF ->SetTitle("Run2018A (315252-316995)");
+    //LumiratiovsHF->GetXaxis()->SetRangeUser(0, 70000);
+    //LumiLSratiovsHF ->GetYaxis()->SetRangeUser(350, 450);
+  }
+
+  LumiratiovsHF->GetXaxis()->SetTitle("HFOC");                                                                                 
+  LumiratiovsHF->GetYaxis()->SetTitle("PCC/HFOC");
+  LumiratiovsHF->SetMarkerStyle(8);
+  LumiratiovsHF->SetLineColor(1);
+  LumiratiovsHF->SetMarkerColor(1);
+  LumiratiovsHF->SetMarkerSize(0.5);
+  LumiratiovsHF->GetYaxis()->SetRangeUser(0, 2);
+  //LumiLSratiovsHF ->GetXaxis()->SetRangeUser(0,70000);  
+  LumiratiovsHF->Draw("AP"); 
+
+  PCCvsHF->GetXaxis()->SetTitle("HFOC");
+  PCCvsHF->GetYaxis()->SetTitle("PCC");
+  PCCvsHF->SetMarkerStyle(8);
+  PCCvsHF->SetLineColor(2);
+  PCCvsHF->SetMarkerColor(2);
+  PCCvsHF->SetMarkerSize(0.5);
+  //PCCvsHF->GetYaxis()->SetRangeUser(0,2);
+  //LumiLSratiovsHF ->GetXaxis()->SetRangeUser(0,70000);                                                                                     
+  //LumiratiovsHF->Draw("AP");
+
+  if(run_period=='A'){
+    LumiratiovsHF->Draw("AP");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vsHF_Run2018A"+".png");
+    //PCCvsHF->SetTitle("Run2018A (315252-316995)");
+    PCCvsHF->SetTitle("run number 316380");
+    PCCvsHF->Draw("AP");
+    C5->Print(Path1+"PCCvsHF_Run2018A"+".png");
+  }  
+
+  PCCvsHF_residual->GetXaxis()->SetTitle("HFOC");
+  PCCvsHF_residual->GetYaxis()->SetTitle("(PCC-fit)/fit");
+  //PCCvsHF_residual->GetYaxis()->SetRangeUser(-2, 500);
+
+  PCCvsHF_residual->SetMarkerStyle(8);
+  PCCvsHF_residual->SetLineColor(1);
+  PCCvsHF_residual->SetMarkerColor(1);
+  PCCvsHF_residual->SetMarkerSize(0.5);
+
+  ProjY_h_ratio->GetXaxis()->SetTitle("lumi section");
+  ProjY_h_ratio->GetYaxis()->SetTitle("PCC/HFOC");
+  ProjY_h_ratiovsHF->GetXaxis()->SetTitle("HFOC");
+  ProjY_h_ratiovsHF->GetYaxis()->SetTitle("PCC/HFOC");
+  ProjY_h_ratio->GetYaxis()->SetRangeUser(0, 150);
+  ProjY_h_ratiovsHF->GetYaxis()->SetRangeUser(0, 150);
+  ProjY_h_ratio->SetMarkerStyle(8);
+  ProjY_h_ratio->SetLineColor(1);
+  ProjY_h_ratio->SetMarkerColor(1);
+  ProjY_h_ratio->SetMarkerSize(0.5);
+  ProjY_h_ratiovsHF->SetMarkerStyle(8);
+  ProjY_h_ratiovsHF->SetLineColor(1);
+  ProjY_h_ratiovsHF->SetMarkerColor(1);
+  ProjY_h_ratiovsHF->SetMarkerSize(0.5);
+
+  if(run_period=='A'){
+    //PCCvsHF_residual->SetTitle("Run2018A (315252-316995)");
+    PCCvsHF_residual->SetTitle("run number 316380");
+    PCCvsHF_residual->Draw("AP");
+    C5->Print(Path1+"PCCvsHF_residual_Run2018A"+".png");
+    h_ratio->Draw("histp");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_Run2018A"+".png");
+    h_ratiovsHF->Draw("histp");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
+    h_ratio->Draw("");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
+    h_ratiovsHF->Draw("");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
+    ProjY_h_ratio->Draw("histp");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_projectionY_Run2018A"+".png");
+    ProjY_h_ratiovsHF->Draw("histp");
+    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_projectionY_Run2018A"+".png");
+
+  }
+
+
+
 }
