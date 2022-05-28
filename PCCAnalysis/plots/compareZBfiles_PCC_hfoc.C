@@ -7,16 +7,18 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TCanvas*C = new TCanvas("Luminosity (PCC hfoc data)");
   C->cd();
   C->SetLogy();
-  gStyle->SetOptStat(1111111);  
+  //gStyle->SetOptStat(111);
+  //gStyle->SetStatX(0.93);
+  //gStyle->SetStatY(0.93);  
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
   TString Path; 
   
   std::vector<int> run_number;
   
   if(run_period=='A'){
-    //run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
+    run_number = {315252, 315255, 315257, 315258, 315259, 315264, 315265, 315267, 315270, 315322, 315339, 315357, 315361, 315363, 315365, 315366, 315420, 315488, 315489, 315490, 315506, 315509, 315510, 315512, 315533, 315543, 315555, 315556, 315557, 315587, 315640, 315641, 315642, 315644, 315645, 315646, 315647, 315648, 315689, 315690, 315702, 315703, 315704, 315705, 315713, 315721, 315741, 315764, 315770, 315784, 315785, 315786, 315787, 315788, 315789, 315790, 315800, 315801, 315840, 315973, 315974, 316058, 316059, 316060, 316061, 316062, 316082, 316095, 316109, 316110, 316111, 316112, 316113, 316114, 316151, 316153, 316186, 316187, 316199, 316200, 316201, 316202, 316216, 316217, 316218, 316219, 316239, 316240, 316241, 316260, 316271, 316361, 316362, 316363, 316377, 316378, 316379, 316380, 316455, 316456, 316457, 316469, 316470, 316472, 316477, 316478, 316505, 316569, 316590, 316613, 316615, 316664, 316665, 316666, 316667, 316700, 316701, 316702, 316715, 316716, 316717, 316718, 316719, 316720, 316721, 316722, 316723, 316758, 316766, 316797, 316798, 316799, 316808, 316820, 316839, 316851, 316876,316877, 316878, 316879, 316928, 316944, 316985, 316993, 316994, 316995};
     
-    run_number = {316380}; 
+    //run_number = {316114}; 
   }
   
   if(run_period=='B'){
@@ -71,9 +73,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TGraph *PCCvsHF;
   PCCvsHF=new TGraph();
 
-  TGraph *PCCvsHF_residual;
-  PCCvsHF_residual=new TGraph();
-  
+  TGraphErrors *PCCvsHF_residual;
+  PCCvsHF_residual=new TGraphErrors();
+
+  TGraph *PCC_HFvsHF_residual;
+  PCC_HFvsHF_residual=new TGraph();
+
   TH1* h = new TH1D("h_spread", "Spread of ratio plot", 59070, 0.0, 59070); 
   
   TGraph *LumiLSratiospread;
@@ -81,10 +86,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   
   TH2F* h_ratio;
   TH2F* h_ratiovsHF;
+  TH2F* PCCvsHF_linearity;
   
-  h_ratio = new TH2F("h_ratio", "lumi ratio vs lumi section histogram", 200, 0.0, 70000, 300, 0.0, 4);
-  h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 200, 0.0, 23000, 300, 0.0, 4);
-    
+  h_ratio = new TH2F("h_ratio", "lumi ratio vs lumi section histogram", 28000, 0.0, 70000, 28000, 0.0, 1.4);
+  h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 28000, 0.0, 23000, 28000, 0.0, 1.4);
+  PCCvsHF_linearity = new TH2F("h_PCCvsHF_linearity", "Linearity PCC vs HF histogram", 100, 0.0, 25000, 100, 0.0, 25000);
+ 
   TGraph *residualvslumi_type1;
   residualvslumi_type1=new TGraph();
   
@@ -133,7 +140,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
 
   for (unsigned int j=0;j<run_number.size();j++){  
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
-    //std::cout<< run_number.at(j)<<std::endl;  
+    std::cout<< run_number.at(j)<<std::endl;  
 
     HCSV = new TH1F(TString("HCSV_")+j,"",NBX,0.5,NBX+0.5);
     
@@ -143,17 +150,31 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       return;
     }    
     
-    
+
+    /**_________________________________________________________________    
     f=new TFile(TString("/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018A/")+run_number.at(j)+TString(".root"));
-   
     
+    TH1F* Corr_PCC = NULL;
+    TH1F *H_colliding_bx=NULL;
+    
+    H_colliding_bx=new TH1F("h_new_collding_bx", "Corrected PCC collding bunches", 3500, 0.0, 3500);
+
+    Corr_PCC = (TH1F*)f->Get("CorrectedLumiAvg_316114_0_1_50;1");
+    Corr_PCC->SetLineColor(1);
+    Corr_PCC->SetMarkerColor(1);
+    if (Corr_PCC==NULL){
+      return;
+    }
+
+   
     TH1F * H_type1 = NULL;
     TH1F * H_type2 = NULL;
     
     float type1_mean=0;
     float type2_mean=0;
 
-    for(int num=120;num>=1;num--){
+
+    for(int num=155;num>=1;num--){
       H_type1 = (TH1F*)f->Get(TString("type1;")+num);
       H_type1->SetLineColor(1);
       H_type1->SetMarkerColor(1);
@@ -168,12 +189,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
 	return;
       }
     }
+    ________________________________________________________________**/
     
     std::string line;
     int run=0;
     int ls=0;
     float LumiLS=0;
-    float Lumi = 0.;
     float lumisec_count_perrun=0;
     while (std::getline(myfile, line)){
       std::stringstream iss(line);
@@ -196,19 +217,31 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       cluster_count[ls]=LumiLS;    // map contain old ls and PCC values
       //std::cout<<"oldveto "<<run<< "  "<<ls<<"  "<<cluster_count[ls]<<std::endl;  
       //Lumisection_perrun->Fill(run_counter, lumisec_count_perrun);
-      sigmavis=getSigmaVis(run);      
+      sigmavis=0.7275* getSigmaVis(run);      
+      //sigmavis=getSigmaVis(run);
       LumiperLS->Fill(lumisec_count, LumiLS/sigmavis);
       //std::cout<<"old veto "<<run<< "  "<<ls<<"  "<<LumiLS<<std::endl;
       //std::cout<<"old "<<run<<"    "<< lumisec_count<<std::endl;
-      
+   
+      /**_________________________________________________________________   
+      int x_value;
+    float bincontent;
+    for(int j = 1; j <= Corr_PCC->GetNbinsX(); j++) {
+      x_value =  Corr_PCC->GetBinCenter(j);
+      bincontent = Corr_PCC->GetBinContent(j); 
+      if (bincontent>=500){
+	H_colliding_bx->Fill(x_value, bincontent);
+	//std::cout<<x_value<<" "<<bincontent<<std::endl;
+      }
+    }
+   
       type1_mean=H_type1->GetMean();
       type2_mean=H_type2->GetMean();
-      
-      
+        
       residualvslumi_type1->SetPoint(residualvslumi_type1->GetN(), cluster_count[ls]/sigmavis, type1_mean);
       residualvslumi_type2->SetPoint(residualvslumi_type2->GetN(), cluster_count[ls]/sigmavis, type2_mean);
       std::cout<<run_number.at(j)<<"  "<<cluster_count[ls]/sigmavis<<"  "<<type1_mean<<"  "<<type2_mean<<std::endl;	
-      
+       ________________________________________________________________**/
     }
     
     myfile.close();     
@@ -252,17 +285,19 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       //std::cout<<"hfoc "<<run<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
       //std::cout<<lumiBX<<std::endl; 
       
-      if (run_period=='A'){ //&& cluster_count[ls1]/sigmavis>=4000 && refLumi[ls1]>=4000){
+      if (run_period=='A' && cluster_count[ls1]/sigmavis>=5000 && refLumi[ls1]>=5000){
 	if(sigmavis>0 && refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
 	  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
 	  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
 	  h_ratio->Fill(lumisec_count1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
 	  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
 	  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;	  
 	}
       }
       
+
       if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
 	if(refLumi[ls1]!=0){
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
@@ -327,9 +362,30 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     
   }
   
-  TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,22000);
-  PCCvsHF->Fit("fitfn");
-  
+
+  //TF1 *fitfunc = new TF1("fitfunc","[0]*x+[1]",0,22000);
+  //LumiratiovsHF->Fit("fitfunc");
+
+  TProfile* P = PCCvsHF_linearity->ProfileX();
+  P->SetTitle("ProfileX of PCC vs HFOC linearity histogram");
+  P->GetXaxis()->SetTitle("HFOC");
+  P->GetYaxis()->SetTitle("PCC");
+
+  TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,25000);
+  P->SetMarkerStyle(8);
+  P->SetMarkerColor(2);
+  P->Fit("fitfn");
+
+  TProfile* P1 = h_ratiovsHF->ProfileX();
+  P1->SetTitle("ProfileX of PCC/HFOC vs HFOC histogram");
+  P1->GetXaxis()->SetTitle("HFOC");
+  P1->GetYaxis()->SetTitle("PCC/HFOC");
+
+  //TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,25000);
+  //P1->SetMarkerStyle(8);
+  //P1->SetMarkerColor(2);
+  //P1->Fit("fitfn");
+
   for (unsigned int j=0;j<run_number.size();j++){
     TString infile1=Path+"/"+run_number.at(j)+".hfoc";
     //std::cout<< run_number.at(j)<<std::endl;                                                                                               
@@ -338,26 +394,25 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       cout << "Unable to open new file: "<<infile1.Data()<<endl;
       return;
     }
-    
-    
+  
+  
     std::string line1;
     int ls1=0;
     int run1=0;
     string tmp;
-    float lumiBX;
-    float LumiLS1=0;
-    int lumisec_count_fit=0;
     while (std::getline(myfile1, line1)){
       std::stringstream iss(line1);
       //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...                                  
       iss>>run1>>tmp>>ls1>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;                                                                   
       iss>>refLumi[ls1];
       iss>>tmp>>tmp;                                                                           
-      lumisec_count_fit++;
-      if(fitfn->Eval(ls1)>0){
-	PCCvsHF_residual->SetPoint(PCCvsHF_residual->GetN(), refLumi[ls1], ((cluster_count[ls1]/sigmavis)-fitfn->Eval(ls1))/fitfn->Eval(ls1));
-	//std::cout<<refLumi[ls1]<<"  "<<(cluster_count[ls1]/sigmavis)<<"  "<<((cluster_count[ls1]/sigmavis)-fitfn->Eval(ls1))/fitfn->Eval(ls1)<<std::endl;
-	
+      if(fitfn->Eval(P->GetBinCenter(ls1))!=0){
+	PCCvsHF_residual->SetPoint(PCCvsHF_residual->GetN(), P->GetBinCenter(ls1), ((P->GetBinContent(ls1))-fitfn->Eval(P->GetBinCenter(ls1)))/fitfn->Eval(P->GetBinCenter(ls1)));
+	PCCvsHF_residual->SetPointError(PCCvsHF_residual->GetN(), 0, (P->GetBinError(ls1))/(fitfn->Eval(P->GetBinCenter(ls1))));
+	std::cout<<(P->GetBinError(ls1))/(fitfn->Eval(P->GetBinCenter(ls1)))<<std::endl;
+	//std::cout<<PCCvsHF_residual->GetN()<<"  "<< P->GetBinCenter(ls1)<<"  "<<P->GetBinContent(ls1)<<"  "<<fitfn->Eval(P->GetBinCenter(ls1))<<"  "<<((P->GetBinContent(ls1))-fitfn->Eval(P->GetBinCenter(ls1)))/fitfn->Eval(P->GetBinCenter(ls1))<<std::endl;
+	//PCC_HFvsHF_residual->SetPoint(PCC_HFvsHF_residual->GetN(), P1->GetBinCenter(ls1), ((P1->GetBinContent(ls1))-fitfn->Eval(P1->GetBinCenter(ls1)))/fitfn->Eval(P1->GetBinCenter(ls1)));
+	//std::cout<<PCC_HFvsHF_residual->GetN()<<"  "<< P1->GetBinCenter(ls1)<<"  "<<P1->GetBinContent(ls1)<<"  "<<fitfn->Eval(P1->GetBinCenter(ls1))<<"  "<<((P1->GetBinContent(ls1))-fitfn->Eval(P1->GetBinCenter(ls1)))/fitfn->Eval(P1->GetBinCenter(ls1))<<std::endl;
       }
     }
   }
@@ -384,7 +439,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   LumiperLS->Draw("histp");
   
   if(run_period=='A'){
-    C->Print(Path1+"Lumiperls_PCC_Run2018A"+".png");
+    //C->Print(Path1+"Lumiperls_PCC_Run2018A"+".png");
   }
   if(run_period=='B'){
     C->Print(Path1+"Lumiperls_PCC_Run2018B"+".png");
@@ -414,7 +469,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   LumiperLS1->GetYaxis()->SetRangeUser(1, 1000000);
   
   if(run_period=='A'){    
-    C->Print(Path1+"Lumiperls_hfoc_Run2018A"+".png");
+    //C->Print(Path1+"Lumiperls_hfoc_Run2018A"+".png");
   }
   if(run_period=='B'){
     C->Print(Path1+"Lumiperls_hfoc_Run2018B"+".png");
@@ -469,7 +524,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   if(run_period=='A'){
     LumiperLS->GetXaxis()->SetRangeUser(0, 70000);
     LumiperLS1->GetXaxis()->SetRangeUser(0, 70000);
-    C1->Print(Path1+"Lumiperls_PCC_hfoc_Run2018A"+".png");
+    //C1->Print(Path1+"Lumiperls_PCC_hfoc_Run2018A"+".png");
   }
   if(run_period=='B'){
     C1->Print(Path1+"Lumiperls_PCC_hfoc_Run2018B"+".png");
@@ -546,7 +601,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   
   if(run_period=='A'){
     LumiLSratio->Draw("AP");
-    C2->Print(Path1+"Lumiratio_PCC_hfoc_Run2018A"+".png");
+    //C2->Print(Path1+"Lumiratio_PCC_hfoc_Run2018A"+".png");
   }  
   if(run_period=='B'){
     C2->Print(Path1+"Lumiratio_PCC_hfoc_Run2018B"+".png");
@@ -579,7 +634,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   
   if(run_period=='A'){
     Lumisectionratio->SetTitle("Run2018A (315252-316995)");
-    C3->Print(Path1+"Lumisectionratio_PCC_hfoc_Run2018A"+".png");
+    //C3->Print(Path1+"Lumisectionratio_PCC_hfoc_Run2018A"+".png");
   }
   if(run_period=='B'){
     Lumisectionratio->SetTitle("Run2018B (317080-319311)");
@@ -637,7 +692,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   legend2->Draw("same");
   
   if(run_period=='A'){
-    C4->Print(Path1+"Lumisection_run_PCC_hfoc_Run2018A"+".png");
+    //C4->Print(Path1+"Lumisection_run_PCC_hfoc_Run2018A"+".png");
   }
   if(run_period=='B'){
     C4->Print(Path1+"Lumisection_run_PCC_hfoc_Run2018B"+".png");
@@ -699,39 +754,60 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   //LumiLSratiovsHF ->GetXaxis()->SetRangeUser(0,70000);                                                                                     
   //LumiratiovsHF->Draw("AP");
   
+  PCCvsHF_linearity->GetXaxis()->SetTitle("HFOC");
+  PCCvsHF_linearity->GetYaxis()->SetTitle("PCC");
+  PCCvsHF_linearity->SetMarkerStyle(8);
+  PCCvsHF_linearity->SetLineColor(2);
+  PCCvsHF_linearity->SetMarkerColor(2);
+  PCCvsHF_linearity->SetMarkerSize(0.5);
+
   if(run_period=='A'){
     LumiratiovsHF->Draw("AP");
     C5->Print(Path1+"Lumiratio_PCC_hfoc_vsHF_Run2018A"+".png");
     //PCCvsHF->SetTitle("Run2018A (315252-316995)");
     PCCvsHF->SetTitle("run number 316380");
     PCCvsHF->Draw("AP");
-    C5->Print(Path1+"PCCvsHF_Run2018A"+".png");
+    //C5->Print(Path1+"PCCvsHF_Run2018A"+".png");
   }  
   
   PCCvsHF_residual->GetXaxis()->SetTitle("HFOC");
   PCCvsHF_residual->GetYaxis()->SetTitle("(PCC-fit)/fit");
-  //PCCvsHF_residual->GetYaxis()->SetRangeUser(-2, 500);
-  
+  PCCvsHF_residual->GetXaxis()->SetRangeUser(0, 25000);
+  PCCvsHF_residual->GetYaxis()->SetRangeUser(-0.1, 0.1);
   PCCvsHF_residual->SetMarkerStyle(8);
   PCCvsHF_residual->SetLineColor(1);
   PCCvsHF_residual->SetMarkerColor(1);
-  PCCvsHF_residual->SetMarkerSize(0.5);
+  PCCvsHF_residual->SetMarkerSize(0.3);
+
+
+  PCC_HFvsHF_residual->GetXaxis()->SetTitle("HFOC");
+  PCC_HFvsHF_residual->GetYaxis()->SetTitle("(PCC/HFOC-fit)/fit");
+  PCC_HFvsHF_residual->GetXaxis()->SetRangeUser(0, 25000);
+  PCC_HFvsHF_residual->GetYaxis()->SetRangeUser(-0.1, 0.1);
+  PCC_HFvsHF_residual->SetMarkerStyle(8);
+  PCC_HFvsHF_residual->SetLineColor(1);
+  PCC_HFvsHF_residual->SetMarkerColor(1);
+  PCC_HFvsHF_residual->SetMarkerSize(0.3);
   
   ProjY_h_ratio->GetXaxis()->SetTitle("lumi section");
   ProjY_h_ratio->GetYaxis()->SetTitle("PCC/HFOC");
   ProjY_h_ratiovsHF->GetXaxis()->SetTitle("HFOC");
   ProjY_h_ratiovsHF->GetYaxis()->SetTitle("PCC/HFOC");
-  ProjY_h_ratio->GetYaxis()->SetRangeUser(0, 150);
-  ProjY_h_ratiovsHF->GetYaxis()->SetRangeUser(0, 150);
+  ProjY_h_ratio->GetYaxis()->SetRangeUser(0, 400);
+  ProjY_h_ratiovsHF->GetYaxis()->SetRangeUser(0, 400);
+  ProjY_h_ratio->GetXaxis()->SetRangeUser(0.8, 1.2);
+  ProjY_h_ratiovsHF->GetXaxis()->SetRangeUser(0.8, 1.2);
+
   ProjY_h_ratio->SetMarkerStyle(8);
   ProjY_h_ratio->SetLineColor(1);
   ProjY_h_ratio->SetMarkerColor(1);
-  ProjY_h_ratio->SetMarkerSize(0.5);
+  ProjY_h_ratio->SetMarkerSize(0.7);
   ProjY_h_ratiovsHF->SetMarkerStyle(8);
   ProjY_h_ratiovsHF->SetLineColor(1);
   ProjY_h_ratiovsHF->SetMarkerColor(1);
-  ProjY_h_ratiovsHF->SetMarkerSize(0.5);
-  
+  ProjY_h_ratiovsHF->SetMarkerSize(0.7);
+
+  /**_________________________________________________________________    
   residualvslumi_type1->GetXaxis()->SetTitle("instantaneous luminosity");
   residualvslumi_type1->GetYaxis()->SetTitle("type 1 residual");
   residualvslumi_type2->GetXaxis()->SetTitle("instantaneous luminosity");
@@ -748,29 +824,60 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   residualvslumi_type2->SetLineColor(1);
   residualvslumi_type2->SetMarkerColor(1);
   residualvslumi_type2->SetMarkerSize(0.5);
-  
+  ________________________________________________**/
+
   if(run_period=='A'){
-    //PCCvsHF_residual->SetTitle("Run2018A (315252-316995)");
-    PCCvsHF_residual->SetTitle("run number 316380");
-    PCCvsHF_residual->Draw("AP");
+    PCCvsHF_residual->SetTitle("Run2018A (315252-316995)");
+    PCCvsHF_residual->SetTitle("Residuals");
+    TLine* line = new TLine(0, 0, 25000, 0);
+    line->SetLineColor(kBlack);
+    line->SetLineStyle(2);
+
+    TLine* line1 = new TLine(0, -0.01, 25000, -0.01);
+    line1->SetLineColor(kBlack);
+    line1->SetLineStyle(2);
+
+    TLine* line2 = new TLine(0, 0.01, 25000, 0.01);
+    line2->SetLineColor(kBlack);
+    line2->SetLineStyle(2);
+
+    PCCvsHF_residual->Draw("APE");
+    line->Draw("same");
+    line1->Draw("same");
+    line2->Draw("same");
     C5->Print(Path1+"PCCvsHF_residual_Run2018A"+".png");
-    h_ratio->Draw("histp");
-    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_Run2018A"+".png");
-    h_ratiovsHF->Draw("histp");
+    //PCC_HFvsHF_residual->SetTitle("Residuals");
+    //PCC_HFvsHF_residual->Draw("AP");
+    //C5->Print(Path1+"PCC_HFvsHF_residual_Run2018A"+".png");
+    //h_ratio->Draw("histp");
+    //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_Run2018A"+".png");
+    //h_ratiovsHF->Draw("histp");
+    //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
+    //h_ratio->Draw("");
+    //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
+    h_ratiovsHF->Draw("colz");
     C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
-    h_ratio->Draw("");
-    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
-    h_ratiovsHF->Draw("");
-    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_Run2018A"+".png");
-    ProjY_h_ratio->Draw("histp");
-    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_projectionY_Run2018A"+".png");
-    ProjY_h_ratiovsHF->Draw("histp");
-    C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_projectionY_Run2018A"+".png");
-    residualvslumi_type1->Draw("AP");
+    //ProjY_h_ratio->Draw("histp");
+    //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_projectionY_Run2018A"+".png");
+    //ProjY_h_ratiovsHF->Draw("histp");
+    //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_projectionY_Run2018A"+".png");
+    PCCvsHF_linearity->Draw("colz");
+    C5->Print(Path1+"PCC_vs_HFOC_histo_linearity_Run2018A"+".png");
+
+    P->Draw("P");
+   
+    C5->Print(Path1+"PCC_vs_HFOC_histo_linearity_tprofile_Run2018A"+".png");
+    P1->Draw("P");
+    C5->Print(Path1+"PCC_hfoc_vs_HFOC_histo_linearity_tprofile_Run2018A"+".png");
+
+
+    /**_________________________________________________________________  
+       residualvslumi_type1->Draw("AP");
     C5->Print(Path1+"type1afterglow_residualvslumi_Run2018A"+".png");
     residualvslumi_type2->Draw("AP");
     C5->Print(Path1+"type2afterglow_residualvslumi_Run2018A"+".png");
-    
+    __________________________________**/
+
   }
     
 }
