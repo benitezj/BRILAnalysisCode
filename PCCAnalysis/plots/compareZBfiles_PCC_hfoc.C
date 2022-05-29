@@ -7,7 +7,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TCanvas*C = new TCanvas("Luminosity (PCC hfoc data)");
   C->cd();
   C->SetLogy();
-  //gStyle->SetOptStat(111);
+  gStyle->SetOptStat(111111);
   //gStyle->SetStatX(0.93);
   //gStyle->SetStatY(0.93);  
   TString Path1="/eos/user/a/asehrawa/BRIL-new/";
@@ -73,11 +73,17 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TGraph *PCCvsHF;
   PCCvsHF=new TGraph();
 
-  TGraphErrors *PCCvsHF_residual;
-  PCCvsHF_residual=new TGraphErrors();
+  TGraph *PCCvsHF_residual;
+  PCCvsHF_residual=new TGraph();
 
   TGraph *PCC_HFvsHF_residual;
   PCC_HFvsHF_residual=new TGraph();
+
+  TH1D *h_PCCvsHF_residual;
+  h_PCCvsHF_residual=new TH1D("PCC vs HF residual histogram", "Residuals",500,-0.02,0.02);
+
+  //TH1D *h_PCC_HFvsHF_residual;
+  //h_PCC_HFvsHF_residual=new TH1D("PCC/HF vs HF residual histogram", "Residuals",500,-0.02,0.02);
 
   TH1* h = new TH1D("h_spread", "Spread of ratio plot", 59070, 0.0, 59070); 
   
@@ -89,7 +95,8 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TH2F* PCCvsHF_linearity;
   
   h_ratio = new TH2F("h_ratio", "lumi ratio vs lumi section histogram", 28000, 0.0, 70000, 28000, 0.0, 1.4);
-  h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 28000, 0.0, 23000, 28000, 0.0, 1.4);
+  //h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 28000, 0.0, 23000, 28000, 0.0, 1.4);
+  h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 200, 0.0, 23000, 300, 0.0, 1.4);
   PCCvsHF_linearity = new TH2F("h_PCCvsHF_linearity", "Linearity PCC vs HF histogram", 100, 0.0, 25000, 100, 0.0, 25000);
  
   TGraph *residualvslumi_type1;
@@ -98,8 +105,9 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TGraph *residualvslumi_type2;
   residualvslumi_type2=new TGraph();
   
-  TFile*f;
+  TH1* h_PCC_HFvsHF_residual = new TH1D("residual histogram", "Residuals", 3000, -0.1, 0.1); 
 
+  TFile*f;
   TH1F*HCSV;
   
   int LS=0;
@@ -165,14 +173,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     if (Corr_PCC==NULL){
       return;
     }
-
    
     TH1F * H_type1 = NULL;
     TH1F * H_type2 = NULL;
     
     float type1_mean=0;
     float type2_mean=0;
-
 
     for(int num=155;num>=1;num--){
       H_type1 = (TH1F*)f->Get(TString("type1;")+num);
@@ -371,20 +377,30 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   P->GetXaxis()->SetTitle("HFOC");
   P->GetYaxis()->SetTitle("PCC");
 
-  TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,25000);
-  P->SetMarkerStyle(8);
-  P->SetMarkerColor(2);
-  P->Fit("fitfn");
+  //TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,25000);
+  //P->SetMarkerStyle(8);
+  //P->SetMarkerColor(2);
+  //P->Fit("fitfn");
 
   TProfile* P1 = h_ratiovsHF->ProfileX();
   P1->SetTitle("ProfileX of PCC/HFOC vs HFOC histogram");
   P1->GetXaxis()->SetTitle("HFOC");
   P1->GetYaxis()->SetTitle("PCC/HFOC");
+  P1->GetYaxis()->SetRangeUser(0.8, 1.2);  
 
-  //TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,25000);
-  //P1->SetMarkerStyle(8);
-  //P1->SetMarkerColor(2);
-  //P1->Fit("fitfn");
+  int x_value;
+  float bincontent;
+  for(int a = 1; a <= P1->GetNbinsX(); a++) {
+    x_value =  P1->GetBinCenter(a);
+    bincontent = P1->GetBinContent(a);   
+    //std::cout<<x_value<<" "<<bincontent<<std::endl;
+  }
+  
+  
+  TF1 *fitfn = new TF1("fitfn","[0]*x+[1]",0,25000);
+  P1->SetMarkerStyle(8);
+  P1->SetMarkerColor(2);
+  P1->Fit("fitfn");
 
   for (unsigned int j=0;j<run_number.size();j++){
     TString infile1=Path+"/"+run_number.at(j)+".hfoc";
@@ -400,23 +416,26 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     int ls1=0;
     int run1=0;
     string tmp;
+
     while (std::getline(myfile1, line1)){
       std::stringstream iss(line1);
       //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...                                  
       iss>>run1>>tmp>>ls1>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;                                                                   
       iss>>refLumi[ls1];
       iss>>tmp>>tmp;                                                                           
-      if(fitfn->Eval(P->GetBinCenter(ls1))!=0){
+      if(fitfn->Eval(P1->GetBinCenter(ls1))!=0){
 	PCCvsHF_residual->SetPoint(PCCvsHF_residual->GetN(), P->GetBinCenter(ls1), ((P->GetBinContent(ls1))-fitfn->Eval(P->GetBinCenter(ls1)))/fitfn->Eval(P->GetBinCenter(ls1)));
-	PCCvsHF_residual->SetPointError(PCCvsHF_residual->GetN(), 0, (P->GetBinError(ls1))/(fitfn->Eval(P->GetBinCenter(ls1))));
-	std::cout<<(P->GetBinError(ls1))/(fitfn->Eval(P->GetBinCenter(ls1)))<<std::endl;
+	//h_PCCvsHF_residual->Fill(((P->GetBinContent(ls1))-fitfn->Eval(P->GetBinCenter(ls1)))/fitfn->Eval(P->GetBinCenter(ls1)));
+	//PCCvsHF_residual->SetPointError(PCCvsHF_residual->GetN(), 0, (P->GetBinError(ls1))/(fitfn->Eval(P->GetBinCenter(ls1))));
+	//std::cout<<(P->GetBinError(ls1))/(fitfn->Eval(P->GetBinCenter(ls1)))<<std::endl;
 	//std::cout<<PCCvsHF_residual->GetN()<<"  "<< P->GetBinCenter(ls1)<<"  "<<P->GetBinContent(ls1)<<"  "<<fitfn->Eval(P->GetBinCenter(ls1))<<"  "<<((P->GetBinContent(ls1))-fitfn->Eval(P->GetBinCenter(ls1)))/fitfn->Eval(P->GetBinCenter(ls1))<<std::endl;
-	//PCC_HFvsHF_residual->SetPoint(PCC_HFvsHF_residual->GetN(), P1->GetBinCenter(ls1), ((P1->GetBinContent(ls1))-fitfn->Eval(P1->GetBinCenter(ls1)))/fitfn->Eval(P1->GetBinCenter(ls1)));
+	PCC_HFvsHF_residual->SetPoint(PCC_HFvsHF_residual->GetN(), P1->GetBinCenter(ls1), ((P1->GetBinContent(ls1))-fitfn->Eval(P1->GetBinCenter(ls1)))/fitfn->Eval(P1->GetBinCenter(ls1)));
+	h_PCC_HFvsHF_residual->Fill(((P1->GetBinContent(ls1))-fitfn->Eval(P1->GetBinCenter(ls1)))/fitfn->Eval(P1->GetBinCenter(ls1)));
 	//std::cout<<PCC_HFvsHF_residual->GetN()<<"  "<< P1->GetBinCenter(ls1)<<"  "<<P1->GetBinContent(ls1)<<"  "<<fitfn->Eval(P1->GetBinCenter(ls1))<<"  "<<((P1->GetBinContent(ls1))-fitfn->Eval(P1->GetBinCenter(ls1)))/fitfn->Eval(P1->GetBinCenter(ls1))<<std::endl;
       }
     }
   }
-  
+
   h_ratio->GetXaxis()->SetTitle("Lumi section");
   h_ratio->GetYaxis()->SetTitle("PCC/HFOC");
   h_ratiovsHF->GetXaxis()->SetTitle("HFOC");
@@ -789,6 +808,18 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   PCC_HFvsHF_residual->SetMarkerColor(1);
   PCC_HFvsHF_residual->SetMarkerSize(0.3);
   
+
+  h_PCC_HFvsHF_residual->GetXaxis()->SetTitle("residuals");
+  h_PCC_HFvsHF_residual->GetYaxis()->SetTitle("Entries");
+  //h_PCC_HFvsHF_residual->GetYaxis()->SetRangeUser(0, 500);
+  //h_PCC_HFvsHF_residual->GetXaxis()->SetRangeUser(-0.02, 0.02);
+  h_PCC_HFvsHF_residual->SetMarkerStyle(8);
+  h_PCC_HFvsHF_residual->SetLineColor(1);
+  h_PCC_HFvsHF_residual->SetMarkerColor(1);
+  h_PCC_HFvsHF_residual->SetMarkerSize(0.3);
+
+
+
   ProjY_h_ratio->GetXaxis()->SetTitle("lumi section");
   ProjY_h_ratio->GetYaxis()->SetTitle("PCC/HFOC");
   ProjY_h_ratiovsHF->GetXaxis()->SetTitle("HFOC");
@@ -841,14 +872,31 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     line2->SetLineColor(kBlack);
     line2->SetLineStyle(2);
 
-    PCCvsHF_residual->Draw("APE");
-    line->Draw("same");
-    line1->Draw("same");
-    line2->Draw("same");
-    C5->Print(Path1+"PCCvsHF_residual_Run2018A"+".png");
-    //PCC_HFvsHF_residual->SetTitle("Residuals");
-    //PCC_HFvsHF_residual->Draw("AP");
-    //C5->Print(Path1+"PCC_HFvsHF_residual_Run2018A"+".png");
+    //PCCvsHF_residual->Draw("AP");
+    //line->Draw("same");
+    //line1->Draw("same");
+    //line2->Draw("same");
+    //C5->Print(Path1+"PCCvsHF_residual_Run2018A"+".png");
+
+    TLine* line3 = new TLine(0, 0, 25000, 0);
+    line3->SetLineColor(kBlack);
+    line3->SetLineStyle(2);
+    TLine* line4 = new TLine(0, -0.01, 25000, -0.01);
+    line4->SetLineColor(kBlack);
+    line4->SetLineStyle(2);
+    TLine* line5 = new TLine(0, 0.01, 25000, 0.01);
+    line5->SetLineColor(kBlack);
+    line5->SetLineStyle(2);
+    PCC_HFvsHF_residual->SetTitle("Residuals");
+    PCC_HFvsHF_residual->Draw("AP");
+    line3->Draw("same");                                                                                                                    
+    line4->Draw("same");                                                                                                                   
+    line5->Draw("same"); 
+    C5->Print(Path1+"PCC_HFvsHF_residual_Run2018A"+".png");
+
+    h_PCC_HFvsHF_residual->Draw("histp");
+    C5->Print(Path1+"PCC_HFvsHF_residual_histo_Run2018A"+".png");
+
     //h_ratio->Draw("histp");
     //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_Run2018A"+".png");
     //h_ratiovsHF->Draw("histp");
@@ -861,13 +909,12 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_ls_histo_projectionY_Run2018A"+".png");
     //ProjY_h_ratiovsHF->Draw("histp");
     //C5->Print(Path1+"Lumiratio_PCC_hfoc_vs_HFOC_histo_projectionY_Run2018A"+".png");
-    PCCvsHF_linearity->Draw("colz");
-    C5->Print(Path1+"PCC_vs_HFOC_histo_linearity_Run2018A"+".png");
-
-    P->Draw("P");
-   
-    C5->Print(Path1+"PCC_vs_HFOC_histo_linearity_tprofile_Run2018A"+".png");
-    P1->Draw("P");
+    //PCCvsHF_linearity->Draw("colz");
+    //C5->Print(Path1+"PCC_vs_HFOC_histo_linearity_Run2018A"+".png");
+    //P->Draw("P");   
+    //C5->Print(Path1+"PCC_vs_HFOC_histo_linearity_tprofile_Run2018A"+".png");
+    P1->Draw("histp");
+    fitfn->Draw("same");
     C5->Print(Path1+"PCC_hfoc_vs_HFOC_histo_linearity_tprofile_Run2018A"+".png");
 
 
