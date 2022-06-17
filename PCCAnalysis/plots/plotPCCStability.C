@@ -4,10 +4,10 @@
 
 float minratio=0.95;
 float maxratio=1.05;
-float plotYrange=0.4;
-int plotXrange=7000;
+float plotYrange=0.2;
 
-void plotPCCStability(TString inpath, TString ref){
+
+void plotPCCStability(TString inpath, TString ref, int plotXrange=100){
 
   //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
@@ -76,21 +76,21 @@ void plotPCCStability(TString inpath, TString ref){
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.5);
   Lumi.GetXaxis()->SetTitle("lumi section");
-  Lumi.GetYaxis()->SetTitle(" PCC Integrated Lumi [#mub^{-1}]");
+  Lumi.GetYaxis()->SetTitle(" PCC Lumi per LS [#mub^{-1}]");
   Lumi.GetYaxis()->SetRangeUser(0,plotYrange);
   Lumi.Draw("histp");
 
-//  //draw run separators
-//  TLine li;
-//  li.SetLineStyle(2);
-//  TLatex ltxt;
-//  ltxt.SetTextAngle(90);
-//  ltxt.SetTextSize(0.03);
-//  TString rtxt("");
-//  for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-//    li.DrawLine(it->first,0,it->first,0.4);
-//    //ltxt.DrawLatex(it->first,0.02,rtxt+it->second);
-//  }
+   //draw run separators
+   TLine li;
+   li.SetLineStyle(2);
+   TLatex ltxt;
+   ltxt.SetTextAngle(90);
+   ltxt.SetTextSize(0.03);
+   TString rtxt("");
+   for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
+     li.DrawLine(it->first,0,it->first,plotYrange);
+     ltxt.DrawLatex(it->first,0.02,rtxt+it->second);
+   }
 
   C.Print(inpath+"/ls_lumi.png");
 

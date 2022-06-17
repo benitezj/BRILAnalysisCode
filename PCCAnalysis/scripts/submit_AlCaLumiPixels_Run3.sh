@@ -3,11 +3,14 @@
 submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check
 cfg=$3  ## only for action=0
-jobtype=step5 ##step2, step3, step4, step5 , csv
+jobtype=csv ##step2, step3, step4, step5 , csv
 
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 condorqueue=workday  #microcentury , workday, testmatch
+
+ref=""
+plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 
@@ -233,6 +236,19 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	fi   
     fi
 
+
+    ##run plotting scripts
+    if [ "$action" == "5" ] ; then
+        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",\"${ref}\",0\)
+    fi
+
     counter=`echo $counter | awk '{print $1+1}'`
 done
 echo "Total runs: $counter"
+
+
+if [ "$action" == "6" ] ; then
+    NLS=`cat ${plotsdir}/ls.dat | wc -l`
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",\"${ref}\",${NLS}\)
+    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\",\"${ref}\"\)
+fi
