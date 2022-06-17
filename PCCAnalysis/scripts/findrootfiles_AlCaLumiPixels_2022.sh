@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#eospath=/eos/cms/store
-eospath=/eos/cms/tier0/store
+eospath=/eos/cms/store
+#eospath=/eos/cms/tier0/store
 
 #########################################
 ## * script to search for files in eos
@@ -30,8 +30,16 @@ period=Run2022A
 
 
 #ZB RawPCCProducer -> /store/data/Run2022A/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/000/352/416/00000
-datatype=3
-dataset=RawPCCProducer-PromptReco
+#datatype=3
+#dataset=RawPCCProducer-PromptReco
+
+#RD PCCIntegrator -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/352/416/00000/fb9a0530-481e-416e-b621-1d15b74a9720.root
+#datatype=4
+#dataset=AlCaPCCRandom-Express
+
+#RD RawPCC -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCAPROMPT/PromptCalibProdLumiPCC-Express-v1/000/352/416/00000/c96bf8ed-4934-4ff9-8560-bf836494a7cb.root
+datatype=5
+dataset=PromptCalibProdLumiPCC-Express
 
 
 echo $period
@@ -88,5 +96,13 @@ fi
 
 if [ "$datatype" == "3" ] ; then
     search ${eospath}/data/${period}/AlCaLumiPixelsCountsPrompt/ALCARECO
+fi
+
+if [ "$datatype" == "4" ] ; then
+    search ${eospath}/express/${period}/StreamALCALumiPixelsCountsExpress/ALCARECO
+fi
+
+if [ "$datatype" == "5" ] ; then
+    search ${eospath}/express/${period}/StreamALCALumiPixelsCountsExpress/ALCAPROMPT
 fi
 
