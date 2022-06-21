@@ -2,12 +2,12 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step4 -s ALCAHARVEST:LumiPCC --conditions auto:run3_data --era Run3 --scenario pp --datatier DQM --eventcontent DQM --data --filein file:/eos/cms/store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCAPROMPT/PromptCalibProdLumiPCC-Express-v1/000/352/416/00000/c96bf8ed-4934-4ff9-8560-bf836494a7cb.root -n 100 --no_exec
+# with command line options: step3 -s ALCA:PromptCalibProdLumiPCC --conditions auto:run3_data --era Run3 --datatier ALCARECO --eventcontent ALCARECO --triggerResultsProcess RECO --filein file:/afs/cern.ch/user/b/benitezj/output/BRIL/CMSSW_12_1_0_pre4/src/step2_ALCAPRODUCER.root -n 100 --no_exec
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_cff import Run3
 
-process = cms.Process('ALCAHARVEST',Run3)
+process = cms.Process('ALCA',Run3)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -16,7 +16,8 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration.StandardSequences.AlCaHarvesting_cff')
+process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
+process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
@@ -26,6 +27,9 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 import os,sys
+process.MessageLogger.cerr.FwkSummary.reportEvery = cms.untracked.int32(10000)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10000)
+
 inputlist=cms.untracked.vstring()
 inputfile=os.getenv('INPUTFILE')
 if inputfile != None :
@@ -33,8 +37,7 @@ if inputfile != None :
     infile = open(inputfile,'r')
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
-if len(inputlist) == 0 : 
-    sys.exit("No input files")
+if len(inputlist) == 0 : sys.exit("No input files")
 process.source = cms.Source("PoolSource",
     fileNames =     inputlist
 )
@@ -43,7 +46,7 @@ process.source = cms.Source("PoolSource",
 process.options = cms.untracked.PSet(
     FailPath = cms.untracked.vstring(),
     IgnoreCompletely = cms.untracked.vstring(),
-    Rethrow = cms.untracked.vstring('ProductNotFound'),
+    Rethrow = cms.untracked.vstring(),
     SkipEvent = cms.untracked.vstring(),
     accelerators = cms.untracked.vstring('*'),
     allowUnscheduled = cms.obsolete.untracked.bool,
@@ -70,51 +73,45 @@ process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(False)
 )
 
-
-process.MessageLogger.cerr.FwkSummary.reportEvery = cms.untracked.int32(10000)
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10000)
-
-
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('step4 nevts:100'),
+    annotation = cms.untracked.string('step3 nevts:100'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
 
 # Output definition
 
+
 # Additional output definition
+process.ALCARECOStreamPromptCalibProdLumiPCC = cms.OutputModule("PoolOutputModule",
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOPromptCalibProdLumiPCC')
+    ),
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('ALCARECO'),
+        filterName = cms.untracked.string('PromptCalibProdLumiPCC')
+    ),
+    eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
+    fileName = cms.untracked.string('PromptCalibProdLumiPCC.root'),
+    outputCommands = cms.untracked.vstring(
+        'drop *',
+        'keep *_rawPCCProd_*_*',
+        'keep *_corrPCCProd_*_*'
+    )
+)
 
 # Other statements
-process.PoolDBOutputService.toPut.append(process.ALCAHARVESTLumiPCC_dbOutput)
-process.pclMetadataWriter.recordsToMap.append(process.ALCAHARVESTLumiPCC_metadata)
+process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECOPromptCalibProdLumiPCC_noDrop.outputCommands)
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data', '')
 
 # Path and EndPath definitions
-process.ALCAHARVESTDQMSaveAndMetadataWriter = cms.Path(process.dqmSaver+process.pclMetadataWriter)
-process.BeamSpotByLumi = cms.Path(process.ALCAHARVESTBeamSpotByLumi)
-process.BeamSpotByRun = cms.Path(process.ALCAHARVESTBeamSpotByRun)
-process.BeamSpotHPByLumi = cms.Path(process.ALCAHARVESTBeamSpotHPByLumi)
-process.BeamSpotHPByRun = cms.Path(process.ALCAHARVESTBeamSpotHPByRun)
-process.BeamSpotHPLowPUByLumi = cms.Path(process.ALCAHARVESTBeamSpotHPLowPUByLumi)
-process.BeamSpotHPLowPUByRun = cms.Path(process.ALCAHARVESTBeamSpotHPLowPUByRun)
-process.EcalPedestals = cms.Path(process.ALCAHARVESTEcalPedestals)
-process.LumiPCC = cms.Path(process.ALCAHARVESTLumiPCC)
-process.PPSAlignment = cms.Path(process.ALCAHARVESTPPSAlignment)
-process.PPSDiamondSampicTimingCalibration = cms.Path(process.ALCAHARVESTPPSDiamondSampicTimingCalibration)
-process.PPSTimingCalibration = cms.Path(process.ALCAHARVESTPPSTimingCalibration)
-process.SiPixelAli = cms.Path(process.ALCAHARVESTSiPixelAli)
-process.SiPixelLA = cms.Path(process.ALCAHARVESTSiPixelLorentzAngle)
-process.SiPixelQuality = cms.Path(process.dqmEnvSiPixelQuality+process.ALCAHARVESTSiPixelQuality)
-process.SiStripGains = cms.Path(process.ALCAHARVESTSiStripGains)
-process.SiStripGainsAAG = cms.Path(process.ALCAHARVESTSiStripGainsAAG)
-process.SiStripHitEff = cms.Path(process.ALCAHARVESTSiStripHitEfficiency)
-process.SiStripQuality = cms.Path(process.ALCAHARVESTSiStripQuality)
+process.endjob_step = cms.EndPath(process.endOfProcess)
+process.ALCARECOStreamPromptCalibProdLumiPCCOutPath = cms.EndPath(process.ALCARECOStreamPromptCalibProdLumiPCC)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.LumiPCC,process.ALCAHARVESTDQMSaveAndMetadataWriter)
+process.schedule = cms.Schedule(process.pathALCARECOPromptCalibProdLumiPCC,process.endjob_step,process.ALCARECOStreamPromptCalibProdLumiPCCOutPath)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
