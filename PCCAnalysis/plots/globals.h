@@ -38,7 +38,9 @@ void drawCMSPrelim(long year,float xpos=0.2){
 ///////////crossection
 float getSigmaVis(int run){
 
-  if(run>=323700){
+  if(run>=352416){//Run 3 Data with 2018ABC veto
+    return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting
+  }else if(run>=323700){
     return 3.14e6/ORBITF; // for second part of RunD, tighter stability cut ABCD
 
     //#define SigmaPCC 0.0117935*3.14e6/(23.31*11245.6) // for second part of RunD , BPIX B1

@@ -1,8 +1,6 @@
 // -*- C++ -*-
 //
 // Original Author:  Jose  Benitez (jose.benitez@cern.ch)
-//         Created:  18 October 2021 
-// Purpose: produces TH2 histogram with PCC lum per LS and per BX
 
 // system include files
 #include <memory>
@@ -20,9 +18,6 @@
 #include "DataFormats/Luminosity/interface/LumiInfo.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 
-
-//#include "FWCore/ServiceRegistry/interface/Service.h"
-//#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 //
 // class declaration
@@ -48,7 +43,6 @@ private:
   std::string   csvfilename_;//
   std::ofstream csvfile;
 
-  //TH1F * h_pt;
 };
 
 
@@ -56,14 +50,11 @@ LumiPCCAnalyzer::LumiPCCAnalyzer(const edm::ParameterSet& iConfig)
   :
   pccSrc_(iConfig.getParameter<std::string>("LumiInfoName")),
   prodInst_(iConfig.getParameter<std::string>("LumiInfoInst")),
-  csvfilename_("rawPCC.csv")
+  csvfilename_(iConfig.getParameter<std::string>("CSVFileName"))
 {
 
   edm::InputTag inputPCCTag_(pccSrc_, prodInst_);
   lumiInfoToken=consumes<LumiInfo, edm::InLumi>(inputPCCTag_);
-
-  //edm::Service<TFileService> fs;
-  //h_pt    = fs->make<TH1F>( "pt"  , "p_{t}", 100,  0., 1 );
 }
 
 
@@ -104,12 +95,6 @@ void  LumiPCCAnalyzer::endLuminosityBlock(const edm::LuminosityBlock& lumiSeg, c
     csvfile<<","<<std::to_string(lumiByBX[i]);
   csvfile<<std::endl;
   csvfile.close();
-  
-
-  //std::cout<<std::to_string(lumiSeg.run())<<",";
-  //std::cout<<std::to_string(lumiSeg.luminosityBlock())<<",";
-  //std::cout<<std::to_string(inLumiOb.getTotalInstLumi())<<std::endl;
-
 }
 
 //define this as a plug-in
