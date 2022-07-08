@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_PCC_hfoc(char run_period='H') {
+void compareZBfiles_PCC_hfoc(char run_period='A') {
   
   TCanvas*C = new TCanvas("Luminosity (PCC hfoc data)");
   C->cd();
@@ -57,14 +57,14 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
   
   TH1F *LumiperLS;
   LumiperLS=new TH1F("h", "PCC_per_ls", 70000, 0.0, 70000);
-  //LumiperLS=new TH1F("h", "PCC_per_ls", 2000, 0.0, 2000);
+  //LumiperLS=new TH1F("h", "PCC_per_ls", 300000, 0.0, 300000);
   
   TGraph *LumiLSratio;
   LumiLSratio=new TGraph();
   
   TH1F *LumiperLS1;
   LumiperLS1=new TH1F("h1", "hfoc_per_ls", 70000, 0.0, 70000); 
-  //LumiperLS1=new TH1F("h1", "hfoc_per_ls", 2000, 0.0, 2000);
+  //LumiperLS1=new TH1F("h1", "hfoc_per_ls", 300000, 0.0, 300000);
   
   TH1F *Lumisection_perrun;
   Lumisection_perrun=new TH1F("h_lr", "# of Lumi sections vs run number", 150, 0, 150);
@@ -93,7 +93,7 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
   //TH1D *h_PCC_HFvsHF_residual;
   //h_PCC_HFvsHF_residual=new TH1D("PCC/HF vs HF residual histogram", "Residuals",500,-0.02,0.02);
   
-  TH1* h = new TH1D("h_spread", "Spread of ratio plot", 59070, 0.0, 59070); 
+  //TH1* h = new TH1D("h_spread", "Spread of ratio plot", 59070, 0.0, 59070); 
   
   TH2F* h_ratio;
   TH2F* h_ratiovsHF;
@@ -101,6 +101,7 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
   
   //h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram", 28000, 0.0, 70000, 28000, 0.0, 1.4);
   h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 70000, 300, 0.4, 1.6);
+  //h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 300000, 300, 0, 3);
   //h_ratio = new TH2F("h_ratio", "Fill 6961 ", 2100, 0.0, 2100, 500, 0.4, 1.6);
   //h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 28000, 0.0, 23000, 28000, 0.0, 1.4);
   h_ratiovsHF = new TH2F("h_ratiovsHF", " ", 500, 0.0, 23000, 300, 0.3, 1.3);
@@ -156,9 +157,12 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
   }
   
   
+
+
+
   for (unsigned int j=0;j<run_number.size();j++){  
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
-    std::cout<< run_number.at(j)<<std::endl;    
+    //std::cout<< run_number.at(j)<<std::endl;    
     ifstream myfile (infile.Data());    
     if (!myfile.is_open()){
       cout << "Unable to open PCC file: "<<infile.Data()<<endl; 
@@ -209,6 +213,51 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
       cout << "Unable to open hfoc file: "<<infile1.Data()<<endl;
       return;
     }
+
+
+
+    std::string normtag;
+    std::string run;
+    std::string goodlsbegin;
+    std::string goodlsend;
+    std::string line_json;
+    int lineNum;
+    std::ifstream file("/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json");
+    if (file.is_open()){
+      lineNum = 0;
+      while(std::getline(file, line_json)) {
+	lineNum++;
+	//reader.parse(file, line)
+	
+	std::stringstream iss(line_json);
+	std::string token;
+	
+	std::getline(iss,token, ',');
+	std::stringstream normtagiss(token);
+	normtagiss>>normtag;
+	
+	std::getline(iss,token,':');
+	std::stringstream runiss(token);
+	runiss>>run;
+	
+	std::getline(iss,token,',');
+	std::stringstream lsissbegin(token);
+	lsissbegin>>goodlsbegin;
+	
+	std::getline(iss,token);
+	std::stringstream lsissend(token);
+	lsissend>>goodlsend;
+
+	if(lineNum>=2576 && lineNum<=2722){
+	  std::cout<<normtag<<" "<<run<<"  "<<goodlsbegin<<", "<<goodlsend<<endl;
+	  //cout <<line<<endl;
+
+	}
+      }
+      
+    }
+    
+    
     
     std::string line1;
     string tmp;
@@ -217,6 +266,7 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
     while (std::getline(myfile1, line1)){
       std::stringstream iss(line1);
       //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
+      //if(ls1>=goodlsbegin && ls1<=goodlsend){
       iss>>run1>>tmp>>ls1>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
       iss>>refLumi[ls1];
       iss>>tmp>>tmp;
@@ -316,7 +366,8 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
       }
             
     }
-    
+      //}
+
     previousrunlumisec_count1+=lumisec_count1;
     myfile1.close();
     
@@ -822,7 +873,7 @@ void compareZBfiles_PCC_hfoc(char run_period='H') {
   ProjY_h_ratiovsHF->SetMarkerColor(1);
   ProjY_h_ratiovsHF->SetMarkerSize(0.7);
 
-  if(run_period=='H'){
+  if(run_period=='A'){
     PCCvsHF_residual->SetTitle("Run2018A (315252-316995)");
     PCCvsHF_residual->SetTitle("Residuals");
     TLine* line = new TLine(0, 0, 25000, 0);
