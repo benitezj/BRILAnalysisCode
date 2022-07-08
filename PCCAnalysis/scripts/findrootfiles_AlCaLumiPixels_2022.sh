@@ -1,8 +1,5 @@
 #!/bin/bash
 
-eospath=/eos/cms/store
-#eospath=/eos/cms/tier0/store
-
 #########################################
 ## * script to search for files in eos
 ## * output are files with runnumber.txt with list of root files 
@@ -10,37 +7,25 @@ eospath=/eos/cms/store
 #######################################
 
 
-#period=Run2018A
-period=Run2022A
+period=$1 #Run2022A
 
 ########
 ## choose type of data: 
 
-# many streams -> /eos/cms/store/data/Run2018A/AlCaLumiPixels0/RAW/v1/000/316/524/00000/
-#datatype=0
-#dataset=v1
+#ZeroBias RawPCCProducer -> /store/data/Run2022A/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/000/352/416/00000
+datatype=3
+eospath=/eos/cms/store
+dataset=RawPCCProducer-PromptReco
 
-#1 -> /eos/cms/store/express/Run2018D/StreamALCALUMIPIXELSEXPRESS/ALCARECO/AlCaPCCRandom-Express-v1/000/320/500/00000/2C216013-EE93-E811-967D-FA163ECC5F9A.root
-#datatype=1
-#dataset=AlCaPCCRandom-Express 
-
-#2 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/239/00000/0CEC4AA3-1259-E811-9384-02163E01A168.root
-#datatype=2
-#dataset=AlCaPCCZeroBias-PromptReco
-
-
-#ZB RawPCCProducer -> /store/data/Run2022A/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/000/352/416/00000
-#datatype=3
-#dataset=RawPCCProducer-PromptReco
-
-
-#RD PCCIntegrator -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/352/416/00000/fb9a0530-481e-416e-b621-1d15b74a9720.root
+#Random PCCIntegrator -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/352/416/00000/fb9a0530-481e-416e-b621-1d15b74a9720.root
 #datatype=4
+#eospath=/eos/cms/store
 #dataset=AlCaPCCRandom-Express
 
-#RD RawPCC -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCAPROMPT/PromptCalibProdLumiPCC-Express-v1/000/352/416/00000/c96bf8ed-4934-4ff9-8560-bf836494a7cb.root
-datatype=5
-dataset=PromptCalibProdLumiPCC-Express
+#Random RawPCC -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCAPROMPT/PromptCalibProdLumiPCC-Express-v1/000/352/416/00000/c96bf8ed-4934-4ff9-8560-bf836494a7cb.root
+#datatype=5
+#eospath=/eos/cms/store
+#dataset=PromptCalibProdLumiPCC-Express
 
 
 echo $period
