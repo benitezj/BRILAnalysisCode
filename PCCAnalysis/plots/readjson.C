@@ -19,10 +19,8 @@ void readjson(){
     lineNum = 0;
     while(std::getline(file, line)) {
       lineNum++;
-      
       //reader.parse(file, line)
       
-      ///**........................
       std::stringstream iss(line);
       std::string token;
       
@@ -30,24 +28,24 @@ void readjson(){
       std::stringstream normtagiss(token);
       normtagiss>>normtag;
       
-      std::getline(iss,token, ',');
+      std::getline(iss,token,':');
       std::stringstream runiss(token);
       runiss>>run;
       
-      std::getline(iss,token, ',');
+      std::getline(iss,token,',');
       std::stringstream lsissbegin(token);
       lsissbegin>>goodlsrangebegin;
       
-      std::getline(iss,token, ',');
+      std::getline(iss,token);
       std::stringstream lsissend(token);
       lsissend>>goodlsrangeend;
       
-      //std::cout<<normtag<<" "<<run<<"  "<<goodlsrangebegin<<" "<<goodlsrangeend<<endl;
-      cout <<line<<endl;
-      //.................**/
-  
+      std::cout<<//normtag<<" "<<
+	run<<"  "<<goodlsrangebegin<<", "<<goodlsrangeend<<endl;
+      //cout <<line<<endl;
+       
     }
   }
 }
 
-///cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json
+// path to hfoc json file /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json
