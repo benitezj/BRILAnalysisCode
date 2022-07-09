@@ -156,8 +156,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   if(run_period=='H'){
     Path = "/eos/user/a/asehrawa/zerobias_allrun";
   }
-  
-  
+    
   for (unsigned int j=0;j<run_number.size();j++){  
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
     std::cout<< run_number.at(j)<<std::endl;    
