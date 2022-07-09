@@ -11,7 +11,6 @@ void readjson(){
   std::string run;
   std::string goodlsrangebegin;
   std::string goodlsrangeend;
-  
   std::string line;
   int lineNum;
   std::ifstream file("/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json");
@@ -19,8 +18,7 @@ void readjson(){
     lineNum = 0;
     while(std::getline(file, line)) {
       lineNum++;
-      //reader.parse(file, line)
-      
+      //reader.parse(file, line)      
       std::stringstream iss(line);
       std::string token;
       
@@ -41,7 +39,7 @@ void readjson(){
       lsissend>>goodlsrangeend;
       
       std::cout<<//normtag<<" "<<
-	run<<"  "<<goodlsrangebegin<<", "<<goodlsrangeend<<endl;
+	run<<"  "<<goodlsrangebegin<<" , "<<goodlsrangeend<<endl;
       //cout <<line<<endl;
        
     }

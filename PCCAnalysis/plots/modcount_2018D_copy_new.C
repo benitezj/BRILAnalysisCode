@@ -12,7 +12,7 @@ void modcount_2018D_copy_new() {
   //gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
   //gStyle->SetOptStat(1111111);
   
-  //std::vector<int> run_number= {320500, 320569, 320570, 320571, 320612, 320617, 320654, 320673, 320674, 320688, 320712, 320757, 320804, 320807, 320809, 320821, 320822, 320823, 320824, 320838, 320840, 320841, 320853, 320854, 320855, 320856, 320857, 320858, 320859, 320887, 320888, 320917, 320920, 320933, 320934, 320936, 320941, 320980, 320995, 320996, 321004, 321005, 321006, 321007, 321009, 321010, 321011, 321012, 321051, 321055, 321067, 321068, 321069, 321078, 321119, 321121, 321122, 321123, 321124, 321126, 321134, 321138, 321140, 321149, 321162, 321164, 321165, 321166, 321167, 321177, 321178, 321218, 321219, 321221, 321230, 321231, 321232, 321233, 321261, 321262, 321283, 321294, 321295, 321296, 321305, 321310, 321311, 321312, 321313, 321383, 321386, 321388, 321393, 321396, 321397, 321414, 321415, 321431, 321432, 321433, 321434, 321436, 321457, 321461, 321475, 321528, 321536, 321586, 321607, 321636, 321640, 321650, 321652, 321653, 321665}; 
+  std::vector<int> run_number= {320500, 320569, 320570, 320571, 320612, 320617, 320654, 320673, 320674, 320688, 320712, 320757, 320804, 320807, 320809, 320821, 320822, 320823, 320824, 320838, 320840, 320841, 320853, 320854, 320855, 320856, 320857, 320858, 320859, 320887, 320888, 320917, 320920, 320933, 320934, 320936, 320941, 320980, 320995, 320996, 321004, 321005, 321006, 321007, 321009, 321010, 321011, 321012, 321051, 321055, 321067, 321068, 321069, 321078, 321119, 321121, 321122, 321123, 321124, 321126, 321134, 321138, 321140, 321149, 321162, 321164, 321165, 321166, 321167, 321177, 321178, 321218, 321219, 321221, 321230, 321231, 321232, 321233, 321261, 321262, 321283, 321294, 321295, 321296, 321305, 321310, 321311, 321312, 321313, 321383, 321386, 321388, 321393, 321396, 321397, 321414, 321415, 321431, 321432, 321433, 321434, 321436, 321457, 321461, 321475, 321528, 321536, 321586, 321607, 321636, 321640, 321650, 321652, 321653, 321665}; 
   
   //std::vector<int> run_number= {321710, 321712, 321730, 321731, 321732, 321735, 321755, 321758, 321759, 321760, 321773, 321774, 321775, 321776, 321777, 321778, 321780, 321781, 321794, 321796, 321813, 321815, 321817, 321818, 321819, 321820, 321831, 321832, 321833, 321834, 321879, 321880, 321887, 321908, 321909, 321917, 321919, 321933, 321949, 321960, 321961, 321973, 321975, 321988, 321990, 322013, 322014, 322022, 322040, 322049, 322057, 322068, 322079, 322088, 322106, 322113, 322118, 322165, 322167, 322179, 322201, 322204, 322222, 322252, 322317, 322319, 322322, 322324, 322332, 322348, 322355, 322356, 322381, 322407, 322430, 322431, 322480, 322483, 322484, 322485, 322487, 322492, 322510, 322599, 322602, 322603, 322605, 322616, 322617, 322625, 322633, 322958, 322959, 322961, 322963, 322964}; 
   
@@ -30,13 +30,11 @@ void modcount_2018D_copy_new() {
   //std::vector<int> run_number={323526};  
 
 
-  std::vector<int> run_number={323363, 323364, 323365, 323367, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323397, 323398, 323399, 323417, 323418, 323419, 323420, 323421, 323423, 323495, 323526, 324202, 324205, 324206, 324207, 324209};      //bad run numbers                                                                                                                            
+  //std::vector<int> run_number={323363, 323364, 323365, 323367, 323374, 323375, 323376, 323377, 323378, 323388, 323391, 323393, 323394, 323395, 323397, 323398, 323399, 323417, 323418, 323419, 323420, 323421, 323423, 323495, 323526, 324202, 324205, 324206, 324207, 324209};      //bad run numbers                                                                                                                            
 
 //std::vector<int> run_number_all={323423, 323495};                                                                                     
 
   //std::vector<int> run_number={323414, 323416, 323470, 323471, 323472, 323473, 323474, 323475, 323487, 323488, 323492, 323493, 323524, 323525, 323693, 323696, 323702, 323725, 323726, 323727, 323755, 323775, 323778, 323790, 323794, 323841, 323857, 323940, 323954, 323976, 323978, 323980, 323983, 323997, 324021, 324022, 324077, 324201, 324237, 324245, 324293, 324315, 324318, 324420};   //good run numbers          
-
-
 
   std::cout<<run_number.size()<<std::endl;
   readModRPhiZCoordinates();
@@ -61,7 +59,7 @@ void modcount_2018D_copy_new() {
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunD1_0p02_3sigma_weight_cut.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunD2_0p02_3sigma_weight_cut.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunD3_0p02_3sigma_weight_cut.txt");
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunD3_partI_0p02_3sigma_weight_cut.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunD3_partI_0p02_3sigma_weight_cut.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/veto_RunD3_partII_0p02_3sigma_weight_cut.txt");   
   
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/layer_only_test_veto.txt");                
@@ -254,17 +252,17 @@ void modcount_2018D_copy_new() {
       
       //loop over modules
       for (unsigned int i=0;i<1856;i++){
-	//if(totcount > 70000000){
+	if(totcount > 60000000){
 	  if(MODVETO[modid[i]]==0){
 	    histo_counts[i]->Fill(LS, m_count[i]/totcount);
 	    //std::cout<<i<<" "<<countsum[i]<<" "<<totcountsum<<" "<<countsum[i]/totcountsum<<std::endl; 
 	    //std::cout<<i<<" "<<m_count[i]/totcount<<std::endl;  
 	  }
-	  //}
+	  }
       }
       
       
-      //if(totcount > 70000000){
+      if(totcount > 60000000){
 	histo_L2->Fill(LS, count_L2/totcount);
 	histo_L3->Fill(LS, count_L3/totcount);
 	histo_L4->Fill(LS, count_L4/totcount);
@@ -277,7 +275,7 @@ void modcount_2018D_copy_new() {
 	gr9->SetPoint(gr9->GetN(), LS, totcount);
 	//std::cout<<LS<<" "<< totcount<<std::endl;
 	//std::cout<<run_number.at(j)<<std::endl;
-	//}
+	}
       
       
     }
@@ -767,7 +765,7 @@ void modcount_2018D_copy_new() {
   P_L2 = histo_L2->ProfileX();
   //P_L2->SetTitle("BPIX Layer 2");
   ProjY_L2 = histo_L2->ProjectionY(TString("Projection_L2"),0,200);
-  P_L2->GetXaxis()->SetRangeUser(0, 30000);
+  P_L2->GetXaxis()->SetRangeUser(0, 50000);
   P_L2->GetXaxis()->SetNdivisions(50);
   P_L2->GetYaxis()->SetRangeUser(0, 0.35);
   //P_L2->GetXaxis()->SetNdivisions(7);
@@ -777,7 +775,7 @@ void modcount_2018D_copy_new() {
   //P_L2->SetTitle("              Run2018A (315252-316995)");
   //P_L2->SetTitle("              Run2018B (317080-319311)");
   //P_L2->SetTitle("              Run2018C (319337-320065)");
-  //P_L2->SetTitle("            Run2018D (320500-321778)");
+  P_L2->SetTitle("            Run2018D (320500-321778)");
   //P_L2->SetTitle("            Run2018D (321710-322964)");
   //P_L2->SetTitle("            Run2018D (323363-325175)");
   //P_L2->SetTitle("            Run2018D (323363-324420)");

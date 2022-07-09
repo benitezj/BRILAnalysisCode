@@ -9,11 +9,28 @@ action=$2
 
 ##corr: afterglow corrections with Random triggers,
 ##lumi: ZeroBias triggers luminosity 
+#jobtype=lumi
+
+#baseoutdir=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src                                           
+#plotsdir=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_oldveto_Run2018C  
+
+#baseoutdir=/eos/user/b/benitezj/BRIL/PCC
+#plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi
+
+#plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi_old
+
 jobtype=lumi
 
+#baseoutdir=/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A
 
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC
-plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi
+baseoutdir=/eos/user/a/asehrawa/PCC/EXPRESS_datasets
+plotsdir=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC/EXPRESS_datasets
+
+#baseoutdir=/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto
+#plotsdir=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A
+
+#baseoutdir=/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018C_newveto
+#plotsdir=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C
 
 ###########################################################
 ### 
@@ -52,7 +69,6 @@ outputdir=$baseoutdir/AlCaPCCRandom/$submitdir
 fi
 echo "output: $outputdir"
 
-
 ##############################################################
 ## directory containing the Afterglow corrections if computed privately
 #DBDIR=/eos/cms/store/cmst3/user/benitezj/BRIL/PCC/AlCaPCCRandom
@@ -67,6 +83,16 @@ echo "output: $outputdir"
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
 #DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4
 #DBROOTDIR=/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G_v4
+#DBDIR=/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto_RD/AlCaPCCRandom/Run2018A
+#DBDIR=/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018B_newveto/AlCaPCCRandom/Run2018B_RD 
+#DBDIR=/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018C_newveto/AlCaPCCRandom/Run2018C_RD
+#DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018A
+#DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018B
+DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018C
+#DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018D1
+#DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018D2
+#DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018D3
+#DBDIR=/eos/user/a/asehrawa/PCC/EXPRESS_datasets/AlCaPCCRandom/Run2018_RD_test/Run2018D4
 if [ "$DBDIR" != "" ] || [ "$DBROOTDIR" != "" ]; then
    echo "corections: $DBDIR $DBROOTDIR"
 fi
@@ -145,8 +171,8 @@ make_sh_script(){
     echo "cmsRun  ${fullsubmitdir}/cfg.py" >> $fullsubmitdir/${run}.sh
     
     if [ "$jobtype" == "corr" ] ; then
-	echo "cp PCC_Corr.db $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
-	echo "cp CorrectionHisto.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+	echo "cp PCC_Corr.db  $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
+	echo "cp CorrectionHisto.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
     
     if [ "$jobtype" == "lumi" ] ; then
@@ -204,12 +230,12 @@ check_log(){
     
     
     ### error check for lumi jobs	
-#    if [ "$jobtype" == "lumi" ] && [ "$fail" == "0" ]; then
-#	if [  ! -f  $outputdir/${run}.csv ]; then
-#	    echo "no csv"
-#	    fail=1
-#	fi
-#    fi
+    if [ "$jobtype" == "lumi" ] && [ "$fail" == "0" ]; then
+	if [  ! -f  $outputdir/${run}.csv ]; then
+	    echo "no csv"
+	    fail=1
+	fi
+    fi
     
     
     ### error check for corrections jobs
@@ -265,7 +291,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     ##get ref data from brilcalc
     if [ "$action" == "4" ] && [ "$ref" != "" ] ; then
 	command="brilcalc lumi -u hz/ub -r $run --byls  --output-style csv --normtag ${normtagdir}/normtag_${ref}.json "
-	#echo $command
+	echo $command
 	${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.$ref
     fi
 

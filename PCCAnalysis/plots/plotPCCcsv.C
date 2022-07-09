@@ -177,6 +177,8 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 
     //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<rawL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<rawL/(sigmavis*modfrac[ls])<<std::endl;
 
+    std::cout<<run<< "  "<<ls<<"  "<<rawL<<" "<<sigmavis<<" "<<rawL/sigmavis<<std::endl;
+
     if(sigmavis>0 && modfrac[ls]>0)
       lsL = rawL/(sigmavis*modfrac[ls]);
       //lsL = rawL/(sigmavis);

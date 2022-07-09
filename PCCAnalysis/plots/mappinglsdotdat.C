@@ -25,10 +25,10 @@ void mappinglsdotdat() {
     std::getline(myfile, line);
     std::stringstream iss(line);
     iss>>run>>ls>>count;
-    if(run==315257) {      
+    //if(run==315257) {      
       cluster_count[run][ls]=count;
       //std::cout<<run<<" "<<ls<<"  "<<cluster_count[run][ls]<<std::endl;
-    }
+      //}
     
   }
   
@@ -63,16 +63,16 @@ void mappinglsdotdat() {
     std::stringstream iss1(line1);
     iss1>>run1>>ls1>>count1;
     
-    if(run1==315257) {   
+    //if(run1==315257) {   
       cluster_count1[run1][ls1]=count1;
     //std::cout<<run<<" "<<ls<<"  "<<cluster_count[run][ls]<<std::endl;
-    }
+    //}
     
   }
   
   for(auto & outer_map_pair1 : cluster_count1) {
     for(auto & inner_map_pair1 : outer_map_pair1.second) {
-      cout << "new "<<outer_map_pair1.first << "  "<< inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
+      //cout << "new "<<outer_map_pair1.first << "  "<< inner_map_pair1.first << "  " << inner_map_pair1.second << endl;
     }
   }
   
