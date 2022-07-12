@@ -1,6 +1,6 @@
 #include "globals.h"
 
-TString inpath="./May2022Checks/Run2022A/";
+TString inpath="./May2022Checks/May2022Data/Random/ALCAPROMPT/Run2022B/";
 TString PayloadDataPath("./May2022Checks/May2022Payloads/");
 TString outpath("./May2022Checks/");
 
@@ -18,7 +18,7 @@ void comparePCLPayload(long run){
   cout<<"Processing :"<<Inputfile<<endl;  
 
   TCanvas C("C","",1200,900);
-  C.Divide(1,3);
+
   C.Print(outpath+"/"+OutFileName+"_"+run+".pdf[");
 
   
@@ -30,11 +30,11 @@ void comparePCLPayload(long run){
   while ((key = next())) {
     if(!key) continue;
 
-
-   
     TString kname(key->GetName());
-    //cout<<kname<<endl;
     if(!kname.Contains("RawLumiAvg")) continue;
+
+    cout<<"RawLumi: "<<kname<<endl;
+    
     TObjArray * a = kname.Tokenize("_");
     long r=atoi(((TObjString*)(*a)[1])->GetName());
     long l=atoi(((TObjString*)(*a)[2])->GetName());
@@ -44,17 +44,15 @@ void comparePCLPayload(long run){
     if(r!=run) continue;
  
 
+    
     TH1F* HSCALE = (TH1F*) FCORR.Get(TString("ScaleFactorsAvg_")+r+"_"+l+"_"+ls1+"_"+ls2);
     if(!HSCALE){
       cout<<"Histo not found: "<<TString("ScaleFactorsAvg_")+r+"_"+l+"_"+ls1+"_"+ls2<<endl;
       continue;
     }
-    HSCALE->SetTitle(TString("Run: ")+run+" , LS: "+ls1+" - "+ls2);
-    HSCALE->GetYaxis()->SetTitle("scale factor");
-    HSCALE->GetYaxis()->SetNdivisions(4);
-    HSCALE->GetXaxis()->SetTitle("bcid");
-    HSCALE->SetMarkerColor(4);
-
+    cout<<"ScaleFactors: "<<kname<<endl;
+    
+  
     //for(int j=0;j<HSCALE->GetNbinsX();j++){
     //   cout<<j<<" - "<<HSCALE->GetBinContent(j+1)<<endl;
     //}
@@ -63,14 +61,9 @@ void comparePCLPayload(long run){
     
     //read the payload data
     TH1F HPAYLOAD(TString("HPAYLOAD")+r+"_"+ls1,"",HSCALE->GetNbinsX(),HSCALE->GetXaxis()->GetXmin(),HSCALE->GetXaxis()->GetXmax());
-    HPAYLOAD.SetMarkerColor(4);
-    HPAYLOAD.GetYaxis()->SetNdivisions(4);
     TH1F HRatio(TString("HRatio")+r+"_"+ls1,"",HSCALE->GetNbinsX(),HSCALE->GetXaxis()->GetXmin(),HSCALE->GetXaxis()->GetXmax());
-    HRatio.SetMarkerColor(2);
-    HRatio.GetYaxis()->SetNdivisions(4);
-    //TH1F HRatioProj(TString("HRatioProj")+r+"_"+ls1,"",100,0.95,1.05);
-    TH1F HRatioProj(TString("HRatioProj")+r+"_"+ls1,"",220,0.05,1.05);
-    HRatioProj.GetYaxis()->SetNdivisions(4);
+    TH1F HRatioProj(TString("HRatioProj")+r+"_"+ls1,"",1001,0.99,1.01);
+
     
     ifstream plfile;
     TString plfilename=PayloadDataPath+"/LumiCorrections_"+r+"_"+ls1+".payload";
@@ -94,6 +87,7 @@ void comparePCLPayload(long run){
       std::getline(iss,token, ',');
       std::stringstream lvalue(token);
       lvalue>>PLls;
+      
       if(run!=PLrun || ls1!=PLls){
 	cout<<" run or ls does not match: "<<run<<"!="<<PLrun<<" "<<ls1<<"!="<<PLls<<endl;
       }
@@ -104,33 +98,57 @@ void comparePCLPayload(long run){
 	fvalue>>factor;
 	HPAYLOAD.SetBinContent(j+1,factor);
 
-	float scalefactor=HSCALE->GetBinContent(j+1);
-	float ratio=0.;
-	if(scalefactor!=0.)                    ratio=factor/scalefactor;
-	else if(factor==0. && scalefactor==0.) ratio=1.;
-	else                                   ratio=0.;
-	//if(fabs(ratio-1)>0.01)                 ratio=0.;
-	HRatio.SetBinContent(j+1,ratio);
-	HRatioProj.Fill(ratio);
-	
-	if(fabs(ratio-1)>0.01) cout<<"Factors don't match, run="<<run<<" ls="<<ls1<<" bx="<<j+1<<" :  ratio ="<<ratio<<"  payload="<<factor<<"  private="<<scalefactor<<endl;
+	float scalefactor=HSCALE->GetBinContent(j);
+	if(scalefactor>0.8){//select colliding bunches
+	  float ratio=0.;
+	  if(scalefactor!=0.)                    ratio=factor/scalefactor;
+	  else if(factor==0. && scalefactor==0.) ratio=1.;
+	  else                                   ratio=0.;
+
+	  HRatio.SetBinContent(j+1,ratio);
+	  HRatioProj.Fill(ratio);
+
+	  if(fabs(ratio-1)>0.01) cout<<"Factors don't match, run="<<run<<" ls="<<ls1<<" bx="<<j+1<<" :  ratio ="<<ratio<<"  payload="<<factor<<"  private="<<scalefactor<<endl;
+	}
+
       }
       
     }
     plfile.close();
 
     
+    C.Clear();
+    C.Divide(1,3);
+    
     C.cd(1);
+    HPAYLOAD.SetTitle(TString("Run: ")+run+" , LS: "+ls1+" - "+ls2);
+    HPAYLOAD.GetYaxis()->SetTitle("PCL Payload");
+    HPAYLOAD.GetYaxis()->SetNdivisions(4);
+    HPAYLOAD.GetXaxis()->SetTitle("bcid");
+    HPAYLOAD.SetMarkerColor(4);
     HPAYLOAD.GetYaxis()->SetRangeUser(-0.05,1.1);
     HPAYLOAD.Draw("histp");
-    //HSCALE->GetYaxis()->SetRangeUser(-0.05,1.1);
-    //HSCALE->Draw("histp");
-    //gPad->Update();
+
     C.cd(2);
-    HRatio.GetYaxis()->SetTitle("ratio");
-    HRatio.GetYaxis()->SetRangeUser(-0.05,1.1);    
-    HRatio.Draw("histp");
+    HSCALE->GetYaxis()->SetRangeUser(-0.05,1.1);
+    HSCALE->SetTitle(TString("Run: ")+run+" , LS: "+ls1+" - "+ls2);
+    HSCALE->GetYaxis()->SetTitle("Private Payload");
+    HSCALE->GetYaxis()->SetNdivisions(4);
+    HSCALE->GetXaxis()->SetTitle("bcid");
+    HSCALE->SetMarkerColor(4);
+    HSCALE->Draw("histpsame");
+
+//    HRatio.SetMarkerColor(2);
+//    HRatio.GetYaxis()->SetNdivisions(4);
+//    HRatio.GetYaxis()->SetTitle("ratio");
+//    HRatio.GetYaxis()->SetRangeUser(-0.05,1.1);    
+//    HRatio.Draw("histp");
+
     C.cd(3);
+    HRatioProj.SetTitle(" colliding bunches");
+    HRatioProj.GetXaxis()->SetTitle(" PCL / private ");
+    HRatioProj.GetYaxis()->SetTitle(" # of bcids ");
+    HRatioProj.GetYaxis()->SetNdivisions(4);
     HRatioProj.Draw("hist");
     gPad->Update();
     TPaveStats *st = (TPaveStats*)HRatioProj.FindObject("stats");

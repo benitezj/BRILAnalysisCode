@@ -6,9 +6,6 @@ import os,sys
 process = cms.Process("LumiInfo")
 process.path1 = cms.Path()
 
-
-
-
 ######################## 
 ## PoolSource module
 
@@ -25,7 +22,6 @@ else:
     #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-02May2018-v1/70000/AA1D32AA-CE57-E811-B631-FA163E09BABD.root')
     #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-02May2018-v1/30000/F451E0E9-C553-E811-8AB7-FA163E4D19DB.root')
     
-
 if len(inputlist) == 0 : sys.exit("No input files")
 print(inputlist)
 process.source = cms.Source("PoolSource",
@@ -34,7 +30,7 @@ process.source = cms.Source("PoolSource",
 
 jsonfile=os.getenv('JSONFILE')
 if jsonfile != '' :
-   print('will apply json file: '+jsonfile)
+   #print('will apply json file: '+jsonfile)
    process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
    print('LumisToProcess: ')
    print( process.source.lumisToProcess)
@@ -90,17 +86,24 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
         OutputValue = cms.untracked.string("Average"),
     )    
 ) 
-print('RawPCCProducerParameters.ApplyCorrections: '+ process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections)
+print('RawPCCProducerParameters.ApplyCorrections: '+ str(process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections))
 
 
 ###### veto list  
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/mergedModuleList.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Lo.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts_SamTest_Hi.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018A.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_2018_vdM.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018C.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D1.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D2.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D3.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D4.txt'
 
 print('reading from veto file: '+vetofilename)
 vetofile = open(vetofilename,'r')

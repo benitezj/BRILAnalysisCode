@@ -173,12 +173,25 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
 
     //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<rawL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<rawL/(sigmavis*modfrac[ls])<<std::endl;
 
+<<<<<<< HEAD
     lsL=0.;
     if(sigmavis>0)
       lsL = rawL/sigmavis;
     if(corrModFrac && modfrac[ls]>0)
       lsL /= modfrac[ls];
  
+=======
+    std::cout<<run<< "  "<<ls<<"  "<<rawL<<" "<<sigmavis<<" "<<rawL/sigmavis<<std::endl;
+
+    if(sigmavis>0 && modfrac[ls]>0)
+      lsL = rawL/(sigmavis*modfrac[ls]);
+      //lsL = rawL/(sigmavis);
+    else lsL=0.;
+
+    if(corrCSV)
+      corrfile<<run<<","<<ls<<","<<((modfrac[ls]>0.) ? rawL/modfrac[ls] : rawL);
+
+>>>>>>> 09748230592ab7238252048344e3aad56da577b9
     runL+=lsL;
 
     ////fill lumi per LS plots

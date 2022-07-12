@@ -34,9 +34,9 @@ void modcount_2018B_copy_new() {
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_Run2018B.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight1.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/veto_master_VdM_ABCD_2018_newcuts.txt");
-  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration_vdM.txt");
+  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/module_L1_rms_mean_gr_0.07_totcount10^8_third_iteration_vdM.txt");
 
-  readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018A_vetolist_second_iteration.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/plots/Run2018A_vetolist_second_iteration.txt");
 
   int LS=0;
   int run=0;
@@ -650,13 +650,13 @@ void modcount_2018B_copy_new() {
   //C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_2p5sigma"+".png");
   C.Print(Path1+"Graphs_cut_totcount/"+"RMS_Mean_histo_testing"+".root");
   
-  //gr_modweight->SetTitle("              Run2018B (317080-319311)");
-  gr_modweight->SetTitle("              module weights_AonB");
+  gr_modweight->SetTitle("              Run2018B (317080-319311)");
+  //gr_modweight->SetTitle("              module weights_AonB");
 
   gr_modweight->GetXaxis()->SetTitle("module number index");                                                                                 
   gr_modweight->GetYaxis()->SetTitle("module weight");
   gr_modweight->GetXaxis()->SetRangeUser(0,2000);
-  gr_modweight->GetYaxis()->SetRangeUser(0, 0.007);
+  gr_modweight->GetYaxis()->SetRangeUser(0, 0.0045);
   gr_modweight->Draw("AP"); 
   //C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_testing"+".png");
   C.Print(Path1+"Graphs_cut_totcount/"+"mod_weight_AonB_testing"+".png");

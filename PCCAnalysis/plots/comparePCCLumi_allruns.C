@@ -1,5 +1,5 @@
 #include "globals.h"
-void comparePCCLumi_allruns(int option=2, char run_period='A'){
+void comparePCCLumi_allruns(int option=2, char run_period='B'){
   
   TString Path="/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto/";
   
@@ -103,7 +103,8 @@ void comparePCCLumi_allruns(int option=2, char run_period='A'){
 	std::getline(iss,token, ',');
 	std::stringstream biss(token);
 	biss>>Lumi;
-	if(ls>=513 && ls<=563){
+	//if(ls>=513 && ls<=563){
+	if(ls>=1 && ls<=51){
 	HCSV->AddBinContent(b,Lumi);
       }
       }
@@ -166,8 +167,9 @@ void comparePCCLumi_allruns(int option=2, char run_period='A'){
 	std::getline(iss1,token1, ',');
 	std::stringstream biss1(token1);
 	biss1>>Lumi1;
-	if(ls1>=513 && ls1<=563){
-	HCSV1->AddBinContent(b1,Lumi1);
+	//if(ls1>=513 && ls1<=563){
+	if(ls1>=1 && ls1<=51){
+	    HCSV1->AddBinContent(b1,Lumi1);
       }
       }
     }
@@ -192,7 +194,7 @@ void comparePCCLumi_allruns(int option=2, char run_period='A'){
     HCSV->SetTitle("run number 315690 LS (513-563)");
   }
   if(run_period=='B'){
-    HCSV->SetTitle("run number 317511");
+    HCSV->SetTitle("run number 317511 LS (1-51)");
   }
   if(run_period=='C'){
     HCSV->SetTitle("run number 319486");
@@ -288,7 +290,8 @@ void comparePCCLumi_allruns(int option=2, char run_period='A'){
     }
     
     if(run_period=='B'){
-      C.Print(Path+TString("csv_file_lumi_comparison_RunB_ratio_317511")+".root");
+      HCSV->GetYaxis()->SetRangeUser(1.5, 1.6);
+      C.Print(Path+TString("csv_file_lumi_comparison_RunB_ratio_317511")+".png");
     }
     
     if(run_period=='C'){

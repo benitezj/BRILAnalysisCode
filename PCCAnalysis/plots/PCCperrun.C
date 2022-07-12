@@ -4,10 +4,16 @@ void PCCperrun() {
   
   TCanvas C("C");
   C.cd();
+
+
+  TGraph * g = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB/\
+runs.dat"); 
   
   //TGraph * g = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018A/Run2018A_ZB/runs.dat");
   //TGraph * g = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018B/Run2018B_ZB/runs.dat");
   TGraph * g = new TGraph("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRIL/PCC_lumi_newveto_2018C/Run2018C_ZB/runs.dat");
+
+
 
   //TH1* h = new TH1D("h", "PCC per run ratio", 146, 315252, 316995); 
   //TH1* h = new TH1D("h", "PCC per run ratio", 132, 317080, 319311);
