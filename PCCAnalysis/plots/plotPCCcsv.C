@@ -5,8 +5,13 @@
 
 float ratiomin=0.7;
 float ratiomax=1.3;
+
+
+
 float refLumi[NLS];
+
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
+
 float modfrac[NLS];//correction to visible crossection for applied Pixel Quality flag
 
 void getRefLumi(TString inputfile){
@@ -80,7 +85,7 @@ void getModFrac(TString inputfile){
 
 
 
-void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  bool perBXRatioPlots=0){
+void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPlots=0){
 
   //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
 
@@ -110,28 +115,19 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   }
 
 
-  //output corrected lumi csv file
-  bool corrCSV=0;
-  ofstream corrfile;
-  if(corrCSV){
-    corrfile.open((inpath+"/"+Run+".csvcorr").Data());
-    if (!corrfile.is_open()){
-      cout << "Unable to open csvcorr file."<<endl; 
-      return;
-    }
-  }
-
-
   ///read the reference lumi
-  getRefLumi(inpath+"/"+Run+"."+ref);
+  getRefLumi(inpath+"/"+Run+".ref");
   
   //get the module fraction corrections
-  getModFrac(inpath+"/"+Run+".frac");
+  bool corrModFrac=0;
+  if(corrModFrac)  
+    getModFrac(inpath+"/"+Run+".frac");
 
 
   ///create histograms
   TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
   TH1F HLumiLS("HLumiLS","",NLS,0.5,NLS+0.5);
+  TH1F HLumiLSRef("HLumiLSRef","",NLS,0.5,NLS+0.5);
   TH1F HLumiLSRatio("HLumiLSRatio","",NLS,0.5,NLS+0.5);
   TH1F HLumiBX("HLumiBX","",NBX,0.5,NBX+0.5);
   TH1F HLumiBXRatio("HLumiBXRatio","",NBX,0.5,NBX+0.5);
@@ -177,14 +173,12 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 
     //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<rawL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<rawL/(sigmavis*modfrac[ls])<<std::endl;
 
-    if(sigmavis>0 && modfrac[ls]>0)
-      lsL = rawL/(sigmavis*modfrac[ls]);
-      //lsL = rawL/(sigmavis);
-    else lsL=0.;
-
-    if(corrCSV)
-      corrfile<<run<<","<<ls<<","<<((modfrac[ls]>0.) ? rawL/modfrac[ls] : rawL);
-
+    lsL=0.;
+    if(sigmavis>0)
+      lsL = rawL/sigmavis;
+    if(corrModFrac && modfrac[ls]>0)
+      lsL /= modfrac[ls];
+ 
     runL+=lsL;
 
     ////fill lumi per LS plots
@@ -194,7 +188,9 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 
     //ratio to ref luminometer
     if(refLumi[ls]>0){
-      HLumiLSRatio.SetBinContent(ls,(lsL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
+      //HLumiLSRatio.SetBinContent(ls,(lsL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
+      HLumiLSRatio.SetBinContent(ls,lsL/refLumi[ls]);
+      HLumiLSRef.SetBinContent(ls,refLumi[ls]);
       runLRef+=refLumi[ls];
     }
     
@@ -204,14 +200,12 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 	std::getline(iss,token, ',');
 	std::stringstream bxLiss(token);
 	bxLiss>>rawL;
-	bxL = rawL/(sigmavis*modfrac[ls]);
-	//bxL = rawL/(sigmavis);
+	bxL = rawL/sigmavis;
+	if(corrModFrac && modfrac[ls]>0 )
+	  bxL /= modfrac[ls];
 	HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	HLumiBX.AddBinContent(bx+1,bxL);
 
-	if(corrCSV)
-	  corrfile<<","<<((modfrac[ls]>0.) ? rawL/modfrac[ls] : rawL);
-	
       }
     }
     
@@ -221,8 +215,6 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<std::endl;
 
 
-    if(corrCSV)
-      corrfile<<std::endl;
 
   }
   cout<<endl;
@@ -231,7 +223,6 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   ///close files
   myfile.close();
   lsfile.close();
-  if(corrCSV) corrfile.close();
 
   //write run lumi
   runfile<<Run<<" "<<runL<<" "<<runLRef<<std::endl;
@@ -243,85 +234,79 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   ///////////////////////////////////////////////////
   gStyle->SetOptStat(0);
   TCanvas C;
-  float MAXPCC=1.3*maxL;
 
-
-  //2D plot on top and 1D on bottom
-  TPad can_1("can_1", "can_1", 0.0, 0.4, 1.0, 1.0);
-  can_1.SetTopMargin(0.05);
-  can_1.SetBottomMargin(0.02);
-  can_1.SetLeftMargin(0.1);
-  can_1.SetRightMargin(0.15);
-  can_1.SetFrameBorderMode(0);
-  can_1.cd();
-  HLumiBXvsLS.GetXaxis()->SetTitle("lumi section");
-  HLumiBXvsLS.GetYaxis()->SetTitle("bcid");
-  HLumiBXvsLS.GetZaxis()->SetTitle("PCC Lumi [1/#mub]");
-  HLumiBXvsLS.GetXaxis()->SetNdivisions(0);
-  HLumiBXvsLS.GetXaxis()->SetRangeUser(0,maxLS+50);
-  HLumiBXvsLS.GetYaxis()->SetLabelSize(0.05);
-  HLumiBXvsLS.GetYaxis()->SetTitleSize(0.07);
-  HLumiBXvsLS.GetYaxis()->SetTitleOffset(0.6);
-  HLumiBXvsLS.GetZaxis()->SetLabelSize(0.05);
-  HLumiBXvsLS.GetZaxis()->SetTitleSize(0.06);
-  HLumiBXvsLS.GetZaxis()->SetTitleOffset(0.7);
-  HLumiBXvsLS.Draw("colz");
-  //HRefLumiBXvsLS.Draw("colz");
+  float MAXPCC=1.4*maxL;
 
   ////// Lumi vs ls 
-  TPad can_2("can_2", "can_2",0.0, 0.0, 1.0, 0.4);
-  can_2.SetTopMargin(0.08);
-  can_2.SetBottomMargin(0.15);
-  can_2.SetLeftMargin(0.1);
-  can_2.SetRightMargin(0.15);
-  can_2.SetFrameBorderMode(0);
-  can_2.cd();
+  TLegend leg(0.8,0.8,0.95,0.98);
+  TPad can_1("can_1", "can_1", 0.0, 0.5, 1.0, 1.0);
+  can_1.SetTopMargin(0.02);
+  can_1.SetBottomMargin(0.15);
+  can_1.SetLeftMargin(0.1);
+  can_1.SetRightMargin(0.05);
+  can_1.SetFrameBorderMode(0);
+  can_1.cd();
   HLumiLS.GetXaxis()->SetTitle("lumi section");
-  HLumiLS.GetYaxis()->SetTitle("PCC Lumi [1/#mub]");
-  HLumiLS.GetXaxis()->SetRangeUser(0,maxLS+50);
-  HLumiLS.GetXaxis()->SetLabelSize(0.07);
-  HLumiLS.GetXaxis()->SetTitleSize(0.1);
-  HLumiLS.GetXaxis()->SetTitleOffset(0.6);
-  HLumiLS.GetYaxis()->SetLabelSize(0.07);
-  HLumiLS.GetYaxis()->SetTitleSize(0.08);
+  HLumiLS.GetYaxis()->SetTitle("integrated lumi [ #mub^{-1} ]");
+  HLumiLS.GetXaxis()->SetRangeUser(0,maxLS);
+  HLumiLS.GetXaxis()->SetLabelSize(0.05);
+  HLumiLS.GetXaxis()->SetTitleSize(0.07);
+  HLumiLS.GetXaxis()->SetTitleOffset(0.9);
+  HLumiLS.GetYaxis()->SetLabelSize(0.04);
+  HLumiLS.GetYaxis()->SetTitleSize(0.06);
   HLumiLS.GetYaxis()->SetTitleOffset(0.6);
   HLumiLS.GetYaxis()->SetRangeUser(0,MAXPCC);
   HLumiLS.GetYaxis()->SetNdivisions(5);
   HLumiLS.SetMarkerStyle(8);
-  HLumiLS.SetMarkerSize(0.5);
+  HLumiLS.SetMarkerSize(0.3);
   HLumiLS.Draw("histp");
-  
+  leg.AddEntry(&HLumiLS,"PCC","p");
+  if(HLumiLSRef.GetEntries()>0){
+    HLumiLSRef.SetMarkerStyle(8);
+    HLumiLSRef.SetMarkerSize(0.3);
+    HLumiLSRef.SetMarkerColor(4);
+    HLumiLSRef.Draw("histpsame");
+    leg.AddEntry(&HLumiLSRef,RefLumi,"p");
+  }
+  leg.Draw();
   TLatex text;
-  text.SetTextSize(0.13);
-  text.DrawLatexNDC(0.6,0.8,TString("Run ")+(long)Run);
+  text.SetTextSize(0.06);
+  text.DrawLatexNDC(0.12,0.9,TString("Run ")+(long)Run);
+
+
  
   ///////Ratio plot
-  TLine tline;
-  TGaxis ratioaxis(maxLS+50,0,maxLS+50,MAXPCC,ratiomin,ratiomax,510,"+L");
 
-  HLumiLSRatio.Scale(MAXPCC);
-  HLumiLSRatio.GetXaxis()->SetTitle("lumi section");
-  HLumiLSRatio.GetYaxis()->SetTitle(TString("PCC/")+ref);
-  HLumiLSRatio.SetMarkerStyle(8);
-  HLumiLSRatio.SetMarkerSize(0.5);
-  HLumiLSRatio.SetMarkerColor(2);
-  HLumiLSRatio.Draw("histpsame");
-  
-  tline.SetLineColor(2);
-  tline.DrawLine(0,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin),maxLS+50,MAXPCC*(1-ratiomin)/(ratiomax-ratiomin));
-  
-  ratioaxis.SetLineColor(kRed);
-  ratioaxis.SetTextColor(kRed);
-  ratioaxis.SetLabelSize(0.07);
-  ratioaxis.SetLabelColor(2);
-  ratioaxis.SetTitleSize(0.08);
-  ratioaxis.SetTitleOffset(0.6);
-  ratioaxis.SetTitle(TString("PCC/")+ref);
-  ratioaxis.SetNdivisions(3);
-  ratioaxis.Draw();
-  
+  TPad can_2("can_2", "can_2",0.0, 0.0, 1.0, 0.5);
+  can_2.SetTopMargin(0.02);
+  can_2.SetBottomMargin(0.15);
+  can_2.SetLeftMargin(0.1);
+  can_2.SetRightMargin(0.05);
+  can_2.SetFrameBorderMode(0);
+  can_2.cd();
+  if(HLumiLSRef.GetEntries()>0){
+    HLumiLSRatio.GetXaxis()->SetTitle("lumi section");
+    HLumiLSRatio.GetYaxis()->SetTitle(TString("ratio"));
+    HLumiLSRatio.GetXaxis()->SetRangeUser(0,maxLS);
+    HLumiLSRatio.GetYaxis()->SetRangeUser(0.7,1.3);
+    HLumiLSRatio.GetXaxis()->SetLabelSize(0.05);
+    HLumiLSRatio.GetXaxis()->SetTitleSize(0.07);
+    HLumiLSRatio.GetXaxis()->SetTitleOffset(0.9);
+    HLumiLSRatio.GetYaxis()->SetLabelSize(0.04);
+    HLumiLSRatio.GetYaxis()->SetTitleSize(0.06);
+    HLumiLSRatio.GetYaxis()->SetTitleOffset(0.6);
+    HLumiLSRatio.GetYaxis()->SetNdivisions(5);
+    HLumiLSRatio.SetMarkerStyle(8);
+    HLumiLSRatio.SetMarkerSize(0.3);
+    HLumiLSRatio.SetMarkerColor(2);
+    HLumiLSRatio.Draw("histpsame");
+    text.DrawLatexNDC(0.12,0.9,TString("Run ")+(long)Run);
 
-
+    TLine tline;  
+    tline.SetLineColor(2);
+    tline.DrawLine(0,1,maxLS,1);
+  }
+  
   C.Clear();
   can_1.Draw();
   can_2.Draw();
@@ -331,6 +316,29 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
   //// per BX ratio plots, and linearity plots
   //////////////////////////////////////////
   if(perBXRatioPlots) {
+
+    C.Clear();
+    TPad can_1("can_1", "can_1", 0.0, 0.4, 1.0, 1.0);
+    can_1.SetTopMargin(0.05);
+    can_1.SetBottomMargin(0.02);
+    can_1.SetLeftMargin(0.1);
+    can_1.SetRightMargin(0.15);
+    can_1.SetFrameBorderMode(0);
+    can_1.cd();
+    HLumiBXvsLS.GetXaxis()->SetTitle("lumi section");
+    HLumiBXvsLS.GetYaxis()->SetTitle("bcid");
+    HLumiBXvsLS.GetZaxis()->SetTitle("PCC Lumi [1/#mub]");
+    HLumiBXvsLS.GetXaxis()->SetNdivisions(0);
+    HLumiBXvsLS.GetXaxis()->SetRangeUser(0,maxLS+50);
+    HLumiBXvsLS.GetYaxis()->SetLabelSize(0.05);
+    HLumiBXvsLS.GetYaxis()->SetTitleSize(0.07);
+    HLumiBXvsLS.GetYaxis()->SetTitleOffset(0.6);
+    HLumiBXvsLS.GetZaxis()->SetLabelSize(0.05);
+    HLumiBXvsLS.GetZaxis()->SetTitleSize(0.06);
+    HLumiBXvsLS.GetZaxis()->SetTitleOffset(0.7);
+    HLumiBXvsLS.Draw("colz");
+
+
 
     int nLSmerge=100;
     HRefLumiBXvsLS.RebinX(nLSmerge); HRefLumiBXvsLS.Scale(1./nLSmerge);
@@ -404,7 +412,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     C.Clear();
     //C.SetLeftMargin(0.15);
     GRvsL.GetYaxis()->SetRangeUser(0.85,1.15);
-    GRvsL.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    GRvsL.GetYaxis()->SetTitle(TString(" slope"));
     GRvsL.GetXaxis()->SetTitle("lumi section");
     GRvsL.SetMarkerStyle(8);
     GRvsL.SetMarkerSize(0.4);
@@ -414,9 +422,9 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
     
 
     C.Clear();
-    HRatio.GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    HRatio.GetYaxis()->SetTitle(TString("ratio"));
     HRatio.GetYaxis()->SetRangeUser(ratiomin,ratiomax);
-    HRatio.GetXaxis()->SetTitle(ref+" sbil");
+    HRatio.GetXaxis()->SetTitle("sbil");
     //HRatio.SetMarkerStyle(8);
     //HRatio.SetMarkerSize(0.4);
     HRatio.Fit(&P1,"Q","",fitmin,fitmax);
@@ -431,7 +439,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 
     C.Clear();
     TProfile*P=HRatio.ProfileX("HRatioProf");
-    P->GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    P->GetYaxis()->SetTitle(TString("ratio"));
     P->GetYaxis()->SetRangeUser(ratiomin,ratiomax);
     P->Draw("pe");
     P1.Draw("lsame");
@@ -441,7 +449,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 
     C.Clear();
     C.SetLeftMargin(0.15);
-    G.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    G.GetYaxis()->SetTitle(TString(" ratio")+" slope");
     G.GetYaxis()->SetRangeUser(-0.02,0.02);
     G.GetXaxis()->SetTitle("bcid");
     G.SetMarkerStyle(8);
@@ -450,7 +458,7 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", TString ref="",  
 
     C.Clear();
     HSlope.Divide(&HSlopeN);
-    HSlope.GetYaxis()->SetTitle(TString(" PCC / ")+ref+" slope");
+    HSlope.GetYaxis()->SetTitle(TString(" ratio")+" slope");
     HSlope.GetYaxis()->SetRangeUser(-0.02,0.02);
     HSlope.GetXaxis()->SetTitle("bcid");
     HSlope.Draw("histp");
