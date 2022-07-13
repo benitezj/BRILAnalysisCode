@@ -10,23 +10,17 @@ void readjson(){
   file >> j;
   //std::cout<<j<<endl;
   
-  for (json::iterator it = j.begin(); it != j.end(); ++it) {
-    //std::cout << *it << '\n';
-  }
-  
+  //for (json::iterator it = j.begin(); it != j.end(); ++it) {
+  //std::cout << *it << '\n';
+  //}
   for (auto& elem : j) {
     //std::cout << "str = " << elem.at(0).get<std::string>() << std::endl;
     auto &subelem = elem.at(1);
     //std::cout<<elem.at(1)<<std::endl;
-    for (auto &subsub : subelem) {
-      //std::cout << subsub.key() << " : " << subsub.value() << std::endl;
-    }
     for (json::iterator it1 = elem.at(1).begin(); it1 != elem.at(1).end(); ++it1) {
       std::cout << "run number: " << it1.key() << ", good ls range: " << it1.value() << '\n';
       //std::cout << *it1 << '\n';
-    }
-    
-    //std::cout << element << '\n';
+    } 
   }
   //std::cout<<j.size()<<std::endl;
 }
