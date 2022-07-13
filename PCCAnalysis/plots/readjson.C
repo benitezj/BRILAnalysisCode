@@ -22,7 +22,7 @@ void readjson(){
       //std::cout << subsub.key() << " : " << subsub.value() << std::endl;
     }
     for (json::iterator it1 = elem.at(1).begin(); it1 != elem.at(1).end(); ++it1) {
-      std::cout << "run number: " << it1.key() << ", good ls range:" << it1.value() << '\n';
+      std::cout << "run number: " << it1.key() << ", good ls range: " << it1.value() << '\n';
       //std::cout << *it1 << '\n';
     }
     
