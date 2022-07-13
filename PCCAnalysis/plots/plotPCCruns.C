@@ -13,7 +13,7 @@
 #define PCCRUNLUMIRatioMax 1.05
 
 long RUNOFFSET=300000;
-
+TString ref="bestlumi";
 
 
 float getRunRefLumi(TString inputfile){
@@ -79,7 +79,7 @@ bool getPIXReadyState(TString inputfile, int RUN){
 }
 
 
-void plotPCCruns(TString Path,TString ref=""){
+void plotPCCruns(TString Path){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   
@@ -174,7 +174,7 @@ void plotPCCruns(TString Path,TString ref=""){
   LumiRun.Draw("ap");
 
   LumiRun.GetXaxis()->SetTitle("run");//TString("run number ") + " - " + RUNOFFSET);
-  LumiRun.GetYaxis()->SetTitle("PCC Lumi [1/#mub]");
+  LumiRun.GetYaxis()->SetTitle("integrated lumi [ #mub^{-1} ]");
 
   LumiRunZero.SetMarkerStyle(8);
   LumiRunZero.SetMarkerSize(0.5); 
@@ -192,7 +192,7 @@ void plotPCCruns(TString Path,TString ref=""){
     LumiRunRatio.SetMarkerStyle(8);
     LumiRunRatio.SetMarkerSize(0.5); 
     LumiRunRatio.SetMarkerColor(2);
-    LumiRunRatio.GetYaxis()->SetTitle(TString("PCC / ")+ref);
+    LumiRunRatio.GetYaxis()->SetTitle(TString("ratio"));
     LumiRunRatio.GetXaxis()->SetTitle(LumiRun.GetXaxis()->GetTitle());
     LumiRunRatio.Draw("ap");
     

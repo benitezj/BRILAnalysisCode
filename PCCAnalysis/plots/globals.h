@@ -15,7 +15,7 @@
 #define PCCRUNLUMIRatioMax 22
 long RUNOFFSET=315000;
 
-
+TString RefLumi="hfoc";
 
 ////CMS plot labels
 TString InstLumiAxisTitle("HFOC Inst. Luminosity [ E34#scale[1.0]{cm}^{-2} s^{-1} ]");
