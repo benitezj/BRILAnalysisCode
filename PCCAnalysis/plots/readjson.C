@@ -1,11 +1,11 @@
-#include "/home/ashish/json/single_include/nlohmann/json.hpp"
+#include "/afs/cern.ch/user/a/asehrawa/json/single_include/nlohmann/json.hpp"
 #include <iostream>
 #include <fstream>
 using json = nlohmann::json;
 using namespace std;
 void readjson(){
   
-  std::ifstream file("/home/ashish/vcpkg/normtag_hfoc.json");
+  std::ifstream file("/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json");
   json j;
   file >> j;
   //std::cout<<j<<endl;
