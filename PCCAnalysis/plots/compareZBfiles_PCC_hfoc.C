@@ -2,7 +2,11 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_PCC_hfoc(char run_period='A') {
+#include "/afs/cern.ch/user/a/asehrawa/json/single_include/nlohmann/json.hpp"
+#include <fstream>
+using json = nlohmann::json;
+using namespace std;
+void compareZBfiles_PCC_hfoc(char run_period='B') {
   
   TCanvas*C = new TCanvas("Luminosity (PCC hfoc data)");
   C->cd();
@@ -21,7 +25,9 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   }
   
   if(run_period=='B'){
-    run_number = {317080, 317087, 317088, 317089, 317170, 317182, 317212, 317213, 317239, 317279,317291, 317292, 317295, 317296, 317297, 317319, 317320,317338, 317339, 317340, 317382, 317383, 317391, 317392, 317434, 317435, 317438, 317475, 317478, 317479, 317480, 317481, 317482, 317484, 317488, 317509, 317510, 317511, 317512, 317527, 317580, 317591, 317626, 317640, 317641, 317648,317649, 317650, 317661, 317663, 317683, 317696, 318070, 318622, 318653, 318661, 318662, 318663, 318667, 318669, 318670, 318675, 318712,318714, 318733, 318734, 318785,318816, 318817, 318819, 318820, 318828, 318834, 318836, 318837, 318872, 318874, 318876, 318877, 318939, 318944, 318945, 318953, 318980, 318981, 318982, 318983, 318984, 318992, 319006, 319011, 319015, 319016, 319018, 319019, 319077, 319097, 319098, 319099, 319100, 319101, 319103, 319104, 319124, 319125, 319159, 319160, 319173, 319174, 319175, 319176, 319177, 319190, 319222, 319223, 319254, 319255, 319256, 319260, 319262, 319263, 319264, 319265, 319266, 319267, 319268, 319270, 319273, 319274, 319300, 319310, 319311};
+    //run_number = {317080, 317087, 317088, 317089, 317170, 317182, 317212, 317213, 317239, 317279,317291, 317292, 317295, 317296, 317297, 317319, 317320,317338, 317339, 317340, 317382, 317383, 317391, 317392, 317434, 317435, 317438, 317475, 317478, 317479, 317480, 317481, 317482, 317484, 317488, 317509, 317510, 317511, 317512, 317527, 317580, 317591, 317626, 317640, 317641, 317648,317649, 317650, 317661, 317663, 317683, 317696, 318070, 318622, 318653, 318661, 318662, 318663, 318667, 318669, 318670, 318675, 318712,318714, 318733, 318734, 318785,318816, 318817, 318819, 318820, 318828, 318834, 318836, 318837, 318872, 318874, 318876, 318877, 318939, 318944, 318945, 318953, 318980, 318981, 318982, 318983, 318984, 318992, 319006, 319011, 319015, 319016, 319018, 319019, 319077, 319097, 319098, 319099, 319100, 319101, 319103, 319104, 319124, 319125, 319159, 319160, 319173, 319174, 319175, 319176, 319177, 319190, 319222, 319223, 319254, 319255, 319256, 319260, 319262, 319263, 319264, 319265, 319266, 319267, 319268, 319270, 319273, 319274, 319300, 319310, 319311};
+
+    run_number ={318939, 318944, 318945, 318953};
   }
   
   if(run_period=='C'){
@@ -98,11 +104,11 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TH2F* PCCvsHF_linearity;
   
   //h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram", 28000, 0.0, 70000, 28000, 0.0, 1.4);
-  h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 70000, 300, 0.4, 1.6);
+  h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 70000, 300, 0.3, 2);
   //h_ratio = new TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 300000, 300, 0, 3);
   //h_ratio = new TH2F("h_ratio", "Fill 6961 ", 2100, 0.0, 2100, 500, 0.4, 1.6);
   //h_ratiovsHF = new TH2F("h_ratiovsHF", "lumi ratio vs HF histogram", 28000, 0.0, 23000, 28000, 0.0, 1.4);
-  h_ratiovsHF = new TH2F("h_ratiovsHF", " ", 500, 0.0, 23000, 300, 0.3, 1.3);
+  h_ratiovsHF = new TH2F("h_ratiovsHF", " ", 500, 0.0, 23000, 300, 0.3, 2);
   PCCvsHF_linearity = new TH2F("h_PCCvsHF_linearity", "Linearity PCC vs HF histogram", 100, 0.0, 25000, 100, 0.0, 25000);
   
   TH1* h_PCCvsHF_residual = new TH1F("residual histogram PCC vs HF", "Residuals", 300, -0.1, 0.1);
@@ -156,7 +162,13 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   if(run_period=='H'){
     Path = "/eos/user/a/asehrawa/zerobias_allrun";
   }
-    
+   
+
+  std::ifstream file("/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json");
+  json obj;
+  file >> obj;
+
+  
   for (unsigned int j=0;j<run_number.size();j++){  
     TString infile=Path+"/"+run_number.at(j)+".csv"; 
     std::cout<< run_number.at(j)<<std::endl;    
@@ -210,150 +222,140 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
       cout << "Unable to open hfoc file: "<<infile1.Data()<<endl;
       return;
     }
-    
-    std::ifstream file("/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json");
-    std::string line_json;
-    int lineNum;
+        
     std::string line1;
     string tmp;
     int lumisec_count1=0;
     float lumisec_count_perrun1=0;
-    while (std::getline(myfile1, line1)){
-      if (file.is_open()){
-	lineNum = 0;
-	while(std::getline(file, line_json)) {
-	  lineNum++;
-	  //reader.parse(file, line)
-	  std::stringstream iss(line_json);
-	  std::string token;
-	  
-	  std::getline(iss,token, ',');
-	  std::stringstream normtagiss(token);
-	  normtagiss>>normtag;
-	  
-	  std::getline(iss,token,':');
-	  std::stringstream runiss(token);
-	  runiss>>run1;
-	  
-	  std::getline(iss,token,',');
-	  std::stringstream lsissbegin(token);
-	  lsissbegin>>ls4;
-	  
-	  std::getline(iss,token);
-	  std::stringstream lsissend(token);
-	  lsissend>>ls5;
-	  
-	  if(lineNum>=2576 && lineNum<=2722){
-	    //std::cout<<normtag<<" "<<run<<"  "<<ls4<<", "<<ls5<<endl;
-	    //cout <<line_json<<endl;
-	    std::stringstream iss(line1);
-	    //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
-	    if(ls1>=ls4 || ls1<=ls5){   
-	      iss>>run1>>tmp>>ls1>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
-	      iss>>refLumi[ls1];
-	      iss>>tmp>>tmp;
-	      lumisec_count1++;
-	      LS1 = previousrunlumisec_count1 + ls1;
-	      lumisec_count_perrun1++;      
-	      //std::getline(iss1,token1, ',');
-	      //std::stringstream lumiiss1(token1);
-	      //lumiiss1>>LumiLS1;
-	      //Lumisection_perrun1->Fill(run_counter++, lumisec_count_perrun1);
-	      LumiperLS1->Fill(LS1, refLumi[ls1]);
-	      //LumiperLS1->Fill(ls1, refLumi[ls1]);
-	      //std::cout<<"hfoc "<<run<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
-	      //std::cout<<lumiBX<<std::endl; 
-	      
-	      if (run_period=='A'){// && cluster_count[ls1]/sigmavis>=5000 && refLumi[ls1]>=5000){
-		if(sigmavis>0 && refLumi[ls1]!=0){	
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));	  
-		  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
-		  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  //std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmavis*refLumi[ls1])<<std::endl;
-		  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;
-		  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
-		  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;	  
-		}
-	      }
-	      
-	      if (run_period=='B' && LumiLS>=3000000 && LumiLS1>=4000000){
-		if(refLumi[ls1]!=0){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-		}
-	      }
-	      
-	      if (run_period=='C'){//&& LumiLS>=1000000 && LumiLS1>=1000000){
-		if(sigmavis>0 && refLumi[ls1]!=0){
-		  //if(cluster_count[ls1]/(sigmavis*refLumi[ls1])>1.05 && cluster_count[ls1]/(sigmavis*refLumi[ls1])<1.10){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmavis*refLumi[ls1])<<std::endl;	  
-		  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
-		  //}          
-		  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));                                                                  
-		  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;                                                                     
-		  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
-		  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;     
-		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-		}
-	      }
-	      
-	      if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
-		if(refLumi[ls1]!=0){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-		}
-	      }
-	      
-	      if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
-		if(refLumi[ls1]!=0){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-		}
-	      }
-	      
-	      if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
-		if(refLumi[ls1]!=0){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-		}
-	      }
-	      
-	      if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
-		if(refLumi[ls1]!=0){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
-		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
-		}
-	      }
-	      
-	      if (run_period=='H'){// && cluster_count[ls1]/sigmavis>=5000 && refLumi[ls1]>=5000){                                                   
-		if(sigmavis>0 && refLumi[ls1]!=0){
-		  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
-		  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  //std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmavis*refLu\mi[ls1])<<std::endl;                                                                                                       
-		  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));                                                                  
-		  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
-		  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;                                                                     
-		  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
-		  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;                                          
-
-		}
-	      }	      
-	    }
-	  }
-	  
+    while (std::getline(myfile1, line1)){ 
+      std::stringstream iss1(line1);
+      //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
+      iss1>>run1>>tmp>>ls1>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
+      iss1>>refLumi[ls1];
+      iss1>>tmp>>tmp;
+      lumisec_count1++;
+      LS1 = previousrunlumisec_count1 + ls1;
+      lumisec_count_perrun1++;      
+      //std::getline(iss1,token1, ',');
+      //std::stringstream lumiiss1(token1);
+      //lumiiss1>>LumiLS1;
+      //Lumisection_perrun1->Fill(run_counter++, lumisec_count_perrun1);
+      LumiperLS1->Fill(LS1, refLumi[ls1]);
+      //LumiperLS1->Fill(ls1, refLumi[ls1]);
+      //std::cout<<"hfoc "<<run<< "  "<<ls<<"  "<<LumiLS1<<std::endl;
+      //std::cout<<lumiBX<<std::endl; 
+      
+      if (run_period=='A'){// && cluster_count[ls1]/sigmavis>=5000 && refLumi[ls1]>=5000){
+	if(sigmavis>0 && refLumi[ls1]!=0){	
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));	  
+	  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
+	  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmavis*refLumi[ls1])<<std::endl;
+	  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;
+	  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
+	  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;	  
 	}
       }
+      
+      if (run_period=='B'){// && LumiLS>=3000000 && LumiLS1>=4000000){
+	if(sigmavis>0 && refLumi[ls1]!=0){
+	  for (auto& elem : obj) {
+	    //std::cout << "normtag = " << elem.at(0).get<std::string>() << std::endl;
+	    if(elem.at(0).get<std::string>()=="hfoc18PAS"){                                                               
+	      auto &subelem = elem.at(1);
+	      //std::cout<<"list "<<elem.at(1)<<std::endl;                                                                                   
+	      for (json::iterator it1 = subelem.begin(); it1 != subelem.end(); ++it1) {
+		//if(it1.key()==run_number.at(j)){
+		if(it1.key()=="318939" || it1.key()=="318944" || it1.key()=="318945" || it1.key()=="318953"){
+		  std::cout <<"normtag "<<elem.at(0).get<std::string>()<<" run number: " << it1.key() << ", good ls range: " << it1.value() << '\n';
+		  //LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
+		  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;
+		  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+		  //std::cout<<run<<"  "<< LS1<<"  "<<sigmavis<<"  "<<cluster_count[ls1]<<"  "<<refLumi[ls1]<< " "<<cluster_count[ls1]/(sigmavis*refLumi[ls1])<<std::endl;
+		  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+		  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
+		  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+		  //std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmav\is*refLumi[ls1])<<std::endl;                                                                                                                
+		  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));                                                          
+		  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;                                                             
+		  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
+		  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;          
+		  }
+	      }
+	      
+	    }
+	  }
+	}
+      }
+      
+      if (run_period=='C'){//&& LumiLS>=1000000 && LumiLS1>=1000000){
+	if(sigmavis>0 && refLumi[ls1]!=0){
+	  //if(cluster_count[ls1]/(sigmavis*refLumi[ls1])>1.05 && cluster_count[ls1]/(sigmavis*refLumi[ls1])<1.10){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmavis*refLumi[ls1])<<std::endl;	  
+	  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
+	  //}          
+	  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));                                                                  
+	  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;                                                                     
+	  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
+	  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;     
+	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
+	}
+      }
+      
+      if (run_period=='D' && LumiLS>=2000000 && LumiLS1>=2000000){
+	if(refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
+	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
+	}
+      }
+      
+      if (run_period=='E' && LumiLS>=3000000 && LumiLS1>=2000000){
+	if(refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
+	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
+	}
+      }
+	      
+      if (run_period=='F' &&  LumiLS>=2000000 && LumiLS1>=2000000){
+	if(refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
+	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
+	}
+      }
+      
+      if (run_period=='G' &&  LumiLS>=1000000 && LumiLS1>=3000000){ 
+	if(refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, cluster_count[ls1]/refLumi[ls1]);
+	  //std::cout<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl; 
+	}
+      }
+      
+      if (run_period=='H'){// && cluster_count[ls1]/sigmavis>=5000 && refLumi[ls1]>=5000){                                                   
+	if(sigmavis>0 && refLumi[ls1]!=0){
+	  LumiLSratio->SetPoint(LumiLSratio->GetN(), LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  LumiratiovsHF->SetPoint(LumiratiovsHF->GetN(), refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  PCCvsHF->SetPoint(PCCvsHF->GetN(), refLumi[ls1], cluster_count[ls1]/sigmavis);
+	  h_ratio->Fill(LS1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //std::cout<<run1<<"  "<<LS1<<"  "<<cluster_count[ls1]<<" "<<refLumi[ls1]<<"  "<<sigmavis<<"  "<<cluster_count[ls1]/(sigmavis*refLu\mi[ls1])<<std::endl;                                                                                                       
+	  //h_ratio->Fill(ls1, cluster_count[ls1]/(sigmavis*refLumi[ls1]));                                                                  
+	  h_ratiovsHF->Fill(refLumi[ls1], cluster_count[ls1]/(sigmavis*refLumi[ls1]));
+	  //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;                                                                     
+	  PCCvsHF_linearity->Fill(cluster_count[ls1]/sigmavis, refLumi[ls1]);
+	  //std::cout<<run<<"  "<<lumisec_count1<<" "<<cluster_count[ls1]/refLumi[ls1] <<std::endl;                                          
+	  
+	}
+      }	      
     }
     
+
     previousrunlumisec_count1+=lumisec_count1;
     myfile1.close();
     
@@ -374,6 +376,9 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
     //std::cout<<"new "<<run<<"    "<< lumisec_count1<<std::endl;
     
   }
+  
+      
+    
   
   //std::cout<<h_ratiovsHF->ProjectionY()->GetMean()<<std::endl;
   
@@ -528,7 +533,6 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   TCanvas*C1 = new TCanvas("Luminosity PCC HFOC on same canvas");
   C1->cd();
   C1->SetLogy();
-  
   LumiperLS->GetXaxis()->SetTitle("Lumi section");
   LumiperLS->GetYaxis()->SetTitle("PCC or HFOC");
   //LumiperLS->GetYaxis()->SetRangeUser(1, 1000000);
@@ -608,7 +612,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   }
   if(run_period=='B'){
     LumiLSratio->SetTitle("Run2018B (317080-319311)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(0, 50);
+    LumiLSratio ->GetYaxis()->SetRangeUser(0, 5);
   }
   if(run_period=='C'){
     //LumiLSratio->SetTitle("Run2018C (319337-320065)");
@@ -840,7 +844,6 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   h_PCC_HFvsHF_residual->SetMarkerColor(1);
   h_PCC_HFvsHF_residual->SetMarkerSize(0.3);
 
-
   ProjY_h_ratio->GetXaxis()->SetTitle("lumi section");
   ProjY_h_ratio->GetYaxis()->SetTitle("PCC/HFOC");
   ProjY_h_ratiovsHF->GetXaxis()->SetTitle("HFOC");
@@ -859,7 +862,7 @@ void compareZBfiles_PCC_hfoc(char run_period='A') {
   ProjY_h_ratiovsHF->SetMarkerColor(1);
   ProjY_h_ratiovsHF->SetMarkerSize(0.7);
 
-  if(run_period=='A'){
+  if(run_period=='B'){
     PCCvsHF_residual->SetTitle("Run2018A (315252-316995)");
     PCCvsHF_residual->SetTitle("Residuals");
     TLine* line = new TLine(0, 0, 25000, 0);
