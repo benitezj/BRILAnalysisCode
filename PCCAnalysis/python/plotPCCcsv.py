@@ -24,7 +24,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                   ls=data.split()[1]
                   PCC_count=data.split()[2]
                   HFOC_count=data.split()[3]
-                  print(run, ls, PCC_count, HFOC_count)
+                  ##print(run, ls, PCC_count, HFOC_count)
                   for line in data1:
                         if not line[0].startswith("hfoc"):
                               continue
@@ -32,8 +32,8 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                     for ls1, ls2 in ranges:
                                           print(run1, ls1, ls2)
                                           if float(HFOC_count) !=0:
-                                                h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))                      
                                                 if (run==run1) or (ls1<=ls<=ls2):
+                                                      h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
                                                       h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
                                                       lumisec_count=lumisec_count+1
                                                       ##print(run, ls, lumisec_count, PCC_count, HFOC_count)
