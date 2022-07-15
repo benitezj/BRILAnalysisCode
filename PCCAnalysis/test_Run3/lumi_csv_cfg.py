@@ -40,7 +40,7 @@ process.source = cms.Source("PoolSource",
 #LumiInfo_ALCARECORawPCCProd_rawPCCProd_RECO.
 #LumiInfo_ALCARECORawPCCProdUnCorr_rawPCCProd_RECO.
 process.LumiPCCAnalyzer = cms.EDAnalyzer("LumiPCCAnalyzer",
-                                         LumiInfoName = cms.string("ALCARECORawPCCProdUnCorr"), 
+                                         LumiInfoName = cms.string("ALCARECORawPCCProd"), 
                                          LumiInfoInst = cms.string("rawPCCProd"), 
                                          CSVFileName = cms.string("rawPCC.csv"), 
 )

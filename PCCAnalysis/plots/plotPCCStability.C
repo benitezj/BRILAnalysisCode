@@ -3,9 +3,10 @@
 #include <string>
 #include "globals.h"
 
-float minratio=0.9;
-float maxratio=1.1;
-float plotYrange=0;
+float minratio=0.0;
+float maxratio=2.0;
+float plotYrange=2500;
+float plotYrangeLog=1e4;
 
 
 void plotPCCStability(TString inpath, int plotXrange=100){
@@ -77,9 +78,9 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   Lumi.SetMarkerSize(0.3);
   Lumi.GetXaxis()->SetTitle("lumi section");
   Lumi.GetYaxis()->SetTitle(" integrated lumi [#mub^{-1}]");
-  Lumi.GetYaxis()->SetRangeUser(0.01,1.3*Lumi.GetMaximum());
+  Lumi.GetYaxis()->SetRangeUser(0,plotYrange);
   Lumi.Draw("histp");
-  leg.AddEntry(&Lumi,"PCC","p");
+  leg.AddEntry(&Lumi,"PCC","pl");
 
   TLine li;
   li.SetLineStyle(2);
@@ -88,8 +89,8 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   ltxt.SetTextSize(0.03);
   TString rtxt("");
   for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-    li.DrawLine(it->first,0,it->first,plotYrange);
-    ltxt.DrawLatex(it->first,0.02,rtxt+it->second);
+    li.DrawLine(it->first,1,it->first,plotYrange);
+    ltxt.DrawLatex(it->first,1,rtxt+it->second);
   }
 
 
@@ -98,11 +99,17 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRef.SetMarkerSize(0.3);
     LumiRef.SetMarkerColor(4);
     LumiRef.Draw("histpsame");
-    leg.AddEntry(&LumiRef,RefLumi,"p");
+    leg.AddEntry(&LumiRef,RefLumi,"pl");
   }
+
   leg.Draw();
   C.Print(inpath+"/ls_lumi.png");
 
+  C.SetLogy(1);
+  Lumi.GetYaxis()->SetRangeUser(1,plotYrangeLog);
+  C.Update();
+  C.Print(inpath+"/ls_lumi_log.png");
+  C.SetLogy(0);
 
 
 
@@ -116,7 +123,8 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRatio.SetMarkerStyle(8);
     LumiRatio.SetMarkerSize(0.5);
     LumiRatio.GetXaxis()->SetTitle("lumi section");
-    LumiRatio.GetYaxis()->SetTitle(TString("ratio"));
+    //LumiRatio.GetYaxis()->SetTitle(TString("ratio"));
+    LumiRatio.GetYaxis()->SetTitle(TString("PCC / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");
     li.DrawLine(0,1,plotXrange,1);
