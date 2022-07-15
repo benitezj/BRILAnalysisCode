@@ -16,28 +16,29 @@ h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 200, 0.0, 2
 lumisec_count=0
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
-      with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as f1:
-            data1 = json.load(f1)
-            ##print(data1)
+      with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as f:
+            content = json.load(f)
+            print(content)
             for data in datFile:
                   run=data.split()[0]
                   ls=data.split()[1]
                   PCC_count=data.split()[2]
                   HFOC_count=data.split()[3]
                   ##print(run, ls, PCC_count, HFOC_count)
-                  ##for line in data1:
-                    ##    if not line[0].startswith("hfoc"):
-                      ##        continue
-                        ##      for run1, ranges in line[1].items():
-                          ##          for ls1, ls2 in ranges:
-                            ##              print(run1, ls1, ls2)
-                  if float(HFOC_count) !=0:
-                        ##                  if (run==run1) or (ls1<=ls<=ls2):
-                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-                        h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
-                        lumisec_count=lumisec_count+1
-                              ##print(run, ls, lumisec_count, PCC_count, HFOC_count)
-                                                
+                  with open("hfoc_json.txt", "w") as f:
+                        for line in content:
+                              if not line[0].startswith("hfoc"):
+                                    continue
+                                    for run1, ranges in line[1].items():
+                                          for ls1, ls2 in ranges:
+                                                f.write("{}; {}; {};\n".format(run1, ls1, ls2))
+                                                print(int(run1), int(ls1), int(ls2))
+                                                if float(HFOC_count) !=0:
+                                                      if ((int(run)==int(run1)) or (int(ls1)<=int(ls)<=int(ls2))):
+                                                            h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
+                                                            h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
+                                                            lumisec_count=lumisec_count+1
+                                                            print(run, run1, ls, ls1, ls2, lumisec_count, PCC_count, HFOC_count)
 h_ratiovsHF.SetMarkerStyle(20)
 h_ratiovsHF.SetMarkerColor(46)
 h_ratiovsHF.SetStats(0)
