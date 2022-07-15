@@ -24,7 +24,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                   ls=data.split()[1]
                   PCC_count=data.split()[2]
                   HFOC_count=data.split()[3]
-                  ##print(run, ls, PCC_count, HFOC_count)
+                  print(run, ls, PCC_count, HFOC_count)
                   with open("hfoc_json.txt", "w") as f:
                         for line in content:
                               if not line[0].startswith("hfoc"):
