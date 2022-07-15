@@ -24,7 +24,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                   ls=data.split()[1]
                   PCC_count=data.split()[2]
                   HFOC_count=data.split()[3]
-                  print(run, ls, PCC_count, HFOC_count)
+                  print(int(run), int(ls), float(PCC_count), float(HFOC_count))
                   with open("hfoc_json.txt", "w") as f:
                         for line in content:
                               if not line[0].startswith("hfoc"):
@@ -32,13 +32,13 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                     for run1, ranges in line[1].items():
                                           for ls1, ls2 in ranges:
                                                 f.write("{}; {}; {};\n".format(run1, ls1, ls2))
-                                                print(int(run1), int(ls1), int(ls2))
+                                                ##print(int(run1), int(ls1), int(ls2))
                                                 if float(HFOC_count) !=0:
                                                       if ((int(run)==int(run1)) or (int(ls1)<=int(ls)<=int(ls2))):
                                                             h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
                                                             h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
                                                             lumisec_count=lumisec_count+1
-                                                            print(run, run1, ls, ls1, ls2, lumisec_count, PCC_count, HFOC_count)
+                                                            ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
 h_ratiovsHF.SetMarkerStyle(20)
 h_ratiovsHF.SetMarkerColor(46)
 h_ratiovsHF.SetStats(0)
