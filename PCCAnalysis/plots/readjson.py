@@ -2,7 +2,6 @@ import json
 with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as f:
     data = json.load(f)
 
-
 with open("flat.txt", "w") as f:
     for line in data:
         if not line[0].startswith("hfoc"):
