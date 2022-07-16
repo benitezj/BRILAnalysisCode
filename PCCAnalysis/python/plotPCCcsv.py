@@ -15,30 +15,35 @@ h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 
 h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 200, 0.0, 23000, 200, 0.0, 2)
 lumisec_count=0
 
+
+with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
+    data = json.load(HFOC_JSON)
+    ##print(data)
+with open("hfoc_normtag.txt", "w") as HFOC_JSON:
+    for line in data:
+        if not line[0].startswith("hfoc"):
+            continue
+        for run1, ranges in line[1].items():
+            for ls1, ls2 in ranges:
+                HFOC_JSON.write("{}; {}; {};\n".format(run1, ls1, ls2))
+                ##print(int(run1), int(ls1), int(ls2))                    
+
+          
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
-      with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as f:
-            content = json.load(f)
-            print(content)
-            for data in datFile:
-                  run=data.split()[0]
-                  ls=data.split()[1]
-                  PCC_count=data.split()[2]
-                  HFOC_count=data.split()[3]
-                  print(int(run), int(ls), float(PCC_count), float(HFOC_count))
-                  with open("hfoc_json.txt", "w") as f:
-                        for line in content:
-                              if not line[0].startswith("hfoc"):
-                                    continue
-                                    for run1, ranges in line[1].items():
-                                          for ls1, ls2 in ranges:
-                                                f.write("{}; {}; {};\n".format(run1, ls1, ls2))
-                                                ##print(int(run1), int(ls1), int(ls2))
-                                                if float(HFOC_count) !=0:
-                                                      if ((int(run)==int(run1)) or (int(ls1)<=int(ls)<=int(ls2))):
-                                                            h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-                                                            h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
-                                                            lumisec_count=lumisec_count+1
-                                                            ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
+      for data in datFile:
+            run=data.split()[0]
+            ls=data.split()[1]
+            PCC_count=data.split()[2]
+            HFOC_count=data.split()[3]
+            ##print(int(run), int(ls), float(PCC_count), float(HFOC_count))
+            if float(HFOC_count) !=0:
+                  if ((int(run)==int(run1)) or (int(ls1)<=int(ls)<=int(ls2))):
+                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
+                        h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
+                        lumisec_count=lumisec_count+1
+                        print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
+
+
 h_ratiovsHF.SetMarkerStyle(20)
 h_ratiovsHF.SetMarkerColor(46)
 h_ratiovsHF.SetStats(0)
