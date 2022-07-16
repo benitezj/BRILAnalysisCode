@@ -37,11 +37,12 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
             HFOC_count=data.split()[3]
             ##print(int(run), int(ls), float(PCC_count), float(HFOC_count))
             if float(HFOC_count) !=0:
-                  if ((int(run)==int(run1)) or (int(ls1)<=int(ls)<=int(ls2))):
-                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-                        h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
-                        lumisec_count=lumisec_count+1
-                        print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
+                  for ls1, ls2 in ranges:
+                        if ((int(run)==int(run1)) or (int(ls1)<=int(ls)<=int(ls2))):
+                              h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
+                              h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
+                              lumisec_count=lumisec_count+1
+                              print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
 
 
 h_ratiovsHF.SetMarkerStyle(20)
