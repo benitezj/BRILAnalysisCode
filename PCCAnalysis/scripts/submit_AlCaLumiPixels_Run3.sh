@@ -1,19 +1,23 @@
 #!/bin/bash
 
+#options
 submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check
 cfg=$3  ## only for action=0
 jobtype=csv ##step2, step3, step4, step5 , csv
+condorqueue=local  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor)
 
+
+####
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
-condorqueue=workday  #microcentury , workday, testmatch
-
-
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 
+MAXJOBS=1000000 #useful for testing
 
+##for RawPCCProducer jobs which need to pick up offline afterglow
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
+
 
 ###########################################################
 ### 
@@ -81,7 +85,11 @@ submit(){
     rm -f ${outputdir}/${run}.frac
 
     #bsub -q 1nd -o $fullsubmitdir/${run}.log -J $run < $fullsubmitdir/${run}.sh    
-    condor_submit $fullsubmitdir/${run}.sub 
+    if [ "$condorqueue" == "local" ] ; then
+	source $fullsubmitdir/${run}.sh
+    else
+	condor_submit $fullsubmitdir/${run}.sub 
+    fi
 }
 
 make_sh_script(){
@@ -131,7 +139,7 @@ make_sh_script(){
     fi
 
     if [ "$jobtype" == "step5" ] ; then
-	echo "cp step5_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+	echo "cp step5_onlyRawPCCProducer_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
 
     if [ "$jobtype" == "csv" ] ; then
@@ -208,6 +216,10 @@ check_log(){
 export RUNLIST=""
 counter=0
 for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
+    if [[ $counter -gt 100000 ]]; then
+	 break
+    fi
+
     run=`echo $f | awk -F".txt" '{print $1}'`
     echo $run
 

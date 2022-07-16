@@ -7,7 +7,7 @@ import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_cff import Run3
 
-process = cms.Process('RAWPCCPROD',Run3)
+process = cms.Process('RECO',Run3)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -36,20 +36,28 @@ if dbfile :
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 #process.GlobalTag.globaltag = '124X_dataRun3_Prompt_v2'
 #process.GlobalTag.DumpStat = cms.untracked.bool( False )
-
+import os,sys
 process.MessageLogger.cerr.FwkSummary.reportEvery = cms.untracked.int32(10000)
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10000)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1),
+    input = cms.untracked.int32(-1),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
 # Input source
+inputlist=cms.untracked.vstring()
+inputfile=os.getenv('INPUTFILE')
+if inputfile != None :
+    print('reading from input file: '+inputfile)
+    infile = open(inputfile,'r')
+    inputlist=cms.untracked.vstring(infile.readlines())
+    infile.close()
+if len(inputlist) == 0 : sys.exit("No input files")
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/355/100/00000/4cfd3767-2eb5-4e9e-a21d-c2fb2ce8b5af.root'),
-    secondaryFileNames = cms.untracked.vstring()
+    fileNames =     inputlist
 )
+
 
 process.options = cms.untracked.PSet(
     FailPath = cms.untracked.vstring(),
@@ -106,7 +114,7 @@ process.ALCARECOoutput = cms.OutputModule("PoolOutputModule",
 # Other statements
 process.ALCARECOEventContent.outputCommands.extend(process.OutALCARECORawPCCProducer_noDrop.outputCommands)
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run3_data_prompt', '')
 
 # Path and EndPath definitions
 process.endjob_step = cms.EndPath(process.endOfProcess)
