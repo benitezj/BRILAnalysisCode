@@ -38,17 +38,17 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                     for ls1, ls2 in line[1][run1]:
                         if int(ls1)<=int(ls)<=int(ls2):
                             goodls=True
-                            print(run, int(run1), ls, ls1, ls2)
-                            
-        if goodls==True:
-            LS=int(ls)+lumisec_count                               
-            lumisec_count=lumisec_count+1
-            if float(HFOC_count) !=0:
-                h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-                h_ratio.Fill(int(LS), float(PCC_count)/float(HFOC_count))
-                PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
-                ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
 
+        if goodls==True:  
+            LS=ls+lumisec_count                          
+            if float(HFOC_count) !=0:
+                h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
+                h_ratio.Fill(lumisec_count, float(PCC_count)/float(HFOC_count))
+                PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
+                
+                print(lumisec_count, float(PCC_count)/float(HFOC_count))
+                ##print(run, int(run1), ls, ls1, ls2)
+    
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,25000);
 ProfX_h_ratiovsHF.Fit("fitfn")
@@ -75,7 +75,7 @@ h_ratio.SetMarkerColor(46)
 h_ratio.GetXaxis().SetTitle("Lumi section")
 h_ratio.GetYaxis().SetTitle("PCC/HFOC")
 h_ratio.Draw("colz")
-C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsls.png')
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsls_true.png')
 PCCvsHFOC.SetMarkerStyle(20)
 PCCvsHFOC.SetMarkerColor(46)
 PCCvsHFOC.GetXaxis().SetTitle("HF Inst. Lumi")
@@ -110,3 +110,11 @@ C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
 
 
 
+    ##if goodls==True:
+##LS=int(ls)+lumisec_count                               
+  ##          lumisec_count=lumisec_count+1
+    ##        if float(HFOC_count) !=0:
+      ##          h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
+        ##        h_ratio.Fill(int(LS), float(PCC_count)/float(HFOC_count))
+          ##      PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
+                ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
