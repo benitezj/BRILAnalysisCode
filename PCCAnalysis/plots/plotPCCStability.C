@@ -80,7 +80,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   Lumi.GetYaxis()->SetTitle(" integrated lumi [#mub^{-1}]");
   Lumi.GetYaxis()->SetRangeUser(0,plotYrange);
   Lumi.Draw("histp");
-  leg.AddEntry(&Lumi,"PCC","pl");
+  leg.AddEntry(&Lumi,"PCC","p");
 
   TLine li;
   li.SetLineStyle(2);
@@ -98,8 +98,10 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRef.SetMarkerStyle(8);
     LumiRef.SetMarkerSize(0.3);
     LumiRef.SetMarkerColor(4);
+    LumiRef.SetLineColor(4);
     LumiRef.Draw("histpsame");
-    leg.AddEntry(&LumiRef,RefLumi,"pl");
+    TLegendEntry*  legLumiRef =   leg.AddEntry(&LumiRef,RefLumi,"p");
+    legLumiRef->SetTextColor(4);
   }
 
   leg.Draw();
@@ -121,7 +123,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRatio.SetStats(0);
     LumiRatio.GetYaxis()->SetRangeUser(minratio,maxratio);
     LumiRatio.SetMarkerStyle(8);
-    LumiRatio.SetMarkerSize(0.5);
+    LumiRatio.SetMarkerSize(0.4);
     LumiRatio.GetXaxis()->SetTitle("lumi section");
     //LumiRatio.GetYaxis()->SetTitle(TString("ratio"));
     LumiRatio.GetYaxis()->SetTitle(TString("PCC / ")+RefLumi);
@@ -133,8 +135,8 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     C.Clear();
     HistoLumiRatio.GetYaxis()->SetTitle(" # of lumi sections ");
     HistoLumiRatio.GetXaxis()->SetTitle(TString("ratio"));
-    HistoLumiRatio.SetMarkerStyle(8);
-    HistoLumiRatio.SetMarkerSize(0.5);
+    //HistoLumiRatio.SetMarkerStyle(8);
+    //HistoLumiRatio.SetMarkerSize(0.4);
     //HistoLumiRatio.Draw("hist");
     HistoLumiRatio.Fit("gaus");//,"","same",0.9,1.1);
     C.Print(inpath+"/ls_ratio_histo.png");
