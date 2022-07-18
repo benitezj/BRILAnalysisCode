@@ -15,8 +15,8 @@ h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 
 h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 200, 0.0, 23000, 200, 0.0, 2)
 PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 200, 0.0, 30000, 200, 0.0, 30000)
 ProfX_h_ratiovsHF_residual=ROOT.TGraph()
+ProfX_PCCvsHF_residual=ROOT.TGraph()
 lumisec_count=0
-
 
 with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
     data = json.load(HFOC_JSON)
@@ -55,8 +55,12 @@ fitfn1 = ROOT.TF1("fitfn1","[0]*x+[1]",0,25000);
 ProfX_PCCvsHFOC.Fit("fitfn1")
 
 ##for i in ls:
-  ##  if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i)))!=0:
-    ##    ProfX_h_ratiovsHF_residual.SetPoint(ProfX_h_ratiovsHF_residual.GetN(), ProfX_h_ratiovsHF.GetBinCenter(int(i)), ((ProfX_h_ratiovsHF.GetBinContent(int(i)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i))));
+##    if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i)))!=0:
+##        ProfX_h_ratiovsHF_residual.SetPoint(ProfX_h_ratiovsHF_residual.GetN(), ProfX_h_ratiovsHF.GetBinCenter(int(i)), ((ProfX_h_ratiovsHF.GetBinContent(int(i)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i))));
+
+##for i in ls:
+##    if fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(i)))!=0:         
+##        ProfX_PCCvsHF_residual.SetPoint(ProfX_PCCvsHF_residual.GetN(), ProfX_PCCvsHFOC.GetBinCenter(int(i)), ((ProfX_PCCvsHFOC.GetBinContent(int(i)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(i))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(i))));  
 
 h_ratiovsHF.SetMarkerStyle(20)
 h_ratiovsHF.SetMarkerColor(46)
@@ -94,6 +98,12 @@ ProfX_h_ratiovsHF_residual.GetXaxis().SetTitle("(PCC-Fit)/Fit")
 ProfX_h_ratiovsHF_residual.GetYaxis().SetTitle("Entries")
 ProfX_h_ratiovsHF_residual.Draw("AP")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsHFOC_ProfileX_residuals.png')
+ProfX_PCCvsHF_residual.SetMarkerStyle(20)
+ProfX_PCCvsHF_residual.SetMarkerColor(46)
+ProfX_PCCvsHF_residual.GetXaxis().SetTitle("(PCC-Fit)/Fit")
+ProfX_PCCvsHF_residual.GetYaxis().SetTitle("Entries")
+ProfX_PCCvsHF_residual.Draw("AP")
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
 
 
 
