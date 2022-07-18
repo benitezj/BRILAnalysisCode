@@ -17,6 +17,7 @@ PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 200, 0.0, 30000, 200
 ProfX_h_ratiovsHF_residual=ROOT.TGraph()
 ProfX_PCCvsHF_residual=ROOT.TGraph()
 lumisec_count=0
+LS=0
 goodls=False
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
@@ -37,16 +38,18 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                     for ls1, ls2 in line[1][run1]:
                         if int(ls1)<=int(ls)<=int(ls2):
                             goodls=True
-                            print(run, int(run1), ls, ls1, ls2) 
-
+                            ##print(run, int(run1), ls, ls1, ls2)
+                            
+    if goodls == True:
+        LS=int(ls)+lumisec_count                               
+        lumisec_count=lumisec_count+1
         if float(HFOC_count) !=0:
             h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-            h_ratio.Fill(int(lumisec_count), float(PCC_count)/float(HFOC_count))
+            h_ratio.Fill(int(LS), float(PCC_count)/float(HFOC_count))
+            print(run, ls)
             PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
-            lumisec_count=lumisec_count+1
             ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
-        
-                    
+
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,25000);
 ProfX_h_ratiovsHF.Fit("fitfn")
