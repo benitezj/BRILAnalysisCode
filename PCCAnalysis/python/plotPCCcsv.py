@@ -40,7 +40,8 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                             goodls=True
 
         if goodls==True:  
-            LS=ls+lumisec_count                          
+            LS=int(ls)+lumisec_count
+            lumisec_count=lumisec_count+1                          
             if float(HFOC_count) !=0:
                 h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
                 h_ratio.Fill(lumisec_count, float(PCC_count)/float(HFOC_count))
