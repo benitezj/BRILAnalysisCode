@@ -82,7 +82,7 @@ ProfX_h_ratiovsHF_residual.SetMarkerStyle(20)
 ProfX_h_ratiovsHF_residual.SetMarkerColor(46)
 ProfX_h_ratiovsHF_residual.Draw("AP")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsHFOC_ProfileX_residuals.png')
-C1.Clear()
+
 
 
 
