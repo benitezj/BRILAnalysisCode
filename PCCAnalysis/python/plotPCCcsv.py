@@ -40,14 +40,14 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                             goodls=True
                             print(run, int(run1), ls, ls1, ls2)
                             
-    if goodls==True:
-        LS=int(ls)+lumisec_count                               
-        lumisec_count=lumisec_count+1
-        if float(HFOC_count) !=0:
-            h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-            h_ratio.Fill(int(LS), float(PCC_count)/float(HFOC_count))
-            PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
-            ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
+        if goodls==True:
+            LS=int(ls)+lumisec_count                               
+            lumisec_count=lumisec_count+1
+            if float(HFOC_count) !=0:
+                h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
+                h_ratio.Fill(int(LS), float(PCC_count)/float(HFOC_count))
+                PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
+                ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
 
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,25000);
