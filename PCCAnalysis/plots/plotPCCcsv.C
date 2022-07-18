@@ -144,6 +144,8 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
   float runL=0.;
   float runLRef=0.;
   float sigmavis=getSigmaVis(Run);
+  int Nls=0;
+  int Ncoll=0;
   while (std::getline(myfile, line)){
     //cout<<line;
 
@@ -181,6 +183,8 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
  
     runL+=lsL;
 
+    Nls++;
+
     ////fill lumi per LS plots
     if(HLumiLS.GetBinContent(ls)>0)
       cout<<run<<","<<ls<<"  duplicated"<<endl;    
@@ -195,7 +199,9 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
     }
     
     ///fill lumi per BX plots
+    unsigned ncoll=0;
     if(perBXRatioPlots) { 
+      //cout<<"bx colliding: ";
       for(int bx=0;bx<NBX;bx++){
 	std::getline(iss,token, ',');
 	std::stringstream bxLiss(token);
@@ -206,16 +212,20 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
 	HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	HLumiBX.AddBinContent(bx+1,bxL);
 
+	if(rawL>0.5){
+	  ncoll++;
+	  //cout<<","<<bx+1;
+	}
+
       }
+      //cout<<endl;
     }
     
     if(ls > maxLS) maxLS=ls;
     if(lsL > maxL) maxL=lsL;
 
-    lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<std::endl;
-
-
-
+    lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
+    Ncoll+=ncoll;
   }
   cout<<endl;
   cout<<"Done processing input file"<<endl;
@@ -312,11 +322,37 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
   can_2.Draw();
   C.Print(outpath+"/"+(long)Run+".png");
 
+
+
+
   //////////////////////////////////////////
   //// per BX ratio plots, and linearity plots
   //////////////////////////////////////////
   if(perBXRatioPlots) {
+    
 
+    TCanvas C2("C2","",1200,400);
+    C2.Clear();
+    if(Nls>0) HLumiBX.Scale(1./Nls);
+    HLumiBX.SetMarkerStyle(8);
+    HLumiBX.SetMarkerSize(0.5);
+    HLumiBX.GetYaxis()->SetTitle("Avg. PCC");
+    HLumiBX.GetXaxis()->SetTitle("bcid");
+    HLumiBX.GetYaxis()->SetRangeUser(0,HLumiBX.GetMaximum()*1.3);
+    HLumiBX.Draw("histp");
+    text.DrawLatexNDC(0.75,0.85,TString("# colliding ")+(long)(Ncoll/Nls));
+    C2.Print(outpath+"/"+(long)Run+"_AvgLumiBX.png");
+    
+
+  }
+
+  gROOT->ProcessLine(".q");
+}
+
+
+
+
+/*
     C.Clear();
     TPad can_1("can_1", "can_1", 0.0, 0.4, 1.0, 1.0);
     can_1.SetTopMargin(0.05);
@@ -475,8 +511,4 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
     slopefile<<Run<<" "<<P1.GetParameter(1)<<" "<<P1.GetParError(1)<<endl;
     
 
-  }
-
-  gROOT->ProcessLine(".q");
-}
-
+*/

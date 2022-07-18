@@ -258,7 +258,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
         ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
     fi 
     if [ "$action" == "5" ] ; then
-        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",0\)
+        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",1\)
     fi
 
     counter=`echo $counter | awk '{print $1+1}'`
