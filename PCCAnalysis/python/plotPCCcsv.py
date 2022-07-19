@@ -18,7 +18,6 @@ ProfX_h_ratiovsHF_residual=ROOT.TGraph()
 ProfX_PCCvsHF_residual=ROOT.TGraph()
 lumisec_count=0
 LS=0
-goodls=False
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
     with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
@@ -34,21 +33,19 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
             for run1 in line[1]:
                 ##print (run1)
                 ##print(line[1][run1])
-                if int(run1)==int(run):
-                    for ls1, ls2 in line[1][run1]:
-                        if int(ls1)<=int(ls)<=int(ls2):
-                            goodls=True
-
-        if goodls==True:  
-            LS=int(ls)+lumisec_count
-            lumisec_count=lumisec_count+1                          
-            if float(HFOC_count) !=0:
-                h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
-                h_ratio.Fill(lumisec_count, float(PCC_count)/float(HFOC_count))
-                PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
-                
-                print(lumisec_count, float(PCC_count)/float(HFOC_count))
-                ##print(run, int(run1), ls, ls1, ls2)
+                if 317653<=int(run)<=317663:                                ## Fill 6774
+                    if int(run1)==int(run):                            
+                        for ls1, ls2 in line[1][run1]:
+                            if int(ls1)<=int(ls)<=int(ls2):
+                                ##print(run, run1, ls, ls1, ls2)
+                                LS=int(ls)+lumisec_count
+                                lumisec_count=lumisec_count+1                          
+                                if float(HFOC_count) !=0:
+                                    h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
+                                    h_ratio.Fill(lumisec_count, float(PCC_count)/float(HFOC_count))
+                                    PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))                
+                                    ##print(lumisec_count, float(PCC_count)/float(HFOC_count))
+                                    print int(run), int(run1), ls, ls1, ls2 
     
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,25000);
@@ -111,11 +108,3 @@ C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
 
 
 
-    ##if goodls==True:
-##LS=int(ls)+lumisec_count                               
-  ##          lumisec_count=lumisec_count+1
-    ##        if float(HFOC_count) !=0:
-      ##          h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))    
-        ##        h_ratio.Fill(int(LS), float(PCC_count)/float(HFOC_count))
-          ##      PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))
-                ##print(int(run), int(run1), int(ls), int(ls1), int(ls2), int(lumisec_count), float(PCC_count), float(HFOC_count))
