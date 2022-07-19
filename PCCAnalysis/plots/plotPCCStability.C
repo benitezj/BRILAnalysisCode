@@ -5,6 +5,7 @@
 
 float minratio=0.0;
 float maxratio=2.0;
+float plotYrangeMin=0.1;
 float plotYrange=2500;
 float plotYrangeLog=1e4;
 
@@ -70,7 +71,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
 
 
   /////////////////////////////
-  TLegend leg(0.75,0.74,0.90,0.90);
+  TLegend leg(0.75,0.8,0.90,0.90);
   
   C.Clear();
   Lumi.SetStats(0);
@@ -78,7 +79,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   Lumi.SetMarkerSize(0.3);
   Lumi.GetXaxis()->SetTitle("lumi section");
   Lumi.GetYaxis()->SetTitle(" integrated lumi [#mub^{-1}]");
-  Lumi.GetYaxis()->SetRangeUser(0,plotYrange);
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,plotYrange);
   Lumi.Draw("histp");
   leg.AddEntry(&Lumi,"PCC","p");
 
@@ -89,8 +90,8 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   ltxt.SetTextSize(0.03);
   TString rtxt("");
   for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-    li.DrawLine(it->first,1,it->first,plotYrange);
-    ltxt.DrawLatex(it->first,1,rtxt+it->second);
+    li.DrawLine(it->first,plotYrangeMin,it->first,plotYrange);
+    ltxt.DrawLatex(it->first,plotYrangeMin,rtxt+it->second);
   }
 
 
@@ -108,7 +109,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   C.Print(inpath+"/ls_lumi.png");
 
   C.SetLogy(1);
-  Lumi.GetYaxis()->SetRangeUser(1,plotYrangeLog);
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,plotYrangeLog);
   C.Update();
   C.Print(inpath+"/ls_lumi_log.png");
   C.SetLogy(0);

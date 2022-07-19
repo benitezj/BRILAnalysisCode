@@ -222,6 +222,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     run=`echo $f | awk -F".txt" '{print $1}'`
     echo $run
+    RUNLIST=$RUNLIST,$run
 
     ##create the scripts
     if [ "$action" == "0" ]; then
@@ -257,14 +258,20 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
         #echo $command
         ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
     fi 
-    if [ "$action" == "5" ] ; then
-        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",1\)
-    fi
+#    if [ "$action" == "5" ] ; then
+#        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",0\)
+#    fi
 
     counter=`echo $counter | awk '{print $1+1}'`
 done
 echo "Total runs: $counter"
 
+echo ${RUNLIST:1}
+
+
+if [ "$action" == "5" ] ; then
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
+fi
 
 if [ "$action" == "6" ] ; then
     NLS=`cat ${plotsdir}/ls.dat | wc -l`
