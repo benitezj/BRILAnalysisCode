@@ -14,10 +14,14 @@ int calculateNcolliding(TH1F*H){
   
   float max=H->GetBinContent(H->GetMaximumBin());
   unsigned ncol=0;
+  //cout<<"bx colliding: ";
   for(int b=0;b<NBX;b++){
-    if(H->GetBinContent(b)>0.5*max)
+    if(H->GetBinContent(b)>0.5*max){
       ncol++;
+      //cout<<","<<b+1;
+    }
   }
+  //cout<<endl;
 
   return ncol;
 }
