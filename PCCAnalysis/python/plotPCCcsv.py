@@ -11,12 +11,13 @@ import csv
 import json
 
 C1=ROOT.TCanvas("C1","",2000,1000)
-h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 200, 0.0, 2500, 300, 0.3, 2)                  
+h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 50000, 500, 0, 2)                  
 h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 200, 0.0, 23000, 200, 0.0, 2)
 PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 200, 0.0, 30000, 200, 0.0, 30000)
 ProfX_h_ratiovsHF_residual=ROOT.TGraph()
 ProfX_PCCvsHF_residual=ROOT.TGraph()
 lumisec_count=0
+
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
     with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
@@ -26,32 +27,36 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
         ls=data.split()[1]
         PCC_count=data.split()[2]
         HFOC_count=data.split()[3]
+        goodls=False
         for line in json_data:
             if not line[0].startswith("hfoc"):
                 continue
             for run1 in line[1]:
                 ##print (run1)
                 ##print(line[1][run1])
-                if 317653<=int(run)<=317663:                                ## Fill 6774
+                ##if 317653<=int(run)<=317663:                                ## Fill 6774
                 ##if int(run)==317663: 
                     if int(run1)==int(run):                            
                         for ls1, ls2 in line[1][run1]:
                             if int(ls1)<=int(ls)<=int(ls2):
-                            ##print run, run1, ls, ls1, ls2
-                                lumisec_count=lumisec_count+1                          
-                                if float(HFOC_count) !=0:
-                                    h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
-                                    h_ratio.Fill(lumisec_count, float(PCC_count)/float(HFOC_count))
-                                    PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))                
-                                    print lumisec_count, int(ls), ls1, ls2, float(PCC_count)/float(HFOC_count)
-                                    ##print int(run), int(run1), ls, ls1, ls2 
-    
+                                goodls=True
+                                ##print run, run1, ls, ls1, ls2
+        if goodls==True and float(HFOC_count) !=0:
+            h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
+            h_ratio.Fill(lumisec_count+1, float(PCC_count)/float(HFOC_count))
+            lumisec_count=lumisec_count+1                          
+            PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))                
+            print lumisec_count, int(ls), ls1, ls2, float(PCC_count)/float(HFOC_count)
+            ##print int(run), int(run1), ls, ls1, ls2 
+
+ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)    
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,25000);
 ProfX_h_ratiovsHF.Fit("fitfn")
 ProfX_PCCvsHFOC=PCCvsHFOC.ProfileX()
 fitfn1 = ROOT.TF1("fitfn1","[0]*x+[1]",0,25000);
 ProfX_PCCvsHFOC.Fit("fitfn1")
+
 
 ##for i in ls:
 ##    if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i)))!=0:
@@ -71,8 +76,9 @@ h_ratio.SetMarkerStyle(20)
 h_ratio.SetMarkerColor(46)
 h_ratio.GetXaxis().SetTitle("Lumi section")
 h_ratio.GetYaxis().SetTitle("PCC/HFOC")
+h_ratio.SetStats(1)
 h_ratio.Draw("colz")
-C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsls_false.png')
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsls.png')
 PCCvsHFOC.SetMarkerStyle(20)
 PCCvsHFOC.SetMarkerColor(46)
 PCCvsHFOC.GetXaxis().SetTitle("HF Inst. Lumi")
@@ -103,6 +109,13 @@ ProfX_PCCvsHF_residual.GetXaxis().SetTitle("(PCC-Fit)/Fit")
 ProfX_PCCvsHF_residual.GetYaxis().SetTitle("Entries")
 ProfX_PCCvsHF_residual.Draw("AP")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
+ProjY_h_ratio.SetMarkerStyle(20)
+ProjY_h_ratio.SetMarkerColor(46)
+ProjY_h_ratio.GetXaxis().SetTitle("ProjectionY")
+ProjY_h_ratio.GetYaxis().SetTitle("Entries")
+ProjY_h_ratio.SetStats(1)
+ProjY_h_ratio.Draw()
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
 
 
 
