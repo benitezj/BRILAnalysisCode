@@ -17,7 +17,8 @@ PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 200, 0.0, 30000, 200
 ProfX_h_ratiovsHF_residual=ROOT.TGraph()
 ProfX_PCCvsHF_residual=ROOT.TGraph()
 lumisec_count=0
-
+lumisec_all=0
+lumisec_good=0
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
     with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
@@ -28,6 +29,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
         PCC_count=data.split()[2]
         HFOC_count=data.split()[3]
         goodls=False
+        lumisec_all=lumisec_all+1
         for line in json_data:
             if not line[0].startswith("hfoc"):
                 continue
@@ -39,6 +41,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                     if int(run1)==int(run):                            
                         for ls1, ls2 in line[1][run1]:
                             if int(ls1)<=int(ls)<=int(ls2):
+                                lumisec_good=lumisec_good+1
                                 goodls=True
                                 ##print run, run1, ls, ls1, ls2
         if goodls==True and float(HFOC_count) !=0:
@@ -46,9 +49,10 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
             h_ratio.Fill(lumisec_count+1, float(PCC_count)/float(HFOC_count))
             lumisec_count=lumisec_count+1                          
             PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))                
-            print lumisec_count, int(ls), ls1, ls2, float(PCC_count)/float(HFOC_count)
+            ##print lumisec_count, int(ls), ls1, ls2, float(PCC_count)/float(HFOC_count)
             ##print int(run), int(run1), ls, ls1, ls2 
 
+print lumisec_all, lumisec_good
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)    
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,25000);
@@ -56,7 +60,6 @@ ProfX_h_ratiovsHF.Fit("fitfn")
 ProfX_PCCvsHFOC=PCCvsHFOC.ProfileX()
 fitfn1 = ROOT.TF1("fitfn1","[0]*x+[1]",0,25000);
 ProfX_PCCvsHFOC.Fit("fitfn1")
-
 
 ##for i in ls:
 ##    if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(i)))!=0:
