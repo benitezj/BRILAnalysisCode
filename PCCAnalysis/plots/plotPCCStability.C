@@ -3,8 +3,8 @@
 #include <string>
 #include "globals.h"
 
-float minratio=0.0;
-float maxratio=2.0;
+float minratio=0.2;
+float maxratio=1.8;
 float plotYrangeMin=0.1;
 float plotYrange=2500;
 float plotYrangeLog=1e4;
