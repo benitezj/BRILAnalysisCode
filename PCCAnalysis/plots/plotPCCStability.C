@@ -23,7 +23,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
 
 
   ///create histogram
-  TH1F HistoLumiRatio("HistoLumiRatio","",100,minratio,maxratio);
+  TH1F HistoLumiRatio("HistoLumiRatio","",500,minratio,maxratio);
   TH1F LumiRatio("HLumiRatio","",plotXrange,0,plotXrange);
   TH1F Lumi("HLumi","",plotXrange,0,plotXrange);
   TH1F LumiRef("HLumiRef","",plotXrange,0,plotXrange);
@@ -130,7 +130,16 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRatio.GetYaxis()->SetTitle(TString("PCC / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");
+    li.SetLineColor(2);
     li.DrawLine(0,1,plotXrange,1);
+    li.SetLineColor(4);
+    li.DrawLine(0,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
+    TLatex Meantxt;
+    Meantxt.SetTextSize(0.03);
+    Meantxt.SetTextColor(4);
+    char meantxt[100];
+    sprintf(meantxt,"r=%.3f",HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
+    Meantxt.DrawLatex(plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),meantxt);
     C.Print(inpath+"/ls_ratio.png");
 
     C.Clear();
