@@ -3,8 +3,8 @@
 #include <string>
 #include "globals.h"
 
-float minratio=0.2;
-float maxratio=1.8;
+float minratio=0.7;
+float maxratio=1.3;
 float plotYrangeMin=0.1;
 float plotYrange=2500;
 float plotYrangeLog=1e4;
@@ -130,9 +130,13 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRatio.GetYaxis()->SetTitle(TString("PCC / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");
-    li.SetLineColor(2);
-    li.DrawLine(0,1,plotXrange,1);
+    li.SetLineWidth(2);
+    li.SetLineColor(1);
+    li.SetLineStyle(1);
+    li.DrawLine(0,1,plotXrange,1);//y=1 line
     li.SetLineColor(4);
+    li.SetLineStyle(2);
+    li.SetLineWidth(3);
     li.DrawLine(0,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
     TLatex Meantxt;
     Meantxt.SetTextSize(0.03);
