@@ -18,16 +18,16 @@ period=$1 #Run2022A
 #dataset=AlCaPCCZeroBias-PromptReco
 
 #ZeroBias RawPCCProducer: /eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/
-#eospath=/eos/cms/tier0/store/data
-#dataset=RawPCCProducer-PromptReco
+eospath=/eos/cms/tier0/store/data
+dataset=RawPCCProducer-PromptReco
 
 #Random PCCIntegrator -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/352/416/00000/fb9a0530-481e-416e-b621-1d15b74a9720.root
 #eospath=/eos/cms/store/express
 #dataset=AlCaPCCRandom-Express
 
 #Random RawPCC -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCAPROMPT/PromptCalibProdLumiPCC-Express-v1/000/352/416/00000/c96bf8ed-4934-4ff9-8560-bf836494a7cb.root
-eospath=/eos/cms/store/express
-dataset=PromptCalibProdLumiPCC-Express
+#eospath=/eos/cms/store/express
+#dataset=PromptCalibProdLumiPCC-Express
 
 echo $period
 echo $dataset

@@ -23,7 +23,7 @@ MAXJOBS=1000000 #useful for testing
 ### 
 if [ "$submitdir" == "" ]; then
     echo "invalid submitdir"
-    exit
+    return 0
 fi
 fullsubmitdir=`readlink -f $submitdir`
 echo "fullsubmitdir: $fullsubmitdir"
@@ -31,7 +31,7 @@ echo "fullsubmitdir: $fullsubmitdir"
 INSTALLATION=${CMSSW_BASE}/src
 if [ "$INSTALLATION" == "/src" ]; then
     echo "invalid INSTALLATION"
-    exit
+    return 0
 fi
 echo "INSTALLATION: $INSTALLATION"
 
@@ -54,7 +54,7 @@ fi
 if [ "$action" == "0" ]; then 
     if [ "$cfg" == "" ]; then
 	echo "No cfg provided\n"
-	exit;
+	return 0
     fi
     /bin/cp $cfg $fullsubmitdir/cfg.py
     echo "mkdir -p $outputdir"
@@ -167,18 +167,18 @@ check_log(){
     local run=$1
     fail=0
     
-    if [ ! -f $fullsubmitdir/${run}.log ]; then
-	echo "no log"
-	fail=1
-    fi
+#    if [ ! -f $fullsubmitdir/${run}.log ]; then
+#	echo "no log"
+#	fail=1
+#    fi
     
-    if [ "$fail" == "0" ]; then
-	success=`cat $fullsubmitdir/${run}.log | grep "Normal termination"`
-	if [ "$success" == "" ]; then
-	    echo "no Success"
-	    fail=1
-	fi
-    fi
+#    if [ "$fail" == "0" ]; then
+#	success=`cat $fullsubmitdir/${run}.log | grep "Normal termination"`
+#	if [ "$success" == "" ]; then
+#	    echo "no Success"
+#	    fail=1
+#	fi
+#    fi
     
 #    if [ "$fail" == "0" ]; then
 #	fatal=`cat $fullsubmitdir/${run}.log | grep Fatal`
@@ -202,6 +202,14 @@ check_log(){
     if [ "$jobtype" == "step4" ] && [ "$fail" == "0" ] ; then
 	if [ ! -f $outputdir/${run}.db ]; then
 	    echo "no db"
+	    fail=1
+	fi
+    fi
+
+    ### error check for corrections jobs
+    if [ "$jobtype" == "csv" ] && [ "$fail" == "0" ] ; then
+	if [ ! -f $outputdir/${run}.csv ]; then
+	    echo "no csv"
 	    fail=1
 	fi
     fi
