@@ -58,7 +58,6 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                 PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))                
                 ##print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
                 ##print int(run), int(run1), ls, ls1, ls2 
-
 print ("all ls ", lumisec_all, "good ls ", lumisec_good)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)    
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
@@ -137,8 +136,5 @@ ProjY_h_ratio.GetYaxis().SetTitle("Entries")
 ProjY_h_ratio.SetStats(1)
 ProjY_h_ratio.Draw()
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
-
-
-
 
 ## Selection for low lumi ls PCC_count>=3000000 and HFOC_count>=4000000
