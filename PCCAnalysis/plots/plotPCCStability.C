@@ -3,11 +3,12 @@
 #include <string>
 #include "globals.h"
 
+
 float minratio=0.7;
 float maxratio=1.3;
 float plotYrangeMin=0.1;
-float plotYrange=2500;
-float plotYrangeLog=1e4;
+float plotYrange=3500;
+float plotYrangeLog=5e4;
 
 
 void plotPCCStability(TString inpath, int plotXrange=100){
