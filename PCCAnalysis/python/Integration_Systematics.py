@@ -36,7 +36,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                         for run2 in line1[1]:
                                 for line in json_data:
                                         if not line1[0].startswith("pcc") and line[0].startswith("hfoc"):
-                                                       continue
+                                                continue
                                         for run1 in line[1]:
                                                 if int(run)==int(run1)==int(run2):
                                                         ##print ('lsdat', run, 'pcc', int(run2), 'hfoc', int(run1)) 
@@ -74,12 +74,14 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
         ls=data.split()[1]
         ##if int(run)==317663:
         if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))!=0 and ProfX_h_ratiovsHF.GetBinContent(int(ls))!=0:
-            ProfX_h_ratiovsHF_residual.SetPoint(ProfX_h_ratiovsHF_residual.GetN(), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))));
+            ProfX_h_ratiovsHF_residual.SetPoint(ProfX_h_ratiovsHF_residual.GetN(), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))
+            ProfX_h_ratiovsHF_residual.SetPointError(ProfX_h_ratiovsHF_residual.GetN(), 0, ProfX_h_ratiovsHF.GetBinError(int(ls))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))
             ##print int(run), int(ls), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ProfX_h_ratiovsHF.GetBinContent(int(ls)), fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))
             ##print int(run), int(ls), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))
             ##print ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))  
             if fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))!=0 and ProfX_PCCvsHFOC.GetBinContent(int(ls))!=0:         
-                ProfX_PCCvsHF_residual.SetPoint(ProfX_PCCvsHF_residual.GetN(), ProfX_PCCvsHFOC.GetBinCenter(int(ls)), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))));  
+                ProfX_PCCvsHF_residual.SetPoint(ProfX_PCCvsHF_residual.GetN(), ProfX_PCCvsHFOC.GetBinCenter(int(ls)), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
+                ProfX_PCCvsHF_residual.SetPointError(ProfX_PCCvsHF_residual.GetN(), 0, ProfX_PCCvsHFOC.GetBinError(int(ls))/fitfn.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
                 ##print int(run), int(ls), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))    
                 ##print ProfX_PCCvsHFOC.GetBinCenter(int(ls)), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))
 
