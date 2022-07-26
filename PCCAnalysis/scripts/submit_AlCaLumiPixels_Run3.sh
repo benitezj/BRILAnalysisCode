@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 #options
 submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check
