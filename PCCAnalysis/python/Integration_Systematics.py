@@ -39,9 +39,9 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                         if not line1[0].startswith("pcc"):
                                 continue
                         for run1 in line[1]:
-                                print 'run1', run1
+                                ##print 'run1', run1
                                 for run2 in line1[1]:
-                                        print 'run2', run2
+                                        ##print 'run2', run2
                                         if int(run)==int(run1)==int(run2):
                                                 ##print ('lsdat', run, 'pcc', int(run2), 'hfoc', int(run1)) 
                                                 ##print line[1][run1], line1[1][run2]
