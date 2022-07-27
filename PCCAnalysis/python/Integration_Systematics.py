@@ -35,25 +35,25 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                 for line in json_data:
                         if not line[0].startswith("hfoc"):
                                 continue
-                                for run1 in line[1]:
-                                        ##print 'run1', run1
-                                        for line1 in json_data1:
-                                                if not line1[0].startswith("pcc"):
-                                                        continue
-                                                        for run2 in line1[1]:
-                                                                ##print 'run2', run2
-                                                                if int(run)==int(run1)==int(run2):
-                                                                        ##print ('lsdat', run, 'pcc', int(run2), 'hfoc', int(run1)) 
-                                                                ##print line[1][run1], line1[1][run2]
-                                                                        ##if 317653<=int(run)<=317663:                                ##Fill 6774
-                                                                        ##if int(run2)==317663: 
-                                                                        ##if int(run1)==int(run)==int(run2):
-                                                                        for ls3, ls4 in line1[1][run2]:
-                                                                                for ls1, ls2 in line[1][run1]:                            
-                                                                                        if int(ls1)<=int(ls)<=int(ls2) or int(ls3)<=int(ls)<=int(ls4):
-                                                                                                lumisec_good=lumisec_good+1
-                                                                                                goodls=True
-                                                                                                print int(run), int(run1), int(run2), int(ls), int(ls1), int(ls2), int(ls3), int(ls4)
+                for line1 in json_data1:
+                        if not line1[0].startswith("pcc"):
+                                continue
+                        for run1 in line[1]:
+                                print 'run1', run1
+                                for run2 in line1[1]:
+                                        print 'run2', run2
+                                        if int(run)==int(run1)==int(run2):
+                                                ##print ('lsdat', run, 'pcc', int(run2), 'hfoc', int(run1)) 
+                                                ##print line[1][run1], line1[1][run2]
+                                                ##if 317653<=int(run)<=317663:                                ##Fill 6774
+                                                ##if int(run2)==317663: 
+                                                ##if int(run1)==int(run)==int(run2):
+                                                for ls3, ls4 in line1[1][run2]:
+                                                        for ls1, ls2 in line[1][run1]:                            
+                                                                if int(ls1)<=int(ls)<=int(ls2) or int(ls3)<=int(ls)<=int(ls4):
+                                                                        lumisec_good=lumisec_good+1
+                                                                        goodls=True
+                                                                        print int(run), int(run1), int(run2), int(ls), int(ls1), int(ls2), int(ls3), int(ls4)
         if goodls==True and float(HFOC_count) !=0: 
         ##and float(PCC_count)>=8000 and float(HFOC_count)>=8000:
                 h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
