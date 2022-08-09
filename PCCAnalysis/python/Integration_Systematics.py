@@ -68,7 +68,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                         PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count))                
                         ##print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
                         ##print int(run), int(run1), ls, ls1, ls2 
-print ("all ls ", lumisec_all, "ls count ", lumisec_count, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1)
+print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)    
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,50000);
