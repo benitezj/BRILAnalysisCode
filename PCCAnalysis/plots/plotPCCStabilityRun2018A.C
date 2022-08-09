@@ -17,7 +17,6 @@ void plotPCCStabilityRun2018A() {
   gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/CMSSW_10_2_2/src/BRILAnalysisCode/rootlogon.C");
   
 
-
   ifstream myfile40((inpath40+"/ls.dat").Data());
   if (!myfile40.is_open()){
     cout << "Unable to open file";

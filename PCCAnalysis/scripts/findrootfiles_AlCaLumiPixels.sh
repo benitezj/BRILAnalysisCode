@@ -8,18 +8,18 @@ eospath=/eos/cms/store
 ## * this script takes no arguments, need to set options below
 #######################################
 
-period=Run2018A
+period=Run2018D
 
 ########
 ## choose type of data: 
 #1 -> /eos/cms/store/express/Run2018D/StreamALCALUMIPIXELSEXPRESS/ALCARECO/AlCaPCCRandom-Express-v1/000/320/500/00000/2C216013-EE93-E811-967D-FA163ECC5F9A.root
-datatype=1
-dataset=AlCaPCCRandom-Express 
+#datatype=1
+#dataset=AlCaPCCRandom-Express 
 
 
 #2 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/239/00000/0CEC4AA3-1259-E811-9384-02163E01A168.root
-#datatype=2
-#dataset=AlCaPCCZeroBias-PromptReco
+datatype=2
+dataset=AlCaPCCZeroBias-PromptReco
 
 
 #3 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels0/RAW/v1/000/316/524/00000/

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <dirent.h>
-void compareZBfiles_oldnewveto(char run_period='A') {
+void compareZBfiles_oldnewveto(char run_period='G') {
   
   TCanvas*C = new TCanvas("Luminosity (new old veto)");
   C->cd();
@@ -225,7 +225,6 @@ void compareZBfiles_oldnewveto(char run_period='A') {
 	  LumiLSratio->SetPoint(LumiLSratio->GetN(), lumisec_count1, LumiLS1/cluster_count[ls1]);
 	  //std::cout<<lumisec_count1<<"  "<< LumiLS1<<" "<<cluster_count[ls1]<<"  "<<LumiLS1/cluster_count[ls1] <<std::endl;
 	  
-
 	}
       }
 
@@ -443,23 +442,23 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   
   if(run_period=='A'){
     LumiLSratio ->SetTitle("Run2018A (315252-316995)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(0.6, 0.8);
+    LumiLSratio ->GetYaxis()->SetRangeUser(0.63, 0.83);
   }
   if(run_period=='B'){
     LumiLSratio->SetTitle("Run2018B (317080-319311)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(1.5, 1.6);
+    LumiLSratio ->GetYaxis()->SetRangeUser(1.31325, 1.77675);
   }
   if(run_period=='C'){
     LumiLSratio->SetTitle("Run2018C (319337-320065)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(1, 1.15);  
+    LumiLSratio ->GetYaxis()->SetRangeUser(0.9095, 1.2305);  
   }
   if(run_period=='D'){
     LumiLSratio->SetTitle("Run2018D (320500-321665)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(0.8, 0.9); 
+    LumiLSratio ->GetYaxis()->SetRangeUser(0.73525, 0.99475); 
   }
   if(run_period=='E'){
     LumiLSratio->SetTitle("Run2018D (321710-322964)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(0.75, 0.95); 
+    LumiLSratio ->GetYaxis()->SetRangeUser(0.748, 1.012); 
   }
   if(run_period=='F'){
     LumiLSratio->SetTitle("Run2018D (323363-324420)");
@@ -467,7 +466,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   }
   if(run_period=='G'){   
     LumiLSratio->SetTitle("Run2018D (324564-325175)");
-    LumiLSratio ->GetYaxis()->SetRangeUser(2.05, 2.2); 
+    LumiLSratio ->GetYaxis()->SetRangeUser(1.8105, 2.4495); 
   }
   
   
@@ -479,7 +478,7 @@ void compareZBfiles_oldnewveto(char run_period='A') {
   LumiLSratiospread->SetLineColor(1);
   LumiLSratiospread->SetMarkerColor(1);
   LumiLSratiospread->SetMarkerSize(0.5);
-  LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);  
+  //LumiLSratio ->GetXaxis()->SetRangeUser(0,2200);  
   LumiLSratio->Draw("AP"); 
   //LumiLSratiospread->Draw("AP");
 

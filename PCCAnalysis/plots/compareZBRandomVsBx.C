@@ -47,10 +47,15 @@ TH1F * readCSV(TString CSV,int ls1, int ls2){
 }
 
 void compareZBRandomVsBx(){
-  TString CSV="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_ZeroBias-PromptReco/Run2017G_v4_test/306550.csv";
-  TString CORR="/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4/306550.root";
+  //TString CSV="/eos/user/b/benitezj/BRIL/PCC/ZeroBias/AlCaLumiPixels_ZeroBias-PromptReco/Run2017G_v4_test/306550.csv";
+  //TString CORR="/eos/user/b/benitezj/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-PromptReco/Run2017G_v4/306550.root";
+  
+  TString CSV = "/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto_withafterglowcorrection/ZeroBias/Run2018A_ZB/316110.csv";    
+  TString CORR= "/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto_RD/AlCaPCCRandom/Run2018A/316110.root";                           
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  TString Path="/eos/user/a/asehrawa/BRIL-new/PCC_reprocess_2018A_newveto_withafterglowcorrection/";
+
+gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
   TCanvas C("C","",1200,500);
 
   //iterate over the TFile keys
@@ -87,11 +92,10 @@ void compareZBRandomVsBx(){
     HCSV->SetMarkerStyle(8);
     HCSV->SetMarkerSize(1);
     HCSV->Draw("histpsame");
-    C.Print(TString("compareZBRandomVsBx_")+l+".png");
+    C.Print(Path+TString("compareZBRandomVsBx_")+l+".png");
     
     l++;
   }
-
 
   gROOT->ProcessLine(".q");
 }

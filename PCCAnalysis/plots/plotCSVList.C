@@ -3,15 +3,13 @@
 #include <string>
 #include "globals.h"
 
+bool perBXRatioPlots=0;
 float ratiomin=0.7;
 float ratiomax=1.3;
 
 
-
 float refLumi[NLS];
-
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
-
 float modfrac[NLS];//correction to visible crossection for applied Pixel Quality flag
 
 void getRefLumi(TString inputfile){
@@ -85,9 +83,33 @@ void getModFrac(TString inputfile){
 
 
 
-void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPlots=0){
+void plotCSVList(TString inpath, TString outpath=".", std::string runlist=""){
 
-  //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+
+  ///create output file for lumisections
+  TString lsoutfile=outpath+"/ls.dat";
+  ofstream lsfile(lsoutfile.Data(),std::ofstream::app);
+  if (!lsfile.is_open()){
+    cout << "Unable to open output run file"; 
+    return;
+  }
+
+
+  ////create output file for runs
+  TString runoutfile=outpath+"/runs.dat";
+  ofstream runfile(runoutfile.Data(),std::ofstream::app);
+  if (!runfile.is_open()){
+    cout << "Unable to open output run file"; 
+    return;
+  }
+
+
+
+  std::stringstream ss(runlist.c_str());
+  int Run;
+  while (ss >> Run) {
+    cout<<Run<<endl;
+
 
 
   ///Open the lumi csv file
@@ -98,21 +120,6 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
     return;
   }
 
-  ///create output file for lumisections
-  TString lsoutfile=outpath+"/ls.dat";
-  ofstream lsfile(lsoutfile.Data(),std::ofstream::app);
-  if (!lsfile.is_open()){
-    cout << "Unable to open output run file"; 
-    return;
-  }
-
-  ////create output file for runs
-  TString runoutfile=outpath+"/runs.dat";
-  ofstream runfile(runoutfile.Data(),std::ofstream::app);
-  if (!runfile.is_open()){
-    cout << "Unable to open output run file"; 
-    return;
-  }
 
 
   ///read the reference lumi
@@ -232,11 +239,11 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
 
   ///close files
   myfile.close();
-  lsfile.close();
+
 
   //write run lumi
   runfile<<Run<<" "<<runL<<" "<<runLRef<<std::endl;
-  runfile.close();
+
 
 
   /////////////////////////////////////////////////////
@@ -346,6 +353,15 @@ void plotPCCcsv(TString inpath, long Run, TString outpath=".", bool perBXRatioPl
 
   }
 
+
+
+
+
+    ss.ignore(1);
+  }
+
+  lsfile.close();
+  runfile.close();
   gROOT->ProcessLine(".q");
 }
 

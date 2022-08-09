@@ -1,24 +1,30 @@
 #!/bin/bash
 
+
+#options
 submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check
 cfg=$3  ## only for action=0
-jobtype=step4 ##step2, step3, step4, step5 , csv
+jobtype=csv ##step2, step3, step4, step5 , csv
+condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor)
 
+
+####
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
-condorqueue=workday  #microcentury , workday, testmatch
-
-ref=""
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 
+MAXJOBS=1000000 #useful for testing
+
+##for RawPCCProducer jobs which need to pick up offline afterglow
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
+
 
 ###########################################################
 ### 
 if [ "$submitdir" == "" ]; then
     echo "invalid submitdir"
-    exit
+    return 0
 fi
 fullsubmitdir=`readlink -f $submitdir`
 echo "fullsubmitdir: $fullsubmitdir"
@@ -26,7 +32,7 @@ echo "fullsubmitdir: $fullsubmitdir"
 INSTALLATION=${CMSSW_BASE}/src
 if [ "$INSTALLATION" == "/src" ]; then
     echo "invalid INSTALLATION"
-    exit
+    return 0
 fi
 echo "INSTALLATION: $INSTALLATION"
 
@@ -49,7 +55,7 @@ fi
 if [ "$action" == "0" ]; then 
     if [ "$cfg" == "" ]; then
 	echo "No cfg provided\n"
-	exit;
+	return 0
     fi
     /bin/cp $cfg $fullsubmitdir/cfg.py
     echo "mkdir -p $outputdir"
@@ -80,7 +86,11 @@ submit(){
     rm -f ${outputdir}/${run}.frac
 
     #bsub -q 1nd -o $fullsubmitdir/${run}.log -J $run < $fullsubmitdir/${run}.sh    
-    condor_submit $fullsubmitdir/${run}.sub 
+    if [ "$condorqueue" == "local" ] ; then
+	source $fullsubmitdir/${run}.sh
+    else
+	condor_submit $fullsubmitdir/${run}.sub 
+    fi
 }
 
 make_sh_script(){
@@ -130,7 +140,7 @@ make_sh_script(){
     fi
 
     if [ "$jobtype" == "step5" ] ; then
-	echo "cp step5_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+	echo "cp step5_onlyRawPCCProducer_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
 
     if [ "$jobtype" == "csv" ] ; then
@@ -158,18 +168,18 @@ check_log(){
     local run=$1
     fail=0
     
-    if [ ! -f $fullsubmitdir/${run}.log ]; then
-	echo "no log"
-	fail=1
-    fi
+#    if [ ! -f $fullsubmitdir/${run}.log ]; then
+#	echo "no log"
+#	fail=1
+#    fi
     
-    if [ "$fail" == "0" ]; then
-	success=`cat $fullsubmitdir/${run}.log | grep "Normal termination"`
-	if [ "$success" == "" ]; then
-	    echo "no Success"
-	    fail=1
-	fi
-    fi
+#    if [ "$fail" == "0" ]; then
+#	success=`cat $fullsubmitdir/${run}.log | grep "Normal termination"`
+#	if [ "$success" == "" ]; then
+#	    echo "no Success"
+#	    fail=1
+#	fi
+#    fi
     
 #    if [ "$fail" == "0" ]; then
 #	fatal=`cat $fullsubmitdir/${run}.log | grep Fatal`
@@ -196,6 +206,14 @@ check_log(){
 	    fail=1
 	fi
     fi
+
+    ### error check for corrections jobs
+    if [ "$jobtype" == "csv" ] && [ "$fail" == "0" ] ; then
+	if [ ! -f $outputdir/${run}.csv ]; then
+	    echo "no csv"
+	    fail=1
+	fi
+    fi
     
 }
 
@@ -207,8 +225,13 @@ check_log(){
 export RUNLIST=""
 counter=0
 for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
+    if [[ $counter -gt 100000 ]]; then
+	 break
+    fi
+
     run=`echo $f | awk -F".txt" '{print $1}'`
     echo $run
+    RUNLIST=$RUNLIST,$run
 
     ##create the scripts
     if [ "$action" == "0" ]; then
@@ -238,17 +261,29 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
 
     ##run plotting scripts
-    if [ "$action" == "5" ] ; then
-        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",\"${ref}\",0\)
-    fi
+    if [ "$action" == "4" ] ; then
+        #command="brilcalc lumi -u hz/ub -r $run --byls  --output-style csv --normtag ${normtagdir}/normtag_hfoc.json "
+        command="brilcalc lumi -u hz/ub --byls --output-style csv --type hfoc -r $run"
+        #echo $command
+        ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
+    fi 
+#    if [ "$action" == "5" ] ; then
+#        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",0\)
+#    fi
 
     counter=`echo $counter | awk '{print $1+1}'`
 done
 echo "Total runs: $counter"
 
+echo ${RUNLIST:1}
+
+
+if [ "$action" == "5" ] ; then
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
+fi
 
 if [ "$action" == "6" ] ; then
     NLS=`cat ${plotsdir}/ls.dat | wc -l`
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",\"${ref}\",${NLS}\)
-    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\",\"${ref}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",${NLS}\)
+    #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\"\)
 fi
