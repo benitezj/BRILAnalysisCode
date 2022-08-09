@@ -11,9 +11,9 @@ import csv
 import json
 
 C1=ROOT.TCanvas("C1","",2000,1000)
-h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 5000, 0.0, 50000, 5000, 0, 2)                  
-h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 5000, 0.0, 23000, 5000, 0.0, 2)
-PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 5000, 0.0, 50000, 5000, 0.0, 50000)
+h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 50000, 500, 0, 2)                  
+h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 23000, 500, 0.0, 2)
+PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 50000, 500, 0.0, 50000)
 ProfX_h_ratiovsHF_residual=ROOT.TGraphErrors()
 ProfX_PCCvsHF_residual=ROOT.TGraphErrors()
 lumisec_count=0
