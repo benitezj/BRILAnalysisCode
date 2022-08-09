@@ -149,4 +149,4 @@ ProjY_h_ratio.SetStats(1)
 ProjY_h_ratio.Draw()
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
 
-## Selection for low lumi ls PCC_count>=3000000 and HFOC_count>=4000000
+
