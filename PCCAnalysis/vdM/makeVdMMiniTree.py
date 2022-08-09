@@ -242,7 +242,7 @@ newtree.Branch("vtx_yError",vtx_yError,"vtx_yError/D")
 #######################
 #  Loop over events   #
 #######################
-nentries=tree.GetEntries()/100#00
+nentries=tree.GetEntries()#
 
 print nentries
 maxNBX=0
