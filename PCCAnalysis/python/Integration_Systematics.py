@@ -47,10 +47,8 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                 for line1 in json_data1:
                         if not line1[0].startswith("pcc"):
                                 continue
-                                ##print 'run1', run1
                         for run2 in line1[1]:
-                                ##print 'run2', run2
-                                if int(run)==int(run2):
+                                if int(run2)==int(run):
                                         ##print ('lsdat', run, 'pcc', int(run2), 'hfoc', int(run1)) 
                                         ##print line[1][run1], line1[1][run2]
                                         ##if 317653<=int(run)<=317663:                                ##Fill 6774
@@ -69,7 +67,10 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                         ##print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
                         ##print int(run), int(run1), ls, ls1, ls2 
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
-ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)    
+ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)
+ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 43989)
+fitfn2 = ROOT.TF1("fitfn2","[0] * exp(-0.5 * ((x - [1]) / [2])**2)");
+ProjY_h_ratiovsHF.Fit("fitfn2")
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,50000);
 ProfX_h_ratiovsHF.Fit("fitfn")
@@ -135,18 +136,25 @@ ProfX_h_ratiovsHF_residual.Draw("AP")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsHFOC_ProfileX_residuals.png')
 ProfX_PCCvsHF_residual.SetMarkerStyle(20)
 ProfX_PCCvsHF_residual.SetMarkerColor(46)
-##ProfX_PCCvsHF_residual.GetYaxis().SetRangeUser(-0.01, 0.01)
+ProfX_PCCvsHF_residual.GetYaxis().SetRangeUser(-0.1, 0.1)
 ProfX_PCCvsHF_residual.GetYaxis().SetTitle("(PCC-Fit)/Fit")
 ProfX_PCCvsHF_residual.GetXaxis().SetTitle("HFOC")
 ProfX_PCCvsHF_residual.SetTitle("Linearity systematics")
+line1 = ROOT.TLine(0, -0.01, 25000, -0.01);
+line1.SetLineColor(1);
+line1.SetLineStyle(2);
+line2 = ROOT.TLine(0, 0.01, 25000, 0.01);
+line2.SetLineColor(1);
+line2.SetLineStyle(2);
 ProfX_PCCvsHF_residual.Draw("AP")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
 ProjY_h_ratio.SetMarkerStyle(20)
 ProjY_h_ratio.SetMarkerColor(46)
+ProjY_h_ratio.GetYaxis().SetRangeUser(1.4, 1.8)
 ProjY_h_ratio.GetXaxis().SetTitle("ProjectionY")
 ProjY_h_ratio.GetYaxis().SetTitle("Entries")
 ProjY_h_ratio.SetStats(1)
-ProjY_h_ratio.Draw()
+ProjY_h_ratio.Draw("histp")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
 
 
