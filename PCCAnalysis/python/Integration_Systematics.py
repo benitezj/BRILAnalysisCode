@@ -71,7 +71,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)
 ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 43989)
-fitfn2 = ROOT.TF1("fitfn2","gaus");
+fitfn2 = ROOT.TF1("fitfn2","gaus", 0, 2);
 fitfn2.SetParameters(0, 0, 1000000);
 fitfn2.SetParameters(1, 0, 2);
 fitfn2.SetParameters(2, 0.0005, 0.005);
@@ -166,7 +166,7 @@ ProjY_h_ratio.Draw("histp")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
 ProjY_h_ratiovsHF.SetMarkerStyle(20)
 ProjY_h_ratiovsHF.SetMarkerColor(46)
-##ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
+ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
 ProjY_h_ratiovsHF.GetXaxis().SetTitle("ProjectionY")
 ProjY_h_ratiovsHF.GetYaxis().SetTitle("Entries")
 ProjY_h_ratiovsHF.SetTitle("Stability Systematics")
