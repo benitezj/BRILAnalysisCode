@@ -72,7 +72,6 @@ print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lu
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)
 ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 43989)
 fitfn2 = ROOT.TF1("fitfn2","gaus", 1, 2);
-fitfn2
 fitfn2.SetParameters(0, 0, 1000000);
 fitfn2.SetParameters(1, 1.5, 1.6);
 fitfn2.SetParameters(2, 0.0005, 0.005);
