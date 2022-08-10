@@ -23,7 +23,7 @@ lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
 
-with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018D4/ls.dat", "r") as datFile:
+with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
                 json_data = json.load(HFOC_JSON)
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_pcc.json', "r") as PCC_JSON:
@@ -71,9 +71,9 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)
 ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 43989)
-fitfn2 = ROOT.TF1("fitfn2","gaus", 1, 2);
+fitfn2 = ROOT.TF1("fitfn2","gaus");
 fitfn2.SetParameters(0, 0, 1000000);
-fitfn2.SetParameters(1, 1.5, 1.6);
+fitfn2.SetParameters(1, 0, 2);
 fitfn2.SetParameters(2, 0.0005, 0.005);
 ProjY_h_ratiovsHF.Fit("fitfn2")
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
