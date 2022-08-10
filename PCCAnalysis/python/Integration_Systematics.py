@@ -12,7 +12,7 @@ import json
 
 C1=ROOT.TCanvas("C1","",2000,1000)
 h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 50000, 500, 0, 2)                  
-h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 2)
+h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 12500, 0.0, 25000, 12500, 0.0, 2)
 PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 50000, 500, 0.0, 50000)
 ProfX_h_ratiovsHF_residual=ROOT.TGraphErrors()
 ProfX_PCCvsHF_residual=ROOT.TGraphErrors()
@@ -140,10 +140,10 @@ ProfX_PCCvsHF_residual.GetYaxis().SetRangeUser(-0.1, 0.1)
 ProfX_PCCvsHF_residual.GetYaxis().SetTitle("(PCC-Fit)/Fit")
 ProfX_PCCvsHF_residual.GetXaxis().SetTitle("HFOC")
 ProfX_PCCvsHF_residual.SetTitle("Linearity systematics")
-line1 = ROOT.TLine(0, -0.01, 25000, -0.01);
+line1 = ROOT.TLine(0, -0.01, 35000, -0.01);
 line1.SetLineColor(1);
 line1.SetLineStyle(2);
-line2 = ROOT.TLine(0, 0.01, 25000, 0.01);
+line2 = ROOT.TLine(0, 0.01, 35000, 0.01);
 line2.SetLineColor(1);
 line2.SetLineStyle(2);
 ProfX_PCCvsHF_residual.Draw("AP")
@@ -158,5 +158,13 @@ ProjY_h_ratio.GetYaxis().SetTitle("Entries")
 ProjY_h_ratio.SetStats(1)
 ProjY_h_ratio.Draw("histp")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
+ProjY_h_ratiovsHF.SetMarkerStyle(20)
+ProjY_h_ratiovsHF.SetMarkerColor(46)
+ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
+ProjY_h_ratiovsHF.GetXaxis().SetTitle("ProjectionY")
+ProjY_h_ratiovsHF.GetYaxis().SetTitle("Entries")
+ProjY_h_ratiovsHF.SetStats(1)
+ProjY_h_ratiovsHF.Draw("histp")
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOC_vsHFOC_ProjectionY.png')
 
 
