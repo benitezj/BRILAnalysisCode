@@ -11,8 +11,10 @@ import csv
 import json
 
 C1=ROOT.TCanvas("C1","",2000,1000)
-h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 50000, 500, 0, 2)                  
+h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 12500, 0.0, 50000, 12500, 0, 2)                  
 h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 12500, 0.0, 25000, 12500, 0.0, 2)
+##h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 50000, 500, 0, 2)
+##h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 2)
 PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 50000, 500, 0.0, 50000)
 ProfX_h_ratiovsHF_residual=ROOT.TGraphErrors()
 ProfX_PCCvsHF_residual=ROOT.TGraphErrors()
@@ -69,7 +71,10 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)
 ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 43989)
-fitfn2 = ROOT.TF1("fitfn2","[0] * gaus");
+fitfn2 = ROOT.TF1("fitfn2","gaus", 1, 2);
+fitfn2.SetParameters(0, 0, 100);
+fitfn2.SetParameters(1, 1.545);
+fitfn2.SetParameters(2, 1.5, 1.6);
 ProjY_h_ratiovsHF.Fit("fitfn2")
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,50000);
@@ -84,13 +89,13 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
         run=data.split()[0]
         ls=data.split()[1]
         ##if int(run)==317663:
-        if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))!=0 and ProfX_h_ratiovsHF.GetBinContent(int(ls))!=0:
-            ProfX_h_ratiovsHF_residual.SetPoint(ProfX_h_ratiovsHF_residual.GetN(), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))
-            ProfX_h_ratiovsHF_residual.SetPointError(ProfX_h_ratiovsHF_residual.GetN(), 0, ProfX_h_ratiovsHF.GetBinError(int(ls))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))
+        ##if fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))!=0 and ProfX_h_ratiovsHF.GetBinContent(int(ls))!=0:
+          ##  ProfX_h_ratiovsHF_residual.SetPoint(ProfX_h_ratiovsHF_residual.GetN(), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))
+            ##ProfX_h_ratiovsHF_residual.SetPointError(ProfX_h_ratiovsHF_residual.GetN(), 0, ProfX_h_ratiovsHF.GetBinError(int(ls))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))
             ##print int(run), int(ls), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ProfX_h_ratiovsHF.GetBinContent(int(ls)), fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))
             ##print int(run), int(ls), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))
             ##print ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))  
-            if fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))!=0 and ProfX_PCCvsHFOC.GetBinContent(int(ls))!=0:         
+        if fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))!=0 and ProfX_PCCvsHFOC.GetBinContent(int(ls))!=0:         
                 ProfX_PCCvsHF_residual.SetPoint(ProfX_PCCvsHF_residual.GetN(), ProfX_PCCvsHFOC.GetBinCenter(int(ls)), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
                 ProfX_PCCvsHF_residual.SetPointError(ProfX_PCCvsHF_residual.GetN(), 0, ProfX_PCCvsHFOC.GetBinError(int(ls))/fitfn.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
                 ##print int(run), int(ls), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))    
@@ -127,13 +132,13 @@ ProfX_PCCvsHFOC.GetXaxis().SetTitle("HF Inst. Lumi")
 ProfX_PCCvsHFOC.GetYaxis().SetTitle("PCC")
 ProfX_PCCvsHFOC.Draw("colz")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX.png')
-ProfX_h_ratiovsHF_residual.SetMarkerStyle(20)
-ProfX_h_ratiovsHF_residual.SetMarkerColor(46)
-ProfX_h_ratiovsHF_residual.GetYaxis().SetTitle("(PCC-Fit)/Fit")
-ProfX_h_ratiovsHF_residual.GetXaxis().SetTitle("HFOC")
-ProfX_h_ratiovsHF_residual.SetTitle("Stability Systematics")
-ProfX_h_ratiovsHF_residual.Draw("AP")
-C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsHFOC_ProfileX_residuals.png')
+##ProfX_h_ratiovsHF_residual.SetMarkerStyle(20)
+##ProfX_h_ratiovsHF_residual.SetMarkerColor(46)
+##ProfX_h_ratiovsHF_residual.GetYaxis().SetTitle("(PCC-Fit)/Fit")
+##ProfX_h_ratiovsHF_residual.GetXaxis().SetTitle("HFOC")
+##ProfX_h_ratiovsHF_residual.SetTitle("Stability Systematics")
+##ProfX_h_ratiovsHF_residual.Draw("AP")
+##C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsHFOC_ProfileX_residuals.png')
 ProfX_PCCvsHF_residual.SetMarkerStyle(20)
 ProfX_PCCvsHF_residual.SetMarkerColor(46)
 ProfX_PCCvsHF_residual.GetYaxis().SetRangeUser(-0.1, 0.1)
@@ -155,6 +160,7 @@ ProjY_h_ratio.SetMarkerColor(46)
 ProjY_h_ratio.GetXaxis().SetRangeUser(1.4, 1.8)
 ProjY_h_ratio.GetXaxis().SetTitle("ProjectionY")
 ProjY_h_ratio.GetYaxis().SetTitle("Entries")
+ProjY_h_ratio.SetTitle("Stability Systematics") 
 ProjY_h_ratio.SetStats(1)
 ProjY_h_ratio.Draw("histp")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
@@ -163,8 +169,10 @@ ProjY_h_ratiovsHF.SetMarkerColor(46)
 ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
 ProjY_h_ratiovsHF.GetXaxis().SetTitle("ProjectionY")
 ProjY_h_ratiovsHF.GetYaxis().SetTitle("Entries")
+ProjY_h_ratiovsHF.SetTitle("Stability Systematics")
 ProjY_h_ratiovsHF.SetStats(1)
 ProjY_h_ratiovsHF.Draw("histp")
+fitfn2.Draw("SAME")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOC_vsHFOC_ProjectionY.png')
 
 
