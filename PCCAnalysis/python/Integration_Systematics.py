@@ -23,7 +23,7 @@ lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
 
-with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
+with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018D4/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
                 json_data = json.load(HFOC_JSON)
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_pcc.json', "r") as PCC_JSON:
@@ -98,7 +98,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
             ##print ProfX_h_ratiovsHF.GetBinCenter(int(ls)), ((ProfX_h_ratiovsHF.GetBinContent(int(ls)))-fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls))))/fitfn.Eval(ProfX_h_ratiovsHF.GetBinCenter(int(ls)))  
         if fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))!=0 and ProfX_PCCvsHFOC.GetBinContent(int(ls))!=0:         
                 ProfX_PCCvsHF_residual.SetPoint(ProfX_PCCvsHF_residual.GetN(), ProfX_PCCvsHFOC.GetBinCenter(int(ls)), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
-                ProfX_PCCvsHF_residual.SetPointError(ProfX_PCCvsHF_residual.GetN(), 0, ProfX_PCCvsHFOC.GetBinError(int(ls))/fitfn.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
+                ProfX_PCCvsHF_residual.SetPointError(ProfX_PCCvsHF_residual.GetN(), 0, ProfX_PCCvsHFOC.GetBinError(int(ls))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))
                 ##print int(run), int(ls), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))    
                 ##print ProfX_PCCvsHFOC.GetBinCenter(int(ls)), ((ProfX_PCCvsHFOC.GetBinContent(int(ls)))-fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls))))/fitfn1.Eval(ProfX_PCCvsHFOC.GetBinCenter(int(ls)))
 
@@ -158,7 +158,7 @@ line2.Draw("SAME")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
 ProjY_h_ratio.SetMarkerStyle(20)
 ProjY_h_ratio.SetMarkerColor(46)
-ProjY_h_ratio.GetXaxis().SetRangeUser(1.4, 1.8)
+##ProjY_h_ratio.GetXaxis().SetRangeUser(1.4, 1.8)
 ProjY_h_ratio.GetXaxis().SetTitle("ProjectionY")
 ProjY_h_ratio.GetYaxis().SetTitle("Entries")
 ProjY_h_ratio.SetTitle("Stability Systematics") 
@@ -167,7 +167,7 @@ ProjY_h_ratio.Draw("histp")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
 ProjY_h_ratiovsHF.SetMarkerStyle(20)
 ProjY_h_ratiovsHF.SetMarkerColor(46)
-ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
+##ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
 ProjY_h_ratiovsHF.GetXaxis().SetTitle("ProjectionY")
 ProjY_h_ratiovsHF.GetYaxis().SetTitle("Entries")
 ProjY_h_ratiovsHF.SetTitle("Stability Systematics")
