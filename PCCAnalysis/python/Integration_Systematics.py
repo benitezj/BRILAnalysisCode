@@ -69,7 +69,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 43989)
 ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 43989)
-fitfn2 = ROOT.TF1("fitfn2","[0] * exp(-0.5 * ((x - [1]) / [2])**2)");
+fitfn2 = ROOT.TF1("fitfn2","[0] * gaus");
 ProjY_h_ratiovsHF.Fit("fitfn2")
 ProfX_h_ratiovsHF=h_ratiovsHF.ProfileX()
 fitfn = ROOT.TF1("fitfn","[0]*x+[1]",0,50000);
@@ -147,6 +147,8 @@ line2 = ROOT.TLine(0, 0.01, 25000, 0.01);
 line2.SetLineColor(1);
 line2.SetLineStyle(2);
 ProfX_PCCvsHF_residual.Draw("AP")
+line1.Draw("SAME")
+line2.Draw("SAME")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProfileX_residuals.png')
 ProjY_h_ratio.SetMarkerStyle(20)
 ProjY_h_ratio.SetMarkerColor(46)
