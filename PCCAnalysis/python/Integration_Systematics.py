@@ -11,10 +11,10 @@ import csv
 import json
 
 C1=ROOT.TCanvas("C1","",2000,1000)
-##h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 30000, 0.0, 60000, 30000, 0, 2)                  
-##h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 30000, 0.0, 30000, 30000, 0, 2)
-h_ratio=ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 60000, 500, 0, 2)
-h_ratiovsHF=ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 2)
+h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 30000, 0.0, 60000, 30000, 0, 2)                  
+h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 30000, 0.0, 30000, 30000, 0, 2)
+##h_ratio=ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 60000, 500, 0, 2)
+#3h_ratiovsHF=ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 2)
 PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 60000, 500, 0.0, 60000)
 PCC_perls=ROOT.TGraph()
 HFOC_perls=ROOT.TGraph()
@@ -24,15 +24,13 @@ lumisec_count=0
 lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
-##sigma_vis=4.30861
-##sigma_vis=923.0840
-##sigma_vis=6.41462
-#3sigma_vis=5.159070
-##sigma_vis=5.23821
-##sigma_vis=6.16056
-##sigma_vis=6.72261
-##sigma_vis1=805.9
-PCC_scaling=1.54310264126
+PCC_scaling_A=0.72026245402
+PCC_scaling_B=1.54310264126
+PCC_scaling_C=1.07232029422
+PCC_scaling_D1=0.86243229689
+PCC_scaling_D2=0.87566198595
+PCC_scaling_D3=1.02984954865
+PCC_scaling_D4=1.12380641926
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
