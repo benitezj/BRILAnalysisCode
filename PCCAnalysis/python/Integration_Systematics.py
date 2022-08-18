@@ -71,8 +71,8 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                                         goodls1=True
                                                         print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
                 if float(HFOC_count) !=0 and goodls==True and goodls1==True and float(PCC_count)>=8000 and float(HFOC_count)>=8000:
-                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/(float(HFOC_count)*PCC_scalingB))
-                        h_ratio.Fill(lumisec_count+1, float(PCC_count)/(float(HFOC_count)*PCC_scalingB))
+                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/(float(HFOC_count)*PCC_scaling_B))
+                        h_ratio.Fill(lumisec_count+1, float(PCC_count)/(float(HFOC_count)*PCC_scaling_B))
                         PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count)) 
                         PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count))
                         HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count))
