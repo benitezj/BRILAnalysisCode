@@ -25,13 +25,13 @@ lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
 ##sigma_vis=4.30861
-sigma_vis=9.23084
+sigma_vis=923.0840
 ##sigma_vis=6.41462
 #3sigma_vis=5.159070
 ##sigma_vis=5.23821
 ##sigma_vis=6.16056
 ##sigma_vis=6.72261
-sigma_vis1=8.059
+sigma_vis1=805.9
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
