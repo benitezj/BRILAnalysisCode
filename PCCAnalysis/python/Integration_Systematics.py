@@ -25,13 +25,14 @@ lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
 ##sigma_vis=4.30861
-sigma_vis=923.0840
+##sigma_vis=923.0840
 ##sigma_vis=6.41462
 #3sigma_vis=5.159070
 ##sigma_vis=5.23821
 ##sigma_vis=6.16056
 ##sigma_vis=6.72261
-sigma_vis1=805.9
+##sigma_vis1=805.9
+PCC_scaling=1.54310264126
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
@@ -72,12 +73,12 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                                         goodls1=True
                                                         print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
                 if float(HFOC_count) !=0 and goodls==True and goodls1==True: ## and (float(PCC_count)/sigma_vis)>=1000 and (float(HFOC_count)/sigma_vis1)>=1000:
-                        h_ratiovsHF.Fill(float(HFOC_count)/sigma_vis1, (float(PCC_count)*sigma_vis1)/(float(HFOC_count)*sigma_vis))
-                        h_ratio.Fill(lumisec_count+1, (float(PCC_count)*sigma_vis1)/(float(HFOC_count)*sigma_vis))
-                        lumisec_count=lumisec_count+1                          
-                        PCCvsHFOC.Fill(float(PCC_count)/sigma_vis, float(HFOC_count)/sigma_vis1) 
-                        PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count)/sigma_vis)
-                        HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count)/sigma_vis1)               
+                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/(float(HFOC_count)*PCC_scaling))
+                        h_ratio.Fill(lumisec_count+1, float(PCC_count)/(float(HFOC_count)*PCC_scaling))
+                        PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count)) 
+                        PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count))
+                        HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count))
+                        lumisec_count=lumisec_count+1               
                         ##print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
                         ##print int(run), int(run1), ls, ls1, ls2 
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
