@@ -25,7 +25,7 @@ lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
 ##sigma_vis=4.30861
-sigma_vis=923.0840
+sigma_vis=9230840
 ##sigma_vis=6.41462
 #3sigma_vis=5.159070
 ##sigma_vis=5.23821
@@ -71,7 +71,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                                         lumisec_good1=lumisec_good1+1
                                                         goodls1=True
                                                         print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
-                if float(HFOC_count) !=0 and goodls==True and goodls1==True and (float(PCC_count)/sigma_vis)>=1000 and (float(HFOC_count)/sigma_vis1)>=1000:
+                if float(HFOC_count) !=0 and goodls==True and goodls1==True: ## and (float(PCC_count)/sigma_vis)>=1000 and (float(HFOC_count)/sigma_vis1)>=1000:
                         h_ratiovsHF.Fill(float(HFOC_count)/sigma_vis1, (float(PCC_count)*sigma_vis1)/(float(HFOC_count)*sigma_vis))
                         h_ratio.Fill(lumisec_count+1, (float(PCC_count)*sigma_vis1)/(float(HFOC_count)*sigma_vis))
                         lumisec_count=lumisec_count+1                          
