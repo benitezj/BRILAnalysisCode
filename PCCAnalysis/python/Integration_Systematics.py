@@ -11,11 +11,11 @@ import csv
 import json
 
 C1=ROOT.TCanvas("C1","",2000,1000)
-h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 30000, 0.0, 60000, 30000, 0, 2)                  
-h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 30000, 0.0, 30000, 30000, 0, 2)
-##h_ratio=ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 60000, 500, 0, 3)
-#3h_ratiovsHF=ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 3)
-PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 50000, 500, 0.0, 50000)
+##h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 30000, 0.0, 60000, 30000, 0, 2)                  
+##h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 30000, 0.0, 30000, 30000, 0, 2)
+h_ratio=ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 60000, 500, 0, 2)
+h_ratiovsHF=ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 2)
+PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 60000, 500, 0.0, 60000)
 PCC_perls=ROOT.TGraph()
 HFOC_perls=ROOT.TGraph()
 ProfX_h_ratiovsHF_residual=ROOT.TGraphErrors()
@@ -24,7 +24,13 @@ lumisec_count=0
 lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
+##sigma_vis=4.30861
 sigma_vis=9.23084
+##sigma_vis=6.41462
+#3sigma_vis=5.159070
+##sigma_vis=5.23821
+##sigma_vis=6.16056
+##sigma_vis=6.72261
 sigma_vis1=8.059
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
@@ -65,13 +71,13 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                                         lumisec_good1=lumisec_good1+1
                                                         goodls1=True
                                                         print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
-                if float(HFOC_count) !=0 and float(PCC_count)>=8000 and float(HFOC_count)>=8000 and goodls==True and goodls1==True:
-                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
-                        h_ratio.Fill(lumisec_count+1, float(PCC_count)/float(HFOC_count))
+                if float(HFOC_count) !=0 and goodls==True and goodls1==True and (float(PCC_count)/sigma_vis)>=1000 and (float(HFOC_count)/sigma_vis1)>=1000:
+                        h_ratiovsHF.Fill(float(HFOC_count)/sigma_vis1, (float(PCC_count)*sigma_vis1)/(float(HFOC_count)*sigma_vis))
+                        h_ratio.Fill(lumisec_count+1, (float(PCC_count)*sigma_vis1)/(float(HFOC_count)*sigma_vis))
                         lumisec_count=lumisec_count+1                          
-                        PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count)) 
-                        PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count))
-                        HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count))               
+                        PCCvsHFOC.Fill(float(PCC_count)/sigma_vis, float(HFOC_count)/sigma_vis1) 
+                        PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count)/sigma_vis)
+                        HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count)/sigma_vis1)               
                         ##print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
                         ##print int(run), int(run1), ls, ls1, ls2 
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
@@ -191,7 +197,7 @@ PCC_perls.SetMarkerColor(1)
 PCC_perls.SetMarkerSize(0.5)
 PCC_perls.GetXaxis().SetTitle("ls")
 PCC_perls.GetYaxis().SetTitle("PCC")
-PCC_perls.GetYaxis().SetRangeUser(0.01, 1000000)
+PCC_perls.GetYaxis().SetRangeUser(0.001, 1000000)
 PCC_perls.Draw("AP")
 C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_perls.png')
 HFOC_perls.SetMarkerStyle(20)
@@ -199,7 +205,7 @@ HFOC_perls.SetMarkerColor(2)
 HFOC_perls.SetMarkerSize(0.5)
 HFOC_perls.GetXaxis().SetTitle("ls")
 HFOC_perls.GetYaxis().SetTitle("HFOC")
-HFOC_perls.GetYaxis().SetRangeUser(0.01, 1000000)
+HFOC_perls.GetYaxis().SetRangeUser(0.001, 1000000)
 HFOC_perls.Draw("AP")
 C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'HFOC_perls.png')
 PCC_perls.SetMarkerStyle(20)
@@ -212,8 +218,8 @@ HFOC_perls.SetLineColor(2)
 HFOC_perls.SetMarkerSize(0.5)
 PCC_perls.GetXaxis().SetTitle("ls")
 PCC_perls.GetYaxis().SetTitle("PCC or HFOC")
-PCC_perls.GetYaxis().SetRangeUser(0.01, 1000000)
-HFOC_perls.GetYaxis().SetRangeUser(0.01, 1000000)
+PCC_perls.GetYaxis().SetRangeUser(0.001, 1000000)
+HFOC_perls.GetYaxis().SetRangeUser(0.001, 1000000)
 PCC_perls.Draw("AP")
 HFOC_perls.Draw("PSAME")
 legend = ROOT.TLegend(0.75, 0.75, 0.88, 0.88)
