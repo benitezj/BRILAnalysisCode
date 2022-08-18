@@ -72,7 +72,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                                         lumisec_good1=lumisec_good1+1
                                                         goodls1=True
                                                         print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
-                if float(HFOC_count) !=0 and goodls==True and goodls1==True: ## and (float(PCC_count)/sigma_vis)>=1000 and (float(HFOC_count)/sigma_vis1)>=1000:
+                if float(HFOC_count) !=0 and goodls==True and goodls1==True and float(PCC_count)>=8000 and float(HFOC_count)>=8000:
                         h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/(float(HFOC_count)*PCC_scaling))
                         h_ratio.Fill(lumisec_count+1, float(PCC_count)/(float(HFOC_count)*PCC_scaling))
                         PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count)) 
