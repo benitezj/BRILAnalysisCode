@@ -50,6 +50,16 @@ float getSigmaVis(int run){
     //#define SigmaPCC 0.118907*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk2 Panel1
     //#define SigmaPCC 0.119082*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk3 Panel1
 
+    //New veto list, Ashish Sehrawat
+    //#define SigmaPCC 0.72026245402*5982 mb // for Period A
+    //#define SigmaPCC 1.54310264126*5982 mb // for Period B 
+    //#define SigmaPCC 1.07232029422*5982 mb // for Period C 
+    //#define SigmaPCC 0.86243229689*5982 mb // for Period D1 
+    //#define SigmaPCC 0.87566198595*5982 mb // for Period D2 
+    //#define SigmaPCC 1.02984954865*5982 mb // for Period D3 
+    //#define SigmaPCC 1.12380641926*5982 mb // for Period D4 
+
+
   }else if(run>=315252){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
     return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
