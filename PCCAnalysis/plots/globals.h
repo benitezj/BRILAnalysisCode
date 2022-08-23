@@ -59,6 +59,22 @@ float getSigmaVis(int run){
     //#define SigmaPCC 1.02984954865*5982 mb // for Period D3 
     //#define SigmaPCC 1.12380641926*5982 mb // for Period D4 
 
+    // }else if(run>=315252){
+    //return 4308.60999995;
+    //}else if(run>=317080){
+    //return 9230.84000002;
+    //}else if(run>=319337){
+    //return 6414.62000002;
+    //}else if(run>=320500){
+    //return 5159.07;
+    //}else if(run>=321710){
+    //return 5238.20999995;
+    //}else if(run>=323363){
+    //return 6160.56000002;
+    //}else if(run>=324564){
+    //return 6722.61000001;
+    // }
+
 
   }else if(run>=315252){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
