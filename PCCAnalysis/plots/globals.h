@@ -52,8 +52,7 @@ float getSigmaVis(int run){
 
   }else if(run>=315252){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
-    //return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting  
-    return 9.23084000002e6/ORBITF;  
+    return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
   }else if(run>=306473){
     return 0.9702*3.2074e6/ORBITF; // Run2017G
   }
