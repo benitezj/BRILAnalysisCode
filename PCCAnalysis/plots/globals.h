@@ -50,35 +50,10 @@ float getSigmaVis(int run){
     //#define SigmaPCC 0.118907*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk2 Panel1
     //#define SigmaPCC 0.119082*3.14e6/(23.31*11245.6) // for second part of RunD , FPIX disk3 Panel1
 
-    //New veto list, Ashish Sehrawat
-    //#define SigmaPCC 0.72026245402*5982 mb // for Period A
-    //#define SigmaPCC 1.54310264126*5982 mb // for Period B 
-    //#define SigmaPCC 1.07232029422*5982 mb // for Period C 
-    //#define SigmaPCC 0.86243229689*5982 mb // for Period D1 
-    //#define SigmaPCC 0.87566198595*5982 mb // for Period D2 
-    //#define SigmaPCC 1.02984954865*5982 mb // for Period D3 
-    //#define SigmaPCC 1.12380641926*5982 mb // for Period D4 
-
-    // }else if(run>=315252){
-    //return 4308.60999995;
-    //}else if(run>=317080){
-    //return 9230.84000002;
-    //}else if(run>=319337){
-    //return 6414.62000002;
-    //}else if(run>=320500){
-    //return 5159.07;
-    //}else if(run>=321710){
-    //return 5238.20999995;
-    //}else if(run>=323363){
-    //return 6160.56000002;
-    //}else if(run>=324564){
-    //return 6722.61000001;
-    // }
-
-
   }else if(run>=315252){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
-    return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
+    //return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting
+    return 9.23084000002e6/ORBITF;    
   }else if(run>=306473){
     return 0.9702*3.2074e6/ORBITF; // Run2017G
   }
@@ -88,7 +63,29 @@ float getSigmaVis(int run){
 }
 
 
+float getsigmavis_as(int run){
 
+  //New veto list, Ashish Sehrawat
+  if(run>=315252){
+    return 4.30860999995e6/ORBITF;   // for Period A 
+  }else if(run>=317080){
+    return 9.23084000002e6/ORBITF;   // for Period B
+  }else if(run>=319337){
+    return 6.41462000002e6/ORBITF;   // for Period C
+  }else if(run>=320500){
+    return 5.15907e6/ORBITF;        // for Period D1
+  }else if(run>=321710){
+    return 5.23820999995e6/ORBITF;  // for Period D2
+  }else if(run>=323363){
+    return 6.16056000002e6/ORBITF;   // for Period D3
+  }else if(run>=324564){
+    return 6.72261000001e6/ORBITF;   // for Period D4 
+   }
+
+  cout<<"sigma vis not found for run : "<<run<<endl;
+  return 1;
+
+}
 /////////////////////////
 // Module coordinates
 ////////////////////////
