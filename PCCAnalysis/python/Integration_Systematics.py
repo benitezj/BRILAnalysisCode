@@ -13,7 +13,7 @@ import json
 C1=ROOT.TCanvas("C1","",2000,1000)
 ##h_ratio = ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 30000, 0.0, 60000, 30000, 0, 2)                  
 ##h_ratiovsHF = ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 30000, 0.0, 30000, 30000, 0, 2)
-h_ratio=ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 500, 0.0, 60000, 500, 0, 2)
+h_ratio=ROOT.TH2F("h_ratio", "PCC/HFOC vs lumi section histogram ", 30000, 0.0, 60000, 30000, 0, 2)
 h_ratiovsHF=ROOT.TH2F("h_ratiovsHF", "PCC/HFOC vs HFOC Histogram", 500, 0.0, 25000, 500, 0.0, 2)
 PCCvsHFOC=ROOT.TH2F("h_PCCvsHFOC", "PCC vs HFOC Histogram", 500, 0.0, 60000, 500, 0.0, 60000)
 PCC_perls=ROOT.TGraph()
@@ -24,15 +24,8 @@ lumisec_count=0
 lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
-PCC_scaling_A=1.38394853562
-PCC_scaling_B=0.64597528502
-PCC_scaling_C=0.92957875914
-PCC_scaling_D1=1.15580802354
-PCC_scaling_D2=1.13834582807
-PCC_scaling_D3=0.50511958003
-PCC_scaling_D4=0.46288859237
 
-with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_hfoc_plots/EXPRESS_datasets/Run2018_ZB_test/Run2018B/ls.dat", "r") as datFile:
+with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC/EXPRESS_datasets/Run2018_ZB_test/Run2018A/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
                 json_data = json.load(HFOC_JSON)
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_pcc.json', "r") as PCC_JSON:
@@ -70,17 +63,17 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                                         lumisec_good1=lumisec_good1+1
                                                         goodls1=True
                                                         ##print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
-                if float(HFOC_count) !=0 and goodls==True and goodls1==True and float(PCC_count)>=8000 and float(HFOC_count)>=8000:
-                        h_ratiovsHF.Fill(float(HFOC_count), (float(PCC_count)/float(HFOC_count))*PCC_scaling_B)
-                        h_ratio.Fill(lumisec_count+1, (float(PCC_count)/float(HFOC_count))*PCC_scaling_B)
+                if float(HFOC_count) !=0 and goodls==True and goodls1==True and float(PCC_count)>=4000 and float(HFOC_count)>=4000:
+                        h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
+                        h_ratio.Fill(lumisec_count+1, float(PCC_count)/float(HFOC_count))
                         PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count)) 
                         PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count))
                         HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count))
                         lumisec_count=lumisec_count+1 
-                        print lumisec_count, float(PCC_count)*PCC_scaling_B, float(HFOC_count), (float(PCC_count)/float(HFOC_count))*PCC_scaling_B              
+                        ##print lumisec_count, float(PCC_count)*PCC_scaling_B, float(HFOC_count), (float(PCC_count)/float(HFOC_count))*PCC_scaling_B              
                         ##print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
                         ##print int(run), int(run1), ls, ls1, ls2 
-                        ##print run, lumisec_count, float(PCC_count)/(float(HFOC_count)*PCC_scaling_B)
+                        print run, lumisec_count, float(PCC_count)/float(HFOC_count)
 print ("all ls ", lumisec_all, "HFOC good ls ", lumisec_good, "PCC good ls ", lumisec_good1, "PCC and HFOC good ls ", lumisec_count)
 ProjY_h_ratio=h_ratio.ProjectionY("Y Projection of PCC/HFOC vs ls", 0, 60000)
 ProjY_h_ratiovsHF=h_ratiovsHF.ProjectionY("Y Projection of PCC/HFOC vs HF", 0, 60000)
@@ -125,7 +118,7 @@ h_ratio.SetMarkerColor(46)
 h_ratio.GetXaxis().SetTitle("Lumi section")
 ##h_ratio.GetXaxis().SetTitle("time (s)")
 h_ratio.GetYaxis().SetTitle("PCC/HFOC")
-h_ratio.SetTitle("Fill 6761")
+h_ratio.SetTitle("PCC/HFOC vs lumi section histogram")
 h_ratio.SetStats(1)
 h_ratio.Draw("colz")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOCvsls.png')
@@ -179,7 +172,7 @@ ProjY_h_ratio.GetYaxis().SetTitle("Entries")
 ProjY_h_ratio.SetTitle("Stability Systematics") 
 ProjY_h_ratio.SetStats(1)
 ProjY_h_ratio.Draw("histp")
-C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.png')
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCCvsHFOC_ProjectionY.root')
 ProjY_h_ratiovsHF.SetMarkerStyle(20)
 ProjY_h_ratiovsHF.SetMarkerColor(46)
 ##ProjY_h_ratiovsHF.GetXaxis().SetRangeUser(1.4, 1.8)
@@ -202,7 +195,7 @@ PCC_perls.GetXaxis().SetTitle("ls")
 PCC_perls.GetYaxis().SetTitle("PCC")
 PCC_perls.GetYaxis().SetRangeUser(0.0001, 100000000)
 PCC_perls.Draw("AP")
-C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_perls.root')
+C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_perls.png')
 HFOC_perls.SetMarkerStyle(20)
 HFOC_perls.SetMarkerColor(2)
 HFOC_perls.SetMarkerSize(0.5)
@@ -210,7 +203,7 @@ HFOC_perls.GetXaxis().SetTitle("ls")
 HFOC_perls.GetYaxis().SetTitle("HFOC")
 HFOC_perls.GetYaxis().SetRangeUser(0.0001, 100000000)
 HFOC_perls.Draw("AP")
-C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'HFOC_perls.root')
+C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'HFOC_perls.png')
 PCC_perls.SetMarkerStyle(20)
 HFOC_perls.SetMarkerStyle(20)
 PCC_perls.SetMarkerColor(1)
