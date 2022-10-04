@@ -26,12 +26,15 @@ lumisec_count=0
 lumisec_all=0
 lumisec_good=0
 lumisec_good1=0
+lumisec_good2=0
 
 with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC/EXPRESS_datasets/Run2018_ZB_test/Run2018D4/ls.dat", "r") as datFile:
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfoc.json', "r") as HFOC_JSON:
                 json_data = json.load(HFOC_JSON)
         with open('/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_pcc.json', "r") as PCC_JSON:
                 json_data1 = json.load(PCC_JSON)
+        with open('/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/BRILAnalysisCode/PCCAnalysis/test/emittance_scan_2018.json', "r") as EMITSCAN_JSON:
+                json_data2 = json.load(EMITSCAN_JSON)
         for data in datFile:      
                 run=data.split()[0]
                 ls=data.split()[1]
@@ -41,6 +44,7 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                 lumisec_count=lumisec_count+1
                 goodls=False
                 goodls1=False
+                goodls2=False
                 for line in json_data:
                         if not line[0].startswith("hfoc"):
                                 continue
@@ -48,8 +52,8 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                 if int(run1)==int(run):
                                         for ls1, ls2 in line[1][run1]:
                                                 if int(ls1)<=int(ls)<=int(ls2):
-                                                        lumisec_good=lumisec_good+1
                                                         goodls=True
+                                                        lumisec_good=lumisec_good+1
                                                         ##print int(run), int(run1), int(ls), "ls1 ", int(ls1), "ls2 ", int(ls2)
                 for line1 in json_data1:
                         if not line1[0].startswith("pcc"):
@@ -63,10 +67,20 @@ with open("/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/s
                                         ##if int(run1)==int(run)==int(run2):
                                         for ls3, ls4 in line1[1][run2]:
                                                 if int(ls3)<=int(ls)<=int(ls4):
-                                                        lumisec_good1=lumisec_good1+1
                                                         goodls1=True
+                                                        lumisec_good1=lumisec_good1+1
                                                         ##print int(run), int(run2), int(ls), "ls3 ", int(ls3), "ls4 ", int(ls4)
-                if float(HFOC_count) !=0 and goodls==True and goodls1==True and float(PCC_count)>=3000 and float(HFOC_count)>=3000:
+                for line2 in json_data2:
+                        if not line2[0].startswith("emitscans"):
+                                continue
+                        for run3 in line2[1]:
+                                if int(run3)==int(run):
+                                        for ls5, ls6 in line2[1][run3]:
+                                                if int(ls5)<int(ls) and int(ls)>int(ls6):
+                                                        goodls2=True
+                                                        lumisec_good2=lumisec_good2+1
+                                                        ##print int(run), int(run3), int(ls), "ls5 ", int(ls5), "ls6 ", int(ls6)      
+                if float(HFOC_count) !=0 and goodls==True and goodls1==True and goodls2==True and float(PCC_count)>=6000 and float(HFOC_count)>=6000:
                         ##if int(run)==317291 or int(run)==317292 or int(run)==317295 or int(run)==317296 or int(run)==317297:
                         h_ratiovsHF.Fill(float(HFOC_count), float(PCC_count)/float(HFOC_count))
                         h_ratio.Fill(lumisec_count+1, float(PCC_count)/float(HFOC_count))
@@ -195,7 +209,7 @@ C2.SetLogy()
 PCC_perls.SetMarkerStyle(20)
 PCC_perls.SetMarkerColor(1)
 PCC_perls.SetMarkerSize(0.5)
-PCC_perls.GetXaxis().SetTitle("ls")
+PCC_perls.GetXaxis().SetTitle("ls") 
 PCC_perls.GetYaxis().SetTitle("PCC")
 ##PCC_perls.GetYaxis().SetRangeUser(0.0001, 100000000)
 PCC_perls.GetYaxis().SetRangeUser(100, 100000)
@@ -223,7 +237,7 @@ PCC_perls.GetYaxis().SetTitle("PCC or HFOC")
 PCC_perls.SetTitle("Run 2018B")
 ##PCC_perls.GetYaxis().SetRangeUser(0.0001, 100000000)
 ##HFOC_perls.GetYaxis().SetRangeUser(0.0001, 100000000)
-PCC_perls.GetYaxis().SetRangeUser(100, 100000)                                                                                                                                                    
+PCC_perls.GetYaxis().SetRangeUser(100, 100000)                                                                                                                                                 
 HFOC_perls.GetYaxis().SetRangeUser(100, 100000) 
 PCC_perls.Draw("AP")
 HFOC_perls.Draw("PSAME")
@@ -235,3 +249,13 @@ legend.SetLineColor(0)
 legend.SetFillColor(0)
 legend.Draw("SAME")
 C2.Print('/eos/user/a/asehrawa/BRIL-new/'+'PCC_HFOC_perls.png')
+
+
+
+
+
+
+
+
+
+
