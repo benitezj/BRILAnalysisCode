@@ -25,7 +25,9 @@ HFOC_perls=ROOT.TGraph()
 ProfX_h_ratiovsHF_residual=ROOT.TGraphErrors()
 ProfX_PCCvsHF_residual=ROOT.TGraphErrors()
 PCC_HFOCvsHFOC=ROOT.TGraphErrors()
-ProjY_ProfX_h_ratio=ROOT.TH1F("ProjY_ProfX","Y Projection of Profile", 1080, 0.99, 1.02)
+ProjY_ProfX_h_ratio=ROOT.TH1F("ProjY_ProfX","Y Projection of Profile", 1080, 0.94, 1.06)
+hist_HFOC_perls=ROOT.TH1F("hL"," histogram of HFOC Lumi", 1080, 0, 54032)
+hist_h_ratio = ROOT.TH2F("histo_h_ratio", " Profile vs lumi histogram ", 1080, 0.94, 1.06, 1080, 0.0, 400)
 lumisec_count=0
 lumisec_all=0
 lumisec_good=0
@@ -98,6 +100,7 @@ with open("/eos/user/a/asehrawa/PCC_HFOC_emittance_scan_root_files/PCC/EXPRESS_d
                         PCCvsHFOC.Fill(float(PCC_count), float(HFOC_count)) 
                         PCC_perls.SetPoint(PCC_perls.GetN(), lumisec_count, float(PCC_count))
                         HFOC_perls.SetPoint(HFOC_perls.GetN(), lumisec_count, float(HFOC_count))
+                        hist_HFOC_perls.Fill(float(HFOC_count))
                         #lumisec_count=lumisec_count+1 
                         #print lumisec_count, float(PCC_count)*PCC_scaling_B, float(HFOC_count), (float(PCC_count)/float(HFOC_count))*PCC_scaling_B              
                         #print lumisec_count, int(ls), int(ls1), int(ls2), float(PCC_count)/float(HFOC_count)
@@ -121,7 +124,9 @@ ProfX_h_ratio=h_ratio.ProfileX()
 num_bin=ProfX_h_ratio.GetNbinsX()
 for i in range(num_bin):
         ProjY_ProfX_h_ratio.Fill(float(ProfX_h_ratio.GetBinContent(int(i))))
-        print float(ProfX_h_ratio.GetBinContent(int(i)))
+        #print float(ProfX_h_ratio.GetBinContent(int(i)))
+        hist_h_ratio.Fill(ProfX_h_ratio.GetBinContent(i), hist_HFOC_perls.GetBinContent(i))
+        print ProfX_h_ratio.GetBinContent(i), hist_HFOC_perls.GetBinContent(i)
 
 ## run loop, lumi section loop
 #with open("/eos/user/a/asehrawa/PCC_HFOC_emittance_scan_root_files/PCC/EXPRESS_datasets/Run2018_ZB_test/Run2018A/ls.dat", "r") as datFile:
@@ -155,6 +160,20 @@ for j in range(num_bin1):
         #ProjY_ProfX_h_ratio.Fill(float(ProfX_h_ratio.GetBinContent(int(ls))))
         #print float(ProfX_h_ratio.GetBinContent(int(ls)))
 
+hist_h_ratio.SetMarkerStyle(20)
+hist_h_ratio.SetMarkerColor(46)
+hist_h_ratio.SetMarkerSize(0.8)
+hist_h_ratio.SetStats(1)
+hist_h_ratio.GetXaxis().SetTitle("ProfileX of PCC/HFOC")
+#hist_h_ratio.GetXaxis().SetTitle("time (s)")                                                                                                                                                      
+hist_h_ratio.GetYaxis().SetTitle("HFOC lumi")
+#hist_h_ratio.GetYaxis().SetTitle("PCC/PLT")                                                                                                                                                     
+#hist_h_ratio.GetYaxis().SetRangeUser(0, 400)
+#hist_h_ratio.SetTitle("PCC/HFOC vs lumi section histogram")                                                                                                                                       
+hist_h_ratio.SetTitle("ProfileX vs HFOC lumi histogram")
+hist_h_ratio.SetStats(1)                                                                                                                                                                           
+hist_h_ratio.Draw("colz")
+C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'ProfileXvsHFOClumi.png')
 ProjY_ProfX_h_ratio.SetMarkerStyle(20)
 ProjY_ProfX_h_ratio.SetMarkerColor(46)
 ProjY_ProfX_h_ratio.GetXaxis().SetTitle("PCC/HFOC")
