@@ -23,9 +23,9 @@ void plotAfterglowModel(){
 #define modelrange 3600
 #define range 25
 
-  TF1 F("F",formula,0.5,modelrange+0.5);
-  F.SetParameter(0,type2_a);
-  F.SetParameter(1,type2_b);
+  TF1 Type2Model("Type2Model",formula,0.5,modelrange+0.5);
+  Type2Model.SetParameter(0,type2_a);
+  Type2Model.SetParameter(1,type2_b);
   
 
   TH1F HF("HF","",range,0.5,range+0.5);
@@ -42,7 +42,7 @@ void plotAfterglowModel(){
   ///////// Plot of the per bunch Afterglow model
   C.Clear();
   HF.Draw("hist");
-  F.Draw("lsame");
+  Type2Model.Draw("lsame");
   TLatex text;
   text.DrawLatexNDC(0.3,0.2,TString("F = ")+formula);
   C.Print("plotAfterglowModel.png");
@@ -63,7 +63,7 @@ void plotAfterglowModel(){
 
   for(int i=0;i<ncolliding;i++){
     for(int b=1;b<=range;b++)
-      HModelSumOrbit.AddBinContent(b,F.Eval(i*interval+b));
+      HModelSumOrbit.AddBinContent(b,Type2Model.Eval(i*interval+b));
   }
   C.Clear();
   HModelSumOrbit.Draw("histl");
@@ -74,22 +74,30 @@ void plotAfterglowModel(){
   
   /////////////////////////////////////////////////////////////
   /////// Analysis of Afterglow uncertainty for 36 bunch trains
-  //https://lpc.web.cern.ch/fillingSchemes/2022/candidates/25ns_1815b_1802_1443_1542_180bpi_14inj_3INDIVs.csv
-  //looks like 18 colliding bunches per train
   int NBPTrain=36;
-  int NBPGap=8;
-  int NBTotal=NBPTrain*2+NBPGap*2;
+  cout<<"Number of bunches per train "<<NBPTrain<<endl;
+  int NBPGap=7;
+  cout<<"Number of bunches in gap "<<NBPGap<<endl;
+  int NBTotal=NBPTrain*2 + NBPGap*2;
+  int NTrain=50;         // needed for Type1 uncertainty 
+  cout<<"Number of trains/wagons "<<NTrain<<endl;
     
   //1. Afterglow is normalized on the colliding bunches.
   //2. Unc is driven by sqrt(N) on colliding bunches
   //3. nominal rate for Randoms=400hz, nominal PCC per pp=100, integration time, pileup 
   int RDTriggerRate=400;
+  cout<<"Total trigger "<<RDTriggerRate<<endl;
   float RDTriggerRatePerB=(float)RDTriggerRate/NBX;//Trigger is divided by full orbit
+  cout<<"Trigger per bunch "<<RDTriggerRatePerB<<endl;
   int PCCPerPP=100;
-  float LSTime=23.31*50;  // scale by number of lumisections
+  cout<<"PCC per pp collision "<<PCCPerPP<<endl;
+  int NLSIntegration=50;
+  float LSTime=23.31*NLSIntegration;  // scale by number of lumisections
+  cout<<"Integration time "<<NLSIntegration<<" LS"<<endl;
   int Pileup=40;
-  
+  cout<<"Pileup  "<<Pileup<<endl;
  
+  
   float collisionCount=PCCPerPP*Pileup*RDTriggerRatePerB*LSTime;
   cout<<"collisionCount= "<<collisionCount<<endl;
   
@@ -101,7 +109,7 @@ void plotAfterglowModel(){
       HTrainSignal.Fill(i,collisionCount);
       HTrainBKGType1.Fill(i+1,collisionCount*Type1Frac);
       for(int j=i+1;j<=NBTotal;j++)
-	HTrainBKGType2.Fill(j,collisionCount*F.Eval(j-i));
+	HTrainBKGType2.Fill(j,collisionCount*Type2Model.Eval(j-i));
      }
   
   TH1F HTrainBKG("HTrainBKG","",NBTotal,0.5,NBTotal+0.5);
@@ -110,35 +118,48 @@ void plotAfterglowModel(){
   HTrainBKG.SetLineColor(4);
 
 
+  //estimate type1 fraction unc., type1 frac is determied from one bin at end of train wagon. this fraction should be averaged over all wagons giving better precision
+  float Type1FracUnc_frac =  pow(sqrt(NTrain*collisionCount)/(NTrain*collisionCount),2) ///unc in denominator of fraction
+    + pow(sqrt(NTrain*collisionCount*Type1Frac)/(NTrain*collisionCount*Type1Frac),2) ;   // unc in type1 afterglow bin
+ 
+  float Type1FracUnc = Type1Frac*sqrt(Type1FracUnc_frac);
+  cout<<"Type1 frac: "<<Type1Frac<<" +/- "<<Type1FracUnc<<endl;
 
-  TH1D * HTrainBKGUncBCID[NBTotal];
-  for(int i=0;i<NBTotal;i++)
-    HTrainBKGUncBCID[i] = new TH1D(TString("HTrainBKGUncBCID")+i,"",NBTotal,0.5,NBTotal+0.5);
-  for(int i=1;i<=NBTotal;i++)
-    if(i<=NBPTrain || (i>(NBPTrain+NBPGap) && i<=(NBPTrain*2+NBPGap))){
-      for(int j=i+1;j<=(NBTotal);j++){
-	double unc = 0;
-	if(j==i+1) unc = sqrt(collisionCount)*(Type1Frac + F.Eval(j-i));
-	if(j>i+1) unc = sqrt(collisionCount)*F.Eval(j-i);
-	HTrainBKGUncBCID[i-1]->Fill(j,unc);
-      }
-    }
+  
+  /* TH1D * HTrainBKGUncBCID[NBTotal]; */
+  /* for(int i=0;i<NBTotal;i++) */
+  /*   HTrainBKGUncBCID[i] = new TH1D(TString("HTrainBKGUncBCID")+i,"",NBTotal,0.5,NBTotal+0.5); */
+  /* for(int i=1;i<=NBTotal;i++) */
+  /*   if(i<=NBPTrain || (i>(NBPTrain+NBPGap) && i<=(NBPTrain*2+NBPGap))){ */
+  /*     for(int j=i+1;j<=(NBTotal);j++){ */
+  /* 	double unc = 0; */
+  /* 	if(j==i+1) unc = sqrt(collisionCount)*(Type1Frac + Type2Model.Eval(j-i)); */
+  /* 	if(j>i+1) unc = sqrt(collisionCount)*Type2Model.Eval(j-i); */
+  /* 	HTrainBKGUncBCID[i-1]->Fill(j,unc); */
+  /*     } */
+  /*   } */
+  
   TH1D HTrainBKGUnc("HTrainBKGUnc","",NBTotal,0.5,NBTotal+0.5);
   HTrainBKGUnc.SetLineColor(3);
   for(int i=1;i<=NBTotal;i++)
     if(i<=NBPTrain || (i>(NBPTrain+NBPGap) && i<=(NBPTrain*2+NBPGap))){
-      for(int j=i+1;j<=(NBTotal);j++){
-	double unc = 0;
-	if(j==i+1) unc = sqrt(collisionCount)*(Type1Frac + F.Eval(j-i));
-	if(j>i+1) unc = sqrt(collisionCount)*F.Eval(j-i);
-	HTrainBKGUnc.Fill(j,unc*unc);
+      for(int j=i;j<=NBTotal;j++){
+
+//   AF= N * (T1 + T2);
+//   AF_err^2 =  pow(sqrt(N)*T1,2) + pow(N*T1Err,2) +  pow(sqrt(N)*T2,2) = N*T1*T1 + pow(N*T1Err,2) + N*T2*T2   
+//   AF= N * T2; 
+//   AF_err = sqrt(N)*T2; 
+
+	double unc = 0.00000001;
+	if(j==(i+1)) unc = collisionCount*Type1Frac*Type1Frac + pow(collisionCount*Type1FracUnc,2) + collisionCount*pow(Type2Model.Eval(j-i),2);
+	if(j>(i+1))  unc = collisionCount*pow(Type2Model.Eval(j-i),2);     // here only the type2 unc 
+	HTrainBKGUnc.Fill(j,unc); // different colliding bcids will be added in quadrature
       }
     }  
   for(int i=1;i<=NBTotal;i++)
     HTrainBKGUnc.SetBinContent(i,sqrt(HTrainBKGUnc.GetBinContent(i)));
 
-
-  
+    
   HTrainSignal.GetYaxis()->SetRangeUser(0.01,1.1*collisionCount);
   HTrainSignal.GetYaxis()->SetTitle("Cluster Count");
   HTrainSignal.GetXaxis()->SetTitle("bx");
