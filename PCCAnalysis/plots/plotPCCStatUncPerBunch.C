@@ -1,10 +1,12 @@
 #include "globals.h"
 
+#define PCCPerInteraction 100  //2018 mod veto, 13TeV
+#define NCollidingBX 13       //BSRT fill 2022
+#define TotalTrigger 70000   //
+#define TStep 30  //integration time step
+
 void plotPCCStatUncPerBunch(){
 
-  unsigned PCCPerInteraction=100;//2018 mod veto, 13TeV
-  unsigned NCollidingBX=13;      //BSRT fill 2022
-  unsigned TotalTrigger=20000;   //20kHz
 
   float TriggerPerBX=TotalTrigger/(float)NCollidingBX;
 
@@ -13,8 +15,8 @@ void plotPCCStatUncPerBunch(){
   C.Clear();
   
   TH1F HFrame("HFrame","",1,0,100); //pileup range
-  HFrame.GetYaxis()->SetRangeUser(0,0.0015);
-  HFrame.GetYaxis()->SetTitle("PCC peak rate stat uncertainty");
+  HFrame.GetYaxis()->SetRangeUser(0,0.15);
+  HFrame.GetYaxis()->SetTitle("PCC stat uncertainty per bunch (%)");
   HFrame.GetXaxis()->SetTitle("Pileup");
   HFrame.SetStats(0);
   HFrame.Draw("hist");
@@ -38,20 +40,20 @@ void plotPCCStatUncPerBunch(){
 
       //cout<<I<<" "<<p<<" "<<NPCCerr/NPCC<<endl;
 
-      G[I]->SetPoint(G[I]->GetN(),p,NPCCerr/NPCC);
+      G[I]->SetPoint(G[I]->GetN(),p,100*NPCCerr/NPCC);
       
     }
 
     G[I]->Draw("lpsame");
-    leg.AddEntry(G[I],TString("T=")+(I*5)+" seconds","pl");
+    leg.AddEntry(G[I],TString("T=")+(I*TStep)+" seconds","pl");
   }
   leg.Draw();
   
   TLatex text;
   text.SetTextSize(0.04);
   text.DrawLatexNDC(0.2,0.8,TString("Trigger Rate = ")+(TotalTrigger/1000)+" kHz");
-  text.DrawLatexNDC(0.2,0.75,TString("N colliding bunches = ")+NCollidingBX);
-  text.DrawLatexNDC(0.2,0.70,TString("PCC per pp interaction = ")+PCCPerInteraction);
+  text.DrawLatexNDC(0.2,0.75,TString("N bunches = ")+NCollidingBX);
+  //text.DrawLatexNDC(0.2,0.70,TString("PCC per pp interaction = ")+PCCPerInteraction);
   
   C.Print("plotPCCStatUncPerBunch.png");
   
