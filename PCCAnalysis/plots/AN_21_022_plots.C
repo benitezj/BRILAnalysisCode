@@ -36,7 +36,6 @@ void AN_21_022_plots() {
   TProfile *P_L2;
   TProfile *P_L3;
   TProfile *P_L4;
-
   TProfile *P_D1;
   TProfile *P_D2;
   TProfile *P_D3;
@@ -178,7 +177,7 @@ void AN_21_022_plots() {
   TDatime da(2018,4,26,12,00,00);
   gStyle->SetTimeOffset(da.Convert());
   P_L2->GetXaxis()->SetTimeDisplay(1);
-  P_L2->GetXaxis()->SetTimeFormat("%d/%m");
+  P_L2->GetXaxis()->SetTimeFormat("%d/%m/%Y");
   P_L2->GetYaxis()->SetRangeUser(0, 0.15);
   P_L2->SetTitle("CMS                                                           2018 (13 TeV)");
   P_L2->GetXaxis()->SetTitle("Date [Day/Month]");
