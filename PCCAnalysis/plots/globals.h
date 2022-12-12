@@ -38,8 +38,8 @@ void drawCMSPrelim(long year,float xpos=0.2){
 ///////////crossection
 float getSigmaVis(int run){
 
-  if(run>=352416){//Run 3 Data with 2018ABC veto
-    return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting
+  if(run>=352416){//Run 3 
+    return 6.037e6/ORBITF; // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
   }else if(run>=323700){
     return 3.14e6/ORBITF; // for second part of RunD, tighter stability cut ABCD
 
