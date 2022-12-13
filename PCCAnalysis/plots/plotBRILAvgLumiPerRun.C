@@ -27,20 +27,27 @@ void plotBRILAvgLumiPerRun(){
   
   TCanvas C;
   C.Clear();
-  HR.Draw("hist");
+  C.SetLogy(1);
+  HR.SetMarkerStyle(8);
+  HR.SetMarkerSize(1.);
+  HR.SetStats(0);
+  HR.Draw("histp");
   C.Print("plotBRILAvgLumiPerRun_totL.png");
 
   C.Clear();
+  C.SetLogy(0);
   HRN.Draw("hist");
   C.Print("plotBRILAvgLumiPerRun_NLS.png");
 
   HR.Divide(&HRN);
+  HR.SetTitle("Avg Lumi");
   C.Clear();
-  HR.Draw("hist");
+  C.SetLogy(1);
+  HR.Draw("histp");
   C.Print("plotBRILAvgLumiPerRun_AvgL.png");
 
   for(int i=1;i<=HR.GetNbinsX();i++){
-    if(HR.GetBinContent(i)>1000)
+    if(HR.GetBinContent(i)>10000)
       //cout<<HR.GetBinCenter(i)<<" "<<HR.GetBinContent(i)<<endl;
       cout<<HR.GetBinCenter(i)<<",";
   }
