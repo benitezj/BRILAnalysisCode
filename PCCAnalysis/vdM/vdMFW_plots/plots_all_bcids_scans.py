@@ -1,3 +1,9 @@
+### Important note ####
+#Code used within the vdM framework in  branch 'auto_analyses_17_18' (also 'even_more_fits' and 'pcc_fits' branches); usually run from /AnalysisVisualisationTools/Sxec/
+#It should work other branches
+#Before running this code it is necessary to run 'source cmsenv.sh'
+#######################
+
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
