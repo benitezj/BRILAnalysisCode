@@ -6,9 +6,9 @@
 
 float minratio=0.7;
 float maxratio=1.3;
-float plotYrangeMin=0.1;
-float plotYrange=3500;
-float plotYrangeLog=5e4;
+float plotYrangeMin=0.01;
+float plotYrange=0;
+float plotYrangeLog=1e5;
 
 
 void plotPCCStability(TString inpath, int plotXrange=100){
@@ -31,6 +31,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   int counterLumi=0;
   
   std::map<int,int> runlist;
+  int firstrun=1000000000;
   int lastrun=0;
 
   std::string line;
@@ -45,6 +46,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
 
     counterLumi++;
     Lumi.SetBinContent(counterLumi,totL);
+    if(totL>plotYrange) plotYrange=totL;
 
 
     float ratio=0;
@@ -59,6 +61,9 @@ void plotPCCStability(TString inpath, int plotXrange=100){
       runlist[counterLumi]=run;
       lastrun=run;
     }
+    if(run<firstrun){
+       firstrun=run;
+    }
 
   }
     
@@ -72,15 +77,19 @@ void plotPCCStability(TString inpath, int plotXrange=100){
 
 
   /////////////////////////////
-  TLegend leg(0.75,0.8,0.90,0.90);
-  
+  TLegend leg(0.75,0.9,0.95,0.99);
+  leg.SetLineWidth(0);
+  leg.SetFillStyle(0);
+  leg.SetNColumns(2);
+
   C.Clear();
+  Lumi.SetTitle(TString("Runs: ")+firstrun+" - "+lastrun);
   Lumi.SetStats(0);
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.3);
   Lumi.GetXaxis()->SetTitle("lumi section");
   Lumi.GetYaxis()->SetTitle(" integrated lumi [#mub^{-1}]");
-  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,plotYrange);
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrange);
   Lumi.Draw("histp");
   leg.AddEntry(&Lumi,"PCC","p");
 
@@ -92,7 +101,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   TString rtxt("");
   for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
     li.DrawLine(it->first,plotYrangeMin,it->first,plotYrange);
-    ltxt.DrawLatex(it->first,plotYrangeMin,rtxt+it->second);
+    //ltxt.DrawLatex(it->first,plotYrangeMin,rtxt+it->second);
   }
 
 
@@ -138,22 +147,22 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     li.SetLineColor(4);
     li.SetLineStyle(2);
     li.SetLineWidth(3);
-    li.DrawLine(0,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
+    //li.DrawLine(0,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
     TLatex Meantxt;
     Meantxt.SetTextSize(0.03);
     Meantxt.SetTextColor(4);
     char meantxt[100];
     sprintf(meantxt,"r=%.3f",HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
-    Meantxt.DrawLatex(plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),meantxt);
+    //Meantxt.DrawLatex(plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),meantxt);
     C.Print(inpath+"/ls_ratio.png");
 
     C.Clear();
     HistoLumiRatio.GetYaxis()->SetTitle(" # of lumi sections ");
     HistoLumiRatio.GetXaxis()->SetTitle(TString("ratio"));
-    //HistoLumiRatio.SetMarkerStyle(8);
-    //HistoLumiRatio.SetMarkerSize(0.4);
-    //HistoLumiRatio.Draw("hist");
-    HistoLumiRatio.Fit("gaus");//,"","same",0.9,1.1);
+    HistoLumiRatio.SetMarkerStyle(8);
+    HistoLumiRatio.SetMarkerSize(0.4);
+    HistoLumiRatio.Draw("hist");
+    //HistoLumiRatio.Fit("gaus");//,"","same",0.9,1.1);
     C.Print(inpath+"/ls_ratio_histo.png");
 
   }

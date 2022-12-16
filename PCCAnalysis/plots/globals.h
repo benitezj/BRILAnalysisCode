@@ -38,8 +38,8 @@ void drawCMSPrelim(long year,float xpos=0.2){
 ///////////crossection
 float getSigmaVis(int run){
 
-  if(run>=352416){//Run 3 Data with 2018ABC veto
-    return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting
+  if(run>=352416){//Run 3 
+    return 6.037e6/ORBITF; // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
   }else if(run>=323700){
     return 3.14e6/ORBITF; // for second part of RunD, tighter stability cut ABCD
 
@@ -62,7 +62,29 @@ float getSigmaVis(int run){
 }
 
 
+float getsigmavis_as(int run1){
 
+  //New veto list, Ashish Sehrawat
+  if(run1>=324564){
+    return 6.72261000001e6/ORBITF;   // for Period D4 
+  }else if(run1>=323363){
+    return 6.16056000002e6/ORBITF;   // for Period D3
+  }else if(run1>=321710){
+    return 5.23820999995e6/ORBITF;  // for Period D2
+  }else if(run1>=320500){
+    return 5.15907e6/ORBITF;        // for Period D1
+  }else if(run1>=319337){
+    return 6.41462000002e6/ORBITF;   // for Period C
+  }else if(run1>=317080){
+    return 9.23084000002e6/ORBITF;   // for Period B
+  }else if(run1>=315252){
+    return 4.30860999995e6/ORBITF;   // for Period A 
+  }
+
+  cout<<"sigma vis not found for run : "<<run1<<endl;
+  return 1;
+
+}
 /////////////////////////
 // Module coordinates
 ////////////////////////

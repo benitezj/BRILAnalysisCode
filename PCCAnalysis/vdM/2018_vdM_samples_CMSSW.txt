@@ -1,0 +1,8 @@
+/ZeroBias1/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias2/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias3/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias4/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias5/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias6/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias7/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
+/ZeroBias8/Run2018B-LumiPixelsMinBias-10Dec2018-v1/ALCARECO
