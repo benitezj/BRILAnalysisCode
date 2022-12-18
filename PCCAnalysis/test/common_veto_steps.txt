@@ -1,0 +1,5 @@
+##Steps to make common veto##
+
+cat veto_A.txt veto_B.txt veto_C.txt veto_D.txt > combined_veto_all.txt
+sed 's/[[:blank:]]*$//'  combined_veto_all.txt
+cat combined_veto_all.txt  | sort | uniq > combined_veto.txt
