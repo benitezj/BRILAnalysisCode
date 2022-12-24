@@ -17,8 +17,19 @@ if inputfile != None :
     infile = open(inputfile,'r')
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
-else:    
-    inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
+else:
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/0C05753C-304A-F041-BB5E-6CA209E77721.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/0CAF3C5B-40B2-4C4B-A556-DB05343195EA.root')
+    inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/24EF8507-316C-3F4C-9F0A-8D49084B6FAE.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/288996FE-3259-0945-8BEA-FD6F56B348CB.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/2E6B6FAE-C6C5-CA48-B743-0E157DB69C3D.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/34D28B26-EDE7-2746-B27E-55866DBB0368.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/4022C153-25F6-EF4A-8FB8-329A131D857.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/BD8DA275-4B36-3448-BBCD-66AB9572101B.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/BEDAB030-3FE8-A848-BEE8-318140C11F20.root')
+    #inputlist.insert(-1, 'file:/eos/user/a/asehrawa/zerobias_27Oct2022_Run2018B/C00DEB2A-C113-7047-816C-16E24CCB7C8D.root')
+    
+    #inputlist.insert(-1,'file:/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v3/000/316/766/00000/12C5ED41-3A66-E811-B070-FA163EFF00DA.root')
     #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCZeroBias-02May2018-v1/70000/AA1D32AA-CE57-E811-B631-FA163E09BABD.root')
     #inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels2/ALCARECO/AlCaPCCZeroBias-02May2018-v1/30000/F451E0E9-C553-E811-8AB7-FA163E4D19DB.root')
     
@@ -44,6 +55,8 @@ process.GlobalTag.DumpStat = cms.untracked.bool( False )
 ###replace the Conditions database if DBFILE is set in enviroment
 dbfile=os.getenv('DBFILE')
 #dbfile='/afs/cern.ch/work/b/benitezj/public/BRIL/PCC/AlCaPCCRandom/AlCaLumiPixels_AlCaPCCRandom-17Nov2017/Run2017G/AlCaPCCRandom-17Nov2017.db'
+dbfile='/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/afterglow_veto_1615/afterglow_merged/B.db' 
+
 if dbfile : 
     print('will override DB file: '+ dbfile)
     process.load("CondCore.CondDB.CondDB_cfi")
@@ -97,13 +110,14 @@ print('RawPCCProducerParameters.ApplyCorrections: '+ str(process.rawPCCProd.RawP
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018A.txt'
+#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018A.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_2018_vdM.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018C.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D1.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D2.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D3.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D4.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_common_1615.txt'
 
 print('reading from veto file: '+vetofilename)
 vetofile = open(vetofilename,'r')
