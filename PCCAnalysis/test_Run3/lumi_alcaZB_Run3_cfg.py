@@ -21,8 +21,8 @@ if inputfile != None :
     inputlist=cms.untracked.vstring(infile.readlines())
     infile.close()
 else:    
-    inputlist.insert(-1,'file:step5_ALCAPRODUCER.root')
-    
+    #inputlist.insert(-1,'file:step5_ALCAPRODUCER.root')
+    inputlist.insert(-1,'file:/eos/cms/store/data/Run2022E/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/360/295/00000/1e6afe88-7e29-47dd-af57-8f8b7aea21db.root')
 
 if len(inputlist) == 0 : sys.exit("No input files")
 print(inputlist)
@@ -42,7 +42,8 @@ if jsonfile != None :
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #process.GlobalTag.globaltag = '101X_dataRun2_Prompt_v9'
-process.GlobalTag.globaltag = '113X_dataRun3_Prompt_Candidate_2021_06_21_16_59_39'
+#process.GlobalTag.globaltag = '113X_dataRun3_Prompt_Candidate_2021_06_21_16_59_39'
+process.GlobalTag.globaltag = '124X_dataRun3_Prompt_v10'
 process.GlobalTag.DumpStat = cms.untracked.bool( False )
 
 ###replace the Conditions database if DBFILE is set in enviroment
@@ -79,7 +80,11 @@ if dbfile != None:
 process.rawPCCProd = cms.EDProducer("RawPCCProducer",
     RawPCCProducerParameters = cms.PSet(
         #Mod factor to count lumi and the string to specify output 
-        inputPccLabel = cms.string("alcaPCCProducerZeroBias"),
+#        inputPccLabel = cms.string("alcaPCCProducerZeroBias"),
+#        ProdInst = cms.string("alcaPCCZeroBias"),
+#/eos/cms/store/data/Run2022E/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/360/295/00000/1e6afe88-7e29-47dd-af57-8f8b7aea21db.root
+#recoPixelClusterCounts_alcaPCCIntegratorZeroBias_alcaPCCZeroBias_RECO.
+        inputPccLabel = cms.string("alcaPCCIntegratorZeroBias"),
         ProdInst = cms.string("alcaPCCZeroBias"),
 #        inputPccLabel = cms.string("alcaPCCProducerRandom"),
 #        ProdInst = cms.string("alcaPCCRandom"),
@@ -90,7 +95,7 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
         OutputValue = cms.untracked.string("Average"),
     )    
 ) 
-print('RawPCCProducerParameters.ApplyCorrections: ' +process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections)
+print('RawPCCProducerParameters.ApplyCorrections: ', process.rawPCCProd.RawPCCProducerParameters.ApplyCorrections)
 
 
 ###### veto list  
@@ -102,9 +107,10 @@ vetofilename = None
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
 #vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt'
 
 if vetofilename != None:
-    print('reading from veto file: '+vetofilename)
+    print('reading from veto file: ',vetofilename)
     vetofile = open(vetofilename,'r')
     with vetofile as f:
         for line in f:
