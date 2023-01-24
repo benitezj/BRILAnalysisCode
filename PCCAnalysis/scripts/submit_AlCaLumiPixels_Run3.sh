@@ -6,8 +6,8 @@ action=$2 ## option for: 0=create scripts, 1=submit, 2=check
 cfg=$3  ## only for action=0
 
 #hard coded options
-jobtype=csv ##step2, step3, step4, step5 , csv
-condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
+jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
+condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
@@ -16,7 +16,8 @@ MAXJOBS=1000000 #useful for testing
 
 ##for RawPCCProducer jobs which need to pick up offline afterglow
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
-
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random_Run2Type2Params/Run2022E/
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E/
 
 ###########################################################
 ### 
@@ -34,12 +35,12 @@ if [ "$INSTALLATION" == "/src" ]; then
 fi
 echo "INSTALLATION: $INSTALLATION"
 
-echo "condor queue: $condorqueue"
-
 ### full path to output directory
 outputdir=$baseoutdir/$submitdir
 echo "output: $outputdir"
 
+echo "condor queue: $condorqueue"
+echo "job type: $jobtype"
 
 ##############################################################
 ## directory containing the Afterglow corrections if computed privately
@@ -144,6 +145,13 @@ make_sh_script(){
     if [ "$jobtype" == "csv" ] ; then
 	echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
     fi
+
+    ###
+    if [ "$jobtype" == "corr" ] ; then
+        echo "cp PCC_Corr.db  $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
+        echo "cp CorrectionHisto.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
+    fi
+
 }    
     
 
@@ -212,6 +220,15 @@ check_log(){
 	    fail=1
 	fi
     fi
+
+
+    ### error check for corrections jobs
+    if [ "$jobtype" == "corr" ] && [ "$fail" == "0" ] ; then
+        if [ ! -f $outputdir/${run}.db ]; then
+            echo "no db"
+            fail=1
+        fi
+    fi
     
 }
 
@@ -260,14 +277,11 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##run plotting scripts
     if [ "$action" == "4" ] ; then
-        #command="brilcalc lumi -u hz/ub -r $run --byls  --output-style csv --normtag ${normtagdir}/normtag_hfoc.json "
-        command="brilcalc lumi -u hz/ub --byls --output-style csv --type hfoc -r $run"
-        #echo $command
+        #command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${normtagdir}/normtag_hfoc.json "
+        command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --type hfet"
+        echo $command
         ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
     fi 
-#    if [ "$action" == "5" ] ; then
-#        root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCcsv.C\(\"${outputdir}\",${run},\"${plotsdir}\",0\)
-#    fi
 
     counter=`echo $counter | awk '{print $1+1}'`
 done

@@ -16,7 +16,7 @@ inputlist=cms.untracked.vstring()
 #inputlist.insert(-1,'file:/eos/cms/store/data/Run2017G/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-17Nov2017-v1/20000/229B17F0-2B93-E811-9506-0025905B8568.root')
 #inputlist.insert(-1,'file:/eos/cms//store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v2/000/316/260/00000/C66E2804-6F59-E811-9495-FA163ED20DB8.root')
 #inputlist.insert(-1,'file:/eos/cms//store/data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/317/661/00000/3A939C47-D16F-E811-84C5-FA163E909993.root')   
-inputlist.insert(-1,'file:/eos/cms/store/express/Run2022E/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/360/327/00000/32c89930-ae66-4ed0-9ca2-01c62c8dbb1a.root')
+#inputlist.insert(-1,'file:/eos/cms/store/express/Run2022E/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/360/327/00000/32c89930-ae66-4ed0-9ca2-01c62c8dbb1a.root')
 
 ## read from file, environment variable must be set
 if len(inputlist) == 0 :
@@ -95,8 +95,8 @@ process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducer",
         ProdInst = cms.string("rawPCCRandom"),
         approxLumiBlockSize=cms.int32(50),
         trigstring = cms.untracked.string("corrPCCRand"), 
-        type2_a= cms.double(0.00072),
-        type2_b= cms.double(0.014),
+        type2_a= cms.double(0.00094),
+        type2_b= cms.double(0.018),
         subSystemFolder=cms.untracked.string('AlCaReco')
     )
 )
