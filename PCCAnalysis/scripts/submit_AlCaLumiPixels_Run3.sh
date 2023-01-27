@@ -5,19 +5,25 @@ submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check
 cfg=$3  ## only for action=0
 
-#hard coded options
+
+#######
+## hard coded options
 jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
 condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
-
 MAXJOBS=1000000 #useful for testing
 
-##for RawPCCProducer jobs which need to pick up offline afterglow
+REFDET=hfet
+normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
+
+##Afterglow corrections for RawPCCProducer (csv) jobs 
+DBDIR=""
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random_Run2Type2Params/Run2022E/
-DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E/
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022G
+
 
 ###########################################################
 ### 
@@ -245,7 +251,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     fi
 
     run=`echo $f | awk -F".txt" '{print $1}'`
-    echo $run
+    #echo $run
     RUNLIST=$RUNLIST,$run
 
     ##create the scripts
@@ -277,8 +283,8 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##run plotting scripts
     if [ "$action" == "4" ] ; then
-        #command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${normtagdir}/normtag_hfoc.json "
-        command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --type hfet"
+        command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${normtagdir}/normtag_${REFDET}.json "
+        #command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --type ${REFDET}"
         echo $command
         ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
     fi 
@@ -287,15 +293,15 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 done
 echo "Total runs: $counter"
 
-echo ${RUNLIST:1}
+#echo ${RUNLIST:1}
 
 
 if [ "$action" == "5" ] ; then
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${REFDET}\"\)
 fi
 
 if [ "$action" == "6" ] ; then
     NLS=`cat ${plotsdir}/ls.dat | wc -l`
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",${NLS}\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",${NLS},\"${REFDET}\"\)
     #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\"\)
 fi

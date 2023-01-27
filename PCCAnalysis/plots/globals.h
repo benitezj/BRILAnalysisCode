@@ -18,7 +18,7 @@ long RUNOFFSET=315000;
 TString RefLumi="HFOC";
 
 ////CMS plot labels
-TString InstLumiAxisTitle("HFOC Inst. Luminosity [ E34#scale[1.0]{cm}^{-2} s^{-1} ]");
+TString InstLumiAxisTitle("Inst. Luminosity [ E34#scale[1.0]{cm}^{-2} s^{-1} ]");
 
 void drawLumiTitle(long FILL){
   TLatex text;
@@ -39,7 +39,8 @@ void drawCMSPrelim(long year,float xpos=0.2){
 float getSigmaVis(int run){
 
   if(run>=352416){//Run 3 
-    return 6.037e6/ORBITF; // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
+    //return 6.037e6/ORBITF; // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
+    return 4.1694e6/ORBITF; // 2022 CDEFG veto, Antonio https://indico.cern.ch/event/1230737/, Luis https://docs.google.com/presentation/d/1kKZcGb3-5ehEvTzGkhGT84Io7foL0BhtMw28EGZChHY/edit#slide=id.g1c6669daa76_0_120
   }else if(run>=323700){
     return 3.14e6/ORBITF; // for second part of RunD, tighter stability cut ABCD
 

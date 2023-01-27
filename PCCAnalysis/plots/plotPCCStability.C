@@ -4,16 +4,17 @@
 #include "globals.h"
 
 
-float minratio=0.7;
-float maxratio=1.3;
+float minratio=0.9;
+float maxratio=1.1;
 float plotYrangeMin=0.01;
 float plotYrange=0;
 float plotYrangeLog=1e5;
 
 
-void plotPCCStability(TString inpath, int plotXrange=100){
+void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
 
   //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  if(REF.CompareTo("")!=0)RefLumi=REF;
 
   ifstream myfile((inpath+"/ls.dat").Data());
   if (!myfile.is_open()){
@@ -24,7 +25,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
 
 
   ///create histogram
-  TH1F HistoLumiRatio("HistoLumiRatio","",500,minratio,maxratio);
+  TH1F HistoLumiRatio("HistoLumiRatio","",200,minratio,maxratio);
   TH1F LumiRatio("HLumiRatio","",plotXrange,0,plotXrange);
   TH1F Lumi("HLumi","",plotXrange,0,plotXrange);
   TH1F LumiRef("HLumiRef","",plotXrange,0,plotXrange);
@@ -88,10 +89,10 @@ void plotPCCStability(TString inpath, int plotXrange=100){
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.3);
   Lumi.GetXaxis()->SetTitle("lumi section");
-  Lumi.GetYaxis()->SetTitle(" integrated lumi [#mub^{-1}]");
+  Lumi.GetYaxis()->SetTitle(" lumi ");
   Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrange);
   Lumi.Draw("histp");
-  leg.AddEntry(&Lumi,"PCC","p");
+  leg.AddEntry(&Lumi,"pcc","p");
 
   TLine li;
   li.SetLineStyle(2);
@@ -137,7 +138,7 @@ void plotPCCStability(TString inpath, int plotXrange=100){
     LumiRatio.SetMarkerSize(0.4);
     LumiRatio.GetXaxis()->SetTitle("lumi section");
     //LumiRatio.GetYaxis()->SetTitle(TString("ratio"));
-    LumiRatio.GetYaxis()->SetTitle(TString("PCC / ")+RefLumi);
+    LumiRatio.GetYaxis()->SetTitle(TString("pcc / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");
     li.SetLineWidth(2);

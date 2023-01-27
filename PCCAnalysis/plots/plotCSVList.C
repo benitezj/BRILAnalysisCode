@@ -39,7 +39,7 @@ void getRefLumi(TString inputfile){
     }
   }
 
-  cout<<"Done reading the ref lumi."<<endl;
+  cout<<"Ref lumi: "<<inputfile<<endl;
 }
 
 void getModFrac(TString inputfile){
@@ -83,8 +83,9 @@ void getModFrac(TString inputfile){
 
 
 
-void plotCSVList(TString inpath, TString outpath=".", std::string runlist=""){
+void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TString REF=""){
 
+  if(REF.CompareTo("")!=0) RefLumi=REF;
 
   ///create output file for lumisections
   TString lsoutfile=outpath+"/ls.dat";
@@ -234,7 +235,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist=""){
       Ncoll+=ncoll;
     }
     cout<<endl;
-    cout<<"Done processing input file"<<endl;
+    //cout<<"Done processing input file"<<endl;
     
     ///close files
     myfile.close();
@@ -276,7 +277,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist=""){
     HLumiLS.SetMarkerStyle(8);
     HLumiLS.SetMarkerSize(0.3);
     HLumiLS.Draw("histp");
-    leg.AddEntry(&HLumiLS,"PCC","p");
+    leg.AddEntry(&HLumiLS,"pcc","p");
     if(HLumiLSRef.GetEntries()>0){
       HLumiLSRef.SetMarkerStyle(8);
       HLumiLSRef.SetMarkerSize(0.3);
@@ -342,7 +343,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist=""){
       if(Nls>0) HLumiBX.Scale(1./Nls);
       HLumiBX.SetMarkerStyle(8);
       HLumiBX.SetMarkerSize(0.5);
-      HLumiBX.GetYaxis()->SetTitle("Avg. PCC");
+      HLumiBX.GetYaxis()->SetTitle("Avg. pcc");
       HLumiBX.GetXaxis()->SetTitle("bcid");
       HLumiBX.GetYaxis()->SetRangeUser(0,HLumiBX.GetMaximum()*1.3);
       HLumiBX.Draw("histp");
