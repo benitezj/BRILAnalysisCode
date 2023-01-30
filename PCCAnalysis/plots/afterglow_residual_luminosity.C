@@ -1,4 +1,3 @@
-//#include"globals.h"
 #include <iostream>
 #include <vector>
 #include <dirent.h>
