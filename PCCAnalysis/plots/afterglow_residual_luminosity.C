@@ -70,7 +70,7 @@ void afterglow_residual_luminosity() {
 	  bincontent_total+=bincontent;
 	}
       }
-      bincontent_avg=bincontent_total/(9229*3564);      
+      bincontent_avg=bincontent_total/(9229*3350);      
       //std::cout<<run.at(i)<<" "<<x_value<<" "<<bincontent_total<<" "<<bincontent_avg<<" "<<std::endl;
 
       //****************************
@@ -124,7 +124,7 @@ void afterglow_residual_luminosity() {
   cf->GetFrame()->SetBorderSize(12); 
   
   TH2F *fhist = new TH2F("fhist","",1000,0,1000,100,-0.12,0.37);
-  fhist->GetXaxis()->SetTitle("Inst. lumi");
+  fhist->GetXaxis()->SetTitle("Inst. lumi (1/mb)");
   fhist->GetYaxis()->SetTitle("Type2 residual");
   fhist->GetXaxis()->CenterTitle();
   fhist->GetYaxis()->CenterTitle();
