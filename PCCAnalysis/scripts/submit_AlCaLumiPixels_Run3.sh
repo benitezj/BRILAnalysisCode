@@ -8,7 +8,7 @@ cfg=$3  ## only for action=0
 
 #######
 ## hard coded options
-jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
+jobtype=corr ##step2, step3, step4, step5 , csv ,  corr
 condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
@@ -22,7 +22,7 @@ normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
 DBDIR=""
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random_Run2Type2Params/Run2022E/
-DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E
 
 
 ###########################################################
@@ -293,7 +293,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 done
 echo "Total runs: $counter"
 
-#echo ${RUNLIST:1}
+echo ${RUNLIST:1}
 
 
 if [ "$action" == "5" ] ; then
