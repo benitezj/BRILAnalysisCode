@@ -10,6 +10,7 @@ void readPCCcsv_splitrun() {
   DIR *dir;
   struct dirent *ent;
   std::string directory = "/eos/user/a/asehrawa/PCC_newformat/EXPRESS_datasets/zerobias_27Oct2022_Run2018B";
+  std::string outpath = "/eos/user/a/asehrawa/PCC_newformat/EXPRESS_datasets/pcccsv";
   std::vector<std::string> csvFiles;
   
   // Open the directory and loop over its contents
@@ -60,7 +61,7 @@ void readPCCcsv_splitrun() {
           
           // Open the output file for this run number if it hasn't been opened yet
           if (outputFiles.count(runNumber) == 0) {
-	    std::string outputFileName = directory + "/" +std::to_string(runNumber) + ".csv";
+	    std::string outputFileName = outpath + "/" +std::to_string(runNumber) + ".csv";
             outputFiles[runNumber].open(outputFileName);
           }
           
