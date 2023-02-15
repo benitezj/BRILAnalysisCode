@@ -10,8 +10,8 @@ find "$EOS_PATH" -name "*.root" -type f | while read root_file; do
     filename=$(basename "$root_file" .root)
 
     # Create a folder with the filename in the output directory
-    mkdir -p "$OUTPUT_DIR/$filename"
+    mkdir -p "$OUTPUT_DIR/$EOS_PATH/$filename"
 
     # Copy the root file to the folder
-    cp "$root_file" "$OUTPUT_DIR/$filename"
+    cp "$root_file" "$OUTPUT_DIR/$EOS_PATH/$filename"
 done
