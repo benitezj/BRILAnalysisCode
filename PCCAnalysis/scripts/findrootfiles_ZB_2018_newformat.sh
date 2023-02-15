@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set the EOS area path and the target directory for the output folders
-EOS_PATH="/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/"
+EOS_PATH="/eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/2550000/"
 OUTPUT_DIR="/afs/cern.ch/user/a/asehrawa/PCC_27Oct2022_UL2018/CMSSW_10_6_30/src/zerobias_27Oct2022_Run2018"
 
 # Find all root files in the EOS area and loop over them
