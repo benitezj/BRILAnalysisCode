@@ -1,7 +1,7 @@
 #!/bin/bash                                                                                                                                                        
 
 # Set the path to the directory containing the root files                                                                                                          
-DIRECTORY="/store/test/xrootd/T1_US_FNAL/store/data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/2530000/"
+DIRECTORY="/store/test/xrootd/T1_US_FNAL/store/test/xrootd/T1_US_FNAL/store/data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/2530000/"
 
 # Use the "xrdfs" command to list the files in the directory                                                                                                       
 # and filter the output to show only the files ending with ".root"                                                                                                 
