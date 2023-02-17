@@ -5,7 +5,7 @@ DIRECTORY="/store/test/xrootd/T1_US_FNAL/store/data/Run2018B/AlCaLumiPixels/ALCA
 
 # Use the "xrdfs" command to list the files in the directory                                                                                                       
 # and filter the output to show only the files ending with ".root"                                                                                                 
-FILES=$(xrdfs root://cmsxrootd.fnal.gov/ ls -l $DIRECTORY | awk '{print $5, $9}' | grep -E '\.root$' | awk '{print $2}')
+FILES=$(xrdfs root://cmsxrootd.fnal.gov/ ls -l $DIRECTORY | grep '\.root$')
 
 # Loop through the files and print their names                                                                                                                     
 for FILE in $FILES
