@@ -12,3 +12,6 @@ for FILE in $FILES
 do
     echo $FILE
 done
+
+
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookXrootdService
