@@ -66,8 +66,8 @@ echo "output: $outputdir"
 
 ##############################################################
 ## directory containing the Afterglow corrections if computed privately
-DBDIR=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/afterglow_veto_1615/AlCaPCCRandom/afterglow_merged
-#DBDIR=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/afterglow_veto_1701/AlCaPCCRandom/afterglow_merged
+#DBDIR=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/afterglow_veto_1615/AlCaPCCRandom/afterglow_merged
+DBDIR=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/afterglow_veto_1701/AlCaPCCRandom/afterglow_merged
 if [ "$DBDIR" != "" ] || [ "$DBROOTDIR" != "" ]; then
    echo "corections: $DBDIR $DBROOTDIR"
 fi
