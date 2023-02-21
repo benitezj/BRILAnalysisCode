@@ -23,7 +23,7 @@ jobtype=lumi
 #plotsdir=/afs/cern.ch/user/a/asehrawa/Reprocessed_PCC_2018_data/CMSSW_10_2_2/src/PCC_veto_1615_new_format/EXPRESS_datasets
 
 baseoutdir=/eos/user/a/asehrawa/PCC_newformat/EXPRESS_datasets
-plotsdir=/afs/cern.ch/user/a/asehrawa/PCC_27Oct2022_UL2018/CMSSW_10_6_30/src/EXPRESS_datasets
+plotsdir=/afs/cern.ch/user/a/asehrawa/PCC_newformat/CMSSW_10_6_30/src/PCC_veto_1701_plots
 
 ###########################################################
 ### 
@@ -50,14 +50,14 @@ echo "reference: $ref"
 #goldenjson="-i ~/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt"
 echo "golden json: $goldenjson"
 
-#plotsdir=${plotsdir}/$submitdir
-plotsdir=${plotsdir}/zerobias_27Oct2022_Run2018B
+plotsdir=${plotsdir}/$submitdir
+#plotsdir=${plotsdir}/zerobias_27Oct2022_Run2018B
 echo "plotsdir: $plotsdir"
 
 ### full path to output directory
 if [ "$jobtype" == "lumi" ]; then
-#outputdir=$baseoutdir/ZeroBias/$submitdir
-outputdir=$baseoutdir/zerobias_27Oct2022_Run2018B
+outputdir=$baseoutdir/ZeroBias/$submitdir
+#outputdir=$baseoutdir/zerobias_27Oct2022_Run2018B
 fi
 if [ $jobtype == "corr" ]; then
 outputdir=$baseoutdir/AlCaPCCRandom/$submitdir
