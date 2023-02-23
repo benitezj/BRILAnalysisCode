@@ -8,15 +8,18 @@ cfg=$3  ## only for action=0
 
 #######
 ## hard coded options
-jobtype=corr ##step2, step3, step4, step5 , csv ,  corr
+jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
 condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
 
-REFDET=hfet
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
+#REFDET=${normtagdir}/normtag_hfet.json
+#REFDET=pcc22v1
+REFDET=${normtagdir}/normtag_dt.json
+
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
 DBDIR=""
@@ -283,7 +286,8 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##run plotting scripts
     if [ "$action" == "4" ] ; then
-        command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${normtagdir}/normtag_${REFDET}.json "
+        #command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${normtagdir}/normtag_${REFDET}.json "
+	command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${REFDET}"
         #command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --type ${REFDET}"
         echo $command
         ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
