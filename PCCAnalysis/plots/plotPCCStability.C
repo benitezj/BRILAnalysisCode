@@ -4,8 +4,8 @@
 #include "globals.h"
 
 
-float minratio=0.9;
-float maxratio=1.1;
+float minratio=0.95;
+float maxratio=1.05;
 float plotYrangeMin=0.01;
 float plotYrange=0;
 float plotYrangeLog=1e5;
@@ -29,6 +29,7 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
   TH1F LumiRatio("HLumiRatio","",plotXrange,0,plotXrange);
   TH1F Lumi("HLumi","",plotXrange,0,plotXrange);
   TH1F LumiRef("HLumiRef","",plotXrange,0,plotXrange);
+  TH2F H2LumiRatioVsLumi("H2LumiRatioVsLumi","",100,0,22e3,100,minratio,maxratio);
   int counterLumi=0;
   
   std::map<int,int> runlist;
@@ -53,10 +54,12 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
     float ratio=0;
     if(totLRef>0 ){
       ratio=totL/totLRef;
-      LumiRef.SetBinContent(counterLumi,totLRef);
-      HistoLumiRatio.Fill(ratio);
-      LumiRatio.SetBinContent(counterLumi,ratio);
     }
+    LumiRef.SetBinContent(counterLumi,totLRef);
+    HistoLumiRatio.Fill(ratio);
+    LumiRatio.SetBinContent(counterLumi,ratio);
+    if(totL>7000)
+      H2LumiRatioVsLumi.Fill(totL,ratio);
 
     if(run>lastrun){
       runlist[counterLumi]=run;
@@ -165,6 +168,25 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
     HistoLumiRatio.Draw("hist");
     //HistoLumiRatio.Fit("gaus");//,"","same",0.9,1.1);
     C.Print(inpath+"/ls_ratio_histo.png");
+
+
+    C.Clear();
+    H2LumiRatioVsLumi.SetStats(0);
+    H2LumiRatioVsLumi.GetYaxis()->SetTitle("ratio");
+    H2LumiRatioVsLumi.GetXaxis()->SetTitle("Inst. Lumi [Hz/ub]");
+    H2LumiRatioVsLumi.Draw("colz");
+    C.Print(inpath+"/lumiratio_vs_instlumi.png");
+        
+    TProfile* H2LumiRatioVsLumiProfX=H2LumiRatioVsLumi.ProfileX();
+    H2LumiRatioVsLumiProfX->GetYaxis()->SetTitle("ratio");
+    H2LumiRatioVsLumiProfX->GetXaxis()->SetTitle("Inst. Lumi [Hz/ub]");
+    H2LumiRatioVsLumiProfX->GetYaxis()->SetRangeUser(minratio,maxratio);
+    H2LumiRatioVsLumiProfX->GetYaxis()->SetNdivisions(5);
+    H2LumiRatioVsLumiProfX->GetXaxis()->SetNdivisions(5);
+    H2LumiRatioVsLumiProfX->SetStats(0);
+    C.Clear();
+    H2LumiRatioVsLumiProfX->Draw("histpe");
+    C.Print(inpath+"/lumiratio_vs_instlumi_profile.png");
 
   }
   

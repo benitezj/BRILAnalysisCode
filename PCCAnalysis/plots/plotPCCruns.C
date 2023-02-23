@@ -8,75 +8,75 @@
 //#define PCCRUNLUMIRatioMax 22
 
 #define MAXPCCRUN 1e9
-#define PCCZEROLUMI 1e3
-#define PCCRUNLUMIRatioMin 0.95
-#define PCCRUNLUMIRatioMax 1.05
+#define PCCZEROLUMI 0
+#define PCCRUNLUMIRatioMin 0.9
+#define PCCRUNLUMIRatioMax 1.1
 
-long RUNOFFSET=300000;
-TString ref="bestlumi";
+long RUNOFFSET=355862;
+//TString ref="bestlumi";
 
 
-float getRunRefLumi(TString inputfile){
+// float getRunRefLumi(TString inputfile){
   
-  ifstream myfile(inputfile.Data());
-  if (!myfile.is_open()){
-    std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
-    return 0.;
-  }
+//   ifstream myfile(inputfile.Data());
+//   if (!myfile.is_open()){
+//     std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
+//     return 0.;
+//   }
   
-  std::string line;
-  int run=0;
-  int ls=0;
-  float totL=0.;
-  float totLRun=0.;
-  while (std::getline(myfile, line)){
-    std::stringstream iss(line);
-    std::string token;
+//   std::string line;
+//   int run=0;
+//   int ls=0;
+//   float totL=0.;
+//   float totLRun=0.;
+//   while (std::getline(myfile, line)){
+//     std::stringstream iss(line);
+//     std::string token;
     
-    std::getline(iss,token, ',');
-    std::stringstream runiss(token);
-    runiss>>run;
+//     std::getline(iss,token, ',');
+//     std::stringstream runiss(token);
+//     runiss>>run;
     
-    std::getline(iss,token, ',');
-    std::stringstream lsiss(token);
-    lsiss>>ls;
+//     std::getline(iss,token, ',');
+//     std::stringstream lsiss(token);
+//     lsiss>>ls;
     
-    std::getline(iss,token, ',');
-    std::stringstream totLiss(token);
-    totLiss>>totL;
+//     std::getline(iss,token, ',');
+//     std::stringstream totLiss(token);
+//     totLiss>>totL;
     
-    totLRun+=totL;
-    //if(run==316766) cout<<run<<" "<<ls<<" "<<totL<<endl;
-  }
-  //if(run==316766) cout<<totLRun<<endl;
+//     totLRun+=totL;
+//     //if(run==316766) cout<<run<<" "<<ls<<" "<<totL<<endl;
+//   }
+//   //if(run==316766) cout<<totLRun<<endl;
 
-  return totLRun;
-}
+//   return totLRun;
+// }
 
 
-bool getPIXReadyState(TString inputfile, int RUN){
+// bool getPIXReadyState(TString inputfile, int RUN){
   
-  ifstream myfile(inputfile.Data());
-  if (!myfile.is_open()){
-    std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
-    return 0.;
-  }
+//   ifstream myfile(inputfile.Data());
+//   if (!myfile.is_open()){
+//     std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
+//     return 0.;
+//   }
   
-  std::string line;
-  int run=0;
-  bool state=0;
-  while (std::getline(myfile,line)){
-    std::stringstream iss(line);
-    iss>>run;
-    if(run==RUN){
-      iss>>state;
-      break;
-    }
-  }
-  myfile.close();
+//   std::string line;
+//   int run=0;
+//   bool state=0;
+//   while (std::getline(myfile,line)){
+//     std::stringstream iss(line);
+//     iss>>run;
+//     if(run==RUN){
+//       iss>>state;
+//       break;
+//     }
+//   }
+//   myfile.close();
 
-  return state;//actual values in input file are 1=OFF, 0=ON
-}
+//   return state;//actual values in input file are 1=OFF, 0=ON
+// }
 
 
 void plotPCCruns(TString Path){
@@ -102,6 +102,7 @@ void plotPCCruns(TString Path){
   std::string line;
   int run=0;
   float totLRun=0.;
+  float totRefLRun=0.;
   int counter=0;
   int counterRatio=0;
   int counterZero=0;
@@ -111,44 +112,22 @@ void plotPCCruns(TString Path){
 
     iss>>run;
     iss>>totLRun;
+    iss>>totRefLRun;
 
-    LumiRun.SetPoint(counter++,run-RUNOFFSET,totLRun);
+    LumiRun.SetPoint(counter,run-RUNOFFSET,totLRun);
+
+
+    float runratio=0.;
+    if(totRefLRun>0){
+      runratio=totLRun/totRefLRun;
+    }
+    LumiRunRatio.SetPoint(counter,counter,runratio);
+    HRatio.Fill(runratio);
+
+    counter++;
+    cout<<run<<" "<<runratio<<endl;
+
     if(run>lastrun) lastrun=run-RUNOFFSET;    
-
-    // // get PIX state
-    //bool BPIX=getPIXReadyState("BRILAnalysisCode/PCCAnalysis/test/BPIX_313175_320541.txt",run);
-    //bool FPIX=getPIXReadyState("BRILAnalysisCode/PCCAnalysis/test/FPIX_313175_320541.txt",run);
-    //cout<<"PIX: "<<run<<" "<<(totLRun>0)<<" : "<<BPIX<<" "<<FPIX<<endl;
-
-    // if(totLRun==0){
-    //   cout<<run<<" "<<BPIX<<" "<<FPIX<<endl;
-    // }
-
-    
-    // graph to show runs with 0 lumi
-    if(totLRun<=PCCZEROLUMI){
-      //if(totLRun==0 && BPIX && FPIX){
-      cout<<run<<endl;
-      LumiRunZero.SetPoint(counterZero,run-RUNOFFSET,PCCZEROLUMI);
-      counterZero++;
-    }
-
-    // Comparison to another luminometer
-    if(ref.CompareTo("")!=0){
-      float totRefLRun=0.;
-      iss>>totRefLRun;
-      cout<<run<<" "<<totLRun<<" "<<totRefLRun<<endl;
-      if(totRefLRun>0){
-	LumiRunRatio.SetPoint(counterRatio,counterRatio,totLRun/totRefLRun);
-	HRatio.Fill(totLRun/totRefLRun);
-      }else{
-	LumiRunRatio.SetPoint(counterRatio,counterRatio,0.);
-	HRatio.Fill(0);
-      }
-      counterRatio++;
-    }
-
-
   }
   
   
@@ -183,7 +162,6 @@ void plotPCCruns(TString Path){
   C.Print(Path+"/runs.png");
 
 
-  if(ref.CompareTo("")!=0){
     C.Clear();
     C.SetLogy(0);
 
@@ -215,9 +193,6 @@ void plotPCCruns(TString Path){
     HRatio.GetXaxis()->SetTitle(LumiRunRatio.GetYaxis()->GetTitle());
     HRatio.Draw("hist");
     C.Print(Path+"/runs_ratio_hist.png");
-
-
-  }
 
 
   gROOT->ProcessLine(".q");
