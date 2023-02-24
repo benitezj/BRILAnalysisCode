@@ -4,7 +4,7 @@ import ROOT
 file1 = ROOT.TFile.Open("root://cms-xrd-global.cern.ch//store/data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/60000/980BE645-E9A7-7145-B26D-5459E678C3F0.root")
 
 # Open the second file
-file2 = ROOT.TFile.Open("file2.root")
+file2 = ROOT.TFile.Open("root://cms-xrd-global.cern.ch//store/data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/2520000/288996FE-3259-0945-8BEA-FD6F56B348CB.root")
 
 # Get a list of the TTrees in each file
 trees1 = [key.GetName() for key in file1.GetListOfKeys() if key.GetClassName() == "TTree"]
@@ -36,15 +36,15 @@ for tree_name in common_trees:
 
         # Compare the number of entries in the two branches
         if branch1.GetEntries() != branch2.GetEntries():
-            print(f"Number of entries in branch {branch_name} of tree {tree_name} differs: {branch1.GetEntries()} vs {branch2.GetEntries()}")
+            print("Number of entries in branch {} of tree {} differs: {} vs {}".format(branch_name, tree_name, branch1.GetEntries(), branch2.GetEntries()))
             continue
 
         # Compare the content of the two branches
         for i in range(branch1.GetEntries()):
             branch1.GetEntry(i)
             branch2.GetEntry(i)
-            if branch1.GetValue() != branch2.GetValue():
-                print(f"Content of branch {branch_name} in tree {tree_name} differs at entry {i}")
+            if branch1.GetValue(i, branch1.GetEntries()) != branch2.GetValue(i, branch1.GetEntries()):
+                print("Content of branch {} in tree {} differs at entry {}".format(branch_name, tree_name, i))
                 break
 
 # Close the files
