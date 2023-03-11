@@ -2,12 +2,10 @@
 
 export LC_ALL=C
 export LANG=en_US.UTF-8
-
-# Define the two datasets to compare                                                                                                                        
+                                                                                                                        
 dataset1="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
 dataset2="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
-
-# Function to print information for a given dataset                                                                                                         
+                                                                                                         
 print_info() {
   dataset=$1
   echo "Information for dataset: $dataset"
@@ -24,7 +22,6 @@ print_info() {
   echo "Dataset size per event: $size_per_event bytes"
   echo "Dataset size per lumi section: $size_per_lumi bytes"
 }
-
-# Call the function for both datasets                                                                                                                       
+                                                                                                                       
 print_info $dataset1
 print_info $dataset2
