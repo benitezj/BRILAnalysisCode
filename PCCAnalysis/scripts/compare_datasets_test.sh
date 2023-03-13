@@ -3,7 +3,7 @@
 export LC_ALL=C
 export LANG=en_US.UTF-8
 
-# Define the two datasets to compare                                                                                                                                                                          
+# Define the datasets                                                                                                                                                                          
 dataset1="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
 dataset2="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
 dataset3="/AlCaLumiPixels/Run2018D-AlCaPCCZeroBias-PromptReco-v2/ALCARECO"
@@ -30,7 +30,7 @@ print_info() {
   echo "Dataset size per lumi section: $size_per_lumi bytes"
 }
 
-# Call the function for both datasets                                                                                                                                                                         
+# Call the function for all datasets                                                                                                                                                                         
 print_info $dataset1
 print_info $dataset2
 print_info $dataset3
