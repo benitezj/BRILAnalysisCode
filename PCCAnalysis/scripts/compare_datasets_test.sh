@@ -1,18 +1,23 @@
-#!/bin/bash                                                                                                                                                                                                   
+#!/bin/bash
 
 export LC_ALL=C
 export LANG=en_US.UTF-8
 
-# Define the datasets                                                                                                                                                                          
-dataset1="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
-dataset2="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
-dataset3="/AlCaLumiPixels/Run2018D-AlCaPCCZeroBias-PromptReco-v2/ALCARECO"
-dataset4="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
-dataset5="/AlCaLumiPixels/Run2018B-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
-dataset6="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
+# Define the two datasets to compare
+dataset1="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-PromptReco-v1/ALCARECO"
+dataset2="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-PromptReco-v2/ALCARECO"
+dataset3="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
+dataset4="/AlCaLumiPixels/Run2018B-AlCaPCCZeroBias-PromptReco-v1/ALCARECO"
+dataset5="/AlCaLumiPixels/Run2018B-AlCaPCCZeroBias-PromptReco-v2/ALCARECO"
+dataset6="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-PromptReco-v1/ALCARECO"
+dataset7="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-PromptReco-v2/ALCARECO"
+dataset8="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-PromptReco-v3/ALCARECO"
+dataset9="/AlCaLumiPixels/Run2018D-AlCaPCCZeroBias-PromptReco-v2/ALCARECO"
+dataset10="/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
+dataset11="/AlCaLumiPixels/Run2018B-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
+dataset12="/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO"
 
-
-# Function to print information for a given dataset                                                                                                                                                           
+# Function to print information for a given dataset
 print_info() {
   dataset=$1
   echo "Information for dataset: $dataset"
@@ -30,10 +35,17 @@ print_info() {
   echo "Dataset size per lumi section: $size_per_lumi bytes"
 }
 
-# Call the function for all datasets                                                                                                                                                                         
+# Call the function for both datasets
 print_info $dataset1
 print_info $dataset2
 print_info $dataset3
 print_info $dataset4
 print_info $dataset5
 print_info $dataset6
+print_info $dataset7
+print_info $dataset8
+print_info $dataset9
+print_info $dataset10
+print_info $dataset11
+print_info $dataset12
+
