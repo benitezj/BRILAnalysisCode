@@ -28,11 +28,11 @@
 #include <TH1F.h>
 #include <TFile.h>
 
-class RawPCCProducer : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
+class RawPCCProducer_SiPixelQual : public edm::one::EDProducer<edm::EndLuminosityBlockProducer,
 						   edm::one::WatchLuminosityBlocks> {
 public:
-  explicit RawPCCProducer(const edm::ParameterSet&);
-  ~RawPCCProducer() override;
+  explicit RawPCCProducer_SiPixelQual(const edm::ParameterSet&);
+  ~RawPCCProducer_SiPixelQual() override;
   
 private:
   void beginLuminosityBlock     (edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup) final;
@@ -91,7 +91,7 @@ private:
 };
 
 //--------------------------------------------------------------------------------------------------
-RawPCCProducer::RawPCCProducer(const edm::ParameterSet& iConfig)
+RawPCCProducer_SiPixelQual::RawPCCProducer_SiPixelQual(const edm::ParameterSet& iConfig)
 {
   pccSource_ = iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters").getParameter<std::string>("inputPccLabel");
   prodInst_ = iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters").getParameter<std::string>("ProdInst");
@@ -337,11 +337,11 @@ RawPCCProducer::RawPCCProducer(const edm::ParameterSet& iConfig)
 }
 
 //--------------------------------------------------------------------------------------------------
-RawPCCProducer::~RawPCCProducer(){
+RawPCCProducer_SiPixelQual::~RawPCCProducer_SiPixelQual(){
 }
 
 //-------------------------------------------------------------------------------------------------
-void RawPCCProducer::beginJob(){
+void RawPCCProducer_SiPixelQual::beginJob(){
   
   if(corrRootFile_.compare("")!=0){
     corrFile = new TFile(corrRootFile_.c_str(),"read");
@@ -413,12 +413,12 @@ void RawPCCProducer::endJob(){
 }
 
 //--------------------------------------------------------------------------------------------------
-void RawPCCProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
+void RawPCCProducer_SiPixelQual::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
   
 }
 
 //--------------------------------------------------------------------------------------------------
-void RawPCCProducer::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup){
+void RawPCCProducer_SiPixelQual::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup){
   
   outputLumiInfo = std::make_unique<LumiInfo>();
   
@@ -434,7 +434,7 @@ void RawPCCProducer::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, c
 }
 
 //--------------------------------------------------------------------------------------------------
-void RawPCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup){
+void RawPCCProducer_SiPixelQual::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup){
   
   totalLumi_=0.0;
   statErrOnLumi_=0.0;
@@ -630,11 +630,11 @@ void RawPCCProducer::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, con
 }
 
 //--------------------------------------------------------------------------------------------------
-void RawPCCProducer::endLuminosityBlockProduce(edm::LuminosityBlock& lumiSeg, const edm::EventSetup& iSetup){
+void RawPCCProducer_SiPixelQual::endLuminosityBlockProduce(edm::LuminosityBlock& lumiSeg, const edm::EventSetup& iSetup){
   lumiSeg.put(std::move(outputLumiInfo), std::string(outputProductName_)); 
   
 }
 
-DEFINE_FWK_MODULE(RawPCCProducer);
+DEFINE_FWK_MODULE(RawPCCProducer_SiPixelQual);
 
 
