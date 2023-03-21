@@ -1,9 +1,9 @@
 #!/bin/bash                                                                                                                                            
 
 #To create the input file, run the following command in terminal for period A,B and C
-#dasgoclient -query="file dataset=/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO instance=prod/global | grep file.name | grep '.root'" > Run2018A.txt 
-#dasgoclient -query="file dataset=/AlCaLumiPixels/Run2018B-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO instance=prod/global | grep file.name | grep '.root'" > Run2018B.txt
-#dasgoclient -query="file dataset=/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-27Oct2022_UL2018_PCC-v1/ALCARECO instance=prod/global | grep file.name | grep '.root'" > Run2018C.txt
+#dasgoclient -query="file dataset=/AlCaLumiPixels/Run2018A-AlCaPCCZeroBias-13Mar2023_UL2018_PCC-v1/ALCARECO instance=prod/global | grep file.name | grep '.root'" > Run2018A.txt 
+#dasgoclient -query="file dataset=/AlCaLumiPixels/Run2018B-AlCaPCCZeroBias-13Mar2023_UL2018_PCC-v1/ALCARECO instance=prod/global | grep file.name | grep '.root'" > Run2018B.txt
+#dasgoclient -query="file dataset=/AlCaLumiPixels/Run2018C-AlCaPCCZeroBias-13Mar2023_UL2018_PCC-v1/ALCARECO instance=prod/global | grep file.name | grep '.root'" > Run2018C.txt
 
 # Get the input file name from user  Run2018A.txt, Run2018B.txt, Run2018C.txt                                                                                                                  
 echo "Enter the name of the input file:"
