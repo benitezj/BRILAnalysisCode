@@ -9,8 +9,8 @@
 void readPCCcsv_splitrun() {
   DIR *dir;
   struct dirent *ent;
-  std::string directory = "/eos/user/a/asehrawa/PCC_newformat/EXPRESS_datasets/zerobias_27Oct2022_Run2018B";
-  std::string outpath = "/eos/user/a/asehrawa/PCC_newformat/EXPRESS_datasets/pcccsv";
+  std::string directory = "/eos/user/a/asehrawa/PCC_newdatasets_13March2023/ZeroBias/Run2018C";
+  std::string outpath = "/eos/user/a/asehrawa/PCCcsvperrun/Run2018C";
   std::vector<std::string> csvFiles;
   
   // Open the directory and loop over its contents
@@ -54,26 +54,22 @@ void readPCCcsv_splitrun() {
         
         if (cells.size() >= 3) {
           int runNumber = std::stoi(cells[0]);
-          int lumiSection = std::stoi(cells[1]);
-          double pcc = std::stod(cells[2]);
 
-	  std::cout<<runNumber<<" "<<lumiSection<<" "<<pcc<<std::endl;
-          
           // Open the output file for this run number if it hasn't been opened yet
           if (outputFiles.count(runNumber) == 0) {
-	    std::string outputFileName = outpath + "/" +std::to_string(runNumber) + ".csv";
+	    std::string outputFileName = outpath + "/" + std::to_string(runNumber) + ".csv";
             outputFiles[runNumber].open(outputFileName);
+            outputFiles[runNumber] << line << std::endl; // Add the current line to the output file
           }
-          
-          // Write the information to the output file
-          outputFiles[runNumber] << runNumber <<"," <<lumiSection << "," << pcc << std::endl;
+          else {
+            outputFiles[runNumber] << line << std::endl; // Add the current line to the output file
+          }
         }
       }
       inputFile.close();
     } else {
-      // Handle error opening the file                                                                           
+      // Handle error opening the file
       std::cerr << "Error opening file: " << fullPath << std::endl;
     }
   }
 }
-
