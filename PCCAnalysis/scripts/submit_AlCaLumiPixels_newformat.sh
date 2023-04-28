@@ -259,7 +259,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##get ref data from brilcalc
     if [ "$action" == "4" ] && [ "$ref" != "" ] ; then
-	command="brilcalc lumi -u hz/ub -r $run --byls  --output-style csv --normtag ${normtagdir}/normtag_${ref}.json "
+	command="brilcalc lumi -u hz/ub -r ${rootfilename} --byls  --output-style csv --normtag ${normtagdir}/normtag_${ref}.json "
 	echo $command
 	${command} $goldenjson | grep ${rootfilename}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${rootfilename}.$ref
     fi
