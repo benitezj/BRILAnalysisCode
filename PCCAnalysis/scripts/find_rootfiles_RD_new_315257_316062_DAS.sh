@@ -17,12 +17,8 @@ do
     else
         total_files=$((total_files + file_count))
         echo "Number of files for run $run: $file_count"
-        echo $file_list | tr ' ' '\n'
-        #echo $file_list | sed "s|^|root://cms-xrd-global.cern.ch/|" > "${run}.txt"                                                                                                       
-        #echo $file_list | sed "s|^|root://cms-xrd-global.cern.ch/|g" > "${run}.txt"                                                                                                      
-        #echo $file_list | sed 's| |\nroot://cms-xrd-global.cern.ch/|g' > "${run}.txt"                                                                                                    
+        echo $file_list | tr ' ' '\n'                                                                                                   
         echo $file_list | sed "s|^|root://cms-xrd-global.cern.ch/|" | sed 's| |\nroot://cms-xrd-global.cern.ch/|g' > "${run}.txt"
-
     fi
 done
 
