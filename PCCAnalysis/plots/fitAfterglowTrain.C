@@ -1,0 +1,198 @@
+//*//
+// This code fits one bunch train and the tail
+//*//
+
+TString InputFile="./366800.root";
+TString LSBlockName="RawLumiAvg_366800_2_3_3";
+int FirstBin=1113;   // trains in this data: [1113,1148], [1575,1610], [2007,2042], [2901,2936]
+int NColliding=36;   // number of colliding bunches in the train (train must be contiguous) 
+int NBins=100;       // number of bcids in train plus tail (full fit range)
+
+
+TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
+float fit_chi2;
+float fit_status;
+float fit_Type1f;
+float fit_Type2a;
+float fit_Type2b;
+float fit_AvgN;
+int   fit_firstb;
+int   fit_ncoll;
+int   fit_nbins;
+void makeTree(TString inputfile){
+  Tree=new TTree("Tree","Afterglow Fit results");
+  Tree->Branch("chi2",&fit_chi2);
+  Tree->Branch("status",&fit_status);
+  Tree->Branch("Type1f",&fit_Type1f);
+  Tree->Branch("Type2a",&fit_Type2a);
+  Tree->Branch("Type2b",&fit_Type2b);
+  Tree->Branch("AvgN",&fit_AvgN);
+  Tree->Branch("firstb",&fit_firstb);
+  Tree->Branch("ncoll",&fit_ncoll);
+  Tree->Branch("nbins",&fit_nbins);
+}
+
+void fitAfterglowTrain(TString inputfile=InputFile, TString lsblockname=LSBlockName, int firstb=FirstBin, int ncolliding=NColliding, int nbins=NBins){
+
+  TString formula="[0]*((x-k==0.0)+(x-k==1.0)*[1]+(x-k>0.5)*[2]*exp(-[3]*(x-k-1)))";//base term, will be duplicated below 
+  
+  TFile File(inputfile,"read");
+  TH1F* H=(TH1F*)File.Get(lsblockname);
+  if(!H){
+    cout<<"Histogram not found"<<endl;
+    return;
+  }
+
+  ///create the histogram for the fit and copy the data 
+  TH1F HSel("HSel","",nbins,-0.5,(nbins-1)+0.5);
+  for(int b=0;b<nbins;b++){
+    HSel.SetBinContent(b+1,H->GetBinContent(firstb+b));
+    HSel.SetBinError(b+1,H->GetBinError(firstb+b));
+  }
+
+  /////fit function and parameter limits
+  TString TotalFormula;
+  for(int i=0;i<ncolliding;i++){
+    TString iterm=formula;
+    iterm.ReplaceAll("k",TString("")+i);
+    if(i>0)iterm.ReplaceAll("[0]",TString("[")+(3+i)+"]");
+    if(i>0)TotalFormula=TotalFormula+"+"+iterm;
+    else TotalFormula=iterm;
+  }
+  //cout<<TotalFormula<<endl;
+
+  
+  TF1 Fit("Fit",TotalFormula,-0.5,(nbins-1)+0.5);//domain is x:[0,nbins-1]
+  for(int i=0;i<ncolliding;i++){
+
+    if(i==0) Fit.SetParLimits(0,1,1e6);
+    else Fit.SetParLimits(i+3,1,1e6);
+    //if(i==0) Fit.FixParameter(0,HSel.GetBinContent(i+1));
+    //else Fit.FixParameter(3+i,HSel.GetBinContent(i+1));
+
+  }
+  //Fit.FixParameter(1,0.025);
+  Fit.SetParLimits(1,0.0001,0.3);  //type 1 frac
+
+  //Fit.FixParameter(2,0.02);
+  Fit.SetParLimits(2,0.00001,0.2); // type 2 a
+  
+  //Fit.FixParameter(3,0.017);
+  Fit.SetParLimits(3,0.0001,0.5); // type 2 b
+
+  
+  TVirtualFitter::SetMaxIterations(50000); 
+  TFitResultPtr r=HSel.Fit(&Fit,"SQ"); //simple ROOT fit
+  
+  cout<<"Chi2/NDF: "<<Fit.GetChisquare()<<"/"<<Fit.GetNDF()<<endl;
+  cout<<"CovStatus: "<<r->CovMatrixStatus()<<endl;
+
+  ///compute average of the colliding bunches
+  float Navg=0.;
+  for(int i=0;i<ncolliding;i++){
+    if(i==0) Navg+=Fit.GetParameter(0);
+    else Navg+=Fit.GetParameter(i+3);
+  }
+  Navg/=ncolliding;
+
+  
+  ///Histograms containing the fit result and residuals
+  TH1F HFit("HFit","",nbins,-0.5,(nbins-1)+0.5);
+  TH1F HFitRes("HFitRes","",nbins,-0.5,(nbins-1)+0.5);
+  for(int b=0;b<nbins;b++){
+    float x=HSel.GetBinCenter(b+1);
+    float y=Fit.Eval(x);
+    HFit.SetBinContent(b+1,y);
+    HFitRes.SetBinContent(b+1,100*(HSel.GetBinContent(b+1)-y)/Navg);
+    HFitRes.SetBinError(b+1,100*HSel.GetBinError(b+1)/Navg);
+  }
+
+
+  
+  TCanvas C;
+  C.SetLogy(1);
+
+  /// plot with the input data full orbit
+  C.Clear();
+  H->SetStats(0);
+  H->GetYaxis()->SetTitle("Raw PCC");
+  H->GetXaxis()->SetTitle("bcid");
+  H->Draw("hist");
+  C.Print(TString("fitAfterglowTrain_inputdata-")+lsblockname+".png");
+
+
+  // plot with the fitted data and fit results
+  C.Clear();
+  HSel.SetStats(0);
+  HSel.SetMarkerStyle(8);
+  HSel.SetMarkerSize(1);
+  HSel.GetYaxis()->SetTitle("Raw PCC");
+  HSel.GetXaxis()->SetTitle("bcid");
+  HSel.Draw("histpe");
+  HFit.SetLineStyle(1);
+  HFit.SetLineColor(2);
+  HFit.Draw("histsame");
+
+  TLatex text;
+  text.SetTextColor(2);
+  text.SetTextSize(0.035);
+
+  text.DrawLatexNDC(0.1,0.93,TString("Data: ")+ lsblockname);
+  text.DrawLatexNDC(0.7,0.93,TString("First bcid: ")+firstb);  
+
+  ///print formula
+  formula.ReplaceAll("[0]","N_{k}");
+  formula.ReplaceAll("[1]","f");
+  formula.ReplaceAll("[2]","A");
+  formula.ReplaceAll("[3]","B");
+  text.DrawLatexNDC(0.2,0.85,TString("F_{k}(x) = ")+formula);
+
+  //print param values
+  char s[100];
+  snprintf(s,40,"f=%0.5f (Type1)",float(Fit.GetParameter(1)));
+  text.DrawLatexNDC(0.6,0.8,s);
+  snprintf(s,40,"A=%0.7f (Type2)",float(Fit.GetParameter(2)));
+  text.DrawLatexNDC(0.6,0.75,s);
+  snprintf(s,40,"B=%0.5f (Type2)",float(Fit.GetParameter(3)));
+  text.DrawLatexNDC(0.6,0.70,s);
+
+  //print fit status
+  snprintf(s,40,"Chi2/NDF=%.0f/%d",Fit.GetChisquare(),Fit.GetNDF());
+  text.DrawLatexNDC(0.6,0.6,s);
+  snprintf(s,40,"CovStatus=%d",r->CovMatrixStatus());
+  text.DrawLatexNDC(0.6,0.65,s);
+  
+
+  C.Print(TString("fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
+  
+
+  
+  //plot with the Fit Residuals
+  C.Clear();
+  C.SetLogy(0);
+  HFitRes.SetStats(0);
+  HFitRes.SetMarkerStyle(8);
+  HFitRes.SetMarkerSize(1);
+  HFitRes.GetXaxis()->SetTitle("bcid");
+  HFitRes.GetYaxis()->SetTitle("100 * (Data - Fit) / <N>   [%]");
+  HFitRes.GetYaxis()->SetTitleOffset(1.2);
+  HFitRes.GetYaxis()->SetRangeUser(-1,1);
+  HFitRes.Draw("histpe");
+  TLine line;
+  line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
+  C.Print(TString("fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+".png");
+ 
+
+  //fill TTree
+  fit_chi2=Fit.GetChisquare()/Fit.GetNDF();
+  fit_status=r->CovMatrixStatus();
+  fit_AvgN=Navg;
+  fit_ncoll=ncolliding;
+  fit_firstb=firstb;
+  fit_nbins=nbins;
+  fit_Type1f=Fit.GetParameter(1);
+  fit_Type2a=Fit.GetParameter(2);
+  fit_Type2b=Fit.GetParameter(3);
+  if(Tree)Tree->Fill();
+  
+}
