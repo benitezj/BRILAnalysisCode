@@ -1,4 +1,4 @@
-import ROOT
+import  ROOT
 from ROOT import TFile, TTree, TChain
 import tables as t, pandas as pd, pylab as py, sys, numpy, math, os, Queue, csv
 import math 
@@ -26,7 +26,11 @@ tree.SetBranchStatus("run",1)
 tree.SetBranchStatus("LS",1)                                                                                                                     
 tree.SetBranchStatus("LN",1)                                                                                                                     
 tree.SetBranchStatus("event",1)                                                                                                                  
-tree.SetBranchStatus("nPixelClusters",1)                                                                                                         
+tree.SetBranchStatus("nPixelClusters",1)
+#uncoment for tuples 2022                                                                             
+tree.SetBranchStatus("nPixelClusters.first.first",1)
+tree.SetBranchStatus("nPixelClusters.first.second",1) 
+tree.SetBranchStatus("nPixelClusters.second",1)                          
 tree.SetBranchStatus("timeStamp_begin",1)                                                                                                   
 
 ################### Make mod veto list ################                                                                                                                            
@@ -64,7 +68,7 @@ if not os.path.exists(output_path):
 file='pcc_ZB.hd5' 
 h5out = t.open_file(output_path+file,mode='w')
 
-outtablename = 'pltlumizero'
+outtablename = 'pcchd5'
 compr_filter = t.Filters(complevel=9, complib='blosc')
 chunkshape=(100,)
 outtable = h5out.create_table('/',outtablename,Lumitable,filters=compr_filter,chunkshape=chunkshape)
@@ -87,7 +91,7 @@ event_count = numpy.zeros(16)
 
 numBunchesLHC = 3564                                                                                                                            
 k = 11246.                                                                                                                                       
-fill = 6016  #2018->6868 #2017->6016                                                                                                        
+fill = 8385  #2018->6868 #2017->6016                                                                                                        
                                                                                                         
 ################## Loop over events ###########################                                                                            
 
@@ -102,11 +106,12 @@ for iev in range(nentries):
     if tree.nPixelClusters.size() == 0:                                                                                           
         continue                                                                                                 
     for item in tree.nPixelClusters:                                                                                
-        bxid=item[0][0]                                                                                                 
-        module=item[0][1]                                                                                            
-        clusters=item[1]            
-        if module in vetoModules or module/1000000==303:#when starts in 303 is  barrel layer 0                                    
-            continue                                                                                                           
+        bxid=item.first.first            #item[0][0]                                             
+        module=item.first.second         #item[0][1]                                                    
+        clusters=item.second             #item[1] 
+        print(bxid,module,clusters)           
+        if module in vetoModules or module/1000000==303:#when starts in 303 is  barrel layer 0                  
+            continue                                                                                         
         a.add(module)                                                                                           
         pixelCount[0]=pixelCount[0]+clusters      
 

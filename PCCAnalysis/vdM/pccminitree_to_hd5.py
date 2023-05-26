@@ -17,7 +17,7 @@ output_path = './'
 numBunchesLHC = 3564
 k = 11246.
 
-fill = 6868
+fill = 8385  #8178 #6868 #6016
 
 
 input_file=args.minitreefile
@@ -26,14 +26,8 @@ class Lumitable(t.IsDescription):
  fillnum = t.UInt32Col(shape=(), dflt=0, pos=0)
  runnum = t.UInt32Col(shape=(), dflt=0, pos=1)
  lsnum = t.UInt32Col(shape=(), dflt=0, pos=2)
- nbnum = t.UInt32Col(shape=(), dflt=0, pos=3)
- #timestampsec = t.Float32Col(shape=(3564), dflt=0, pos=4) 
- #timestampsec = t.UInt32Col(shape=(3564,), dflt=0, pos=4)  
+ nbnum = t.UInt32Col(shape=(), dflt=0, pos=3)  
  timestampsec = t.UInt32Col(shape=(), dflt=0, pos=4)
- #totsize = t.UInt32Col(shape=(), dflt=0, pos=6)
- #publishnnb = t.UInt8Col(shape=(), dflt=0, pos=7)
- #avg = t.Float32Col(shape=(), dflt=0.0, pos=14)
-
  avgraw = t.Float32Col(shape=(), dflt=0.0, pos=5) #new
  avg = t.Float32Col(shape=(), dflt=0.0, pos=6) #new
  bxraw = t.Float32Col(shape=(3564,), dflt=0.0, pos=7) #new
@@ -50,7 +44,7 @@ h5out = t.open_file(output_path+file,mode='w')
 
 ## create the table
 #outtablename = 'pcclumi'
-outtablename = 'pltlumizero'
+outtablename = 'pcchd5'
 compr_filter = t.Filters(complevel=9, complib='blosc')
 chunkshape=(100,)
 outtable = h5out.create_table('/',outtablename,Lumitable,filters=compr_filter,chunkshape=chunkshape)
@@ -75,7 +69,7 @@ nentries=tree.GetEntries()
 
 
 
-#j,i ; NB[lumi_slice][bunch_num]
+#j,i ; NB[lumi_slice][bunch_num] 1LN = 0.359s  1LN4 = 1.4s
 PCC_NB= [numpy.zeros(3564) for i in range(64)] #NB
 PCC_NB4= [numpy.zeros(3564) for i in range(16)] # NB4
 
@@ -86,7 +80,7 @@ ev_count= [numpy.zeros(3564) for i in range(64)]
 ev_countNB4= [numpy.zeros(3564) for i in range(16)]
 
 time_count_NB4avg= numpy.zeros(16)
-
+#event_count_NB4avg = numpy.zeros(16)
 #loop indices: [numpy.zeros(j) for n in range(i)] ; i=numb. bunch
 #e.g.: [numpy.zeros(2) for i in range(3)] -> [[0,0] , [0,0], [0,0] ]
 
@@ -99,7 +93,6 @@ for iev in range(nentries):
   print "Processing event ",iev ," Total events: ",nentries ," ; Remaining events: ", nentries-iev
  
  tree.GetEntry(iev)
- #if tree.timeStamp>=1530358110 and tree.timeStamp<=1530360523: #vdM1
 
  if iev%100000==0:
   print "ievent to hd5:", iev, "  Total events: ",nentries ," ; Remaining events: ", nentries-iev
@@ -126,6 +119,7 @@ for iev in range(nentries):
      if ev_countNB4[k][l]!=0:
       time_countNB4[k][l]/=ev_countNB4[k][l]
       PCC_NB4[k][l]/=ev_countNB4[k][l]
+  
 
   for r in range(16):
     count_nonzero=0
@@ -137,13 +131,14 @@ for iev in range(nentries):
     if count_nonzero!=0:
        time_count_NB4avg[r]=time_count_NB4avg[r]/count_nonzero
 
+   
+
   for m in range(16):  
     rownew['fillnum'] = fill
     rownew['runnum'] = tree.run
-    rownew['lsnum'] = LS_prev 
-    rownew['nbnum'] = m #0 to 15
-    #rownew['timestampsec'] = time_countNB4[m] 
-    #rownew['timestampsec'] = time_countNB4[m][3380]  
+    rownew['lsnum'] = LS_prev
+    #rownew['nevent'] = event_count_NB4avg[m]
+    rownew['nbnum'] = m #0 to 15  
     rownew['timestampsec'] = time_count_NB4avg[m] 
     bxsum=0
     for b in range(3564):
@@ -154,16 +149,16 @@ for iev in range(nentries):
     rownew['bx'] = PCC_NB4[m]
     rownew.append()
     outtable.flush() 
+
+#reset array
+
   for j in range(3564):
     for i in range(64):
-     PCC_NB[i][j]= 0.
-  
+     PCC_NB[i][j]= 0.  
      time_count[i][j]= 0
-  
      ev_count[i][j]=0
   for p in range(16):  
      time_count_NB4avg[p]=0     
-
   for i in range(16):
     for j in range(3564):
      PCC_NB4[i][j]=0
