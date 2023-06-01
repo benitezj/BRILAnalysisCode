@@ -2,14 +2,8 @@
 // This code fits one bunch train and the tail
 //*//
 
-/* TString InputFile="./366800.root"; */
-/* TString LSBlockName="RawLumiAvg_366800_2_3_3"; */
-/* int FirstBin=1113;   // trains in this data: [1113,1148], [1575,1610], [2007,2042], [2901,2936] */
-/* int NColliding=36;   // number of colliding bunches in the train (train must be contiguous)  */
-/* int NBins=100;       // number of bcids in train plus tail (full fit range) */
 
-
-bool makePlots=0;
+bool makePlots=1;
 
 
 TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
@@ -22,6 +16,10 @@ float fit_AvgN;
 int   fit_firstb;
 int   fit_ncoll;
 int   fit_nbins;
+int   fit_run=0;
+int   fit_ls;
+int   fit_lsblock=0; int lastrun=0; int lastlsblock=0; int lastlsblockmax=0;
+
 void makeTree(){
   Tree=new TTree("Tree","Afterglow Fit results");
   Tree->Branch("chi2",&fit_chi2);
@@ -33,6 +31,9 @@ void makeTree(){
   Tree->Branch("firstb",&fit_firstb);
   Tree->Branch("ncoll",&fit_ncoll);
   Tree->Branch("nbins",&fit_nbins);
+  Tree->Branch("run",&fit_run);
+  Tree->Branch("ls",&fit_ls);
+  Tree->Branch("lsblock",&fit_lsblock);
 }
 
 //void fitAfterglowTrain(TString inputfile=InputFile, TString lsblockname=LSBlockName, int firstb=FirstBin, int ncolliding=NColliding, int nbins=NBins){
@@ -44,6 +45,23 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     return;
   }
 
+  TObjArray * a = lsblockname.Tokenize("_");
+  
+
+  
+  if(atoi(((TObjString*)(*a)[2])->GetName())!=lastlsblock){
+    fit_lsblock++;
+    lastlsblock=atoi(((TObjString*)(*a)[2])->GetName());
+  } 
+  
+  
+  fit_run=atoi(((TObjString*)(*a)[1])->GetName());
+  //fit_lsblock=atoi(((TObjString*)(*a)[2])->GetName());
+  fit_ls=atoi(((TObjString*)(*a)[3])->GetName());
+  //long ls2=atoi(((TObjString*)(*a)[4])->GetName());
+
+
+  
   ///create the histogram for the fit and copy the data 
   TH1F HSel("HSel","",nbins,-0.5,(nbins-1)+0.5);
   for(int b=0;b<nbins;b++){
@@ -87,7 +105,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
 
   Fit.SetParameter(3,0.015);
   //Fit.FixParameter(3,0.017);
-  //Fit.SetParLimits(3,0.0001,0.5); // type 2 b
+  Fit.SetParLimits(3,0.0001,0.5); // type 2 b
 
   
   TVirtualFitter::SetMaxIterations(50000); 
@@ -97,18 +115,18 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
   cout<<"CovStatus: "<<r->CovMatrixStatus()<<endl;
 
   ///compute average of the colliding bunches
-  float Navg=0.;
+  float AvgN=0.;
   for(int i=0;i<ncolliding;i++){
-    if(i==0) Navg+=Fit.GetParameter(0);
-    else Navg+=Fit.GetParameter(i+3);
+    if(i==0) AvgN+=Fit.GetParameter(0);
+    else AvgN+=Fit.GetParameter(i+3);
   }
-  Navg/=ncolliding;
+  AvgN/=ncolliding;
 
   
   //fill TTree
   fit_chi2=Fit.GetChisquare()/Fit.GetNDF();
   fit_status=r->CovMatrixStatus();
-  fit_AvgN=Navg;
+  fit_AvgN=AvgN;
   fit_ncoll=ncolliding;
   fit_firstb=firstb;
   fit_nbins=nbins;
@@ -128,16 +146,16 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
       float x=HSel.GetBinCenter(b+1);
       float y=Fit.Eval(x);
       HFit.SetBinContent(b+1,y);
-      HFitRes.SetBinContent(b+1,100*(HSel.GetBinContent(b+1)-y)/Navg);
-      HFitRes.SetBinError(b+1,100*HSel.GetBinError(b+1)/Navg);
+      HFitRes.SetBinContent(b+1,100*(HSel.GetBinContent(b+1)-y)/AvgN);
+      HFitRes.SetBinError(b+1,100*HSel.GetBinError(b+1)/AvgN);
     }
 
 
     TCanvas C;
-    C.SetLogy(1);
 
     /// plot with the input data full orbit
     C.Clear();
+    C.SetLogy(1);
     H->SetStats(0);
     H->GetYaxis()->SetTitle("Raw PCC");
     H->GetXaxis()->SetTitle("bcid");
@@ -145,11 +163,14 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     C.Print(TString("fitAfterglowTrain_inputdata-")+lsblockname+".png");
 
 
+    /////////////
     // plot with the fitted data and fit results
     C.Clear();
+    C.SetLogy(1);
     HSel.SetStats(0);
     HSel.SetMarkerStyle(8);
-    HSel.SetMarkerSize(1);
+    HSel.SetMarkerSize(0.5);
+    HSel.GetYaxis()->SetRangeUser(1,9*AvgN);
     HSel.GetYaxis()->SetTitle("Raw PCC");
     HSel.GetXaxis()->SetTitle("bcid");
     HSel.Draw("histpe");
@@ -162,7 +183,8 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     text.SetTextSize(0.035);
 
     text.DrawLatexNDC(0.1,0.93,TString("Data: ")+ lsblockname);
-    text.DrawLatexNDC(0.7,0.93,TString("First bcid: ")+firstb);  
+    text.DrawLatexNDC(0.55,0.93,TString("First bcid: ")+firstb);
+    text.DrawLatexNDC(0.75,0.93,TString("Ncolliding: ")+ncolliding);  
 
     ///print formula
     formula.ReplaceAll("[0]","N_{k}");
@@ -174,21 +196,22 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     //print param values
     char s[100];
     snprintf(s,40,"f=%0.5f (Type1)",float(Fit.GetParameter(1)));
-    text.DrawLatexNDC(0.6,0.8,s);
+    text.DrawLatexNDC(0.2,0.80,s);
     snprintf(s,40,"A=%0.7f (Type2)",float(Fit.GetParameter(2)));
-    text.DrawLatexNDC(0.6,0.75,s);
+    text.DrawLatexNDC(0.45,0.80,s);
     snprintf(s,40,"B=%0.5f (Type2)",float(Fit.GetParameter(3)));
-    text.DrawLatexNDC(0.6,0.70,s);
+    text.DrawLatexNDC(0.45,0.75,s);
 
     //print fit status
-    snprintf(s,40,"Chi2/NDF=%.0f/%d",Fit.GetChisquare(),Fit.GetNDF());
-    text.DrawLatexNDC(0.6,0.6,s);
+    snprintf(s,40,"Chi2/NDF=%.1f/%d",Fit.GetChisquare(),Fit.GetNDF());
+    text.DrawLatexNDC(0.7,0.80,s);
     snprintf(s,40,"CovStatus=%d",r->CovMatrixStatus());
-    text.DrawLatexNDC(0.6,0.65,s);
+    text.DrawLatexNDC(0.7,0.75,s);
   
 
     C.Print(TString("fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
-  
+
+    ////////////
     //plot with the Fit Residuals
     C.Clear();
     C.SetLogy(0);

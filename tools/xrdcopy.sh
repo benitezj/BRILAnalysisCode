@@ -32,7 +32,7 @@ while read p; do
     #echo $SAMPLE
     #echo $FILE
 
-    command="mkdir -p ${OUTPATH}/${SAMPLE}; xrdcp $XRDPATH/$p $OUTPATH/$SAMPLE/$FILE"
+    command="mkdir -p ${OUTPATH}/${SAMPLE}; xrdcp $XRDPATH/$p $OUTPATH/$SAMPLE/"
     echo $command
     if [ $execute == 1 ]; then
 	`$command`
