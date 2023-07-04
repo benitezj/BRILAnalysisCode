@@ -1,13 +1,18 @@
 
 #include "fitAfterglowTrain.C"
-//,1575,2007,2901
-void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={366800}, std::vector<int> LeadBCIDList={1113}, int NTRAINBCIDS=36, int NBCIDS=100){
+
+//void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={366800}, std::vector<int> LeadBCIDList={1113,1575,2007,2901}, int NTRAINBCIDS=36, int NBCIDS=100){
 
 
-  //TString input="./366800.root";
-  //std::vector<int> FBList={1113,1575,2007,2901};
-  //NColliding=36;   // number of colliding bunches in the train (train must be contiguous) 
-  //NBins=100;       // number of bcids in train plus tail (full fit range)
+//Fill 7036
+//void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={1}, int NTRAINBCIDS=11, int NBCIDS=100){//1-wagon
+
+//void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={188,1070,1964,2858}, int NTRAINBCIDS=103, int NBCIDS=200){//2-wagons
+//void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995}, std::vector<int> LeadBCIDList={188}, int NTRAINBCIDS=103, int NBCIDS=200){
+
+void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={454,1336,2230,3124}, int NTRAINBCIDS=158, int NBCIDS=240){//3-wagons
+//void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995}, std::vector<int> LeadBCIDList={3124}, int NTRAINBCIDS=158, int NBCIDS=240){
+
   
   
   TString OutfileName=inpath+"/fitAfterglow_output.root";
@@ -17,28 +22,31 @@ void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={366800}, std:
   makeTree();
   
 
-  TFile File((inpath+"/"+RunList[0]+".root").Data(),"read");
-  if(File.IsZombie()){
-    cout<<(inpath+"/"+RunList[0]).Data()<<" not found"<<endl;
-    return;
-  }
+  for(int r=0;r<RunList.size();r++){
   
-  TIter next(File.GetListOfKeys());
-  while (TObject* key = next()) {
-    if(!key) continue;
+    TFile File((inpath+"/"+RunList[r]+".root").Data(),"read");
+    if(File.IsZombie()){
+      cout<<(inpath+"/"+RunList[r]).Data()<<" not found"<<endl;
+      return;
+    }
+  
+    TIter next(File.GetListOfKeys());
+    while (TObject* key = next()) {
+      TString kname(key->GetName());
+      if(!kname.Contains("RawLumiAvg")) continue;
+      cout<<key->GetName()<<endl;
 
-    TString kname(key->GetName());
-    if(!kname.Contains("RawLumiAvg")) continue;
-    cout<<key->GetName()<<endl;
-
-    TH1F* H=(TH1F*)File.Get(key->GetName());
+      TH1F* H=(TH1F*)File.Get(key->GetName());
     
-    for(int i=0;i<LeadBCIDList.size();i++)
-      fitAfterglowTrain(H,key->GetName(), LeadBCIDList[i], NTRAINBCIDS, NBCIDS);
-       
+      for(int i=0;i<LeadBCIDList.size();i++)
+	fitAfterglowTrain(H,key->GetName(), LeadBCIDList[i], NTRAINBCIDS, NBCIDS);
+
+      //break;
+    }
+
   }
 
-
+  
   outputfile.cd();
   if(Tree) Tree->Write();
   outputfile.ls();
