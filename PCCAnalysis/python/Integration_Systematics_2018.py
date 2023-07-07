@@ -219,6 +219,7 @@ hist_h_ratio.SetTitle("ProfileX vs HFOC lumi")
 hist_h_ratio.Draw("AB")
 addCMSLabel(C1, "CMS Preliminary", "2018", "#sqrt{s} = 13 TeV")
 C1.Print('/eos/user/a/asehrawa/BRIL-new/'+'ProfileXvsHFOClumi_all.png')
+
 ProfX_h_residual.SetMarkerStyle(20)
 ProfX_h_residual.SetMarkerColor(46)
 ProfX_h_residual.GetYaxis().SetTitle("Entries")
