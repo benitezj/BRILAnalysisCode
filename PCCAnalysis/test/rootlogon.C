@@ -71,10 +71,11 @@ void rootlogon() {
   // Histos
   CMS->SetHistLineColor(1);
   CMS->SetHistLineStyle(0);
-  CMS->SetHistLineWidth(2);
+  CMS->SetHistLineWidth(1);
   CMS->SetEndErrorSize(2);
   CMS->SetErrorX(0.5);
   CMS->SetMarkerStyle(20);
+  CMS->SetMarkerSize(0.5);
 
   // Fit/function
   CMS->SetOptFit(0);
