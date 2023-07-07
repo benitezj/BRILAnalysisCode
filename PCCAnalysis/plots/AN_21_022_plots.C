@@ -46,7 +46,7 @@ void AN_21_022_plots() {
   C.cd();
   //C.SetLogy();                                                                                                                                                                                                      
   //C.SetCanvasSize(2000,600);                                                                                                                                                                                        
-  //gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/rootlogon.C");
+  gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/rootlogon.C");
   //gStyle->SetOptStat(1111111);    
 
   //TDatime da(2018,04,26,00,00,00);
@@ -265,7 +265,7 @@ void AN_21_022_plots() {
 
   AddCMSLabel(&C, "CMS Preliminary", "2018", "#sqrt{s} = 13 TeV");
 
-  auto legend = new TLegend(0.7,0.35,0.89,0.65);
+  auto legend = new TLegend(0.7,0.34,0.89,0.64);
   legend->AddEntry(P_L2,"Barrel layer 2","l");
   legend->AddEntry(P_L3,"Barrel layer 3","l");
   legend->AddEntry(P_L4,"Barrel layer 4","l");
