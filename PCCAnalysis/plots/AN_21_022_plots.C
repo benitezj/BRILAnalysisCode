@@ -22,7 +22,7 @@ void AddCMSLabel(TCanvas* canv, TString cmsText = "CMS Preliminary", TString ext
   latex.SetTextAngle(0);
   latex.SetTextColor(kBlack);    
 
-  float cmsTextPosX = 0.10;  // Moved a bit to the left
+  float cmsTextPosX = 0.15;  // Moved a bit to the left
   float cmsTextPosY = 0.94;
   latex.SetTextFont(cmsTextFont);
   latex.SetTextAlign(11); 
@@ -39,7 +39,6 @@ void AddCMSLabel(TCanvas* canv, TString cmsText = "CMS Preliminary", TString ext
   pad->Update();
 }
 
-
 void AN_21_022_plots() {
 
   TString Path = "/eos/user/a/asehrawa/BRIL-new/";
@@ -47,7 +46,7 @@ void AN_21_022_plots() {
   C.cd();
   //C.SetLogy();                                                                                                                                                                                                      
   //C.SetCanvasSize(2000,600);                                                                                                                                                                                        
-  gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/rootlogon.C");
+  //gROOT->ProcessLine(".x /afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/rootlogon.C");
   //gStyle->SetOptStat(1111111);    
 
   //TDatime da(2018,04,26,00,00,00);
@@ -69,11 +68,9 @@ void AN_21_022_plots() {
   std::cout<<run_number.size()<<std::endl;
   readModRPhiZCoordinates();
 
-  //readModVeto("/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/veto_common_1701.txt");
-
+  readModVeto("/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/veto_common_1701.txt");
   //readModVeto("/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt");
-
-  readModVeto("/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/veto_empty.txt");
+  //readModVeto("/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/veto_empty.txt");
 
   int LS=0;
   int run=0;
@@ -107,7 +104,6 @@ void AN_21_022_plots() {
   //histo_D1=new TH2F("Histo_Disk1","",200,X1,X2,300,0,0.15);
   //histo_D2=new TH2F("Histo_Disk2","",200,X1,X2,300,0,0.15);
   //histo_D3=new TH2F("Histo_Disk3","",200,X1,X2,300,0,0.15);
-
 
   int modid[1856];
   for (unsigned int j=0;j<run_number.size();j++){
@@ -192,7 +188,7 @@ void AN_21_022_plots() {
         }
       }
    
-      //if(totcount > 8000000){
+      if(totcount > 8000000){
 	histo_L2->Fill(LS, count_L2/totcount);
 	histo_L3->Fill(LS, count_L3/totcount);
 	histo_L4->Fill(LS, count_L4/totcount);
@@ -201,7 +197,7 @@ void AN_21_022_plots() {
 	histo_D3->Fill(LS, count_D3/totcount);
         //std::cout<<LS<<" "<< count_L2/totcount <<std::endl;                                                                                                                                                                  
         //std::cout<<run_number.at(j)<<std::endl;                                                                                                                                                                     
-	//}
+	}
       
       //if(totcount > 10000000) {                                                                                                                                                                                     
       //std::cout<<run_number.at(j)<<std::endl;                                                                                                                                                                       
@@ -241,7 +237,7 @@ void AN_21_022_plots() {
   //P_L2->GetXaxis()->SetTimeDisplay(1);
   //P_L2->GetXaxis()->SetTimeFormat("%d/%m/%Y");
   P_L2->GetYaxis()->SetRangeUser(0, 0.50);
-  P_L2->SetTitle("CMS Preliminary 2018                                                           13 TeV");
+  //P_L2->SetTitle("CMS Preliminary 2018                                                           13 TeV");
   P_L2->GetXaxis()->SetTitle("Lumi section");
   P_L2->GetYaxis()->SetTitle("Relative contribution");
 
@@ -269,7 +265,7 @@ void AN_21_022_plots() {
 
   AddCMSLabel(&C, "CMS Preliminary", "2018", "#sqrt{s} = 13 TeV");
 
-  auto legend = new TLegend(0.7,0.6,0.89,0.8);
+  auto legend = new TLegend(0.7,0.35,0.89,0.65);
   legend->AddEntry(P_L2,"Barrel layer 2","l");
   legend->AddEntry(P_L3,"Barrel layer 3","l");
   legend->AddEntry(P_L4,"Barrel layer 4","l");
