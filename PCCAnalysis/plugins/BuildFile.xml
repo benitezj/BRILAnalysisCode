@@ -44,4 +44,8 @@
   <flags   EDM_PLUGIN="1"/>
 </library>
 
+<library   file="RawPCCProducer_modveto.cc" name="RawPCCProducer_modveto">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
 
