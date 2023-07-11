@@ -248,6 +248,7 @@ check_log(){
 ##################################################################
 export RUNLIST=""
 counter=0
+counterbad=0
 for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     if [[ $counter -gt 100000 ]]; then
 	 break
@@ -273,6 +274,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	check_log $run
 	if [ "$fail" == "1" ]; then
 	    echo $fullsubmitdir/${run}.log
+	    counterbad=`echo $counterbad | awk '{print $1+1}'`
 	fi   
     fi
 
@@ -296,6 +298,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     counter=`echo $counter | awk '{print $1+1}'`
 done
 echo "Total runs: $counter"
+echo "Total bad runs: $counterbad"
 
 echo ${RUNLIST:1}
 
