@@ -83,7 +83,7 @@ void rootlogon(){
   //gStyle->SetTitleFont  (42,"X");
   //gStyle->SetTitleFont  (42,"Y");
 
-  gStyle->SetOptStat    (0);
+  //gStyle->SetOptStat    (0);
 
   //gROOT->SetStyle("Style");
 
