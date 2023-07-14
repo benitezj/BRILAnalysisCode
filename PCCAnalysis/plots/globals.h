@@ -39,7 +39,8 @@ void drawCMSPrelim(long year,float xpos=0.2){
 float getSigmaVis(int run){
 
   if(run>=352416){//Run 3 
-    return 6.037e6/ORBITF; // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
+    //return 6.037e6/ORBITF; // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
+    return 4.1533e6/ORBITF; // veto_CDEFG_3_2022.txt, Luis thesis 6/28/2022 
   }else if(run>=323700){
     return 3.14e6/ORBITF; // for second part of RunD, tighter stability cut ABCD
 

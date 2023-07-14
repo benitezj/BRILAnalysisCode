@@ -16,9 +16,9 @@ plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
 
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
-#REFDET=${normtagdir}/normtag_hfet.json
+REFDET=${normtagdir}/normtag_hfet.json
 #REFDET=pcc22v1
-REFDET=${normtagdir}/normtag_dt.json
+#REFDET=${normtagdir}/normtag_dt.json
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
