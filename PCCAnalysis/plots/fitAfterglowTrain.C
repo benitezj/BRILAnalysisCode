@@ -13,12 +13,20 @@ float fit_Type1f;
 float fit_Type2a;
 float fit_Type2b;
 float fit_AvgN;
+
 int   fit_firstb;
 int   fit_ncoll;
 int   fit_nbins;
 int   fit_run=0;
 int   fit_ls;
 int   fit_lsblock=0; int lastrun=0; int lastlsblock=0; int lastlsblockmax=0;
+
+float fit_residNp1;
+float fit_residNp2;
+float fit_residNp3;
+float fit_residNp4;
+float fit_Type1f2;
+
 
 void makeTree(){
   Tree=new TTree("Tree","Afterglow Fit results");
@@ -28,6 +36,11 @@ void makeTree(){
   Tree->Branch("Type2a",&fit_Type2a);
   Tree->Branch("Type2b",&fit_Type2b);
   Tree->Branch("AvgN",&fit_AvgN);
+  Tree->Branch("residNp1",&fit_residNp1);
+  Tree->Branch("residNp2",&fit_residNp2);
+  Tree->Branch("residNp3",&fit_residNp3);
+  Tree->Branch("residNp4",&fit_residNp4);
+  Tree->Branch("Type1f2",&fit_Type1f2);
   Tree->Branch("firstb",&fit_firstb);
   Tree->Branch("ncoll",&fit_ncoll);
   Tree->Branch("nbins",&fit_nbins);
@@ -71,8 +84,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
 
 
   TString formula="[0]*((x-k==0.0)+(x-k==1.0)*[1]+(x-k>0.5)*[2]*exp(-[3]*(x-k-1)))";//base term, will be duplicated below 
-  
-  /////fit function and parameter limits
+  //TString formula="[0]*((x-k==0.0)+(x-k==1.0)*[1]+(x-k==2.0)*[4]+(x-k>0.5)*[2]*exp(-[3]*(x-k-1)))";//added another type1 term, below need to fix the 3 -> 4 
   TString TotalFormula;
   for(int i=0;i<ncolliding;i++){
     TString iterm=formula;
@@ -86,26 +98,15 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
   
   TF1 Fit("Fit",TotalFormula,-0.5,(nbins-1)+0.5);//domain is x:[0,nbins-1]
   for(int i=0;i<ncolliding;i++){
-
-    //if(i==0) Fit.SetParLimits(0,1,1e6);
-    //else Fit.SetParLimits(i+3,1,1e6);
-    
     if(i==0) Fit.SetParameter(0,HSel.GetBinContent(i+1));
     else Fit.SetParameter(3+i,HSel.GetBinContent(i+1));
 
   }
 
-  //Fit.FixParameter(1,0.025);
   Fit.SetParLimits(1,0.0001,0.3);  //type 1 frac
-  Fit.SetParameter(1,0.025);
-  
-  Fit.SetParameter(2,0.001);
-  //Fit.FixParameter(2,0.02);
-  //Fit.SetParLimits(2,0.00001,0.2); // type 2 a
-
-  Fit.SetParameter(3,0.015);
-  //Fit.FixParameter(3,0.017);
-  Fit.SetParLimits(3,0.0001,0.5); // type 2 b
+  Fit.SetParameter(2,0.001); //type2 a init
+  Fit.SetParameter(3,0.015); //type2 b init
+  Fit.SetParLimits(3,0.0001,0.5); //type 2 b, range
 
   
   TVirtualFitter::SetMaxIterations(50000); 
@@ -118,39 +119,24 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
   float AvgN=0.;
   for(int i=0;i<ncolliding;i++){
     if(i==0) AvgN+=Fit.GetParameter(0);
-    else AvgN+=Fit.GetParameter(i+3);
+    else     AvgN+=Fit.GetParameter(i+3);
   }
   AvgN/=ncolliding;
 
   
-  //fill TTree
-  fit_chi2=Fit.GetChisquare()/Fit.GetNDF();
-  fit_status=r->CovMatrixStatus();
-  fit_AvgN=AvgN;
-  fit_ncoll=ncolliding;
-  fit_firstb=firstb;
-  fit_nbins=nbins;
-  fit_Type1f=Fit.GetParameter(1);
-  fit_Type2a=Fit.GetParameter(2);
-  fit_Type2b=Fit.GetParameter(3);
-  if(Tree)Tree->Fill();
+  TH1F HFit("HFit","",nbins,-0.5,(nbins-1)+0.5);
+  TH1F HFitRes("HFitRes","",nbins,-0.5,(nbins-1)+0.5);
+  ///Histograms containing the fit result and residuals
+  for(int b=0;b<nbins;b++){
+    float x=HSel.GetBinCenter(b+1);
+    float y=Fit.Eval(x);
+    HFit.SetBinContent(b+1,y);
+    HFitRes.SetBinContent(b+1,100*(HSel.GetBinContent(b+1)-y)/AvgN);
+    HFitRes.SetBinError(b+1,100*HSel.GetBinError(b+1)/AvgN);
+  }
 
-
- 
+    
   if(makePlots){
-
-    ///Histograms containing the fit result and residuals
-    TH1F HFit("HFit","",nbins,-0.5,(nbins-1)+0.5);
-    TH1F HFitRes("HFitRes","",nbins,-0.5,(nbins-1)+0.5);
-    for(int b=0;b<nbins;b++){
-      float x=HSel.GetBinCenter(b+1);
-      float y=Fit.Eval(x);
-      HFit.SetBinContent(b+1,y);
-      HFitRes.SetBinContent(b+1,100*(HSel.GetBinContent(b+1)-y)/AvgN);
-      HFitRes.SetBinError(b+1,100*HSel.GetBinError(b+1)/AvgN);
-    }
-
-
     TCanvas C;
 
     /// plot with the input data full orbit
@@ -173,7 +159,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HSel.GetYaxis()->SetRangeUser(1,9*AvgN);
     HSel.GetYaxis()->SetTitle("Raw PCC");
     HSel.GetXaxis()->SetTitle("bcid");
-    HSel.Draw("histpe");
+    HSel.Draw("histp");
     HFit.SetLineStyle(1);
     HFit.SetLineColor(2);
     HFit.Draw("histsame");
@@ -222,13 +208,54 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HFitRes.GetYaxis()->SetTitle("100 * (Data - Fit) / <N>   [%]");
     HFitRes.GetYaxis()->SetTitleOffset(1.2);
     HFitRes.GetYaxis()->SetRangeUser(-1,1);
-    HFitRes.Draw("histpe");
+    HFitRes.Draw("histp");
     TLine line;
     line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
     C.Print(TString("fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+".png");
+
+    ////////////
+    //plot with zoom
+
+    C.Clear();
+    C.SetLogy(0);
+    HSel.GetYaxis()->SetRangeUser(0,40);
+    HSel.GetXaxis()->SetRangeUser(ncolliding,nbins);
+    HSel.Draw("histp");
+    HFit.Draw("histsame");
+    C.Print(TString("fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+"_zoom.png");
+
+    C.Clear();
+    C.SetLogy(0);
+    HFitRes.GetXaxis()->SetRangeUser(ncolliding,nbins);
+    HFitRes.Draw("histp");
+    line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
+    C.Print(TString("fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+"_zoom.png");
  
   }
 
 
+
+  //fill TTree
+  fit_chi2=Fit.GetChisquare()/Fit.GetNDF();
+  fit_status=r->CovMatrixStatus();
+  fit_AvgN=AvgN;
+
+  fit_residNp1=HFitRes.GetBinContent(ncolliding+1);
+  fit_residNp2=HFitRes.GetBinContent(ncolliding+2);
+  fit_residNp3=HFitRes.GetBinContent(ncolliding+3);
+  fit_residNp4=HFitRes.GetBinContent(ncolliding+4);
+  //fit_Type1f2=Fit.GetParameter(4);
+  
+  fit_ncoll=ncolliding;
+  fit_firstb=firstb;
+  fit_nbins=nbins;
+  fit_Type1f=Fit.GetParameter(1);
+  fit_Type2a=Fit.GetParameter(2);
+  fit_Type2b=Fit.GetParameter(3);
+
+  
+  if(Tree)Tree->Fill();
+
+  
   
 }

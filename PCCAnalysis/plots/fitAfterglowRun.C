@@ -10,7 +10,8 @@
 //void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={188,1070,1964,2858}, int NTRAINBCIDS=103, int NBCIDS=200){//2-wagons
 //void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995}, std::vector<int> LeadBCIDList={188}, int NTRAINBCIDS=103, int NBCIDS=200){
 
-void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={454,1336,2230,3124}, int NTRAINBCIDS=158, int NBCIDS=240){//3-wagons
+//void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={454,1336,2230,3124}, int NTRAINBCIDS=158, int NBCIDS=240){//3-wagons
+void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={1336}, int NTRAINBCIDS=158, int NBCIDS=240){//3-wagons
 //void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995}, std::vector<int> LeadBCIDList={3124}, int NTRAINBCIDS=158, int NBCIDS=240){
 
   
@@ -33,7 +34,8 @@ void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996
     TIter next(File.GetListOfKeys());
     while (TObject* key = next()) {
       TString kname(key->GetName());
-      if(!kname.Contains("RawLumiAvg")) continue;
+      //if(!kname.Contains("RawLumiAvg")) continue;
+      if(!kname.Contains("RawLumiAvg_320996_7_334_381")) continue;
       cout<<key->GetName()<<endl;
 
       TH1F* H=(TH1F*)File.Get(key->GetName());
