@@ -4,33 +4,40 @@
 #include <dirent.h>
 
 bool makePerLayerPlots=1;
+float DeviationMax=0.1;
 
 float RMSThr=100000;
-float StabilityThr=0.03;
+float StabilityThr=100000;
 float SlopeThr=10000; //3v3 = 0.05, 3v3_4 = 0.03
 
-float DeviationMax=0.2;
-
+#define MAXMODWEIGHT 0.01
 #define NTOTALLS 8000
 #define NLSBLOCK 50
 #define MAXTOTPCC 500E6 
 #define MINTOTPCC 0
 #define MINTOTPCCAVG 1E3
-#define MAXTOTPCCAVG 300E3
+#define MAXTOTPCCAVG 250E3
 
+
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_B3.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_1.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_Stability5p.txt";
 
 //TString OutPath = "/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/ModuleVeto2022";
 TString OutPath = "./ModuleVeto2022";
 
 TCanvas C("C");
-  
-//TF1 Pfit("Pfit","[0]+[1]*x",MINTOTPCC,MAXTOTPCC);
 
+
+
+//TF1 Pfit("Pfit","[0]+[1]*x",MINTOTPCC,MAXTOTPCC);
 
 float fitModule(TProfile* P, float weight, int idx=0){
   
   for(int b=1;b<=P->GetNbinsX();b++)
-    if(!(P->GetBinContent(b)>0. && P->GetBinError(b)/P->GetBinContent(b)<0.02) ){
+    if(!(P->GetBinContent(b)>0. && P->GetBinError(b)/P->GetBinContent(b)<0.02) || P->GetBinContent(b)==0.){
       P->SetBinContent(b,0);
       P->SetBinError(b,0);
     }
@@ -44,8 +51,7 @@ float fitModule(TProfile* P, float weight, int idx=0){
   float diff=0.;
   for(int b=1;b<=P->GetNbinsX();b++)
     if(P->GetBinContent(b)>0){
-      diff = ((P->GetBinContent(b)-F.Eval(P->GetBinCenter(b)))/weight);
-      diff *=diff;
+      diff += ((P->GetBinContent(b)-F.Eval(P->GetBinCenter(b)))/weight) * ((P->GetBinContent(b)-F.Eval(P->GetBinCenter(b)))/weight);
     }
   diff = sqrt(diff);
 
@@ -69,12 +75,6 @@ float fitModule(TProfile* P, float weight, int idx=0){
 void plot_Module_RMS_Stability() {
 
 
-  //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
-  //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_B3.txt";
-  //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
-  //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_1.txt";
-
-  TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_Stability3p.txt";
   
   //TString Path = "./Run2022D";// "/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022D";
   //std::vector<int> run_number = {357538,357539,357540,357542,357550,357610,357611,357688,357697,357698,357700,357706};
@@ -111,7 +111,7 @@ void plot_Module_RMS_Stability() {
   TH2F *histo_counts[NMOD];
   for (unsigned int i=0;i<NMOD;i++)
     if(MODVETO[MODID[i]]==0){
-      histo_counts[i]=new TH2F(TString("Histo_counts")+i,"", NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.01);
+      histo_counts[i]=new TH2F(TString("Histo_counts")+i,"", NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,MAXMODWEIGHT);
       histo_counts[i]->GetXaxis()->SetTitle("Lumi section");
     }
 
@@ -127,30 +127,30 @@ void plot_Module_RMS_Stability() {
   TH2F *histo_slope[NMOD];
   for (unsigned int i=0;i<NMOD;i++)
     if(MODVETO[MODID[i]]==0)
-      histo_slope[i]=new TH2F(TString("Histo_counts_linearity")+i,"",50,MINTOTPCC,MAXTOTPCC,100,0,0.01);
+      histo_slope[i]=new TH2F(TString("Histo_counts_linearity")+i,"",50,MINTOTPCC,MAXTOTPCC,100,0,MAXMODWEIGHT);
   
 
-  TH2F* histo_L1=new TH2F("Histo_Layer1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_L2=new TH2F("Histo_Layer2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_L3=new TH2F("Histo_Layer3","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_L4=new TH2F("Histo_Layer4","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_D1S1=new TH2F("Histo_Disk1S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_D2S1=new TH2F("Histo_Disk2S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_D3S1=new TH2F("Histo_Disk3S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_D1S2=new TH2F("Histo_Disk1S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_D2S2=new TH2F("Histo_Disk2S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
-  TH2F* histo_D3S2=new TH2F("Histo_Disk3S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,200,0,1.1);
+  TH2F* histo_L1=new TH2F("Histo_Layer1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_L2=new TH2F("Histo_Layer2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_L3=new TH2F("Histo_Layer3","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_L4=new TH2F("Histo_Layer4","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_D1S1=new TH2F("Histo_Disk1S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_D2S1=new TH2F("Histo_Disk2S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_D3S1=new TH2F("Histo_Disk3S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_D1S2=new TH2F("Histo_Disk1S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_D2S2=new TH2F("Histo_Disk2S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_D3S2=new TH2F("Histo_Disk3S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
 
-  TH2F* histoLinearity_L1=new TH2F("HistoLinearity_Layer1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_L2=new TH2F("HistoLinearity_Layer2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_L3=new TH2F("HistoLinearity_Layer3","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_L4=new TH2F("HistoLinearity_Layer4","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_D1S1=new TH2F("HistoLinearity_Disk1S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_D2S1=new TH2F("HistoLinearity_Disk2S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_D3S1=new TH2F("HistoLinearity_Disk3S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_D1S2=new TH2F("HistoLinearity_Disk1S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_D2S2=new TH2F("HistoLinearity_Disk2S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
-  TH2F* histoLinearity_D3S2=new TH2F("HistoLinearity_Disk3S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,200,0,1.1);
+  TH2F* histoLinearity_L1=new TH2F("HistoLinearity_Layer1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_L2=new TH2F("HistoLinearity_Layer2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_L3=new TH2F("HistoLinearity_Layer3","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_L4=new TH2F("HistoLinearity_Layer4","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_D1S1=new TH2F("HistoLinearity_Disk1S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_D2S1=new TH2F("HistoLinearity_Disk2S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_D3S1=new TH2F("HistoLinearity_Disk3S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_D1S2=new TH2F("HistoLinearity_Disk1S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_D2S2=new TH2F("HistoLinearity_Disk2S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_D3S2=new TH2F("HistoLinearity_Disk3S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
   
     
 
@@ -396,7 +396,7 @@ void plot_Module_RMS_Stability() {
   ModWeight->SetMarkerSize(0.5);
   ModWeight->GetXaxis()->SetTitle("Module ID");                                                                                 
   ModWeight->GetYaxis()->SetTitle("Module Weight");
-  ModWeight->GetYaxis()->SetRangeUser(0, 0.008);
+  ModWeight->GetYaxis()->SetRangeUser(0, MAXMODWEIGHT);
   C.Clear();
   ModWeight->Draw("AP"); 
   C.Print(OutPath+"/Module_RMS_Stability_weights.png");
@@ -437,8 +437,9 @@ void plot_Module_RMS_Stability() {
   hStabilityDeviation->GetYaxis()->SetTitle("# of modules");
   C.Clear();
   hStabilityDeviation->Draw("hist");
+  //C.SetLogy(1);
   C.Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
-
+  //C.SetLogy(1);
   
   ////////////////
   ///Linearity fit results
@@ -552,7 +553,7 @@ void plot_Module_RMS_Stability() {
     
     P_L1->SetStats(0);
     //P_L1->GetYaxis()->SetRangeUser(0.05,0.20);
-    P_L1->GetYaxis()->SetRangeUser(0.95,1.05);
+    P_L1->GetYaxis()->SetRangeUser(1-DeviationMax,1+DeviationMax);
     P_L1->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
     P_L1->GetXaxis()->SetTitle("Lumi section");
     C.Clear();
@@ -672,7 +673,7 @@ void plot_Module_RMS_Stability() {
      
      PLinearityL1->SetStats(0);
      //PLinearityL1->GetYaxis()->SetRangeUser(0.05,0.20);
-     PLinearityL1->GetYaxis()->SetRangeUser(0.95,1.05);
+     PLinearityL1->GetYaxis()->SetRangeUser(1-DeviationMax,1+DeviationMax);
      PLinearityL1->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
      PLinearityL1->GetXaxis()->SetTitle("Avg. PCC per module per LS");
      

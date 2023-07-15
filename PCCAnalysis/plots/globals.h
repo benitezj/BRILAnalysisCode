@@ -232,11 +232,15 @@ void readModVeto(TString file){
     std::cout << "Unable to open "<<endl;
     return;
   }
+  int count=0;
   std::string line;
   while (std::getline(myfile,line)){
     int module=atoi(line.c_str());
     MODVETO[module]=1;
+    count++;
   }
+  cout<<"Done reading the module veto: "<<file<<endl;
+  cout<<"Number of bad modules: "<<count<<endl;
 }
 
 
