@@ -1,69 +1,100 @@
 #include"globals.h" 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <dirent.h>
 
+TCanvas C("C");
+
 bool makePerLayerPlots=1;
-float DeviationMax=0.1;
+
+float DeviationMax=0.05;
+float DeviationMaxPerLayer=0.05;
+
+float LinearityMax=0.02;
 
 float RMSThr=100000;
-float StabilityThr=100000;
-float SlopeThr=10000; //3v3 = 0.05, 3v3_4 = 0.03
+float StabilityThr=1000;
+float LinearityThr=1000;
+float SlopeThr=10000;
 
 #define MAXMODWEIGHT 0.01
-#define NTOTALLS 8000
-#define NLSBLOCK 50
-#define MAXTOTPCC 500E6 
+#define NTOTALLS 60000 //D 2500, E 15000, F 60000
+#define NLSBLOCK 500
 #define MINTOTPCC 0
-#define MINTOTPCCAVG 1E3
+#define MAXTOTPCC 500E6 
+#define MINTOTPCCAVG 50E3
 #define MAXTOTPCCAVG 250E3
+#define NBINTOTPCCAVG 50
 
-
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_B3.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_1.txt";
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_Stability5p.txt";
 
 //TString OutPath = "/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/ModuleVeto2022";
 TString OutPath = "./ModuleVeto2022";
 
-TCanvas C("C");
+
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_B3.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_1.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022E_Stability2p1p05p.txt";
 
 
-
-//TF1 Pfit("Pfit","[0]+[1]*x",MINTOTPCC,MAXTOTPCC);
-
-float fitModule(TProfile* P, float weight, int idx=0){
   
-  for(int b=1;b<=P->GetNbinsX();b++)
-    if(!(P->GetBinContent(b)>0. && P->GetBinError(b)/P->GetBinContent(b)<0.02) || P->GetBinContent(b)==0.){
+//TString InputPath = "./Run2022D";   // "/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022D";
+//std::vector<int> run_number = {357538,357539,357540,357542,357550,357610,357611,357688,357697,357698,357700,357706};
+
+//TString InputPath = "./Run2022E"; //"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022E";  
+//std::vector<int> run_number = {359602,359603,359604,359608,359609,359611,359612,359614,359663,359664,359684,359685,359686,359693,359699,359717,359718,359751,359764,359776,359806,359808,359812,359813,359814,359871,359998,360017,360018,360019,360075,360090,360116,360121,360122,360123,360124,360126,360128,360129,360131,360141,360225,360295,360327};
+
+TString InputPath = "./Run2022F"; //"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022F";  
+//std::vector<int> run_number = {360458,360459,360460};
+std::vector<int> run_number = {360390,360391,360392,360393,360400,360413,360428,360430,360432,360433,360435,360437,360438,360439,360440,360441,360442,360458,360459,360460,360486,360490,360491,360737,360761,360794,360795,360796,360797,360820,360821,360825,360826,360856,360874,360875,360876,360887,360888,360889,360890,360892,360893,360894,360895,360919,360920,360921,360927,360941,360942,360945,360946,360948,360950,360951,360991,360992,361020,361044,361045,361050,361052,361053,361054,361059,361083,361091,361105,361106,361107,361108,361110,361188,361193,361195,361197,361198,361223,361239,361240,361272,361280,361283,361284,361297,361303,361318,361319,361320,361333,361361,361362,361363,361364,361365,361366,361400,361417,361443,361468,361475,361512,361569,361573,361579,361580,361881,361882,361883,361884,361885,361886,361887,361889,361890,361893,361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933,361948,361953,361954,361955,361956,361957,361971,361989,361990,361992,361993,361994,362009,362058,362059,362060,362061,362062,362063,362064,362085,362087,362091,362104,362105,362106,362107,362148,362152,362153,362154,362159,362160,362161,362163,362166,362167};
+
+
+
+
+
+
+float fitModule(TH1F* P, float weight, int idx=0){
+  
+  for(int b=1;b<=P->GetNbinsX();b++){
+    //cout<<b<<" "<< P->GetBinError(b)<<" "<<P->GetBinContent(b)<<endl;
+    if(!(P->GetBinContent(b)>0. && P->GetBinError(b)/P->GetBinContent(b)<0.01) || P->GetBinContent(b)==0.){
       P->SetBinContent(b,0);
       P->SetBinError(b,0);
     }
+    
+  }
 
-  TF1 F("FitF","[0]",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
+  TF1 F("FitF","pol0",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
   F.SetLineColor(2);
   
-  F.SetParameter(0,weight);
-  int status=P->Fit(&F,"Q","",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
+  int status=-1;
+  status=P->Fit(&F,"Q","",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
+  if(status!=0)
+    cout<<idx<<" "<<status<<" "<<weight<<" "<<F.GetParameter(0)<<endl;
   
   float diff=0.;
+  int c=0;
   for(int b=1;b<=P->GetNbinsX();b++)
     if(P->GetBinContent(b)>0){
-      diff += ((P->GetBinContent(b)-F.Eval(P->GetBinCenter(b)))/weight) * ((P->GetBinContent(b)-F.Eval(P->GetBinCenter(b)))/weight);
+      if(P->GetBinContent(b)>F.Eval(P->GetBinCenter(b)))
+	 diff += (P->GetBinContent(b)-F.Eval(P->GetBinCenter(b)))/weight;
+      else diff += (F.Eval(P->GetBinCenter(b)) - P->GetBinContent(b))/weight;
+      c++;
     }
-  diff = sqrt(diff);
+  diff = diff/c;
 
 
   if(idx!=0){
-    P->SetTitle(TString("Module ")+MODID[idx]+",    fit status="+status);
+    //P->SetTitle(TString("Module ")+MODID[idx]+",    fit status="+status);
+    P->SetTitle(TString("Module ")+MODID[idx]+",    fit status="+status+",     diff="+int(diff*1000)+" pm");
     P->GetYaxis()->SetTitle("Module Weight");
-    //P->GetXaxis()->SetTitle("Lumi section");
     P->SetStats(0);
-    P->GetYaxis()->SetRangeUser(0.8*weight,1.2*weight);
+    P->GetYaxis()->SetRangeUser(0.9*weight,1.1*weight);
     C.Clear();
     P->Draw();
+    F.Draw("lsame");
     C.Print(OutPath+"/Module_RMS_Stability_module_stabilityfit_"+idx+".png");
   }
   
@@ -72,23 +103,10 @@ float fitModule(TProfile* P, float weight, int idx=0){
       
 
 
-void plot_Module_RMS_Stability() {
 
 
-  
-  //TString Path = "./Run2022D";// "/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022D";
-  //std::vector<int> run_number = {357538,357539,357540,357542,357550,357610,357611,357688,357697,357698,357700,357706};
+void plot_Module_RMS_Stability() {  
 
-  TString Path = "./Run2022E"; //"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022E";  
-  std::vector<int> run_number = {359602,359603,359604,359608,359609,359611,359612,359614,359663,359664,359684,359685,359686,359693,359699,359717,359718,359751,359764,359776,359806,359808,359812,359813,359814,359871,359998,360017,360018,360019,360075,360090,360116,360121,360122,360123,360124,360126,360128,360129,360131,360141,360225,360295,360327};
-
-  //TString Path = "/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022F";  
-  //std::vector<int> run_number = {360458,360459,360460};
-  //std::vector<int> run_number = {360390,360391,360392,360393,360400,360413,360428,360430,360432,360433,360435,360437,360438,360439,360440,360441,360442,360458,360459,360460,360486,360490,360491,360737,360761,360794,360795,360796,360797,360820,360821,360825,360826,360856,360874,360875,360876,360887,360888,360889,360890,360892,360893,360894,360895,360919,360920,360921,360927,360941,360942,360945,360946,360948,360950,360951,360991,360992,361020,361044,361045,361050,361052,361053,361054,361059,361083,361091,361105,361106,361107,361108,361110,361188,361193,361195,361197,361198,361223,361239,361240,361272,361280,361283,361284,361297,361303,361318,361319,361320,361333,361361,361362,361363,361364,361365,361366,361400,361417,361443,361468,361475,361512,361569,361573,361579,361580,361881,361882,361883,361884,361885,361886,361887,361889,361890,361893,361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933,361948,361953,361954,361955,361956,361957,361971,361989,361990,361992,361993,361994,362009,362058,362059,362060,362061,362062,362063,362064,362085,362087,362091,362104,362105,362106,362107,362148,362152,362153,362154,362159,362160,362161,362163,362166,362167};
-
-
-
-  /////////////////////////////////////////
   readModRPhiZCoordinates();
  
   if(ModVeto.CompareTo("")!=0)
@@ -104,58 +122,72 @@ void plot_Module_RMS_Stability() {
   TH2F* TotalPCC=new TH2F("Histo_totpcc","", NTOTALLS/NLSBLOCK,0,NTOTALLS,300,0,MAXTOTPCC);
   TH2F* TotalPCCAvg=new TH2F("Histo_totpccavg","", NTOTALLS/NLSBLOCK,0,NTOTALLS,300,0,300e3);  
   
-  TGraph *ModWeight=new TGraph();
 
+
+  TH1F *histo_counts[NMOD];
+  TGraph *ModWeight=new TGraph();
   TGraph *ModWeightRMS=new TGraph();
   TH1D *hRMS=new TH1D("RMS/Mean", "",100,0,0.2);
-  TH2F *histo_counts[NMOD];
+  
+  TGraph* gStabilityDeviation=new TGraph();
+  TH1D* hStabilityDeviation=new TH1D("StabilityDeviation", "",200,0,DeviationMax); 
+  TH1F *h_weightprofile[NMOD];
+  TH1F *h_weightprofile_count[NMOD];
+
+
+  TGraph* gLinearityDeviation=new TGraph();
+  TH1D* hLinearityDeviation=new TH1D("LinearityDeviation", "",200,0,LinearityMax); 
+  TH1F *h_weightlinearity[NMOD];
+  TH1F *h_weightlinearity_count[NMOD];
+
+  
   for (unsigned int i=0;i<NMOD;i++)
     if(MODVETO[MODID[i]]==0){
-      histo_counts[i]=new TH2F(TString("Histo_counts")+i,"", NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,MAXMODWEIGHT);
-      histo_counts[i]->GetXaxis()->SetTitle("Lumi section");
+      histo_counts[i]=new TH1F(TString("Histo_counts")+i,"",2000,0,MAXMODWEIGHT);
+
+      h_weightprofile[i]=new TH1F(TString("h_weightprofile")+i,"", NTOTALLS/NLSBLOCK,0,NTOTALLS);
+      h_weightprofile[i]->Sumw2();
+      h_weightprofile_count[i]=new TH1F(TString("h_weightprofile_count")+i,"", NTOTALLS/NLSBLOCK,0,NTOTALLS);
+     
+      h_weightlinearity[i]=new TH1F(TString("h_weightlinearity")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
+      h_weightlinearity[i]->Sumw2();
+      h_weightlinearity_count[i]=new TH1F(TString("h_weightlinearity_count")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG); 
     }
 
-  
-  TGraph* gStabilityStatus=new TGraph();
-  TGraph* gStabilityDeviation=new TGraph();
-  TH1D* hStabilityDeviation=new TH1D("StabilityDeviation", "",100,0,DeviationMax); 
+    
+  //TGraph *ModWeightSlope=new TGraph();
+  //TH1D *hSlope=new TH1D("LinearityDeviation", "",100,0,LinearityMax); 
+  //TH1D *hSlopeResidual=new TH1D("LinearityResidual", "",100,-10,10);
+  //TH2F *histo_slope[NMOD];
 
-  
-  TGraph *ModWeightSlope=new TGraph();
-  TH1D *hSlope=new TH1D("LinearityDeviation", "",100,0,DeviationMax); 
-  TH1D *hSlopeResidual=new TH1D("LinearityResidual", "",100,-10,10);
-  TH2F *histo_slope[NMOD];
-  for (unsigned int i=0;i<NMOD;i++)
-    if(MODVETO[MODID[i]]==0)
-      histo_slope[i]=new TH2F(TString("Histo_counts_linearity")+i,"",50,MINTOTPCC,MAXTOTPCC,100,0,MAXMODWEIGHT);
-  
 
-  TH2F* histo_L1=new TH2F("Histo_Layer1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_L2=new TH2F("Histo_Layer2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_L3=new TH2F("Histo_Layer3","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_L4=new TH2F("Histo_Layer4","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_D1S1=new TH2F("Histo_Disk1S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_D2S1=new TH2F("Histo_Disk2S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_D3S1=new TH2F("Histo_Disk3S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_D1S2=new TH2F("Histo_Disk1S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_D2S2=new TH2F("Histo_Disk2S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
-  TH2F* histo_D3S2=new TH2F("Histo_Disk3S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,100,0,0.8);
+  TH2F* histo_L1=new TH2F("Histo_Layer1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_L2=new TH2F("Histo_Layer2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_L3=new TH2F("Histo_Layer3","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_L4=new TH2F("Histo_Layer4","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_D1S1=new TH2F("Histo_Disk1S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_D2S1=new TH2F("Histo_Disk2S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_D3S1=new TH2F("Histo_Disk3S1","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_D1S2=new TH2F("Histo_Disk1S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_D2S2=new TH2F("Histo_Disk2S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
+  TH2F* histo_D3S2=new TH2F("Histo_Disk3S2","",NTOTALLS/NLSBLOCK,0,NTOTALLS,1000,0,0.8);
 
-  TH2F* histoLinearity_L1=new TH2F("HistoLinearity_Layer1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_L2=new TH2F("HistoLinearity_Layer2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_L3=new TH2F("HistoLinearity_Layer3","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_L4=new TH2F("HistoLinearity_Layer4","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_D1S1=new TH2F("HistoLinearity_Disk1S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_D2S1=new TH2F("HistoLinearity_Disk2S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_D3S1=new TH2F("HistoLinearity_Disk3S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_D1S2=new TH2F("HistoLinearity_Disk1S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_D2S2=new TH2F("HistoLinearity_Disk2S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
-  TH2F* histoLinearity_D3S2=new TH2F("HistoLinearity_Disk3S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,100,0,0.8);
+  TH2F* histoLinearity_L1=new TH2F("HistoLinearity_Layer1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_L2=new TH2F("HistoLinearity_Layer2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_L3=new TH2F("HistoLinearity_Layer3","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_L4=new TH2F("HistoLinearity_Layer4","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_D1S1=new TH2F("HistoLinearity_Disk1S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_D2S1=new TH2F("HistoLinearity_Disk2S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_D3S1=new TH2F("HistoLinearity_Disk3S1","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_D1S2=new TH2F("HistoLinearity_Disk1S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_D2S2=new TH2F("HistoLinearity_Disk2S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
+  TH2F* histoLinearity_D3S2=new TH2F("HistoLinearity_Disk3S2","",200,MINTOTPCCAVG,MAXTOTPCCAVG,1000,0,0.8);
   
     
-
+  
+  cout<<"Reading data from: "<<InputPath<<endl;
   for (unsigned int j=0;j<run_number.size();j++){
-    TString infile=Path+"/"+run_number.at(j)+".csv"; 
+    TString infile=InputPath+"/"+run_number.at(j)+".csv"; 
     std::cout<< run_number.at(j)<<std::endl;  
     
     ifstream myfile (infile.Data());    
@@ -247,8 +279,19 @@ void plot_Module_RMS_Stability() {
 	   
 	   for (unsigned int i=0;i<NMOD;i++)
 	     if(MODVETO[MODID[i]]==0){
-	       histo_counts[i]->Fill(ls_idx, m_count[i]/totcount);
-	       histo_slope[i]->Fill(totcount, m_count[i]/totcount);
+	       
+	       //histo_counts[i]->Fill(ls_idx, m_count[i]/totcount);
+	       histo_counts[i]->Fill(m_count[i]/totcount);
+
+	       h_weightprofile[i]->AddBinContent(int(float(ls_idx)/NLSBLOCK), m_count[i]);
+	       h_weightprofile_count[i]->AddBinContent(int(float(ls_idx)/NLSBLOCK), totcount);
+ 
+	       //histo_slope[i]->Fill(totcount, m_count[i]/totcount);
+
+	       h_weightlinearity[i]->AddBinContent(int(NBINTOTPCCAVG*(totcount_avg - MINTOTPCCAVG)/(MAXTOTPCCAVG - MINTOTPCCAVG)), m_count[i]);
+	       h_weightlinearity_count[i]->AddBinContent(int(NBINTOTPCCAVG*(totcount_avg - MINTOTPCCAVG)/(MAXTOTPCCAVG - MINTOTPCCAVG)), totcount);
+ 
+	       
 	     }
 	   
 	   if(makePerLayerPlots){
@@ -291,29 +334,47 @@ void plot_Module_RMS_Stability() {
 
 
   cout<<"bad modules: "<<endl;
-
+  std::ofstream vetostream("veto.tmp",std::ofstream::out);
+  
 
   ///Make a Profile , fit , get chi2
   for (unsigned int i=0;i<NMOD;i++){
-    if(MODVETO[MODID[i]]==0){      
-      float mean=histo_counts[i]->GetMean(2);
-      float rms=histo_counts[i]->GetRMS(2);
+    if(MODVETO[MODID[i]]==0){
+      //if(i!=165) continue;
+    
+   
+      //float mean=histo_counts[i]->GetMean(2);
+      //float rms=histo_counts[i]->GetRMS(2);
+      float mean=histo_counts[i]->GetMean();
+      float rms=histo_counts[i]->GetRMS();
       if(mean>0){
 	ModWeight->SetPoint(ModWeight->GetN(), i, mean);
 	ModWeightRMS->SetPoint(ModWeightRMS->GetN(), i, rms/mean);
 	hRMS->Fill(rms/mean);
       }
-      if(rms/mean>RMSThr) cout<<MODID[i]<<endl;
+      if(rms/mean>RMSThr) vetostream<<MODID[i]<<endl;
 
+      
       ////////////////////////
       ///Stability fit
-      TProfile* P_stability=histo_counts[i]->ProfileX(TString("Histo_Profile_Stability")+i);      
-      float diff_stability=fitModule(P_stability,mean);
+      h_weightprofile[i]->Divide(h_weightprofile_count[i]);
+      float diff_stability=fitModule(h_weightprofile[i],mean);
       gStabilityDeviation->SetPoint(gStabilityDeviation->GetN(),i,diff_stability);
       hStabilityDeviation->Fill(diff_stability);
-      if(diff_stability>StabilityThr) cout<<MODID[i]<<endl;
+      if(diff_stability>StabilityThr) vetostream<<MODID[i]<<endl;
 	
 
+
+      ////////////////////////
+      ///Linearity fit
+      h_weightlinearity[i]->Divide(h_weightlinearity_count[i]);
+      float diff_linearity=fitModule(h_weightlinearity[i],mean);
+      gLinearityDeviation->SetPoint(gLinearityDeviation->GetN(),i,diff_linearity);
+      hLinearityDeviation->Fill(diff_linearity);
+      if(diff_linearity>LinearityThr) vetostream<<MODID[i]<<endl;
+	
+
+      
       ////////////////////////
       /// linearity fit
       
@@ -362,7 +423,7 @@ void plot_Module_RMS_Stability() {
   }
 
 
-
+  vetostream.close();
 
 
   TotalPCC->SetStats(0);
@@ -437,35 +498,51 @@ void plot_Module_RMS_Stability() {
   hStabilityDeviation->GetYaxis()->SetTitle("# of modules");
   C.Clear();
   hStabilityDeviation->Draw("hist");
-  //C.SetLogy(1);
+  C.SetLogy(1);
   C.Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
-  //C.SetLogy(1);
+  C.SetLogy(0);
+
+
   
-  ////////////////
-  ///Linearity fit results
-  ModWeightSlope->SetMarkerStyle(8);
-  ModWeightSlope->SetMarkerSize(0.5);
-  ModWeightSlope->GetYaxis()->SetTitle("Avg. Linearity Deviation");
-  ModWeightSlope->GetXaxis()->SetTitle("Module ID");
-  ModWeightSlope->GetYaxis()->SetRangeUser(0,DeviationMax);    
+  ///////////////
+  ///Linearity Fit results
+  gLinearityDeviation->SetMarkerStyle(8);
+  gLinearityDeviation->SetMarkerSize(0.5);
+  gLinearityDeviation->GetYaxis()->SetTitle("Linearity Deviation");
+  gLinearityDeviation->GetXaxis()->SetTitle("Module ID");
+  gLinearityDeviation->GetYaxis()->SetRangeUser(0,LinearityMax);    
   C.Clear();
-  ModWeightSlope->Draw("AP");
-  C.Print(OutPath+"/Module_RMS_Stability_Slope.png");
+  gLinearityDeviation->Draw("AP");
+  C.Print(OutPath+"/Module_RMS_LinearityDeviation.png");
 
-  hSlope->GetXaxis()->SetTitle("Avg. Linearity Deviation");
-  hSlope->GetYaxis()->SetTitle("# of modules");
+  hLinearityDeviation->GetXaxis()->SetTitle("Linearity Deviation");
+  hLinearityDeviation->GetYaxis()->SetTitle("# of modules");
   C.Clear();
-  hSlope->Draw("hist");
-  C.Print(OutPath+"/Module_RMS_Stability_Slope_hist.png");
+  hLinearityDeviation->Draw("hist");
+  C.SetLogy(1);
+  C.Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");
+  C.SetLogy(0);
 
-  /* hSlopeResidual->GetXaxis()->SetTitle("pull"); */
-  /* hSlopeResidual->GetYaxis()->SetTitle("counts"); */
+
+  
+  /* //////////////// */
+  /* ///Linearity fit results */
+  /* ModWeightSlope->SetMarkerStyle(8); */
+  /* ModWeightSlope->SetMarkerSize(0.5); */
+  /* ModWeightSlope->GetYaxis()->SetTitle("Avg. Linearity Deviation"); */
+  /* ModWeightSlope->GetXaxis()->SetTitle("Module ID"); */
+  /* ModWeightSlope->GetYaxis()->SetRangeUser(0,DeviationMax);     */
   /* C.Clear(); */
-  /* hSlopeResidual->Draw("hist"); */
-  /* C.Print(OutPath+"/Module_RMS_Stability_SlopePull_hist.png"); */
+  /* ModWeightSlope->Draw("AP"); */
+  /* C.Print(OutPath+"/Module_RMS_Stability_Slope.png"); */
 
-  
+  /* hSlope->GetXaxis()->SetTitle("Avg. Linearity Deviation"); */
+  /* hSlope->GetYaxis()->SetTitle("# of modules"); */
+  /* C.Clear(); */
+  /* hSlope->Draw("hist"); */
+  /* C.Print(OutPath+"/Module_RMS_Stability_Slope_hist.png"); */
 
+ 
   if(makePerLayerPlots){
 
     //////////Layer / Disk graphs
@@ -553,7 +630,7 @@ void plot_Module_RMS_Stability() {
     
     P_L1->SetStats(0);
     //P_L1->GetYaxis()->SetRangeUser(0.05,0.20);
-    P_L1->GetYaxis()->SetRangeUser(1-DeviationMax,1+DeviationMax);
+    P_L1->GetYaxis()->SetRangeUser(1-DeviationMaxPerLayer,1+DeviationMaxPerLayer);
     P_L1->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
     P_L1->GetXaxis()->SetTitle("Lumi section");
     C.Clear();
@@ -673,7 +750,7 @@ void plot_Module_RMS_Stability() {
      
      PLinearityL1->SetStats(0);
      //PLinearityL1->GetYaxis()->SetRangeUser(0.05,0.20);
-     PLinearityL1->GetYaxis()->SetRangeUser(1-DeviationMax,1+DeviationMax);
+     PLinearityL1->GetYaxis()->SetRangeUser(1-DeviationMaxPerLayer,1+DeviationMaxPerLayer);
      PLinearityL1->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
      PLinearityL1->GetXaxis()->SetTitle("Avg. PCC per module per LS");
      
