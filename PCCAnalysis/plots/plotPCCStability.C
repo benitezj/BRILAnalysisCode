@@ -4,17 +4,16 @@
 #include "globals.h"
 
 
-float minratio=0.95;
-float maxratio=1.05;
+float minratio=0.97;
+float maxratio=1.03;
 float plotYrangeMin=0.01;
 float plotYrange=0;
 float plotYrangeLog=1e5;
 
 
-void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
+void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TString runselection=""){
 
-  //gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
-  if(REF.CompareTo("")!=0)RefLumi=REF;
+  RefLumi=REF;
 
   ifstream myfile((inpath+"/ls.dat").Data());
   if (!myfile.is_open()){
@@ -36,6 +35,10 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
   int firstrun=1000000000;
   int lastrun=0;
 
+  int counter_ls_run=0;
+  int counter_ls_run_tot=0;
+  int prevrun=0;
+
   std::string line;
   int run=0;
   int ls=0;
@@ -46,7 +49,19 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
     std::stringstream iss(line);
     iss>>run>>ls>>totL>>totLRef;
 
-    counterLumi++;
+    if( !(runselection.Contains(TString("")+run)) ) continue;
+
+    //counterLumi++; //total number of lumi sections
+
+    if(run!=prevrun){
+      counter_ls_run_tot+=counter_ls_run;
+      counter_ls_run=0;
+      prevrun=run;
+    }
+    counter_ls_run++;
+    counterLumi = counter_ls_run_tot + ls;
+
+
     Lumi.SetBinContent(counterLumi,totL);
     if(totL>plotYrange) plotYrange=totL;
 
@@ -105,7 +120,6 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF=""){
   TString rtxt("");
   for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
     li.DrawLine(it->first,plotYrangeMin,it->first,plotYrange);
-    //ltxt.DrawLatex(it->first,plotYrangeMin,rtxt+it->second);
   }
 
 
