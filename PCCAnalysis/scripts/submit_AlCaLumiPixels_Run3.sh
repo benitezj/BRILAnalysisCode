@@ -27,7 +27,7 @@ REFNORM=${normtagdir}/normtag_dt.json
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random_Run2Type2Params/Run2022E/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E
-#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random/Run2022F
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v2/Run2022F
 
 ###########################################################
 ### 

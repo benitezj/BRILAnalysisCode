@@ -6,7 +6,8 @@
 bool perBXRatioPlots=0;
 float ratiomin=0.7;
 float ratiomax=1.3;
-float sigmavis=1.24*4.1533e6/ORBITF;  //set to 0 to retrieve nominal value
+//float sigmavis=1.24*4.1533e6/ORBITF;  //set to 0 to retrieve nominal value
+float sigmavis=0.9807*0.38*4.1533e6/ORBITF;  //set to 0 to retrieve nominal value
 
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
