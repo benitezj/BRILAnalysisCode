@@ -51,7 +51,7 @@ void makeTree(){
 
 //void fitAfterglowTrain(TString inputfile=InputFile, TString lsblockname=LSBlockName, int firstb=FirstBin, int ncolliding=NColliding, int nbins=NBins){
 
-void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding, int nbins){
+void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding, int nbins, TString outpath="."){
 
   if(!H){
     cout<<"Histogram not found"<<endl;
@@ -137,7 +137,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
 
     
   if(makePlots){
-    TCanvas C;
+    TCanvas C("Canvas","",800,600);
 
     /// plot with the input data full orbit
     C.Clear();
@@ -146,7 +146,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     H->GetYaxis()->SetTitle("Raw PCC");
     H->GetXaxis()->SetTitle("bcid");
     H->Draw("hist");
-    C.Print(TString("fitAfterglowTrain_inputdata-")+lsblockname+".png");
+    C.Print(outpath+TString("/fitAfterglowTrain_inputdata-")+lsblockname+".png");
 
 
     /////////////
@@ -172,30 +172,30 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     text.DrawLatexNDC(0.55,0.93,TString("First bcid: ")+firstb);
     text.DrawLatexNDC(0.75,0.93,TString("Ncolliding: ")+ncolliding);  
 
-    ///print formula
-    formula.ReplaceAll("[0]","N_{k}");
-    formula.ReplaceAll("[1]","f");
-    formula.ReplaceAll("[2]","A");
-    formula.ReplaceAll("[3]","B");
-    text.DrawLatexNDC(0.2,0.85,TString("F_{k}(x) = ")+formula);
+    /* ///print formula */
+    /* formula.ReplaceAll("[0]","N_{k}"); */
+    /* formula.ReplaceAll("[1]","f"); */
+    /* formula.ReplaceAll("[2]","A"); */
+    /* formula.ReplaceAll("[3]","B"); */
+    /* text.DrawLatexNDC(0.2,0.85,TString("F_{k}(x) = ")+formula); */
 
     //print param values
     char s[100];
-    snprintf(s,40,"f=%0.5f (Type1)",float(Fit.GetParameter(1)));
-    text.DrawLatexNDC(0.2,0.80,s);
-    snprintf(s,40,"A=%0.7f (Type2)",float(Fit.GetParameter(2)));
-    text.DrawLatexNDC(0.45,0.80,s);
-    snprintf(s,40,"B=%0.5f (Type2)",float(Fit.GetParameter(3)));
-    text.DrawLatexNDC(0.45,0.75,s);
+    snprintf(s,40,"Type 1 f=%0.5f, ",float(Fit.GetParameter(1)));
+    text.DrawLatexNDC(0.2,0.85,s);
+    snprintf(s,40,"Type 2: A=%0.7f,  ",float(Fit.GetParameter(2)));
+    text.DrawLatexNDC(0.45,0.85,s);
+    snprintf(s,40,"B=%0.5f",float(Fit.GetParameter(3)));
+    text.DrawLatexNDC(0.7,0.85,s);
 
     //print fit status
-    snprintf(s,40,"Chi2/NDF=%.1f/%d",Fit.GetChisquare(),Fit.GetNDF());
-    text.DrawLatexNDC(0.7,0.80,s);
-    snprintf(s,40,"CovStatus=%d",r->CovMatrixStatus());
-    text.DrawLatexNDC(0.7,0.75,s);
+    // snprintf(s,40,"Chi2/NDF=%.1f/%d",Fit.GetChisquare(),Fit.GetNDF());
+    //text.DrawLatexNDC(0.7,0.85,s);
+    //snprintf(s,40,"CovStatus=%d",r->CovMatrixStatus());
+    //text.DrawLatexNDC(0.7,0.80,s);
   
 
-    C.Print(TString("fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
+    C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
 
     ////////////
     //plot with the Fit Residuals
@@ -211,25 +211,25 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HFitRes.Draw("histp");
     TLine line;
     line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
-    C.Print(TString("fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+".png");
+    C.Print(outpath+TString("/fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+".png");
 
     ////////////
     //plot with zoom
 
     C.Clear();
     C.SetLogy(0);
-    HSel.GetYaxis()->SetRangeUser(0,40);
+    HSel.GetYaxis()->SetRangeUser(0,100);
     HSel.GetXaxis()->SetRangeUser(ncolliding,nbins);
     HSel.Draw("histp");
     HFit.Draw("histsame");
-    C.Print(TString("fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+"_zoom.png");
+    C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+"_zoom.png");
 
     C.Clear();
     C.SetLogy(0);
     HFitRes.GetXaxis()->SetRangeUser(ncolliding,nbins);
     HFitRes.Draw("histp");
     line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
-    C.Print(TString("fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+"_zoom.png");
+    C.Print(outpath+TString("/fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+"_zoom.png");
  
   }
 
