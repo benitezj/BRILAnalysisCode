@@ -13,9 +13,9 @@ bool makePerLayerPlots=1;
 float RMSThr=100000;
 
 bool makeModuleFitStability=0;
-float StabilityThr=1000;
+float StabilityThr=10000;
 float StabilityMax=0.05;
-float StabilityMaxPerLayer=0.05;
+float StabilityMaxPerLayer=0.03;
 
 bool makeModuleFitLinearity=0;
 float LinearityThr=10000;
@@ -23,7 +23,7 @@ float LinearityMax=0.03;
 float LinearityMaxPerLayer=0.03;
 
 bool makeModuleCountPlots=0;
-float VdMNoiseThr=1000;
+float VdMNoiseThr=10000;
 
 #define MAXMODWEIGHT 0.01
 #define MAXTOTPCC 500E6
@@ -37,12 +37,12 @@ float VdMNoiseThr=1000;
 //#define MINTOTPCCAVG 50E3  //final 2022FCDEG veto
 //#define MAXTOTPCCAVG 155E3
 
-#define MINTOTPCCAVG 0E3  //vdM fill
+#define MINTOTPCCAVG 10E3    //vdM fill
 #define MAXTOTPCCAVG 140E3
 
 #define NBINTOTPCCAVG 100
 
-#define NLSBLOCK 1
+#define NLSBLOCK 2
 
 
 
@@ -71,7 +71,8 @@ TString OutPath = "./ModuleVeto2022";
 
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p.txt";
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p05p.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04p.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt";
 
 
 //#define LS_ID_MAX 35000
@@ -96,13 +97,13 @@ TString InputPath = "./ModuleVeto2022/data/Run2022F";//"/eos/user/b/benitezj/BRI
 
 //std::vector<int> run_number = {360458,360459,360460}; //fill with linearity issue in Antonio's veto
 
-//#define LS_ID_MIN 0
-//#define LS_ID_MAX 2000
-//std::vector<int> run_number = {361906,361909,361910,361912,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
+#define LS_ID_MIN 0
+#define LS_ID_MAX 2900
+std::vector<int> run_number = {361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
 
-#define LS_ID_MIN 140
-#define LS_ID_MAX 180
-std::vector<int> run_number = {361919}; //vdM noise fits
+//#define LS_ID_MIN 140
+//#define LS_ID_MAX 180
+//std::vector<int> run_number = {361919}; //vdM noise fits
 
 
 
@@ -206,21 +207,23 @@ void plot_Module_RMS_Stability() {
   float m_count[NMOD];
 
   TH2F TotalPCC("Histo_totpcc","", (LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,MAXTOTPCC);
-  TH2F TotalPCCAvg("Histo_totpccavg","", (LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,300e3);
+  TH2F TotalPCCAvg("Histo_totpccavg","", (LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,MAXTOTPCCAVG);
   
   TH1F *histo_counts[NMOD];
   TGraph ModWeight;
   TGraph ModWeightRMS;
   TH1D hRMS("RMS/Mean", "",100,0,0.2);
 
-  
-  TH1F *h_modulecount[NMOD];
-  TH1F *h_modulecount_count[NMOD];
-  TGraph gStabilityDeviation;
-  TH1F hStabilityDeviation("StabilityDeviation", "",200,0,StabilityMax); 
+  TH1F h_totcount_vs_LS(TString("h_totcount_vs_LS"),"",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
 
+
+  TH1F hStabilityDeviation("StabilityDeviation", "",200,0,StabilityMax); 
+  TH1F *h_modulecount[NMOD];
+  TGraph gStabilityDeviation;
+
+
+  TH1F h_totcount_vs_totpcc(TString("h_totcount_vs_totpcc"),"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
   TH1F *h_weightlinearity[NMOD];
-  TH1F *h_weightlinearity_count[NMOD];
   TGraph gLinearityDeviation;
   TH1F hLinearityDeviation("LinearityDeviation", "",200,0,LinearityMax); 
 
@@ -228,7 +231,6 @@ void plot_Module_RMS_Stability() {
   
   
   int ngood_mod=0;
-  TH1F h_totcount_vs_LS(TString("h_totcount_vs_LS"),"",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
   for (unsigned int i=0;i<NMOD;i++)
     if(MODVETO[MODID[i]]==0){
       ngood_mod++;
@@ -239,7 +241,6 @@ void plot_Module_RMS_Stability() {
       h_modulecount[i]->Sumw2();
       
       h_weightlinearity[i]=new TH1F(TString("h_weightlinearity")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
-      h_weightlinearity_count[i]=new TH1F(TString("h_weightlinearity_count")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
     }
 
   cout<<"Number of good modules: "<<ngood_mod<<endl;
@@ -356,15 +357,13 @@ void plot_Module_RMS_Stability() {
 	  TotalPCC.Fill(ls_idx, totcount);
 	  TotalPCCAvg.Fill(ls_idx, totcount_avg);
 	  h_totcount_vs_LS.Fill(ls_idx, totcount);
+	  h_totcount_vs_totpcc.Fill(totcount_avg, totcount);
 	  
 	  for (unsigned int i=0;i<NMOD;i++){
 	    if(MODVETO[MODID[i]]==0){
 	      histo_counts[i]->Fill(float(m_count[i])/totcount);
-  
 	      h_modulecount[i]->Fill(ls_idx, m_count[i]);
-  
 	      h_weightlinearity[i]->Fill(totcount_avg, m_count[i]);
-	      h_weightlinearity_count[i]->Fill(totcount_avg, totcount);
 	    }
 	  }
 
@@ -474,9 +473,9 @@ void plot_Module_RMS_Stability() {
 	TH1F hlp(TString(h_weightlinearity[i]->GetName())+"_p","",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
 	hlp.GetXaxis()->SetTitle("Total PCC / # of good modules");
 	for(int b=1;b<=hlp.GetNbinsX();b++){
-	  if(h_weightlinearity_count[i]->GetBinContent(b)>0){
-	    hlp.SetBinContent(b,h_weightlinearity[i]->GetBinContent(b)/h_weightlinearity_count[i]->GetBinContent(b));
-	    hlp.SetBinError(b,sqrt(h_weightlinearity[i]->GetBinContent(b))/h_weightlinearity_count[i]->GetBinContent(b));
+	  if(h_totcount_vs_totpcc.GetBinContent(b)>0){
+	    hlp.SetBinContent(b,h_weightlinearity[i]->GetBinContent(b)/h_totcount_vs_totpcc.GetBinContent(b));
+	    hlp.SetBinError(b,sqrt(h_weightlinearity[i]->GetBinContent(b))/h_totcount_vs_totpcc.GetBinContent(b));
 	  }
 	}
 	float diff_linearity=fitModule(&hlp,mean,i);
@@ -500,8 +499,7 @@ void plot_Module_RMS_Stability() {
       delete histo_counts[i];
       delete h_modulecount[i];
       delete h_weightlinearity[i];
-      delete h_weightlinearity_count[i];
-    }
+     }
   }
   
 
