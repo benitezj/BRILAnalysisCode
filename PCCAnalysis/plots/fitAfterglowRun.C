@@ -16,15 +16,12 @@
 
 ///////////////
 ///    2022 Data
-//600b Nov 2022 (fill 8383)  --> Results from tuple:  <T1f> = 0.03134 , <T2a> = 8.178e-4, <T2b> = 0.01109
-//std::vector<int> RunList={361948}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250;
-
-//1800b Nov 2022 (fill 8385) --> Results from tuple: <T1f> = 0.03284 , <T2a> = 8.207e-4, <T2b> = 0.01107
-std::vector<int> RunList={361957}; std::vector<int> LeadBCIDList={66,2748}; int NCOLLIDINGBCIDS=208; int NTOTALBCIDS=270;
-
+//std::vector<int> RunList={361948}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250; //600b fill 8383 -> few blocks
+std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250; //600b Fill 8307  
+//std::vector<int> RunList={361957}; std::vector<int> LeadBCIDList={66,2748}; int NCOLLIDINGBCIDS=208; int NTOTALBCIDS=270;//1800b fill 8385 -> mu scan fill, fit smooth part
 
 //////////////////////////////////////////////
-void fitAfterglowRun(TString inpath){
+void fitAfterglowRun(TString inpath=""){
 
   if(inpath.CompareTo("")==0) return;
 
@@ -55,6 +52,7 @@ void fitAfterglowRun(TString inpath){
     
       for(int i=0;i<LeadBCIDList.size();i++)
 	fitAfterglowTrain(H,key->GetName(), LeadBCIDList[i], NCOLLIDINGBCIDS, NTOTALBCIDS,inpath);
+
 
     }
 
