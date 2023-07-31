@@ -7,14 +7,16 @@
 TCanvas C("C");
 
 
-bool makePerLayerPlots=1;
+#define MAXMODWEIGHT 0.01
 
+bool makeModuleGraphs=1;
+bool makePerLayerPlots=0;
 
 float RMSThr=100000;
 
 bool makeModuleFitStability=0;
 float StabilityThr=10000;
-float StabilityMax=0.05;
+float StabilityMax=0.99;
 float StabilityMaxPerLayer=0.03;
 
 bool makeModuleFitLinearity=0;
@@ -22,10 +24,10 @@ float LinearityThr=10000;
 float LinearityMax=0.03;
 float LinearityMaxPerLayer=0.03;
 
-bool makeModuleCountPlots=0;
+bool fitModuleNoise=0;
 float VdMNoiseThr=10000;
 
-#define MAXMODWEIGHT 0.01
+
 #define MAXTOTPCC 500E6
 
 //#define MINTOTPCCAVG 70E3 //Old veto
@@ -37,17 +39,16 @@ float VdMNoiseThr=10000;
 //#define MINTOTPCCAVG 50E3  //final 2022FCDEG veto
 //#define MAXTOTPCCAVG 155E3
 
-#define MINTOTPCCAVG 10E3    //vdM fill
+#define MINTOTPCCAVG 0E3    //vdM fill
 #define MAXTOTPCCAVG 140E3
 
 #define NBINTOTPCCAVG 100
 
-#define NLSBLOCK 2
-
+#define NLSBLOCK 1
 
 
 //TString OutPath = "/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/ModuleVeto2022";
-TString OutPath = "./ModuleVeto2022";
+TString OutPath = "./tmp";
 
 
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
@@ -92,18 +93,24 @@ TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin
 
 
 TString InputPath = "./ModuleVeto2022/data/Run2022F";//"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022F";   
+//#define LS_ID_MIN 0
 //#define LS_ID_MAX 60000
 //std::vector<int> run_number = {3360390,360391,360392,360393,360400,360411,360413,360414,360428,360429,360430,360431,360432,360433,360434,360435,360436,360437,360438,360439,360440,360441,360442,360444,360445,360458,360459,360460,360472,360486,360490,360491,360519,360520,360523,360525,360526,360528,360530,360533,360538,360542,360590,360591,360594,360659,360660,360666,360681,360683,360684,360685,360688,360696,360697,360698,360703,360736,360737,360761,360787,360788,360794,360795,360796,360797,360813,360815,360816,360817,360819,360820,360821,360822,360823,360825,360826,360850,360856,360874,360882,360886,360887,360888,360889,360890,360891,360892,360893,360894,360895,360912,360919,360920,360921,360927,360940,360941,360942,360943,360944,360945,360946,360948,360949,360950,360951,360968,360989,360991,360992,361020,361032,361038,361044,361045,361046,361047,361048,361050,361051,361052,361053,361054,361059,361074,361082,361083,361088,361089,361090,361091,361092,361101,361105,361106,361107,361108,361110,361177,361183,361188,361193,361195,361196,361197,361198,361208,361223,361239,361240,361267,361269,361270,361271,361272,361279,361280,361283,361284,361292,361294,361297,361303,361318,361319,361320,361333,361361,361362,361363,361364,361365,361366,361370,361398,361400,361417,361424,361442,361443,361464,361467,361468,361475,361503,361512,361562,361564,361569,361570,361573,361579,361580,361604,361606,361607,361609,361614,361618,361677,361685,361686,361722,361723,361724,361740,361790,361791,361807,361808,361810,361848,361849,361852,361859,361860,361872,361881,361885,361887,361889,361890,361893,361894,361895,361896,361898,361905,361906,361948,361954,361957,361968,361971,361974,361989,361990,361992,361993,361994,362009,362058,362059,362060,362061,362062,362063,362064,362085,362086,362087,362091,362095,362104,362105,362106,362107,362108,362148,362152,362153,362154,362159,362160,362161,362163,362166,362167}; ///collisions2022 from OMS
 
 //std::vector<int> run_number = {360458,360459,360460}; //fill with linearity issue in Antonio's veto
 
-#define LS_ID_MIN 0
-#define LS_ID_MAX 2900
-std::vector<int> run_number = {361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
+//#define LS_ID_MIN 0
+//#define LS_ID_MAX 2900
+//std::vector<int> run_number = {361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
 
 //#define LS_ID_MIN 140
 //#define LS_ID_MAX 180
 //std::vector<int> run_number = {361919}; //vdM noise fits
+
+
+#define LS_ID_MIN 250
+#define LS_ID_MAX 550
+std::vector<int> run_number = {361913}; //vdM noise fits
 
 
 
@@ -177,7 +184,7 @@ float fitModule(TH1F* P, float weight, int idx=0){
     P->SetTitle(TString("Module ")+MODID[idx]+",     diff="+int(diff*1000)+" ppm");
     P->GetYaxis()->SetTitle("Module Weight");
     P->SetStats(0);
-    P->GetYaxis()->SetRangeUser(0.9*weight,1.1*weight);
+    P->GetYaxis()->SetRangeUser((1-StabilityMax)*weight,(1+StabilityMax)*weight);
     C.Clear();
     P->Draw();
     F.Draw("lsame");
@@ -201,48 +208,45 @@ void plot_Module_RMS_Stability() {
 
   int run=0;
   int ls=0;
-  float nls_tot=0.;
-  float nls_tot_run=0.;
-  float ls_idx=0.;
-  float m_count[NMOD];
+  int nls_tot=0.;
+  int nls_tot_run=0.;
+  int ls_idx=0.;
+  int m_count[NMOD];
 
-  TH2F TotalPCC("Histo_totpcc","", (LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,MAXTOTPCC);
-  TH2F TotalPCCAvg("Histo_totpccavg","", (LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,MAXTOTPCCAVG);
+  TH2F TotalPCC("Histo_totpcc","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,5000,0,MAXTOTPCC);
+  TH2F TotalPCCPerMod("Histo_totpccavg","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,MAXTOTPCCAVG);
   
-  TH1F *histo_counts[NMOD];
+  TH1F * h_modcount[NMOD];
   TGraph ModWeight;
   TGraph ModWeightRMS;
   TH1D hRMS("RMS/Mean", "",100,0,0.2);
 
   TH1F h_totcount_vs_LS(TString("h_totcount_vs_LS"),"",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
-
-
+  TH1F *h_modcount_vs_LS[NMOD];
   TH1F hStabilityDeviation("StabilityDeviation", "",200,0,StabilityMax); 
-  TH1F *h_modulecount[NMOD];
   TGraph gStabilityDeviation;
 
-
   TH1F h_totcount_vs_totpcc(TString("h_totcount_vs_totpcc"),"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
-  TH1F *h_weightlinearity[NMOD];
+  TH1F *h_modcount_vs_totpcc[NMOD];
   TGraph gLinearityDeviation;
   TH1F hLinearityDeviation("LinearityDeviation", "",200,0,LinearityMax); 
 
   TH1F ModVdmNoise("ModVdmNoise","Noise / Signal",100,0,0.05);
   
-  
   int ngood_mod=0;
-  for (unsigned int i=0;i<NMOD;i++)
+  for (unsigned int i=0;i<NMOD;i++){
     if(MODVETO[MODID[i]]==0){
       ngood_mod++;
-      histo_counts[i]=new TH1F(TString("Histo_counts")+i,"",3000,0,MAXMODWEIGHT);
+      h_modcount[i]=new TH1F(TString("h_modcount")+i,"",3000,0,MAXMODWEIGHT);
  
+      h_modcount_vs_LS[i]=new TH1F(TString("h_modcount_vs_LS")+i,"",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
+      h_modcount_vs_LS[i]->Sumw2();
       
-      h_modulecount[i]=new TH1F(TString("h_modulecount")+i,"",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
-      h_modulecount[i]->Sumw2();
-      
-      h_weightlinearity[i]=new TH1F(TString("h_weightlinearity")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
+      h_modcount_vs_totpcc[i]=new TH1F(TString("h_modcount_vs_totpcc")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
+      h_modcount_vs_totpcc[i]->Sumw2();
     }
-
+  }
+    
   cout<<"Number of good modules: "<<ngood_mod<<endl;
   
 
@@ -270,36 +274,31 @@ void plot_Module_RMS_Stability() {
   
 
 
-  
-
   cout<<"Reading data from: "<<InputPath<<endl;
   for (unsigned int j=0;j<run_number.size();j++){
-
-    
+     
     TString infile=InputPath+"/"+run_number.at(j)+".csv"; 
     ifstream csvfile (infile.Data());    
     if (!csvfile.is_open()){
       cout << "Unable to open file: "<<infile.Data()<<endl; 
       continue;
     }
-
-    std::cout<< run_number.at(j)<<" : ";  
-
+    cout<<"Opened: "<<infile.Data()<<endl;
+    
     int nls_run=0;    
     std::string line;    
-    std::getline(csvfile, line);
     while (std::getline(csvfile, line)){
-      float totcount=0;      
-      float count_L1=0;
-      float count_L2=0;
-      float count_L3=0;
-      float count_L4=0;
-      float count_D1S1=0;
-      float count_D2S1=0;
-      float count_D3S1=0;
-      float count_D1S2=0;
-      float count_D2S2=0;
-      float count_D3S2=0;      
+      int totcount=0;      
+      int count_L1=0;
+      int count_L2=0;
+      int count_L3=0;
+      int count_L4=0;
+      int count_D1S1=0;
+      int count_D2S1=0;
+      int count_D3S1=0;
+      int count_D1S2=0;
+      int count_D2S2=0;
+      int count_D3S2=0;      
 
 
       std::stringstream iss(line);
@@ -316,14 +315,15 @@ void plot_Module_RMS_Stability() {
       nls_run++;      
       nls_tot++;
       ls_idx = nls_tot_run + ls;
-      //ls_idx = ls;
-    
-     
+
+      for (unsigned int i=0;i<NMOD;i++)
+	m_count[i]=0;
+      
       for (unsigned int i=0;i<NMOD;i++){
 	std::getline(iss,token, ',');
 	std::stringstream countiss(token);
 	countiss>>m_count[i];
-
+	
 	if(MODVETO[MODID[i]]==0){                                                                                       
 	  totcount += m_count[i];
  
@@ -347,49 +347,50 @@ void plot_Module_RMS_Stability() {
  
 	}
       }
-     
+      
  
-      if(LS_ID_MIN< ls_idx && ls_idx < LS_ID_MAX && ngood_mod>0){ //need to cut ls_idx otherwise code crashes if wayt out of bounds
+      if(LS_ID_MIN < ls_idx && ls_idx < LS_ID_MAX && ngood_mod>0){ //need to cut ls_idx otherwise code crashes if wayt out of bounds
 	float totcount_avg=float(totcount)/ngood_mod;
-       
+
+	TotalPCC.Fill(ls_idx,totcount);
+	TotalPCCPerMod.Fill(ls_idx,totcount_avg);
+	
 	if(MINTOTPCCAVG < totcount_avg  && totcount_avg < MAXTOTPCCAVG){
 
-	  TotalPCC.Fill(ls_idx, totcount);
-	  TotalPCCAvg.Fill(ls_idx, totcount_avg);
 	  h_totcount_vs_LS.Fill(ls_idx, totcount);
 	  h_totcount_vs_totpcc.Fill(totcount_avg, totcount);
 	  
 	  for (unsigned int i=0;i<NMOD;i++){
 	    if(MODVETO[MODID[i]]==0){
-	      histo_counts[i]->Fill(float(m_count[i])/totcount);
-	      h_modulecount[i]->Fill(ls_idx, m_count[i]);
-	      h_weightlinearity[i]->Fill(totcount_avg, m_count[i]);
+	      h_modcount[i]->Fill(float(m_count[i])/totcount);
+	      h_modcount_vs_LS[i]->Fill(ls_idx, m_count[i]);
+	      h_modcount_vs_totpcc[i]->Fill(totcount_avg, m_count[i]);
 	    }
 	  }
 
 	     
 	  if(makePerLayerPlots){
-	    histo_L1->Fill(ls_idx, count_L1/totcount);
-	    histo_L2->Fill(ls_idx, count_L2/totcount);
-	    histo_L3->Fill(ls_idx, count_L3/totcount);
-	    histo_L4->Fill(ls_idx, count_L4/totcount);
-	    histo_D1S1->Fill(ls_idx, count_D1S1/totcount);
-	    histo_D2S1->Fill(ls_idx, count_D2S1/totcount);
-	    histo_D3S1->Fill(ls_idx, count_D3S1/totcount);
-	    histo_D1S2->Fill(ls_idx, count_D1S2/totcount);
-	    histo_D2S2->Fill(ls_idx, count_D2S2/totcount);
-	    histo_D3S2->Fill(ls_idx, count_D3S2/totcount);
+	    histo_L1->Fill(ls_idx, float(count_L1)/totcount);
+	    histo_L2->Fill(ls_idx, float(count_L2)/totcount);
+	    histo_L3->Fill(ls_idx, float(count_L3)/totcount);
+	    histo_L4->Fill(ls_idx, float(count_L4)/totcount);
+	    histo_D1S1->Fill(ls_idx, float(count_D1S1)/totcount);
+	    histo_D2S1->Fill(ls_idx, float(count_D2S1)/totcount);
+	    histo_D3S1->Fill(ls_idx, float(count_D3S1)/totcount);
+	    histo_D1S2->Fill(ls_idx, float(count_D1S2)/totcount);
+	    histo_D2S2->Fill(ls_idx, float(count_D2S2)/totcount);
+	    histo_D3S2->Fill(ls_idx, float(count_D3S2)/totcount);
 	     
-	    histoLinearity_L1->Fill(totcount_avg, count_L1/totcount);
-	    histoLinearity_L2->Fill(totcount_avg, count_L2/totcount);
-	    histoLinearity_L3->Fill(totcount_avg, count_L3/totcount);
-	    histoLinearity_L4->Fill(totcount_avg, count_L4/totcount);
-	    histoLinearity_D1S1->Fill(totcount_avg, count_D1S1/totcount);
-	    histoLinearity_D2S1->Fill(totcount_avg, count_D2S1/totcount);
-	    histoLinearity_D3S1->Fill(totcount_avg, count_D3S1/totcount);
-	    histoLinearity_D1S2->Fill(totcount_avg, count_D1S2/totcount);
-	    histoLinearity_D2S2->Fill(totcount_avg, count_D2S2/totcount);
-	    histoLinearity_D3S2->Fill(totcount_avg, count_D3S2/totcount);
+	    histoLinearity_L1->Fill(totcount_avg, float(count_L1)/totcount);
+	    histoLinearity_L2->Fill(totcount_avg, float(count_L2)/totcount);
+	    histoLinearity_L3->Fill(totcount_avg, float(count_L3)/totcount);
+	    histoLinearity_L4->Fill(totcount_avg, float(count_L4)/totcount);
+	    histoLinearity_D1S1->Fill(totcount_avg, float(count_D1S1)/totcount);
+	    histoLinearity_D2S1->Fill(totcount_avg, float(count_D2S1)/totcount);
+	    histoLinearity_D3S1->Fill(totcount_avg, float(count_D3S1)/totcount);
+	    histoLinearity_D1S2->Fill(totcount_avg, float(count_D1S2)/totcount);
+	    histoLinearity_D2S2->Fill(totcount_avg, float(count_D2S2)/totcount);
+	    histoLinearity_D3S2->Fill(totcount_avg, float(count_D3S2)/totcount);
 	  }
   	   
 	}
@@ -417,8 +418,8 @@ void plot_Module_RMS_Stability() {
   for (unsigned int i=0;i<NMOD;i++){
     if(MODVETO[MODID[i]]==0){
     
-      float mean=histo_counts[i]->GetMean();
-      float rms=histo_counts[i]->GetRMS();
+      float mean=h_modcount[i]->GetMean();
+      float rms=h_modcount[i]->GetRMS();
       
       if(mean > max_mod_weight) max_mod_weight = mean;
       
@@ -428,36 +429,34 @@ void plot_Module_RMS_Stability() {
 	hRMS.Fill(rms/mean);
       }      
       if(mean<=0. || rms/mean>RMSThr) vetostream<<MODID[i]<<endl;
-
-
-      ///module count profiles
-      if(makeModuleCountPlots){
-	
-	TF1*F = fitvdM(h_modulecount[i]);
+      
+      
+      ///module count graphs
+      if(makeModuleGraphs){
 	C.Clear();
-	h_modulecount[i]->GetYaxis()->SetRangeUser(0,h_modulecount[i]->GetMaximum()*1.1);
-	h_modulecount[i]->SetTitle(TString("Module ")+MODID[i]);
-	h_modulecount[i]->Draw("histp");
-	if(F){
+	h_modcount_vs_LS[i]->GetYaxis()->SetRangeUser(0,h_modcount_vs_LS[i]->GetMaximum()*1.1);
+	h_modcount_vs_LS[i]->SetTitle(TString("Module ")+MODID[i]);
+	h_modcount_vs_LS[i]->Draw("histp");
+	
+	if(fitModuleNoise){
+	  TF1*F = fitvdM(h_modcount_vs_LS[i]);
 	  F->Draw("lsame");
 	  float vdmnoise = F->GetParameter(0)/F->GetParameter(1);
 	  ModVdmNoise.Fill(vdmnoise);
-	  if(vdmnoise > VdMNoiseThr) vetostream<<MODID[i]<<endl;
+	if(vdmnoise > VdMNoiseThr) vetostream<<MODID[i]<<endl;
 	}
 	C.Print(OutPath+"/Module_RMS_Stability_modulecount_"+i+".png");
-
       }
-
       
       ////////////////////////
       ///Stability fit
       if(makeModuleFitStability){
-	TH1F hwp(TString(h_modulecount[i]->GetName())+"_p","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
+	TH1F hwp(TString(h_modcount_vs_LS[i]->GetName())+"_p","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
 	hwp.GetXaxis()->SetTitle("Lumi section");
 	for(int b=1;b<=hwp.GetNbinsX();b++){
 	  if(h_totcount_vs_LS.GetBinContent(b)>0){
-	    hwp.SetBinContent(b,h_modulecount[i]->GetBinContent(b)/h_totcount_vs_LS.GetBinContent(b));
-	    hwp.SetBinError(b,sqrt(h_modulecount[i]->GetBinContent(b))/h_totcount_vs_LS.GetBinContent(b));
+	    hwp.SetBinContent(b,h_modcount_vs_LS[i]->GetBinContent(b)/h_totcount_vs_LS.GetBinContent(b));
+	    hwp.SetBinError(b,sqrt(h_modcount_vs_LS[i]->GetBinContent(b))/h_totcount_vs_LS.GetBinContent(b));
 	  }
 	}
 	float diff_stability=fitModule(&hwp,mean,i);
@@ -470,12 +469,12 @@ void plot_Module_RMS_Stability() {
       ////////////////////////
       ///Linearity fit
       if(makeModuleFitLinearity){
-	TH1F hlp(TString(h_weightlinearity[i]->GetName())+"_p","",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
+	TH1F hlp(TString(h_modcount_vs_totpcc[i]->GetName())+"_p","",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
 	hlp.GetXaxis()->SetTitle("Total PCC / # of good modules");
 	for(int b=1;b<=hlp.GetNbinsX();b++){
 	  if(h_totcount_vs_totpcc.GetBinContent(b)>0){
-	    hlp.SetBinContent(b,h_weightlinearity[i]->GetBinContent(b)/h_totcount_vs_totpcc.GetBinContent(b));
-	    hlp.SetBinError(b,sqrt(h_weightlinearity[i]->GetBinContent(b))/h_totcount_vs_totpcc.GetBinContent(b));
+	    hlp.SetBinContent(b,h_modcount_vs_totpcc[i]->GetBinContent(b)/h_totcount_vs_totpcc.GetBinContent(b));
+	    hlp.SetBinError(b,sqrt(h_modcount_vs_totpcc[i]->GetBinContent(b))/h_totcount_vs_totpcc.GetBinContent(b));
 	  }
 	}
 	float diff_linearity=fitModule(&hlp,mean,i);
@@ -496,9 +495,9 @@ void plot_Module_RMS_Stability() {
   //Clean up per module plots
   for (unsigned int i=0;i<NMOD;i++){
     if(MODVETO[MODID[i]]==0){
-      delete histo_counts[i];
-      delete h_modulecount[i];
-      delete h_weightlinearity[i];
+      delete h_modcount[i];
+      delete h_modcount_vs_LS[i];
+      delete h_modcount_vs_totpcc[i];
      }
   }
   
@@ -509,18 +508,18 @@ void plot_Module_RMS_Stability() {
  TotalPCC_P->SetStats(0);
  TotalPCC_P->GetYaxis()->SetTitle("Total PCC");
  TotalPCC_P->GetXaxis()->SetTitle("Lumi section");
- TotalPCC_P->GetYaxis()->SetRangeUser(0,TotalPCC_P->GetMaximum()*1.2);                                                                                                                   
+ TotalPCC_P->GetYaxis()->SetRangeUser(0,TotalPCC_P->GetMaximum()*1.2);
  C.Clear();
  TotalPCC_P->Draw("histp");                                                                                                                   
  C.Print(OutPath+"/Module_RMS_Stability_totalcount.png");
 
- TProfile* TotalPCCAvg_P=TotalPCCAvg.ProfileX();
- TotalPCCAvg_P->SetStats(0);
- TotalPCCAvg_P->GetYaxis()->SetTitle("Total PCC / # of good modules");
- TotalPCCAvg_P->GetXaxis()->SetTitle("Lumi section");
- TotalPCCAvg_P->GetYaxis()->SetRangeUser(0,TotalPCCAvg_P->GetMaximum()*1.2);                                                                                                                   
+ TProfile* TotalPCCPerMod_P=TotalPCCPerMod.ProfileX();
+ TotalPCCPerMod_P->SetStats(0);
+ TotalPCCPerMod_P->GetYaxis()->SetTitle("Total PCC / # of good modules");
+ TotalPCCPerMod_P->GetXaxis()->SetTitle("Lumi section");
+ TotalPCCPerMod_P->GetYaxis()->SetRangeUser(0,TotalPCCPerMod_P->GetMaximum()*1.2);
  C.Clear();
- TotalPCCAvg_P->Draw("histp");                                                                                                                   
+ TotalPCCPerMod_P->Draw("histp");                                                                                                                   
  C.Print(OutPath+"/Module_RMS_Stability_totalcountavg.png");
 
  
