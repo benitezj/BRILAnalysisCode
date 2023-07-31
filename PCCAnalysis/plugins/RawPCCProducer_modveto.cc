@@ -48,7 +48,7 @@ private:
   const bool saveCSVFile_;
   const std::string csvOutLabel_;
   mutable std::mutex fileLock_;
-
+  std::vector<int> allmodules;
   const std::vector<int> modlist;
 };
 
@@ -287,6 +287,7 @@ void RawPCCProducer_modveto::produce(edm::StreamID, edm::Event& iEvent, const ed
 void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBlock& lumiSeg,
                                                      const edm::EventSetup& iSetup) const {
 
+
   //////////////////////////////////
   /// read input , clusters per module per bx
   /////////////////////////////////
@@ -299,6 +300,16 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
   //cluster counts per module per bx
   auto clustersPerBXInput = inputPcc.readCounts();
 
+ 
+//  std::cout<< std::to_string(lumiSeg.run()) << ",";
+//  std::cout << std::to_string(lumiSeg.luminosityBlock()) << ",";
+//  std::cout<<modID.size()<<std::endl;
+//  for (unsigned int j=0;j<modID.size();j++)
+//    if (std::count(modlist.begin(), modlist.end(), modID.at(j))==0) 
+//      std::cout << "Module id not found in modlist: "<<modID.at(j)<<std::endl;
+//  for (unsigned int j=0;j<modID.size();j++)
+//    std::cout<<modID.at(j)<<std::endl;
+
 
   ///////////////////////////////////////////////////////
   ///Lumi saved in the LuminosityBlocks
@@ -310,21 +321,22 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
   if (saveCSVFile_) {
 
     std::map<int, int> modmap;
-    for (unsigned int i=0;i<modlist.size();i++)
+    for (unsigned int i=0;i<modlist.size();i++){
       modmap.insert(std::pair<int, int>(modlist.at(i), 0));
-  
+    }
 
     //calculate total of clusters per module
     for (unsigned int i=0;i<modlist.size();i++){
-      int k=0;
+      int k=-1;
       for (unsigned int j=0;j<modID.size();j++)
 	if(modID.at(j)==modlist.at(i))
 	  k=j;
 
       int m_c=0;
-      for (int bx=0;bx<int(LumiConstants::numBX);bx++)
-	m_c+=clustersPerBXInput.at(bx+k*int(LumiConstants::numBX));
- 
+      if(k>=0){
+	for (int bx=0;bx<int(LumiConstants::numBX);bx++)
+	  m_c += clustersPerBXInput.at(bx+k*int(LumiConstants::numBX));
+      }
       modmap.find(modlist.at(i))->second = m_c;
     }
 
@@ -338,6 +350,7 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
       //csfile << itr->first<<",";
       csfile << itr->second<<",";
     }
+    
     csfile<<'\n';
     csfile.close();
   }
