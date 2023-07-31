@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <dirent.h>
+#include "modules_361913.h"
 
 TCanvas C("C");
 
@@ -204,8 +205,25 @@ void plot_Module_RMS_Stability() {
   readModRPhiZCoordinates();
  
   if(!readModVeto(ModVeto)) return;
-  //return;
 
+//  //check the module list from the 2022 vdm run:
+//  cout<<"modules not in run 361913 :"<<endl;
+//  for (unsigned int i=0;i<NMOD;i++){
+//    if (std::count(MODID_vdm.begin(), MODID_vdm.end(), MODID.at(i))==0)
+//      cout<<MODID.at(i)<<endl;
+//  }
+
+
+//  std::vector<int> modlist_missing = {304091152,304099336,304099340,304107552,304123920,304136200,304189444,305147928,305172484,305176592,305283084,305291292,306212876,306245644,306311188,306343948,306360324,352598020,352650244,352674820,352785412,352887812,352961540,353171460,353309700,353313796,353317892,353321988,344200196,344593412};
+//  for (unsigned int i=0;i<modlist_missing.size();i++){
+//    if(MODVETO[modlist_missing.at(i)]==0)
+//      cout<<modlist_missing.at(i)<<endl;
+//  }
+//  cout<<endl;  
+//  return;
+
+
+  
   int run=0;
   int ls=0;
   int nls_tot=0.;
