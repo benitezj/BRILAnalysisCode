@@ -5,16 +5,7 @@
 
 
 TString pcctitle="Scale Factor"; 
-float pccmin=0.9,pccmax=1.02; //SBIL
-int bcid=3041;//selected bcd for iov dependence plot 
-int iov=-1;//selected IOV for bcid dependence plot
-
-//Run 366800: Randoms last train [3040,3075],  ZB ?
-
-float collidingcountMin=1000;
-TString objname="Type1Fraction"; TString objtitle="Type1 fraction"; float resmin=0,resmax=0.05;
-//TString objname="Type1Res"; TString objtitle="Type1: Non-colliding residual / Colliding PCC"; float resmin=-0.0001,resmax=0.0001;
-//TString objname="Type2Res"; TString objtitle="Type2: Non-colliding residual / Colliding PCC"; float resmin=-0.02,resmax=0.02;
+float collidingcountMin=100; //select fills with this number of bunches or larger
 
 
 
@@ -25,7 +16,7 @@ float getPCCAvg(TFile*F=NULL, int Run=-1, int I=-1){
   TIter next(F->GetListOfKeys());
   TObject* key;
   while ((key = next())) {
-    TString kname(key->GetName());
+    TString kname(key->GetName());    //TString("RawLumiAvg_")+r+"_"+l+"_"+ls1+"_"+ls2);
     if(!kname.Contains("RawLumiAvg_")) continue;
     
     TObjArray * a = kname.Tokenize("_");
@@ -36,7 +27,6 @@ float getPCCAvg(TFile*F=NULL, int Run=-1, int I=-1){
   
     if(r!=Run || l!=I) continue;
     
-    //TH1F* Lumi = (TH1F*) Afterglow.Get(TString("RawLumiAvg_")+r+"_"+l+"_"+ls1+"_"+ls2);
     TH1F* Lumi = (TH1F*) F->Get(kname.Data());
     if(!Lumi)      continue;
     
@@ -58,9 +48,14 @@ float getPCCAvg(TFile*F=NULL, int Run=-1, int I=-1){
 }
 
 void plot_afterglow_residual(TString inpath, TString outpath, std::string runlist) {
+  cout<<"input path: "<<inpath<<endl;
 
-  TGraph* gResidVsPCC=new TGraph();
-  TGraph* gResidVsIOV=new TGraph();
+  TGraph* gT1fracVsPCC=new TGraph();
+  TGraph* gT1fracVsIOV=new TGraph();
+  TGraph* gT1ResidVsPCC=new TGraph();
+  TGraph* gT1ResidVsIOV=new TGraph();
+  TGraph* gT2ResidVsPCC=new TGraph();
+  TGraph* gT2ResidVsIOV=new TGraph();
 
   ////////////////////
   std::stringstream ss(runlist.c_str());
@@ -70,15 +65,23 @@ void plot_afterglow_residual(TString inpath, TString outpath, std::string runlis
     TFile InputFile(inpath+"/"+Run+".root");
     if(InputFile.IsZombie()) continue;
 
-    TGraphErrors* gRes = (TGraphErrors*)InputFile.Get(objname.Data());
-    if(!gRes){cout<<objname<<" not found"<<endl; continue;}
+    TGraphErrors* gT1frac = (TGraphErrors*)InputFile.Get("Type1Fraction");
+    TGraphErrors* gT1resid = (TGraphErrors*)InputFile.Get("Type1Res");
+    TGraphErrors* gT2resid = (TGraphErrors*)InputFile.Get("Type2Res");
+    if(!gT1frac || !gT2resid || !gT2resid){cout<<" objects  not found. run="<<Run<<endl; continue;}
 
-    double *Y = gRes->GetY();
-    for (int l = 0; l < gRes->GetN(); l++) {
+    double *YT1frac = gT1frac->GetY();
+    double *YT1resid = gT1resid->GetY();
+    double *YT2resid = gT2resid->GetY();
+    for (int l = 0; l < gT1frac->GetN(); l++) {
       float pccavg= getPCCAvg(&InputFile,Run,l);
       if(pccavg>collidingcountMin){
-	gResidVsPCC->SetPoint(gResidVsPCC->GetN(),pccavg, Y[l]); 
-	gResidVsIOV->SetPoint(gResidVsIOV->GetN(),gResidVsIOV->GetN(), Y[l]); 
+	gT1fracVsPCC->SetPoint(gT1fracVsPCC->GetN(),pccavg, YT1frac[l]); 
+	gT1fracVsIOV->SetPoint(gT1fracVsIOV->GetN(),gT1fracVsIOV->GetN(), YT1frac[l]); 
+	gT1ResidVsPCC->SetPoint(gT1ResidVsPCC->GetN(),pccavg, YT1resid[l]); 
+	gT1ResidVsIOV->SetPoint(gT1ResidVsIOV->GetN(),gT1ResidVsIOV->GetN(), YT1resid[l]); 
+	gT2ResidVsPCC->SetPoint(gT2ResidVsPCC->GetN(),pccavg, YT2resid[l]); 
+	gT2ResidVsIOV->SetPoint(gT2ResidVsIOV->GetN(),gT2ResidVsIOV->GetN(), YT2resid[l]); 
       }
     }
 
@@ -89,63 +92,69 @@ void plot_afterglow_residual(TString inpath, TString outpath, std::string runlis
   ////////////////////
   TCanvas Canvas("Canvas"," ", 0,67,1264,678);
 
+  ///////////////////////////////////
+  ///type 1 fraction
   Canvas.Clear();
-  gResidVsPCC->GetYaxis()->SetTitle(objtitle.Data());
-  gResidVsPCC->GetXaxis()->SetTitle("Avg. PCC");
-  gResidVsPCC->GetYaxis()->SetRangeUser(resmin,resmax);
-  gResidVsPCC->SetMarkerStyle(8);
-  gResidVsPCC->SetMarkerSize(0.6);
-  gResidVsPCC->Draw("ap");
-  Canvas.Print(outpath+"/afterglow_"+objname+"_vsinstlumi.png");
+  gT1fracVsPCC->GetYaxis()->SetTitle("Type 1 fraction");
+  gT1fracVsPCC->GetXaxis()->SetTitle("Avg. PCC");
+  gT1fracVsPCC->GetYaxis()->SetRangeUser(0.,0.04);
+  gT1fracVsPCC->SetMarkerStyle(8);
+  gT1fracVsPCC->SetMarkerSize(0.6);
+  gT1fracVsPCC->Draw("ap");
+  Canvas.Print(outpath+"/afterglow_t1f_vsinstlumi.png");
 
   Canvas.Clear();
-  gResidVsIOV->GetXaxis()->SetTitle("LS block id");
-  gResidVsIOV->GetYaxis()->SetTitle(objtitle.Data());
-  gResidVsIOV->GetYaxis()->SetRangeUser(resmin,resmax);
-  gResidVsIOV->SetMarkerStyle(8);
-  gResidVsIOV->SetMarkerSize(0.6);
-  gResidVsIOV->Draw("ap");
-  Canvas.Print(outpath+"/afterglow_"+objname+"_vsLSBlock.png");
+  gT1fracVsIOV->GetXaxis()->SetTitle("LS block id");
+  gT1fracVsIOV->GetYaxis()->SetTitle("Type 1 fraction");
+  gT1fracVsIOV->GetYaxis()->SetRangeUser(0,0.04);
+  gT1fracVsIOV->SetMarkerStyle(8);
+  gT1fracVsIOV->SetMarkerSize(0.6);
+  gT1fracVsIOV->Draw("ap");
+  Canvas.Print(outpath+"/afterglow_t1f_vsLSBlock.png");
+
+  ///////////////////////////////////////
+  ///Type 1 residual
+  Canvas.Clear();
+  gT1ResidVsPCC->GetYaxis()->SetTitle("Type 1 residual");
+  gT1ResidVsPCC->GetXaxis()->SetTitle("Avg. PCC");
+  gT1ResidVsPCC->GetYaxis()->SetRangeUser(-0.0001,0.0001);
+  gT1ResidVsPCC->SetMarkerStyle(8);
+  gT1ResidVsPCC->SetMarkerSize(0.6);
+  gT1ResidVsPCC->Draw("ap");
+  Canvas.Print(outpath+"/afterglow_t1res_vsinstlumi.png");
+
+  Canvas.Clear();
+  gT1ResidVsIOV->GetXaxis()->SetTitle("LS block id");
+  gT1ResidVsIOV->GetYaxis()->SetTitle("Type 1 residual");
+  gT1ResidVsIOV->GetYaxis()->SetRangeUser(-0.0001,0.0001);
+  gT1ResidVsIOV->SetMarkerStyle(8);
+  gT1ResidVsIOV->SetMarkerSize(0.6);
+  gT1ResidVsIOV->Draw("ap");
+  Canvas.Print(outpath+"/afterglow_t1res_vsLSBlock.png");
+
+
+  ////////////////////////
+  ///Type 2 residual
+  Canvas.Clear();
+  gT2ResidVsPCC->GetYaxis()->SetTitle("Type 2 residual");
+  gT2ResidVsPCC->GetXaxis()->SetTitle("Avg. PCC");
+  gT2ResidVsPCC->GetYaxis()->SetRangeUser(0,0.005);
+  gT2ResidVsPCC->SetMarkerStyle(8);
+  gT2ResidVsPCC->SetMarkerSize(0.6);
+  gT2ResidVsPCC->Draw("ap");
+  Canvas.Print(outpath+"/afterglow_t2res_vsinstlumi.png");
+
+  Canvas.Clear();
+  gT2ResidVsIOV->GetXaxis()->SetTitle("LS block id");
+  gT2ResidVsIOV->GetYaxis()->SetTitle("Type 2 residual");
+  gT2ResidVsIOV->GetYaxis()->SetRangeUser(0,0.005);
+  gT2ResidVsIOV->SetMarkerStyle(8);
+  gT2ResidVsIOV->SetMarkerSize(0.6);
+  gT2ResidVsIOV->Draw("ap");
+  Canvas.Print(outpath+"/afterglow_t2res_vsLSBlock.png");
+
+
 }
 
 
-
-//    //*****************************************
-//    float  bincontent_avg_array[gRes->GetN()];
-//    TIter next(InputFile.GetListOfKeys());
-//    TObject* key;
-//    while ((key = next())) {
-//      TString kname(key->GetName());
-//      if(!kname.Contains("CorrectedLumiAvg")) continue;
-//      TObjArray * a = kname.Tokenize("_");
-//      long r=atoi(((TObjString*)(*a)[1])->GetName());
-//      long l=atoi(((TObjString*)(*a)[2])->GetName());
-//      long ls1=atoi(((TObjString*)(*a)[3])->GetName());
-//      long ls2=atoi(((TObjString*)(*a)[4])->GetName());
-//      if(r!=Run) continue;
-//      if(iov!=-1 && l!=iov) continue;
-//
-//      TH1F* Lumi = (TH1F*) InputFile.Get(TString("RawLumiAvg_")+r+"_"+l+"_"+ls1+"_"+ls2);
-//      if(!Lumi)      continue;
-//      
-//      int bxcounter=0;
-//      float bincontent_total=0;
-//      for(int j = 1; j <= Lumi->GetNbinsX(); j++) {
-//	float bincontent = Lumi->GetBinContent(j);
-//	if (bincontent > collidingcountMin) {   // select only colliding bunches
-//	  bincontent_total+=bincontent;
-//	  bxcounter++;
-//	}
-//      }
-//      float bincontent_avg=0.;
-//      if(bxcounter>0)
-//	bincontent_avg=bincontent_total/bxcounter;      
-//      bincontent_avg_array[l] = bincontent_avg;
-//    }                                      
-//    double *Y = gRes->GetY();
-//    for (int l = 0; l < gRes->GetN(); l++) {
-//      if(bincontent_avg_array[l]>collidingcountMin){
-//	gResidVsPCC->SetPoint(gResidVsPCC->GetN(), bincontent_avg_array[l], Y[l]); 
-//	gResidVsIOV->SetPoint(gResidVsIOV->GetN(),gResidVsIOV->GetN(), Y[l]); 
-//      }
-//    }
+ 

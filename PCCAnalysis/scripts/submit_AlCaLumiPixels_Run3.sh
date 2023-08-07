@@ -9,25 +9,26 @@ cfg=$3  ## only for action=0
 #######
 ## hard coded options
 jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
-condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
+condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
 
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
-REFDET=DT
-REFNORM=${normtagdir}/normtag_dt.json
+REFDET=HFET
+REFNORM=${normtagdir}/normtag_hfet.json
 #REFDET=pcc22v1
 
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
-#DBDIR=""
+DBDIR=""
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random_Run2Type2Params/Run2022E/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v2/Run2022F
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v4/Run2022G
 
 ###########################################################
 ### 
@@ -70,6 +71,9 @@ if [ "$action" == "0" ]; then
     echo "mkdir -p $outputdir"
     mkdir -p $outputdir
     /bin/ls $outputdir
+
+    rm -rf $plotsdir
+    mkdir -p $plotsdir
 fi
 
 ## clean up the runs file
@@ -77,8 +81,6 @@ if [ "$action" == "5" ] ; then
     rm -f $fullsubmitdir/runs.dat
     rm -f $fullsubmitdir/ls.dat
     rm -f $fullsubmitdir/slope.dat
-    rm -rf $plotsdir
-    mkdir -p $plotsdir
 fi
 
 
@@ -275,6 +277,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	check_log $run
 	if [ "$fail" == "1" ]; then
 	    echo $fullsubmitdir/${run}.log
+	    cat $fullsubmitdir/${run}.log | grep sqlite_file
 	    counterbad=`echo $counterbad | awk '{print $1+1}'`
 	fi   
     fi
@@ -303,11 +306,15 @@ echo ${RUNLIST:1}
 
 
 if [ "$action" == "5" ] ; then
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${REFDET}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${REFDET}\"\)
 fi
 
 if [ "$action" == "6" ] ; then
     NLS=`cat ${plotsdir}/ls.dat | wc -l`
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",${NLS},\"${REFDET}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",${NLS},\"${REFDET}\"\)
     #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\"\)
+fi
+
+if [ "$action" == "7" ] ; then
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plot_afterglow_residual.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
 fi

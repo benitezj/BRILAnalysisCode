@@ -6,8 +6,10 @@
 bool perBXRatioPlots=0;
 float ratiomin=0.7;
 float ratiomax=1.3;
-//float sigmavis=1.24*4.1533e6/ORBITF;  //set to 0 to retrieve nominal value
-float sigmavis=0.9807*0.38*4.1533e6/ORBITF;  //set to 0 to retrieve nominal value
+
+//set to 0 to retrieve nominal value
+//float sigmavis=1.24*4.1533e6/ORBITF; 
+float sigmavis=0;//0.9807*0.38*4.1533e6/ORBITF;  
 
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
@@ -47,20 +49,13 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 
   ///create output file for lumisections
   TString lsoutfile=outpath+"/ls.dat";
-  ofstream lsfile(lsoutfile.Data(),std::ofstream::app);
+  ofstream lsfile(lsoutfile.Data());
   if (!lsfile.is_open()){
     cout << "Unable to open output run file"; 
     return;
   }
 
 
-  ////create output file for runs
-  TString runoutfile=outpath+"/runs.dat";
-  ofstream runfile(runoutfile.Data(),std::ofstream::app);
-  if (!runfile.is_open()){
-    cout << "Unable to open output run file"; 
-    return;
-  }
 
 
 
@@ -180,7 +175,8 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       if(ls > maxLS) maxLS=ls;
       if(lsL > maxL) maxL=lsL;
       
-      lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      //lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;
@@ -190,11 +186,6 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     myfile.close();
     
 
-    //write run lumi
-    runfile<<Run<<" "<<runL<<" "<<runLRef<<std::endl;
-    
-  
-  
     /////////////////////////////////////////////////////
     ///   make the plots
     ///////////////////////////////////////////////////
@@ -308,6 +299,5 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
   }
   
   lsfile.close();
-  runfile.close();
   gROOT->ProcessLine(".q");
 }

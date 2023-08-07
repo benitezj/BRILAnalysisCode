@@ -4,8 +4,8 @@
 #include "globals.h"
 
 
-float minratio=0.97;
-float maxratio=1.03;
+float minratio=0.90;
+float maxratio=1.10;
 float plotYrangeMin=0.01;
 float plotYrange=0;
 float plotYrangeLog=1e5;
@@ -44,12 +44,15 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
   int ls=0;
   double totL=0;   //lumi for given LS
   double totLRef=0;//lumi for given LS
+  int ncollb=0;
   while (std::getline(myfile, line)){
     //cout<<line;
     std::stringstream iss(line);
-    iss>>run>>ls>>totL>>totLRef;
+    iss>>run>>ls>>totL>>totLRef>>ncollb;
 
-    if( !(runselection.Contains(TString("")+run)) ) continue;
+    if(totL<100) continue;
+
+    //if( !(runselection.Contains(TString("")+run)) ) continue;
 
     //counterLumi++; //total number of lumi sections
 
@@ -73,8 +76,7 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
     LumiRef.SetBinContent(counterLumi,totLRef);
     HistoLumiRatio.Fill(ratio);
     LumiRatio.SetBinContent(counterLumi,ratio);
-    if(totL>7000)
-      H2LumiRatioVsLumi.Fill(totL,ratio);
+    H2LumiRatioVsLumi.Fill(totL,ratio);
 
     if(run>lastrun){
       runlist[counterLumi]=run;
@@ -118,9 +120,9 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
   ltxt.SetTextAngle(90);
   ltxt.SetTextSize(0.03);
   TString rtxt("");
-  for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-    li.DrawLine(it->first,plotYrangeMin,it->first,plotYrange);
-  }
+  //for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
+  //li.DrawLine(it->first,plotYrangeMin,it->first,plotYrange);
+  //}
 
 
   if(RefLumi.CompareTo("")!=0){

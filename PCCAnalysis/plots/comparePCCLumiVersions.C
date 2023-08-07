@@ -58,7 +58,7 @@ bool fillLastLSmap(TString file){
 
 
 
-void comparePCCLumiVersions(TString refDir, TString newDir){
+void comparePCCLumiVersions(TString refDir, TString newDir, TString refTitle="Ref.", TString newTitle="New"){
 
 
   TGraph LumiRef;
@@ -123,7 +123,7 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
   LumiFrame.SetPoint(0,0,1);
   LumiFrame.SetPoint(1,counter,1);
   LumiFrame.GetXaxis()->SetTitle("lumi section");//TString("run - ")+RUNOFFSET);
-  LumiFrame.GetYaxis()->SetTitle("lumi ratio");
+  LumiFrame.GetYaxis()->SetTitle(newTitle+" / "+refTitle);
   LumiFrame.GetYaxis()->SetRangeUser(1-yrange,1+yrange);
   LumiFrame.Draw("ap");
 
@@ -137,21 +137,21 @@ void comparePCCLumiVersions(TString refDir, TString newDir){
   C.Clear();
   gStyle->SetOptStat(1111111);
   HRatio.GetYaxis()->SetTitle("# of LS");
-  HRatio.GetXaxis()->SetTitle("lumi ratio");
+  HRatio.GetXaxis()->SetTitle(newTitle+" / "+refTitle);
   HRatio.Draw("hist");
   C.Print(newDir+"/comparePCCLumiVersions_histo.png");
 
   C.SetLogy(1);
   C.Clear();
   LumiRef.GetYaxis()->SetRangeUser(1,25000);
-  LumiRef.GetYaxis()->SetTitle("pcc [hz/ub]");
+  LumiRef.GetYaxis()->SetTitle(refTitle+" lumi [hz/ub]");
   LumiRef.GetXaxis()->SetTitle("lumi section");
   LumiRef.Draw("ap");
   C.Print(newDir+"/comparePCCLumiVersions_lumiRef.png");
 
   C.Clear();
   LumiNew.GetYaxis()->SetRangeUser(1,25000);
-  LumiNew.GetYaxis()->SetTitle("pcc [hz/ub]");
+  LumiNew.GetYaxis()->SetTitle(newTitle+" lumi [hz/ub]");
   LumiNew.GetXaxis()->SetTitle("lumi section");
   LumiNew.Draw("ap");
   C.Print(newDir+"/comparePCCLumiVersions_lumiNew.png");
