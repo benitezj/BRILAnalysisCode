@@ -500,7 +500,7 @@ void PCC_stability_2022() {
 
   AddCMSLabel(&C, "CMS Preliminary", "2022", "#sqrt{s} = 13.6 TeV");
 
-  auto legend = new TLegend(0.7,0.15,0.89,0.45);
+  auto legend = new TLegend(0.8,0.3,0.9,0.6);
   legend->AddEntry(P_L2,"Barrel layer 2","l");
   legend->AddEntry(P_L3,"Barrel layer 3","l");
   legend->AddEntry(P_L4,"Barrel layer 4","l");
