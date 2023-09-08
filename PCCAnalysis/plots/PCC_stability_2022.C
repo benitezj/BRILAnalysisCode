@@ -278,7 +278,8 @@ void PCC_stability_2022() {
     {"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022G/",
      {362433,362435,362437,362438,362439,362596,362597,362614,362615,362616,362617,362618,362653,362654,362655,362656,362657,362695,362696,362698,362720,362726,362727,362728,362757,362758,362759,362760}},
   };
-  
+
+  //const char* filepath = "/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
   const char* filepath = "/afs/cern.ch/user/b/benitezj/public/BRIL/PCC/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt";
   
   std::ifstream file(filepath);
