@@ -1,4 +1,4 @@
-#include"/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/BRILAnalysisCode/PCCAnalysis/test/globals.h"
+#include "globals.h"
 #include <iostream>
 #include <vector>
 #include <dirent.h>
