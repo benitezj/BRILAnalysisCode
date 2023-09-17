@@ -4,7 +4,7 @@ BASE_DIR="/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_
 OUTPUT="$BASE_DIR/combined_lumi.csv"
 TEMP_DIR="$BASE_DIR/temp_lumi_dir"
 
-# Ensure the temporary directory exists and is empty                                                                                                                                                            
+                                                                                                                                                            
 mkdir -p $TEMP_DIR
 rm -rf $TEMP_DIR/*
 
@@ -24,7 +24,7 @@ process_runs_chunk() {
     done
 }
 
-CHUNK_SIZE=500  # Adjust based on desired granularity and system capabilities                                                                                                                                   
+CHUNK_SIZE=500                                                                                                                                     
 START=355862
 
 while [ $START -le $LAST_RUN ]; do
@@ -36,7 +36,7 @@ while [ $START -le $LAST_RUN ]; do
     START=$((START + CHUNK_SIZE))
 done
 
-# Concatenate all temporary files into the final output                                                                                                                                                         
+                                                                                                                                                         
 for file in $TEMP_DIR/*.csv; do
     sed -e '/Run    LumiSection    Luminosity/d' \
         -e '/ls    delivered(\/fb)/d' \
@@ -46,7 +46,7 @@ for file in $TEMP_DIR/*.csv; do
         -e '/^#/d' $file >> $OUTPUT
 done
 
-# Cleanup                                                                                                                                                                                                       
+                                                                                                                                                                                                       
 rm -rf $TEMP_DIR
 
 echo "Processed up to the last run number: $LAST_RUN. Exiting..."
