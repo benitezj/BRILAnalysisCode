@@ -1,6 +1,5 @@
 #!/bin/bash                                                                                                                                                                                                                         \
                                                                                                                                                                                                                                      
-
 OUTPUT="combined_lumi.csv"
 TEMP_OUTPUT="temp_lumi.csv"
 
