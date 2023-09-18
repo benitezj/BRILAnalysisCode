@@ -8,7 +8,7 @@
 
 void compare_brilcalc_lumi_2022() {
 
-#Use code BRILAnalysisCode/PCCAnalysis/scripts/brilcalc_pcc_lumi.sh to generate input files combined_lumi_pcc.txt and combined_lumi_hfet.txt, use appropriate names for pcc and hfet normtag that is normtag_pcc.json and normtag_hfet.json
+//Use code BRILAnalysisCode/PCCAnalysis/scripts/brilcalc_pcc_lumi.sh to generate input files combined_lumi_pcc.txt and combined_lumi_hfet.txt, use appropriate names for pcc and hfet normtag that is normtag_pcc.json and normtag_hfet.json
 
   std::ifstream filePCC("combined_lumi_pcc.txt");
   std::ifstream fileHFET("combined_lumi_hfet.txt");
