@@ -19,7 +19,7 @@ process_runs_chunk() {
 
     for RUN in $(seq $START $END); do
         echo "Processing RUN: $RUN"
-        brilcalc lumi -c offline --datatag 23v1 --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_pcc.json -u /fb --byls --output-style csv --type hfet -r $RUN | \
+        brilcalc lumi -c offline --datatag 23v1 --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json -u /fb --byls --output-style csv --type hfet -r $RUN | \
         awk -F, 'NR>1 {split($1,run,":"); split($2,ls,":"); print run[1]"    "ls[1]"    "$6}' >> $TEMP_OUTPUT
     done
 }
