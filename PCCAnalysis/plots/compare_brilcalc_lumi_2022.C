@@ -31,7 +31,7 @@ void compare_brilcalc_lumi_2022() {
 
   int runNumber2, lumiSection2;
   float luminosity2;
-  int matchedEntries = 0;
+  //int matchedEntries = 0;
 
   TH2F *hist2D = new TH2F("hist2D", "Sequential Matched Lumi Section vs Ratio;Sequential Matched Lumi Section;Ratio", 2000, 0, 100000, 2000, 0.96, 1.04);
   TH1F *hist1D = new TH1F("hist1D", "Distribution of Luminosity Ratios;Ratio;Entries", 2000, 0.96, 1.04);
@@ -57,7 +57,7 @@ std::ofstream outputFile("ls.dat");
 	hist2D->Fill(matchedCounter, ratio);
         outputFile << runNumber2 << "   " << lumiSection2 << "   " << pccValue << "   " << luminosity2 << "\n";
 	matchedCounter++;
-	matchedEntries++;
+	//matchedEntries++;
       }
     }
   }
@@ -71,7 +71,7 @@ std::ofstream outputFile("ls.dat");
   canvas1D->SaveAs("/eos/user/a/asehrawa/luminosity_ratio_distribution.png");
 
  
-  std::cout << "Total matched entries: " << matchedEntries << std::endl;
+  std::cout << "Total matched entries: " << matchedCounter << std::endl;
 
   filePCC.close();
   fileHFET.close();
