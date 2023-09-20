@@ -16,9 +16,10 @@ plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
 
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
-REFDET=HFET
-REFNORM=${normtagdir}/normtag_hfet.json
-#REFDET=pcc22v1
+REFDET=hfet
+#REFNORM=${normtagdir}/normtag_hfet.json
+REFNORM=hfet22v10
+DATATAG=23v1
 
 
 
@@ -292,7 +293,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##run plotting scripts
     if [ "$action" == "4" ] ; then
-	command="brilcalc lumi -u hz/ub -r $run --byls --output-style csv --normtag ${REFNORM}"
+	command="brilcalc lumi -u hz/ub --byls --output-style csv -c offline -r ${run} --type ${REFDET} --normtag ${REFNORM} --datatag ${DATATAG}"
         echo $command
         ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
     fi 
