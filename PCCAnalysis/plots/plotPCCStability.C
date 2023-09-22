@@ -3,15 +3,17 @@
 #include <string>
 #include "globals.h"
 
-
+float minL=0;
 float minratio=0.90;
 float maxratio=1.10;
 float plotYrangeMin=0.01;
-float plotYrange=0;
-float plotYrangeLog=1e5;
+float plotYrangeMax;//code will find max lumi below
+float plotYrangeMaxLog=10;//log plot
+float plotYrangeZoomMin=0.0;
+float plotYrangeZoomMax=0.2;//zoomed plot
 
 
-void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TString runselection=""){
+void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100, TString REF="HFET",TString runselection=""){
 
   RefLumi=REF;
 
@@ -25,9 +27,9 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
 
   ///create histogram
   TH1F HistoLumiRatio("HistoLumiRatio","",200,minratio,maxratio);
-  TH1F LumiRatio("HLumiRatio","",plotXrange,0,plotXrange);
-  TH1F Lumi("HLumi","",plotXrange,0,plotXrange);
-  TH1F LumiRef("HLumiRef","",plotXrange,0,plotXrange);
+  TH1F LumiRatio("HLumiRatio","",(plotXrangeMax-plotXrangeMin),plotXrangeMin,plotXrangeMax);
+  TH1F Lumi("HLumi","",plotXrangeMax-plotXrangeMin,plotXrangeMin,plotXrangeMax);
+  TH1F LumiRef("HLumiRef","",plotXrangeMax-plotXrangeMin,plotXrangeMin,plotXrangeMax);
   TH2F H2LumiRatioVsLumi("H2LumiRatioVsLumi","",100,0,22e3,100,minratio,maxratio);
   int counterLumi=0;
   
@@ -44,16 +46,24 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
   int ls=0;
   double totL=0;   //lumi for given LS
   double totLRef=0;//lumi for given LS
-  int ncollb=0;
+  //int ncollb=0;
   while (std::getline(myfile, line)){
     //cout<<line;
-    std::stringstream iss(line);
-    iss>>run>>ls>>totL>>totLRef>>ncollb;
+    std::stringstream iss(line);    
 
-    if(totL<100) continue;
+    iss>>run>>ls>>totL;//space separated
+
+//    std::string token;//comma separated
+//    std::getline(iss,token, ',');run=atoi(token.c_str());
+//    std::getline(iss,token, ',');ls=atoi(token.c_str());
+//    std::getline(iss,token, ',');totL=strtof(token.c_str(),NULL); 
+//    cout<<run<<" "<<ls<<" "<<totL<<endl;
+
+    if(RefLumi.CompareTo("")!=0) iss>>totLRef; //>>ncollb;
+
+    if(totL<minL) continue;
 
     //if( !(runselection.Contains(TString("")+run)) ) continue;
-
     //counterLumi++; //total number of lumi sections
 
     if(run!=prevrun){
@@ -65,17 +75,17 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
     counterLumi = counter_ls_run_tot + ls;
 
 
-    Lumi.SetBinContent(counterLumi,totL);
-    if(totL>plotYrange) plotYrange=totL;
+    Lumi.SetBinContent(counterLumi-plotXrangeMin,totL);
+    if(totL>plotYrangeMax) plotYrangeMax=totL;
 
 
     float ratio=0;
     if(totLRef>0 ){
       ratio=totL/totLRef;
     }
-    LumiRef.SetBinContent(counterLumi,totLRef);
+    LumiRef.SetBinContent(counterLumi-plotXrangeMin,totLRef);
     HistoLumiRatio.Fill(ratio);
-    LumiRatio.SetBinContent(counterLumi,ratio);
+    LumiRatio.SetBinContent(counterLumi-plotXrangeMin,ratio);
     H2LumiRatioVsLumi.Fill(totL,ratio);
 
     if(run>lastrun){
@@ -87,7 +97,7 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
     }
 
   }
-    
+  cout<<"TotalLS: "<<counterLumi<<"  MaxLumi: "<<plotYrangeMax<<" FirstRun:"<<firstrun<<" LastRun:"<<lastrun<<endl;
   myfile.close();
 
 
@@ -109,8 +119,8 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.3);
   Lumi.GetXaxis()->SetTitle("lumi section");
-  Lumi.GetYaxis()->SetTitle(" lumi ");
-  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrange);
+  Lumi.GetYaxis()->SetTitle(" rate ");
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrangeMax);
   Lumi.Draw("histp");
   leg.AddEntry(&Lumi,"pcc","p");
 
@@ -121,7 +131,7 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
   ltxt.SetTextSize(0.03);
   TString rtxt("");
   //for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-  //li.DrawLine(it->first,plotYrangeMin,it->first,plotYrange);
+  //li.DrawLine(it->first,plotYrangeMin,it->first,plotYrangeMax);
   //}
 
 
@@ -139,10 +149,19 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
   C.Print(inpath+"/ls_lumi.png");
 
   C.SetLogy(1);
-  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,plotYrangeLog);
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,plotYrangeMaxLog*plotYrangeMax);
   C.Update();
   C.Print(inpath+"/ls_lumi_log.png");
   C.SetLogy(0);
+
+
+  TF1 fitF("bkg","[0]",plotXrangeMin,plotXrangeMax);
+  fitF.SetLineColor(2);
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeZoomMin,plotYrangeZoomMax);
+  Lumi.Fit(&fitF,"","",plotXrangeMin,plotXrangeMax);
+  fitF.Draw("lsame");
+  C.Update();
+  C.Print(inpath+"/ls_lumi_zoom.png");
 
 
 
@@ -156,24 +175,22 @@ void plotPCCStability(TString inpath, int plotXrange=100, TString REF="HFET",TSt
     LumiRatio.SetMarkerStyle(8);
     LumiRatio.SetMarkerSize(0.4);
     LumiRatio.GetXaxis()->SetTitle("lumi section");
-    //LumiRatio.GetYaxis()->SetTitle(TString("ratio"));
     LumiRatio.GetYaxis()->SetTitle(TString("pcc / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");
     li.SetLineWidth(2);
     li.SetLineColor(1);
     li.SetLineStyle(1);
-    li.DrawLine(0,1,plotXrange,1);//y=1 line
+    li.DrawLine(plotXrangeMin,1,plotXrangeMax,1);//y=1 line
     li.SetLineColor(4);
     li.SetLineStyle(2);
     li.SetLineWidth(3);
-    //li.DrawLine(0,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
+
     TLatex Meantxt;
     Meantxt.SetTextSize(0.03);
     Meantxt.SetTextColor(4);
     char meantxt[100];
     sprintf(meantxt,"r=%.3f",HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
-    //Meantxt.DrawLatex(plotXrange,HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()),meantxt);
     C.Print(inpath+"/ls_ratio.png");
 
     C.Clear();
