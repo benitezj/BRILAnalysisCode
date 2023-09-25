@@ -72,12 +72,12 @@ void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing
     totalPCC += pcc * timePerLumiSection;
     totalHFOC += hfoc * timePerLumiSection;
 
-    //if (excludedRuns.find(run) != excludedRuns.end()) {
-    // continue; 
-    //}
-    //if (pcc < 10) {
-      //continue;
-    //}
+    if (excludedRuns.find(run) != excludedRuns.end()) {
+     continue; 
+    }
+    if (pcc < 10) {
+      continue;
+    }
 
     totalPCCFiltered += pcc * timePerLumiSection;
     totalHFOCFiltered += hfoc * timePerLumiSection;
