@@ -9,7 +9,7 @@
 #include <TGraph.h>
 #include <TH1F.h>
 #include <TStyle.h>
-
+#include <set>
 
 std::map<int, int> lastLSmap;
 
@@ -36,7 +36,14 @@ bool fillLastLSmap(TString file) {
 
 void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/PCC_newafterglowparameters_27May2023/Run2018_27May2023/ls.dat" ) {
 
-  //void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/ls_JB.dat" ) {
+//void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing_PCC_ZB_data_27May2023/CMSSW_10_6_30/src/ls_JB.dat" ) {
+
+
+  std::set<int> excludedRuns = { 359280,359281,359283,359284,359285,359286,359287,359288,359291,359293,359294,359297,
+                                 361881,361882,361883,361884,361885,361886,361887,361889,361890,361893,
+                                 361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,
+                                 361925,361926,361927,361929,361932,361933 };
+
 
   TString path = "/eos/user/a/asehrawa/";
 
@@ -51,6 +58,7 @@ void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing
   }
 
   float totalPCC = 0., totalHFOC = 0.;
+  float totalPCCFiltered = 0., totalHFOCFiltered = 0.;
   const float timePerLumiSection = 23.36;
 
   std::string line;
@@ -63,6 +71,16 @@ void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing
 
     totalPCC += pcc * timePerLumiSection;
     totalHFOC += hfoc * timePerLumiSection;
+
+    //if (excludedRuns.find(run) != excludedRuns.end()) {
+    // continue; 
+    //}
+    //if (pcc < 10) {
+      //continue;
+    //}
+
+    totalPCCFiltered += pcc * timePerLumiSection;
+    totalHFOCFiltered += hfoc * timePerLumiSection;
 
     if (run != lastRun) {
       lastRun = run;
@@ -80,12 +98,21 @@ void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing
 
   std::cout << "Integrated PCC Lumi [Hz/ub]: " << totalPCC << std::endl;
   std::cout << "Integrated HFOC Lumi [Hz/ub] " << totalHFOC << std::endl;
-                                                                                                                           
+                     
+  std::cout << "Filtered Integrated PCC Lumi [Hz/ub]: " << totalPCCFiltered << std::endl;
+  std::cout << "Filtered Integrated HFOC Lumi [Hz/ub]: " << totalHFOCFiltered << std::endl;
+                                                                                                      
   float totalPCC_fb = totalPCC * 1e-9;
   float totalHFOC_fb = totalHFOC * 1e-9;
 
+  float totalPCCFiltered_fb = totalPCCFiltered * 1e-9;
+  float totalHFOCFiltered_fb = totalHFOCFiltered * 1e-9;
+
   std::cout << "Integrated PCC Lumi: " << totalPCC_fb << " fb^-1" << std::endl;
   std::cout << "Integrated HFOC Lumi: " << totalHFOC_fb << " fb^-1" << std::endl;
+
+  std::cout << "Filtered Integrated PCC Lumi: " << totalPCCFiltered_fb << " fb^-1" << std::endl;
+  std::cout << "Filtered Integrated HFOC Lumi: " << totalHFOCFiltered_fb << " fb^-1" << std::endl;
 
   TCanvas C;
 
@@ -93,7 +120,7 @@ void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing
   C.SetLogy(1);
   PCCGraph.GetYaxis()->SetTitle("PCC Lumi [Hz/ub]");
   PCCGraph.GetXaxis()->SetTitle("Lumi Section");
-  PCCGraph.GetYaxis()->SetRangeUser(0.00001, 100000);
+  PCCGraph.GetYaxis()->SetRangeUser(0.1, 100000);
   PCCGraph.Draw("AP");
   C.Print(path + "PCC_vs_LumiSection_2022.png");
 
@@ -101,7 +128,7 @@ void instlumivsls(TString inputFile = "/afs/cern.ch/user/a/asehrawa/reprocessing
   C.SetLogy(1);
   HFOCGraph.GetYaxis()->SetTitle("HFOC Lumi [Hz/ub]");
   HFOCGraph.GetXaxis()->SetTitle("Lumi Section");
-  HFOCGraph.GetYaxis()->SetRangeUser(0.00001, 100000);
+  HFOCGraph.GetYaxis()->SetRangeUser(0.1, 100000);
   HFOCGraph.Draw("AP");
   C.Print(path + "HFOC_vs_LumiSection_2022.png");
 
