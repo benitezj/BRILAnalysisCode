@@ -25,14 +25,20 @@ TH1F *h_modcount_vs_LS[NMOD];
 
 
 TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt";
-TString InputPath = "."; //"./ModuleVeto2022/data/Run2022F";  //"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022F";
-TString OutPath = "./tmp"; 
-std::vector<int> run_number = {361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
+TString OutPath = "./fitPCCvdM_vdMData";
 
+//TString InputPath = "./ModuleVeto2022/data/Run2022F";  //ALCARECO data per module  per run
+std::vector<int> run_number = {361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8381
+
+TString InputPath = "./LS_rates_avg.csv";        //vdM Tuple data
 
 
 TF1* fitvdM(TH1F* P,ofstream*o){
+
+  ///single Guass
   //TF1 *F = new TF1(TString("FitVDM")+P->GetName(),"[3]+[4]*x+[0]*exp(-(x-[1])*(x-[1])/(0.5*[2]*[2]))",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
+
+  //Double Guass with same mean
   TF1 *F = new TF1(TString("FitVDM")+P->GetName(),"[3]+[4]*x+[0]*((1./[2])*exp(-(x-[1])*(x-[1])/(0.5*[2]*[2]))+([5]/[6])*exp(-(x-[1])*(x-[1])/(0.5*[6]*[6])))",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
 
 
@@ -130,7 +136,7 @@ void readDataHd5(int LS_ID_MIN, int LS_ID_MAX){
   int nls_tot_run=0;
   int nls_run=0;
   int prevrun=0;
-  TString infile=InputPath+"/LS_rates_avg.csv";
+  TString infile=InputPath;
   ifstream csvfile (infile.Data());    
   if (!csvfile.is_open()){
     cout << "Unable to open file: "<<infile.Data()<<endl; 
@@ -290,7 +296,7 @@ void readTimeLSMap(){
 
 void fillPCCvdM(int LS_ID_MIN, int LS_ID_MAX, TGraph *G){
   
-  ifstream infile(TString("./tmp/bkg_")+LS_ID_MIN+"_"+LS_ID_MAX+".dat");    
+  ifstream infile(OutPath+"/bkg_"+LS_ID_MIN+"_"+LS_ID_MAX+".dat");    
   if (!infile.is_open()){
     cout << "Unable to open file: "<<LS_ID_MIN<<","<<LS_ID_MAX<<endl; 
     return;
@@ -321,25 +327,27 @@ void fillPCCvdM(int LS_ID_MIN, int LS_ID_MAX, TGraph *G){
 }
 
 
-void fitPCCvdM_PerModule(){
+void fitPCCNoise_vdMFill(){
 
   std::vector<std::pair<int,int>> list;
   
-///// scan ranges based on the ZB Physics datasets
-// SS1:574,584 ;  SS2:2343,2357
-// vdM1X:600,642 ; vdM1Y:659,700 ; vdM2Y:1720,1760; diagX:1793,1832 ; diagY:1850,1890 ; vdM3X:1908,1948 ; vdM3Y:1966,2008 ; vdM4X:2192,2232 ; vdM4Y:2258,2300 ;
-     list.push_back(std::pair<int,int>(575,584));//SS1  //for SS noise need to fix peak param to 0
-     list.push_back(std::pair<int,int>(2343,2357));//SS2
-     
-     list.push_back(std::pair<int,int>(600,642));
-     list.push_back(std::pair<int,int>(659,700));
-     list.push_back(std::pair<int,int>(1720,1760)); //vdM2Y,   vdM2X not available
-     list.push_back(std::pair<int,int>(1793,1832));
-     list.push_back(std::pair<int,int>(1850,1890));
-     list.push_back(std::pair<int,int>(1908,1948));
-     list.push_back(std::pair<int,int>(1966,2008));
-     list.push_back(std::pair<int,int>(2192,2232));
-     list.push_back(std::pair<int,int>(2258,2300));
+  ///// scan ranges based on the ZB Physics datasets
+  list.push_back(std::pair<int,int>(575,584));//SS1  //for SS noise need to fix peak param to 0
+  list.push_back(std::pair<int,int>(2343,2357));//SS2
+  
+  list.push_back(std::pair<int,int>(600,642));//vdM1X
+  list.push_back(std::pair<int,int>(659,700));//vdM1Y
+
+  list.push_back(std::pair<int,int>(1720,1760)); //vdM2 ?
+
+  list.push_back(std::pair<int,int>(1793,1832)); //vdM3Y
+  list.push_back(std::pair<int,int>(1850,1890));//vdM3X
+
+  list.push_back(std::pair<int,int>(1908,1948));//offset X
+  list.push_back(std::pair<int,int>(1966,2008));//offset Y
+
+  list.push_back(std::pair<int,int>(2192,2232));//vdM4X
+  list.push_back(std::pair<int,int>(2259,2299));//vdM4Y
    
 
 //  list.push_back(std::pair<int,int>(500,2500));
@@ -348,7 +356,7 @@ void fitPCCvdM_PerModule(){
   ///run scan fits and save the noise values 
   //for(int i=0;i<list.size();i++)
   //  fitPCCvdM(list[i].first,list[i].second);
-  // return;
+  //return;
 
 
   ///////////////////////////////////////
@@ -360,7 +368,7 @@ void fitPCCvdM_PerModule(){
   
   C.Clear();
   G[NMOD].GetYaxis()->SetTitle("Avg. PCC Background");
-  G[NMOD].GetYaxis()->SetRangeUser(0,0.1);//50000);
+  G[NMOD].GetYaxis()->SetRangeUser(0,0.1);
   G[NMOD].GetXaxis()->SetTitle(TString("time [hr]"));
   G[NMOD].SetMarkerStyle(8);
   G[NMOD].SetMarkerSize(0.5);
