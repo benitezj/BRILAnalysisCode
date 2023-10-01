@@ -6,6 +6,8 @@
 #include <TCanvas.h>
 #include <TGraph.h>
 
+//source BRILAnalysisCode/PCCAnalysis/scripts/brilcalc_pcc_lumi.sh to get brilcalc data for PCC or HFET using proper normtag and luminometer name
+
 void compare_brilcalc_lumi_2022() {
 
   std::ifstream filePCC("combined_lumi_pcc.txt");
