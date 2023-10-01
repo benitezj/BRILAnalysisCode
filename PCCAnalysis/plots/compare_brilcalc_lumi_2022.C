@@ -6,7 +6,7 @@
 #include <TCanvas.h>
 #include <TGraph.h>
 
-//source BRILAnalysisCode/PCCAnalysis/scripts/brilcalc_pcc_lumi.sh to get brilcalc data (input files for this code) for PCC or HFET using proper normtag and luminometer name 
+//source BRILAnalysisCode/PCCAnalysis/scripts/brilcalc_pcc_lumi.sh to get brilcalc data (input files combined_lumi_pcc.txt or combined_lumi_hfet.txt for this code) for PCC or HFET using proper normtag and luminometer name 
 
 void compare_brilcalc_lumi_2022() {
 
