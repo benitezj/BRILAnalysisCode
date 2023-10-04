@@ -202,7 +202,8 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     leg.Draw();
     
     drawCMSPrelim();
-    drawFillYear(8307,2022);
+    //drawFillYear(8307,2022);
+    drawFillYear(7036,2018);
     drawPCCLuminometer();
     C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
 
