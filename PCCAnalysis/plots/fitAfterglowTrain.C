@@ -1,10 +1,10 @@
 //*//
 // This code fits one bunch train and the tail
 //*//
-
+#include "globals.h"
 
 bool makePlots=1;
-
+float yRangeMin=10;
 
 TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
 float fit_chi2;
@@ -143,7 +143,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     C.Clear();
     C.SetLogy(1);
     H->SetStats(0);
-    H->GetYaxis()->SetTitle("Raw PCC");
+    H->GetYaxis()->SetTitle("Total PCC");
     H->GetXaxis()->SetTitle("bcid");
     H->Draw("hist");
     C.Print(outpath+TString("/fitAfterglowTrain_inputdata-")+lsblockname+".png");
@@ -156,9 +156,9 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HSel.SetStats(0);
     HSel.SetMarkerStyle(8);
     HSel.SetMarkerSize(0.5);
-    HSel.GetYaxis()->SetRangeUser(1,9*AvgN);
-    HSel.GetYaxis()->SetTitle("Raw PCC");
-    HSel.GetXaxis()->SetTitle("bcid");
+    HSel.GetYaxis()->SetRangeUser(yRangeMin,10*AvgN);
+    HSel.GetYaxis()->SetTitle("Total PCC");
+    HSel.GetXaxis()->SetTitle("BCID");
     HSel.Draw("histp");
     HFit.SetLineStyle(1);
     HFit.SetLineColor(2);
@@ -168,9 +168,9 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     text.SetTextColor(2);
     text.SetTextSize(0.035);
 
-    text.DrawLatexNDC(0.1,0.93,TString("Data: ")+ lsblockname);
-    text.DrawLatexNDC(0.55,0.93,TString("First bcid: ")+firstb);
-    text.DrawLatexNDC(0.75,0.93,TString("Ncolliding: ")+ncolliding);  
+//   text.DrawLatexNDC(0.1,0.93,TString("Data: ")+ lsblockname);
+//   text.DrawLatexNDC(0.55,0.93,TString("First bcid: ")+firstb);
+//   text.DrawLatexNDC(0.75,0.93,TString("Ncolliding: ")+ncolliding);  
 
     /* ///print formula */
     /* formula.ReplaceAll("[0]","N_{k}"); */
@@ -179,22 +179,31 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     /* formula.ReplaceAll("[3]","B"); */
     /* text.DrawLatexNDC(0.2,0.85,TString("F_{k}(x) = ")+formula); */
 
-    //print param values
-    char s[100];
-    snprintf(s,40,"Type 1 f=%0.5f, ",float(Fit.GetParameter(1)));
-    text.DrawLatexNDC(0.2,0.85,s);
-    snprintf(s,40,"Type 2: A=%0.7f,  ",float(Fit.GetParameter(2)));
-    text.DrawLatexNDC(0.45,0.85,s);
-    snprintf(s,40,"B=%0.5f",float(Fit.GetParameter(3)));
-    text.DrawLatexNDC(0.7,0.85,s);
-
+//    //print param values
+//    char s[100];
+//    snprintf(s,40,"Type 1 f=%0.5f, ",float(Fit.GetParameter(1)));
+//    text.DrawLatexNDC(0.2,0.85,s);
+//    snprintf(s,40,"Type 2: A=%0.7f,  ",float(Fit.GetParameter(2)));
+//    text.DrawLatexNDC(0.45,0.85,s);
+//    snprintf(s,40,"B=%0.5f",float(Fit.GetParameter(3)));
+//    text.DrawLatexNDC(0.7,0.85,s);
+//
     //print fit status
     // snprintf(s,40,"Chi2/NDF=%.1f/%d",Fit.GetChisquare(),Fit.GetNDF());
     //text.DrawLatexNDC(0.7,0.85,s);
     //snprintf(s,40,"CovStatus=%d",r->CovMatrixStatus());
     //text.DrawLatexNDC(0.7,0.80,s);
-  
 
+    TLegend leg(0.75,0.75,0.88,0.88);
+    leg.SetLineStyle(0);
+    leg.SetLineColor(0);
+    leg.AddEntry(&HSel,"Data","p");
+    leg.AddEntry(&HFit,"Fit","l");
+    leg.Draw();
+    
+    drawCMSPrelim();
+    drawFillYear(8307,2022);
+    drawPCCLuminometer();
     C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
 
     ////////////
@@ -207,7 +216,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HFitRes.GetXaxis()->SetTitle("bcid");
     HFitRes.GetYaxis()->SetTitle("100 * (Data - Fit) / <N>   [%]");
     HFitRes.GetYaxis()->SetTitleOffset(1.2);
-    HFitRes.GetYaxis()->SetRangeUser(-1,1);
+    HFitRes.GetYaxis()->SetRangeUser(-3,3);
     HFitRes.Draw("histp");
     TLine line;
     line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
@@ -222,14 +231,14 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HSel.GetXaxis()->SetRangeUser(ncolliding,nbins);
     HSel.Draw("histp");
     HFit.Draw("histsame");
-    C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+"_zoom.png");
+    //    C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+"_zoom.png");
 
     C.Clear();
     C.SetLogy(0);
     HFitRes.GetXaxis()->SetRangeUser(ncolliding,nbins);
     HFitRes.Draw("histp");
     line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
-    C.Print(outpath+TString("/fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+"_zoom.png");
+    //    C.Print(outpath+TString("/fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+"_zoom.png");
  
   }
 

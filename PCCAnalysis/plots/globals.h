@@ -23,17 +23,29 @@ long RUNOFFSET=315000;
 ///plot labels
 TString RefLumi="HFOC";
 TString InstLumiAxisTitle("HFOC Inst. Luminosity [ E34#scale[1.0]{cm}^{-2} s^{-1} ]");
-void drawLumiTitle(long FILL){
-  TLatex text;
-  text.SetTextColor(4);
-  text.SetTextSize(0.040);
-  text.DrawLatexNDC(0.25,0.94,TString("CMS Offline Luminosity, LHC Fill ")+(long)FILL+", #sqrt{s} = 13 TeV");
-}
-void drawCMSPrelim(long year,float xpos=0.2){
+void drawLumiTitle(long FILL,long year=2022){
   TLatex text;
   text.SetTextColor(1);
-  text.SetTextSize(0.050);
-  text.DrawLatexNDC(xpos,0.85,TString("#font[62]{CMS} #font[52]{Preliminary ")+year+"}");
+  text.SetTextSize(0.040);
+  text.DrawLatexNDC(0.25,0.94,TString("CMS Offline Luminosity, LHC Fill ")+(long)FILL+",  "+year+",  (#sqrt{s} = 13 TeV)");
+}
+void drawFillYear(long FILL,long year){
+  TLatex text;
+  text.SetTextColor(1);
+  text.SetTextSize(0.03);
+  text.DrawLatexNDC(0.6,0.94,TString("Fill ")+(long)FILL+",  "+year+",  (#sqrt{s} = 13 TeV)");
+}
+void drawCMSPrelim(float xpos=0.19,float ypos=0.85){
+  TLatex text;
+  text.SetTextColor(1);
+  text.SetTextSize(0.040);
+  text.DrawLatexNDC(xpos,ypos,TString("#font[62]{CMS} #font[52]{Preliminary}"));
+}
+void drawPCCLuminometer(float xpos=0.19,float ypos=0.80){
+  TLatex text;
+  text.SetTextColor(1);
+  text.SetTextSize(0.035);
+  text.DrawLatexNDC(xpos,ypos,TString("#font[52]{PCC Luminometer} "));
 }
 
 
