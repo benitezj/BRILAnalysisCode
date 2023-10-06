@@ -49,6 +49,7 @@ float getPCCAvg(TFile*F=NULL, int Run=-1, int I=-1){
 
 void plot_afterglow_residual(TString inpath, TString outpath, std::string runlist) {
   cout<<"input path: "<<inpath<<endl;
+  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
   TGraph* gT1fracVsPCC=new TGraph();
   TGraph* gT1fracVsIOV=new TGraph();
@@ -90,67 +91,85 @@ void plot_afterglow_residual(TString inpath, TString outpath, std::string runlis
 
 
   ////////////////////
-  TCanvas Canvas("Canvas"," ", 0,67,1264,678);
+  TCanvas Canvas;//("Canvas"," ", 0,67,1264,678);
 
   ///////////////////////////////////
   ///type 1 fraction
   Canvas.Clear();
-  gT1fracVsPCC->GetYaxis()->SetTitle("Type 1 fraction");
-  gT1fracVsPCC->GetXaxis()->SetTitle("Avg. PCC");
+  gT1fracVsPCC->GetYaxis()->SetTitle("Type 1 Afterglow Fraction");
+  gT1fracVsPCC->GetXaxis()->SetTitle("Average Raw PCC per BCID");
   gT1fracVsPCC->GetYaxis()->SetRangeUser(0.,0.04);
   gT1fracVsPCC->SetMarkerStyle(8);
   gT1fracVsPCC->SetMarkerSize(0.6);
   gT1fracVsPCC->Draw("ap");
+  drawCMSPrelim();
+  drawFillYear(0,2022);
+  drawPCCLuminometer();
   Canvas.Print(outpath+"/afterglow_t1f_vsinstlumi.png");
 
   Canvas.Clear();
-  gT1fracVsIOV->GetXaxis()->SetTitle("LS block id");
-  gT1fracVsIOV->GetYaxis()->SetTitle("Type 1 fraction");
+  gT1fracVsIOV->GetXaxis()->SetTitle("50 LS Block");
+  gT1fracVsIOV->GetYaxis()->SetTitle("Type 1 Afterglow Fraction");
   gT1fracVsIOV->GetYaxis()->SetRangeUser(0,0.04);
   gT1fracVsIOV->SetMarkerStyle(8);
   gT1fracVsIOV->SetMarkerSize(0.6);
   gT1fracVsIOV->Draw("ap");
+  drawCMSPrelim();
+  drawFillYear(0,2022);
+  drawPCCLuminometer();
   Canvas.Print(outpath+"/afterglow_t1f_vsLSBlock.png");
 
   ///////////////////////////////////////
   ///Type 1 residual
   Canvas.Clear();
-  gT1ResidVsPCC->GetYaxis()->SetTitle("Type 1 residual");
-  gT1ResidVsPCC->GetXaxis()->SetTitle("Avg. PCC");
+  gT1ResidVsPCC->GetYaxis()->SetTitle("Type 1 Afterglow Residual");
+  gT1ResidVsPCC->GetXaxis()->SetTitle("Average Raw PCC per BCID");
   gT1ResidVsPCC->GetYaxis()->SetRangeUser(-0.0001,0.0001);
   gT1ResidVsPCC->SetMarkerStyle(8);
   gT1ResidVsPCC->SetMarkerSize(0.6);
   gT1ResidVsPCC->Draw("ap");
+  drawCMSPrelim();
+  drawFillYear(0,2022);
+  drawPCCLuminometer();
   Canvas.Print(outpath+"/afterglow_t1res_vsinstlumi.png");
 
   Canvas.Clear();
-  gT1ResidVsIOV->GetXaxis()->SetTitle("LS block id");
-  gT1ResidVsIOV->GetYaxis()->SetTitle("Type 1 residual");
+  gT1ResidVsIOV->GetXaxis()->SetTitle("50 LS Block");
+  gT1ResidVsIOV->GetYaxis()->SetTitle("Type 1 Afterglow Residual");
   gT1ResidVsIOV->GetYaxis()->SetRangeUser(-0.0001,0.0001);
   gT1ResidVsIOV->SetMarkerStyle(8);
   gT1ResidVsIOV->SetMarkerSize(0.6);
   gT1ResidVsIOV->Draw("ap");
+  drawCMSPrelim();
+  drawFillYear(0,2022);
+  drawPCCLuminometer();
   Canvas.Print(outpath+"/afterglow_t1res_vsLSBlock.png");
 
 
   ////////////////////////
   ///Type 2 residual
   Canvas.Clear();
-  gT2ResidVsPCC->GetYaxis()->SetTitle("Type 2 residual");
-  gT2ResidVsPCC->GetXaxis()->SetTitle("Avg. PCC");
+  gT2ResidVsPCC->GetYaxis()->SetTitle("Type 2 Afterglow Residual");
+  gT2ResidVsPCC->GetXaxis()->SetTitle("Average Raw PCC per BCID");
   gT2ResidVsPCC->GetYaxis()->SetRangeUser(0,0.005);
   gT2ResidVsPCC->SetMarkerStyle(8);
   gT2ResidVsPCC->SetMarkerSize(0.6);
   gT2ResidVsPCC->Draw("ap");
+  drawCMSPrelim();
+  drawFillYear(0,2022);
+  drawPCCLuminometer();
   Canvas.Print(outpath+"/afterglow_t2res_vsinstlumi.png");
 
   Canvas.Clear();
-  gT2ResidVsIOV->GetXaxis()->SetTitle("LS block id");
-  gT2ResidVsIOV->GetYaxis()->SetTitle("Type 2 residual");
+  gT2ResidVsIOV->GetXaxis()->SetTitle("50 LS Block");
+  gT2ResidVsIOV->GetYaxis()->SetTitle("Type 2 Afterglow Residual");
   gT2ResidVsIOV->GetYaxis()->SetRangeUser(0,0.005);
   gT2ResidVsIOV->SetMarkerStyle(8);
   gT2ResidVsIOV->SetMarkerSize(0.6);
   gT2ResidVsIOV->Draw("ap");
+  drawCMSPrelim();
+  drawFillYear(0,2022);
+  drawPCCLuminometer();
   Canvas.Print(outpath+"/afterglow_t2res_vsLSBlock.png");
 
 

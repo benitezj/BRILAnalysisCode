@@ -29,11 +29,17 @@ void drawLumiTitle(long FILL,long year=2022){
   text.SetTextSize(0.040);
   text.DrawLatexNDC(0.25,0.94,TString("CMS Offline Luminosity, LHC Fill ")+(long)FILL+",  "+year+",  (#sqrt{s} = 13 TeV)");
 }
-void drawFillYear(long FILL,long year){
+void drawFillYear(long FILL=0,long year=0){
   TLatex text;
   text.SetTextColor(1);
   text.SetTextSize(0.03);
-  text.DrawLatexNDC(0.6,0.94,TString("Fill ")+(long)FILL+",  "+year+",  (#sqrt{s} = 13 TeV)");
+  //text.DrawLatexNDC(0.6,0.94,TString("Fill ")+(long)FILL+",  "+year+",  (#sqrt{s} = 13 TeV)");
+  TString FillYear="";
+  float xpos=0.8;
+  if(FILL!=0){FillYear+=TString(" Fill ")+(long)FILL+",";  xpos-=0.1;}
+  if(year!=0){FillYear+=TString("  ")+year+",";  xpos-=0.1;}
+  FillYear+=TString("  ")+"(#sqrt{s} = 13 TeV)";
+  text.DrawLatexNDC(xpos,0.94,FillYear.Data());
 }
 void drawCMSPrelim(float xpos=0.19,float ypos=0.85){
   TLatex text;
