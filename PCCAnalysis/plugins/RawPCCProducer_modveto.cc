@@ -36,8 +36,7 @@ private:
 
   //input object labels
   edm::EDGetTokenT<reco::PixelClusterCounts> pccToken_;
-  //Output average values
-  const std::string takeAverageValue_;
+
 
   //output object labels
   const edm::EDPutTokenT<LumiInfo> putToken_;
@@ -57,13 +56,11 @@ RawPCCProducer_modveto::RawPCCProducer_modveto(const edm::ParameterSet& iConfig)
     : pccToken_(consumes<reco::PixelClusterCounts, edm::InLumi>(edm::InputTag(
           iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters").getParameter<std::string>("inputPccLabel"),
           iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters").getParameter<std::string>("ProdInst")))),
-      takeAverageValue_(iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters")
-                            .getUntrackedParameter<std::string>("OutputValue", std::string("Average"))),
       putToken_(produces<LumiInfo, edm::Transition::EndLuminosityBlock>(
           iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters")
-              .getUntrackedParameter<std::string>("outputProductName", "alcaLumi"))),
+	  .getUntrackedParameter<std::string>("outputProductName", "alcaLumi"))),
       saveCSVFile_(iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters")
-                       .getUntrackedParameter<bool>("saveCSVFile", false)),
+		   .getUntrackedParameter<bool>("saveCSVFile", false)),
       csvOutLabel_(iConfig.getParameter<edm::ParameterSet>("RawPCCProducerParameters")
 		   .getUntrackedParameter<std::string>("label", std::string("rawPCC.csv"))),
   modlist({303042564, 303042568, 303042572, 303042576, 303042580, 303042584, 303042588, 303042592, 303046660,
@@ -325,6 +322,10 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
       modmap.insert(std::pair<int, int>(modlist.at(i), 0));
     }
 
+    int nevt=0;
+    for (int bx = 0; bx < int(LumiConstants::numBX); bx++)
+      nevt+=events[bx];
+
     //calculate total of clusters per module
     for (unsigned int i=0;i<modlist.size();i++){
       int k=-1;
@@ -336,7 +337,12 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
       if(k>=0){
 	for (int bx=0;bx<int(LumiConstants::numBX);bx++)
 	  m_c += clustersPerBXInput.at(bx+k*int(LumiConstants::numBX));
+
       }
+
+      if(nevt>0) m_c /= nevt;
+      else m_c=0;
+
       modmap.find(modlist.at(i))->second = m_c;
     }
 
