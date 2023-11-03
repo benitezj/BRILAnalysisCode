@@ -7,32 +7,38 @@
 
 TCanvas C("C");
 
+#define MARKERSIZE 0.3
 
-#define MAXMODWEIGHT 0.01
+#define MAXMODWEIGHT 0.02
 
-bool makeModuleGraphs=1;
-bool makePerLayerPlots=0;
+bool makeModuleGraphs=0;
+bool makePerLayerPlotsStability=0;
+float StabilityMaxPerLayer=0.015;
+bool makePerLayerPlotsLinearity=0;
+float LinearityMaxPerLayer=0.01;
 
 float RMSThr=100000;
 
 bool makeModuleFitStability=1;
 float StabilityThr=10000;
-float StabilityMax=0.99;
-float StabilityMaxPerLayer=0.03;
+float StabilityMax=0.8;
 
 bool makeModuleFitLinearity=0;
 float LinearityThr=10000;
 float LinearityMax=0.03;
-float LinearityMaxPerLayer=0.03;
 
 bool fitModuleNoise=0;
 float VdMNoiseThr=10000;
 
+#define NLSBLOCK 10
 
-#define MAXTOTPCC 500E6
+#define MINTOTPCC 450E6
+#define MAXTOTPCC 700E6
 
-#define MINTOTPCCAVG 100E3  //Layer0 veto
-#define MAXTOTPCCAVG 300E3
+#define NBINTOTPCCAVG 200
+
+//#define MINTOTPCCAVG 100E3  //Layer0 veto
+//#define MAXTOTPCCAVG 300E3
 
 //#define MINTOTPCCAVG 70E3 //Old veto
 //#define MAXTOTPCCAVG 250E3  
@@ -43,19 +49,16 @@ float VdMNoiseThr=10000;
 //#define MINTOTPCCAVG 50E3  //final 2022FCDEG veto
 //#define MAXTOTPCCAVG 155E3
 
-//#define MINTOTPCCAVG 0E3    //vdM fill
-//#define MAXTOTPCCAVG 140E3
+#define MINTOTPCCAVG 0E3    //vdM fill
+#define MAXTOTPCCAVG 200E3
 
-#define NBINTOTPCCAVG 100
-
-#define NLSBLOCK 1
 
 
 //TString OutPath = "/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/ModuleVeto2022";
 TString OutPath = "./tmp";
 
 
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
 
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p.txt";
@@ -77,7 +80,7 @@ TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04p.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt";
 
 
 //#define LS_ID_MAX 35000
@@ -97,15 +100,15 @@ TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";
 
 
 TString InputPath = "./ModuleVeto2022/data/Run2022F";//"/eos/user/b/benitezj/BRIL/PCC_Run3/LinearityStudy_2022Veto/Run2022F";   
-#define LS_ID_MIN 0
-#define LS_ID_MAX 60000
-std::vector<int> run_number = {3360390,360391,360392,360393,360400,360411,360413,360414,360428,360429,360430,360431,360432,360433,360434,360435,360436,360437,360438,360439,360440,360441,360442,360444,360445,360458,360459,360460,360472,360486,360490,360491,360519,360520,360523,360525,360526,360528,360530,360533,360538,360542,360590,360591,360594,360659,360660,360666,360681,360683,360684,360685,360688,360696,360697,360698,360703,360736,360737,360761,360787,360788,360794,360795,360796,360797,360813,360815,360816,360817,360819,360820,360821,360822,360823,360825,360826,360850,360856,360874,360882,360886,360887,360888,360889,360890,360891,360892,360893,360894,360895,360912,360919,360920,360921,360927,360940,360941,360942,360943,360944,360945,360946,360948,360949,360950,360951,360968,360989,360991,360992,361020,361032,361038,361044,361045,361046,361047,361048,361050,361051,361052,361053,361054,361059,361074,361082,361083,361088,361089,361090,361091,361092,361101,361105,361106,361107,361108,361110,361177,361183,361188,361193,361195,361196,361197,361198,361208,361223,361239,361240,361267,361269,361270,361271,361272,361279,361280,361283,361284,361292,361294,361297,361303,361318,361319,361320,361333,361361,361362,361363,361364,361365,361366,361370,361398,361400,361417,361424,361442,361443,361464,361467,361468,361475,361503,361512,361562,361564,361569,361570,361573,361579,361580,361604,361606,361607,361609,361614,361618,361677,361685,361686,361722,361723,361724,361740,361790,361791,361807,361808,361810,361848,361849,361852,361859,361860,361872,361881,361885,361887,361889,361890,361893,361894,361895,361896,361898,361905,361906,361948,361954,361957,361968,361971,361974,361989,361990,361992,361993,361994,362009,362058,362059,362060,362061,362062,362063,362064,362085,362086,362087,362091,362095,362104,362105,362106,362107,362108,362148,362152,362153,362154,362159,362160,362161,362163,362166,362167}; ///collisions2022 from OMS
+//#define LS_ID_MIN 0
+//#define LS_ID_MAX 60000
+//std::vector<int> run_number = {3360390,360391,360392,360393,360400,360411,360413,360414,360428,360429,360430,360431,360432,360433,360434,360435,360436,360437,360438,360439,360440,360441,360442,360444,360445,360458,360459,360460,360472,360486,360490,360491,360519,360520,360523,360525,360526,360528,360530,360533,360538,360542,360590,360591,360594,360659,360660,360666,360681,360683,360684,360685,360688,360696,360697,360698,360703,360736,360737,360761,360787,360788,360794,360795,360796,360797,360813,360815,360816,360817,360819,360820,360821,360822,360823,360825,360826,360850,360856,360874,360882,360886,360887,360888,360889,360890,360891,360892,360893,360894,360895,360912,360919,360920,360921,360927,360940,360941,360942,360943,360944,360945,360946,360948,360949,360950,360951,360968,360989,360991,360992,361020,361032,361038,361044,361045,361046,361047,361048,361050,361051,361052,361053,361054,361059,361074,361082,361083,361088,361089,361090,361091,361092,361101,361105,361106,361107,361108,361110,361177,361183,361188,361193,361195,361196,361197,361198,361208,361223,361239,361240,361267,361269,361270,361271,361272,361279,361280,361283,361284,361292,361294,361297,361303,361318,361319,361320,361333,361361,361362,361363,361364,361365,361366,361370,361398,361400,361417,361424,361442,361443,361464,361467,361468,361475,361503,361512,361562,361564,361569,361570,361573,361579,361580,361604,361606,361607,361609,361614,361618,361677,361685,361686,361722,361723,361724,361740,361790,361791,361807,361808,361810,361848,361849,361852,361859,361860,361872,361881,361885,361887,361889,361890,361893,361894,361895,361896,361898,361905,361906,361948,361954,361957,361968,361971,361974,361989,361990,361992,361993,361994,362009,362058,362059,362060,362061,362062,362063,362064,362085,362086,362087,362091,362095,362104,362105,362106,362107,362108,362148,362152,362153,362154,362159,362160,362161,362163,362166,362167}; ///collisions2022 from OMS
 
 //std::vector<int> run_number = {360458,360459,360460}; //fill with linearity issue in Antonio's veto
 
-//#define LS_ID_MIN 0
-//#define LS_ID_MAX 2900
-//std::vector<int> run_number = {361906,361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
+#define LS_ID_MIN 0
+#define LS_ID_MAX 3500
+std::vector<int> run_number = {361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
 
 //#define LS_ID_MIN 140
 //#define LS_ID_MAX 180
@@ -130,9 +133,28 @@ std::vector<int> run_number = {3360390,360391,360392,360393,360400,360411,360413
 
 
 
+//////////////////////
+/// 2023
+//#define MAXTOTPCC 15000
+//#define MINTOTPCC 5000
+//#define MINTOTPCCAVG 0
+//#define MAXTOTPCCAVG 10
+//TString InputPath = "./ModuleVeto2023/Run2023C";
+//#define LS_ID_MIN 0
+//#define LS_ID_MAX 20000
+//std::vector<int> run_number = {367095,367100,367102,367103,367104,367111,367112,367127,367128,367129,367130,367131,367132,367133,367134,367228,367229,367230,367231,367232,367234,367260,367261,367262,367263,367264,367267,367268,367269,367270,367271,367312,367314,367315,367334,367336,367337,367355,367385,367406,367413,367415,367416,367475,367476,367477,367515};
+//TString InputPath = "./ModuleVeto2023/Run2023D";
+//#define LS_ID_MIN 0
+//#define LS_ID_MAX 25000
+//std::vector<int> run_number = {3369867,369869,369870,369872,369873,369901,369927,369937,369938,369941,369942,369943,369956,369978,369994,369998,369999,370000,370005,370091,370092,370093,370095,370096,370097,370100,370101,370102,370129,370144,370169,370171,370172,370175,370192,370195,370196,370293,370294,370300,370302,370304,370307,370321,370332,370340,370354,370355,370357,370406,370436,370460,370472,370497,370522,370560,370579,370580};
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TF1* fitvdM(TH1F* P){
-  TF1 *F = new TF1(TString("FitVDM")+P->GetName(),"[0]+[1]*exp(-(x-[2])*(x-[2])/(0.5*[3]*[3]))",P->GetBinCenter(1),P->GetBinCenter(P->GetNbinsX()));
+  TF1 *F = new TF1(TString("FitVDM")+P->GetName(),
+		   "[0]+[1]*exp(-(x-[2])*(x-[2])/(0.5*[3]*[3]))",
+		   P->GetBinCenter(1),
+		   P->GetBinCenter(P->GetNbinsX()));
   F->SetLineColor(2);
   F->SetParameter(1,P->GetMaximum());
   F->SetParLimits(1,0.05*P->GetMaximum(),2*P->GetMaximum());
@@ -208,23 +230,6 @@ void plot_Module_RMS_Stability() {
  
   if(!readModVeto(ModVeto)) return;
 
-//  //check the module list from the 2022 vdm run:
-//  cout<<"modules not in run 361913 :"<<endl;
-//  for (unsigned int i=0;i<NMOD;i++){
-//    if (std::count(MODID_vdm.begin(), MODID_vdm.end(), MODID.at(i))==0)
-//      cout<<MODID.at(i)<<endl;
-//  }
-
-
-//  std::vector<int> modlist_missing = {304091152,304099336,304099340,304107552,304123920,304136200,304189444,305147928,305172484,305176592,305283084,305291292,306212876,306245644,306311188,306343948,306360324,352598020,352650244,352674820,352785412,352887812,352961540,353171460,353309700,353313796,353317892,353321988,344200196,344593412};
-//  for (unsigned int i=0;i<modlist_missing.size();i++){
-//    if(MODVETO[modlist_missing.at(i)]==0)
-//      cout<<modlist_missing.at(i)<<endl;
-//  }
-//  cout<<endl;  
-//  return;
-
-
   
   int run=0;
   int ls=0;
@@ -233,8 +238,8 @@ void plot_Module_RMS_Stability() {
   int ls_idx=0.;
   int m_count[NMOD];
 
-  TH2F TotalPCC("Histo_totpcc","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,5000,0,MAXTOTPCC);
-  TH2F TotalPCCPerMod("Histo_totpccavg","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,1000,0,MAXTOTPCCAVG);
+  TH2F PCC_vs_LS("Histo_totpcc","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,500,0,MAXTOTPCC);
+  TH2F PCCPerMod_vs_LS("Histo_totpccavg","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
   
   TH1F * h_modcount[NMOD];
   TGraph ModWeight;
@@ -252,22 +257,22 @@ void plot_Module_RMS_Stability() {
   TH1F hLinearityDeviation("LinearityDeviation", "",200,0,LinearityMax); 
 
   TH1F ModVdmNoise("ModVdmNoise","Noise / Signal",100,0,0.05);
+
   
   int ngood_mod=0;
   for (unsigned int i=0;i<NMOD;i++){
     if(MODVETO[MODID[i]]==0){
       ngood_mod++;
       h_modcount[i]=new TH1F(TString("h_modcount")+i,"",3000,0,MAXMODWEIGHT);
- 
       h_modcount_vs_LS[i]=new TH1F(TString("h_modcount_vs_LS")+i,"",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX);
       h_modcount_vs_LS[i]->Sumw2();
-      
       h_modcount_vs_totpcc[i]=new TH1F(TString("h_modcount_vs_totpcc")+i,"",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG);
       h_modcount_vs_totpcc[i]->Sumw2();
     }
   }
-    
   cout<<"Number of good modules: "<<ngood_mod<<endl;
+
+
   
 
   TH2D* histo_L1=new TH2D("Histo_Layer1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
@@ -308,7 +313,8 @@ void plot_Module_RMS_Stability() {
     int nls_run=0;    
     std::string line;    
     while (std::getline(csvfile, line)){
-      int totcount=0;      
+      int totcount=0;
+      int totcountgood=0;      
       int count_L1=0;
       int count_L2=0;
       int count_L3=0;
@@ -343,74 +349,80 @@ void plot_Module_RMS_Stability() {
 	std::getline(iss,token, ',');
 	std::stringstream countiss(token);
 	countiss>>m_count[i];
-	
-	if(MODVETO[MODID[i]]==0){                                                                                       
-	  totcount += m_count[i];
- 
-	  if(makePerLayerPlots){
-	    if(BPIXorFPIX[MODID[i]]==1){
-	      if(LY[MODID[i]]==1)	      count_L1+=m_count[i];
-	      if(LY[MODID[i]]==2)	      count_L2+=m_count[i];
-	      if(LY[MODID[i]]==3)	      count_L3+=m_count[i];
-	      if(LY[MODID[i]]==4)	      count_L4+=m_count[i];
-	    }
- 	    
-	    if(BPIXorFPIX[MODID[i]]==2){
-	      if(DISK[MODID[i]]==2)	      count_D1S1+=m_count[i];
-	      if(DISK[MODID[i]]==1)	      count_D2S1+=m_count[i];
-	      if(DISK[MODID[i]]==0)	      count_D3S1+=m_count[i];
-	      if(DISK[MODID[i]]==3)	      count_D1S2+=m_count[i];
-	      if(DISK[MODID[i]]==4)	      count_D2S2+=m_count[i];
-	      if(DISK[MODID[i]]==5)	      count_D3S2+=m_count[i];	      
-	    }  
+	totcount += m_count[i];
+	 
+	if(MODVETO[MODID[i]]==0){                                                                                        
+	  totcountgood += m_count[i];
+	  
+	  if(BPIXorFPIX[MODID[i]]==1){
+	    if(LY[MODID[i]]==1)	      count_L1+=m_count[i];
+	    if(LY[MODID[i]]==2)	      count_L2+=m_count[i];
+	    if(LY[MODID[i]]==3)	      count_L3+=m_count[i];
+	    if(LY[MODID[i]]==4)	      count_L4+=m_count[i];
 	  }
+ 	    
+	  if(BPIXorFPIX[MODID[i]]==2){
+	    if(DISK[MODID[i]]==2)	      count_D1S1+=m_count[i];
+	    if(DISK[MODID[i]]==1)	      count_D2S1+=m_count[i];
+	    if(DISK[MODID[i]]==0)	      count_D3S1+=m_count[i];
+	    if(DISK[MODID[i]]==3)	      count_D1S2+=m_count[i];
+	    if(DISK[MODID[i]]==4)	      count_D2S2+=m_count[i];
+	    if(DISK[MODID[i]]==5)	      count_D3S2+=m_count[i];	      
+	  }  
  
 	}
       }
       
- 
-      if(LS_ID_MIN < ls_idx && ls_idx < LS_ID_MAX && ngood_mod>0){ //need to cut ls_idx otherwise code crashes if wayt out of bounds
-	float totcount_avg=float(totcount)/ngood_mod;
 
-	TotalPCC.Fill(ls_idx,totcount);
-	TotalPCCPerMod.Fill(ls_idx,totcount_avg);
-	if(MINTOTPCCAVG < totcount_avg  && totcount_avg < MAXTOTPCCAVG){
-	  h_totcount_vs_LS.Fill(ls_idx, totcount);
-	  h_totcount_vs_totpcc.Fill(totcount_avg, totcount);
+      
+      if(LS_ID_MIN < ls_idx && ls_idx < LS_ID_MAX && ngood_mod>0 ){ //need to cut ls_idx otherwise code crashes if wayt out of bounds
+	PCC_vs_LS.Fill(ls_idx,totcount);
+
+	float totcountgood_avg=float(totcountgood)/ngood_mod;
+	PCCPerMod_vs_LS.Fill(ls_idx,totcountgood_avg);
+	    
+	if(MINTOTPCC < totcount  && totcount < MAXTOTPCC){	  
+	  //if(MINTOTPCCAVG < totcountgood_avg  && totcountgood_avg < MAXTOTPCCAVG){
+	    
+
+	    h_totcount_vs_LS.Fill(ls_idx,totcount);
+	    h_totcount_vs_totpcc.Fill(totcountgood_avg, totcount);
 	  
-	  for (unsigned int i=0;i<NMOD;i++){
-	    if(MODVETO[MODID[i]]==0){
-	      h_modcount[i]->Fill(float(m_count[i])/totcount);
-	      h_modcount_vs_LS[i]->Fill(ls_idx, m_count[i]);
-	      h_modcount_vs_totpcc[i]->Fill(totcount_avg, m_count[i]);
+	    for (unsigned int i=0;i<NMOD;i++){
+	      if(MODVETO[MODID[i]]==0){
+		h_modcount[i]->Fill(float(m_count[i])/totcount);
+		h_modcount_vs_LS[i]->Fill(ls_idx, m_count[i]);
+		h_modcount_vs_totpcc[i]->Fill(totcountgood_avg, m_count[i]);
+	      }
 	    }
-	  }
 
 	     
-	  if(makePerLayerPlots){
-	    histo_L1->Fill(ls_idx, float(count_L1)/totcount);
-	    histo_L2->Fill(ls_idx, float(count_L2)/totcount);
-	    histo_L3->Fill(ls_idx, float(count_L3)/totcount);
-	    histo_L4->Fill(ls_idx, float(count_L4)/totcount);
-	    histo_D1S1->Fill(ls_idx, float(count_D1S1)/totcount);
-	    histo_D2S1->Fill(ls_idx, float(count_D2S1)/totcount);
-	    histo_D3S1->Fill(ls_idx, float(count_D3S1)/totcount);
-	    histo_D1S2->Fill(ls_idx, float(count_D1S2)/totcount);
-	    histo_D2S2->Fill(ls_idx, float(count_D2S2)/totcount);
-	    histo_D3S2->Fill(ls_idx, float(count_D3S2)/totcount);
-	     
-	    histoLinearity_L1->Fill(totcount_avg, float(count_L1)/totcount);
-	    histoLinearity_L2->Fill(totcount_avg, float(count_L2)/totcount);
-	    histoLinearity_L3->Fill(totcount_avg, float(count_L3)/totcount);
-	    histoLinearity_L4->Fill(totcount_avg, float(count_L4)/totcount);
-	    histoLinearity_D1S1->Fill(totcount_avg, float(count_D1S1)/totcount);
-	    histoLinearity_D2S1->Fill(totcount_avg, float(count_D2S1)/totcount);
-	    histoLinearity_D3S1->Fill(totcount_avg, float(count_D3S1)/totcount);
-	    histoLinearity_D1S2->Fill(totcount_avg, float(count_D1S2)/totcount);
-	    histoLinearity_D2S2->Fill(totcount_avg, float(count_D2S2)/totcount);
-	    histoLinearity_D3S2->Fill(totcount_avg, float(count_D3S2)/totcount);
-	  }
-  	   
+	    if(makePerLayerPlotsStability){
+	      histo_L1->Fill(ls_idx, float(count_L1)/totcountgood);
+	      histo_L2->Fill(ls_idx, float(count_L2)/totcountgood);
+	      histo_L3->Fill(ls_idx, float(count_L3)/totcountgood);
+	      histo_L4->Fill(ls_idx, float(count_L4)/totcountgood);
+	      histo_D1S1->Fill(ls_idx, float(count_D1S1)/totcountgood);
+	      histo_D2S1->Fill(ls_idx, float(count_D2S1)/totcountgood);
+	      histo_D3S1->Fill(ls_idx, float(count_D3S1)/totcountgood);
+	      histo_D1S2->Fill(ls_idx, float(count_D1S2)/totcountgood);
+	      histo_D2S2->Fill(ls_idx, float(count_D2S2)/totcountgood);
+	      histo_D3S2->Fill(ls_idx, float(count_D3S2)/totcountgood);
+	    }
+	    
+	    if(makePerLayerPlotsLinearity){
+	      histoLinearity_L1->Fill(totcountgood_avg, float(count_L1)/totcountgood);
+	      histoLinearity_L2->Fill(totcountgood_avg, float(count_L2)/totcountgood);
+	      histoLinearity_L3->Fill(totcountgood_avg, float(count_L3)/totcountgood);
+	      histoLinearity_L4->Fill(totcountgood_avg, float(count_L4)/totcountgood);
+	      histoLinearity_D1S1->Fill(totcountgood_avg, float(count_D1S1)/totcountgood);
+	      histoLinearity_D2S1->Fill(totcountgood_avg, float(count_D2S1)/totcountgood);
+	      histoLinearity_D3S1->Fill(totcountgood_avg, float(count_D3S1)/totcountgood);
+	      histoLinearity_D1S2->Fill(totcountgood_avg, float(count_D1S2)/totcountgood);
+	      histoLinearity_D2S2->Fill(totcountgood_avg, float(count_D2S2)/totcountgood);
+	      histoLinearity_D3S2->Fill(totcountgood_avg, float(count_D3S2)/totcountgood);
+	    }
+	    // }
 	}
 	 
       }
@@ -425,12 +437,14 @@ void plot_Module_RMS_Stability() {
   }
   cout<<"Total # of LS "<<nls_tot<<endl;
   cout<<"Last LS idx "<<ls_idx<<endl;
-  
 
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  
   cout<<"bad modules (veto.tmp) "<<endl;
   std::ofstream vetostream("veto.tmp",std::ofstream::out);
-  
-
+ 
   ///Make a Profile , fit , get chi2
   float max_mod_weight=0;
   for (unsigned int i=0;i<NMOD;i++){
@@ -439,7 +453,8 @@ void plot_Module_RMS_Stability() {
       float mean=h_modcount[i]->GetMean();
       float rms=h_modcount[i]->GetRMS();
       
-      if(mean > max_mod_weight) max_mod_weight = mean;
+      if(mean > max_mod_weight)
+	max_mod_weight = mean;
       
       if(mean>0){
 	ModWeight.SetPoint(ModWeight.GetN(), i, mean);
@@ -452,7 +467,8 @@ void plot_Module_RMS_Stability() {
       ///module count graphs
       if(makeModuleGraphs){
 	C.Clear();
-	h_modcount_vs_LS[i]->GetYaxis()->SetRangeUser(0,h_modcount_vs_LS[i]->GetMaximum()*1.1);
+	h_modcount_vs_LS[i]->SetStats(0);
+	h_modcount_vs_LS[i]->GetYaxis()->SetRangeUser(MINTOTPCCAVG,MAXTOTPCCAVG);
 	h_modcount_vs_LS[i]->SetTitle(TString("Module ")+MODID[i]);
 	h_modcount_vs_LS[i]->Draw("histp");
 	
@@ -461,7 +477,9 @@ void plot_Module_RMS_Stability() {
 	  F->Draw("lsame");
 	  float vdmnoise = F->GetParameter(0)/F->GetParameter(1);
 	  ModVdmNoise.Fill(vdmnoise);
-	if(vdmnoise > VdMNoiseThr) vetostream<<MODID[i]<<endl;
+	  if(vdmnoise > VdMNoiseThr)
+	    vetostream<<MODID[i]<<endl;
+	
 	}
 	C.Print(OutPath+"/Module_RMS_Stability_modulecount_"+i+".png");
       }
@@ -520,365 +538,365 @@ void plot_Module_RMS_Stability() {
   }
   
 
+  /////////////////////////////////////////
+  TProfile* PCC_vs_LS_P=PCC_vs_LS.ProfileX();
+  //PCC_vs_LS_P->SetStats(0);
+  //PCC_vs_LS_P->GetYaxis()->SetTitle("Total PCC");
+  //PCC_vs_LS_P->GetXaxis()->SetTitle("Lumi section");
+  //PCC_vs_LS_P->GetYaxis()->SetRangeUser(0,PCC_vs_LS_P->GetMaximum()*1.2);
+  C.Clear();
+  PCC_vs_LS.GetYaxis()->SetTitle("Total PCC");
+  PCC_vs_LS.GetXaxis()->SetTitle("Lumi section");
+  PCC_vs_LS.SetStats(0);
+  PCC_vs_LS.Draw("scat");
+  //PCC_vs_LS_P->Draw("histp");                                                                                                                   
+  C.Print(OutPath+"/Module_RMS_Stability_totalcount.png");
+
+ 
+  TProfile* PCCPerMod_vs_LS_P=PCCPerMod_vs_LS.ProfileX();
+//  PCCPerMod_vs_LS_P->SetStats(0);
+//  PCCPerMod_vs_LS_P->GetYaxis()->SetTitle("Total PCC / # of good modules");
+//  PCCPerMod_vs_LS_P->GetXaxis()->SetTitle("Lumi section");
+//  PCCPerMod_vs_LS_P->GetYaxis()->SetRangeUser(0,PCCPerMod_vs_LS_P->GetMaximum()*1.2);
+  C.Clear();
+  PCCPerMod_vs_LS.GetYaxis()->SetTitle("Avg. PCC per module");
+  PCCPerMod_vs_LS.GetXaxis()->SetTitle("Lumi section");
+  PCCPerMod_vs_LS.SetStats(0);
+  PCCPerMod_vs_LS.Draw("scat");
+  //PCCPerMod_vs_LS_P->Draw("histp");                                                                                                                   
+  C.Print(OutPath+"/Module_RMS_Stability_totalcountavg.png");
+
+
+  /////////////////////
+  /// Module weights
+  ////////////////////
+  ModWeight.SetMarkerStyle(8);
+  ModWeight.SetMarkerSize(MARKERSIZE);
+  ModWeight.SetMarkerColor(4);
+  ModWeight.GetXaxis()->SetTitle("Module ID");                                                                                 
+  ModWeight.GetYaxis()->SetTitle("Module Weight");
+  ModWeight.GetYaxis()->SetRangeUser(0,max_mod_weight);
+  C.Clear();
+  ModWeight.Draw("AP"); 
+  C.Print(OutPath+"/Module_RMS_Stability_weights.png");
+
+
+
+  ////////////////////
+  /// Module RMS 
+  ModWeightRMS.SetMarkerStyle(8);
+  ModWeightRMS.SetMarkerSize(MARKERSIZE);
+  ModWeightRMS.GetYaxis()->SetTitle("RMS / Mean");
+  ModWeightRMS.GetXaxis()->SetTitle("Module ID");
+  ModWeightRMS.GetYaxis()->SetRangeUser(0,StabilityMax);    
+  C.Clear();
+  ModWeightRMS.Draw("AP");
+  C.Print(OutPath+"/Module_RMS_Stability_RMS.png");
+ 
+  hRMS.GetXaxis()->SetTitle("RMS / Mean");
+  hRMS.GetYaxis()->SetTitle("# of modules");
+  C.Clear();
+  hRMS.Draw("hist");
+  C.Print(OutPath+"/Module_RMS_Stability_RMS_hist.png");
+
+
+  //// Noise level per module
+  if(fitModuleNoise){
+    C.Clear();
+    ModVdmNoise.SetMarkerStyle(8);
+    ModVdmNoise.SetMarkerSize(0.6);
+    ModVdmNoise.Draw("hist");
+    C.Print(OutPath+"/Module_RMS_Stability_VdMNoise.png");
+  }
+
+ 
+  ///////////////
+  ///Stability Fit results
+  if(makeModuleFitStability){
+    gStabilityDeviation.SetMarkerStyle(8);
+    gStabilityDeviation.SetMarkerSize(MARKERSIZE);
+    gStabilityDeviation.GetYaxis()->SetTitle("Stability Deviation");
+    gStabilityDeviation.GetXaxis()->SetTitle("Module ID");
+    gStabilityDeviation.GetYaxis()->SetRangeUser(0,StabilityMax);    
+    C.Clear();
+    gStabilityDeviation.Draw("AP");
+    C.Print(OutPath+"/Module_RMS_StabilityDeviation.png");
+
+    hStabilityDeviation.GetXaxis()->SetTitle("Stability Deviation");
+    hStabilityDeviation.GetYaxis()->SetTitle("# of modules");
+    C.Clear();
+    hStabilityDeviation.Draw("hist");
+    C.SetLogy(1);
+    C.Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
+    C.SetLogy(0);
+  }
+
+
   
- /////////////////////////////////////////
- TProfile* TotalPCC_P=TotalPCC.ProfileX();
- TotalPCC_P->SetStats(0);
- TotalPCC_P->GetYaxis()->SetTitle("Total PCC");
- TotalPCC_P->GetXaxis()->SetTitle("Lumi section");
- TotalPCC_P->GetYaxis()->SetRangeUser(0,TotalPCC_P->GetMaximum()*1.2);
- C.Clear();
- TotalPCC_P->Draw("histp");                                                                                                                   
- C.Print(OutPath+"/Module_RMS_Stability_totalcount.png");
+  ///////////////
+  ///Linearity Fit results
+  if(makeModuleFitLinearity){
+    gLinearityDeviation.SetMarkerStyle(8);
+    gLinearityDeviation.SetMarkerSize(MARKERSIZE);
+    gLinearityDeviation.GetYaxis()->SetTitle("Linearity Deviation");
+    gLinearityDeviation.GetXaxis()->SetTitle("Module ID");
+    gLinearityDeviation.GetYaxis()->SetRangeUser(0,LinearityMax);    
+    C.Clear();
+    gLinearityDeviation.Draw("AP");
+    C.Print(OutPath+"/Module_RMS_LinearityDeviation.png");
 
- TProfile* TotalPCCPerMod_P=TotalPCCPerMod.ProfileX();
- TotalPCCPerMod_P->SetStats(0);
- TotalPCCPerMod_P->GetYaxis()->SetTitle("Total PCC / # of good modules");
- TotalPCCPerMod_P->GetXaxis()->SetTitle("Lumi section");
- TotalPCCPerMod_P->GetYaxis()->SetRangeUser(0,TotalPCCPerMod_P->GetMaximum()*1.2);
- C.Clear();
- TotalPCCPerMod_P->Draw("histp");                                                                                                                   
- C.Print(OutPath+"/Module_RMS_Stability_totalcountavg.png");
-
- 
- ModWeight.SetMarkerStyle(8);
- ModWeight.SetMarkerSize(0.5);
- ModWeight.SetMarkerColor(4);
- ModWeight.GetXaxis()->SetTitle("Module ID");                                                                                 
- ModWeight.GetYaxis()->SetTitle("Module Weight");
- ModWeight.GetYaxis()->SetRangeUser(0,max_mod_weight);
- C.Clear();
- ModWeight.Draw("AP"); 
- C.Print(OutPath+"/Module_RMS_Stability_weights.png");
+    hLinearityDeviation.GetXaxis()->SetTitle("Linearity Deviation");
+    hLinearityDeviation.GetYaxis()->SetTitle("# of modules");
+    C.Clear();
+    hLinearityDeviation.Draw("hist");
+    C.SetLogy(1);
+    C.Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");
+    C.SetLogy(0);
+  }
 
  
- ModWeightRMS.SetMarkerStyle(8);
- ModWeightRMS.SetMarkerSize(0.5);
- ModWeightRMS.GetYaxis()->SetTitle("RMS / Mean");
- ModWeightRMS.GetXaxis()->SetTitle("Module ID");
- ModWeightRMS.GetYaxis()->SetRangeUser(0,StabilityMax);    
- C.Clear();
- ModWeightRMS.Draw("AP");
- C.Print(OutPath+"/Module_RMS_Stability_RMS.png");
+  if(makePerLayerPlotsStability){
 
- 
- hRMS.GetXaxis()->SetTitle("RMS / Mean");
- hRMS.GetYaxis()->SetTitle("# of modules");
- C.Clear();
- hRMS.Draw("hist");
- C.Print(OutPath+"/Module_RMS_Stability_RMS_hist.png");
+    //////////Layer / Disk graphs
+    TProfile* P_L2 = histo_L2->ProfileX();
+    TProfile* P_L3 = histo_L3->ProfileX();
+    TProfile* P_L4 = histo_L4->ProfileX();
+    TProfile* P_D1S1 = histo_D1S1->ProfileX();
+    TProfile* P_D2S1 = histo_D2S1->ProfileX();
+    TProfile* P_D3S1 = histo_D3S1->ProfileX();
+    TProfile* P_D1S2 = histo_D1S2->ProfileX();
+    TProfile* P_D2S2 = histo_D2S2->ProfileX();
+    TProfile* P_D3S2 = histo_D3S2->ProfileX();
+   
+    cout<<histo_L2->GetMean(2)<<endl;;
+    cout<<histo_L3->GetMean(2)<<endl;;
+    cout<<histo_L4->GetMean(2)<<endl;;
+    cout<<histo_D1S1->GetMean(2)<<endl;;
+    cout<<histo_D2S1->GetMean(2)<<endl;;
+    cout<<histo_D3S1->GetMean(2)<<endl;;
+    cout<<histo_D1S2->GetMean(2)<<endl;;
+    cout<<histo_D2S2->GetMean(2)<<endl;;
+    cout<<histo_D3S2->GetMean(2)<<endl;;
 
- C.Clear();
- ModVdmNoise.SetMarkerStyle(8);
- ModVdmNoise.SetMarkerSize(0.6);
- ModVdmNoise.Draw("hist");
- C.Print(OutPath+"/Module_RMS_Stability_VdMNoise.png");
- 
+    P_L2->SetMarkerColor(2);
+    P_L3->SetMarkerColor(3);
+    P_L4->SetMarkerColor(4);    
+    P_D1S1->SetMarkerColor(1);
+    P_D2S1->SetMarkerColor(6);
+    P_D3S1->SetMarkerColor(7);
+    P_D1S2->SetMarkerColor(8);
+    P_D2S2->SetMarkerColor(9);
+    P_D3S2->SetMarkerColor(11);
+   
+    P_L2->SetMarkerStyle(8);
+    P_L3->SetMarkerStyle(8);
+    P_L4->SetMarkerStyle(8);    
+    P_D1S1->SetMarkerStyle(8);
+    P_D2S1->SetMarkerStyle(8);
+    P_D3S1->SetMarkerStyle(8);
+    P_D1S2->SetMarkerStyle(8);
+    P_D2S2->SetMarkerStyle(8);
+    P_D3S2->SetMarkerStyle(8);
 
- ///////////////
- ///Stability Fit results
- if(makeModuleFitStability){
-   gStabilityDeviation.SetMarkerStyle(8);
-   gStabilityDeviation.SetMarkerSize(0.5);
-   gStabilityDeviation.GetYaxis()->SetTitle("Stability Deviation");
-   gStabilityDeviation.GetXaxis()->SetTitle("Module ID");
-   gStabilityDeviation.GetYaxis()->SetRangeUser(0,StabilityMax);    
-   C.Clear();
-   gStabilityDeviation.Draw("AP");
-   C.Print(OutPath+"/Module_RMS_StabilityDeviation.png");
-
-   hStabilityDeviation.GetXaxis()->SetTitle("Stability Deviation");
-   hStabilityDeviation.GetYaxis()->SetTitle("# of modules");
-   C.Clear();
-   hStabilityDeviation.Draw("hist");
-   C.SetLogy(1);
-   C.Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
-   C.SetLogy(0);
- }
-
-
+    P_L2->SetMarkerSize(MARKERSIZE);
+    P_L3->SetMarkerSize(MARKERSIZE);
+    P_L4->SetMarkerSize(MARKERSIZE);    
+    P_D1S1->SetMarkerSize(MARKERSIZE);
+    P_D2S1->SetMarkerSize(MARKERSIZE);
+    P_D3S1->SetMarkerSize(MARKERSIZE);
+    P_D1S2->SetMarkerSize(MARKERSIZE);
+    P_D2S2->SetMarkerSize(MARKERSIZE);
+    P_D3S2->SetMarkerSize(MARKERSIZE);
   
- ///////////////
- ///Linearity Fit results
- if(makeModuleFitLinearity){
-   gLinearityDeviation.SetMarkerStyle(8);
-   gLinearityDeviation.SetMarkerSize(0.5);
-   gLinearityDeviation.GetYaxis()->SetTitle("Linearity Deviation");
-   gLinearityDeviation.GetXaxis()->SetTitle("Module ID");
-   gLinearityDeviation.GetYaxis()->SetRangeUser(0,LinearityMax);    
-   C.Clear();
-   gLinearityDeviation.Draw("AP");
-   C.Print(OutPath+"/Module_RMS_LinearityDeviation.png");
+    auto legend = new TLegend(0.905,0.2,1,0.92);
+    legend->AddEntry(P_L2,"B2","p");
+    legend->AddEntry(P_L3,"B3","p");
+    legend->AddEntry(P_L4,"B4","p");
+    legend->AddEntry(P_D1S1,"F1S1","p");
+    legend->AddEntry(P_D2S1,"F2S1","p");
+    legend->AddEntry(P_D3S1,"F3S1","p");
+    legend->AddEntry(P_D1S2,"F1S2","p");
+    legend->AddEntry(P_D2S2,"F2S2","p");
+    legend->AddEntry(P_D3S2,"F3S2","p");
+    legend->SetFillColor(0);
+    legend->SetLineColor(1);
+   
+    P_L4->SetStats(0);
+    P_L4->GetYaxis()->SetRangeUser(0,0.4);
+    P_L4->GetYaxis()->SetTitle("Weight");
+    P_L4->GetYaxis()->SetNdivisions(8);
+    P_L4->GetXaxis()->SetTitle("Lumi section");
+    C.Clear();
+    P_L4->Draw("histp");
+    P_L2->Draw("histpsame");
+    P_L3->Draw("histpsame");
+    P_D1S1->Draw("histpsame");
+    P_D2S1->Draw("histpsame");
+    P_D3S1->Draw("histpsame");
+    P_D1S2->Draw("histpsame");
+    P_D2S2->Draw("histpsame");
+    P_D3S2->Draw("histpsame");
+    legend->Draw();
+    C.Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk_weight.png");    
 
-   hLinearityDeviation.GetXaxis()->SetTitle("Linearity Deviation");
-   hLinearityDeviation.GetYaxis()->SetTitle("# of modules");
-   C.Clear();
-   hLinearityDeviation.Draw("hist");
-   C.SetLogy(1);
-   C.Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");
-   C.SetLogy(0);
- }
 
+    P_L2->Scale(1./histo_L2->GetMean(2));;
+    P_L3->Scale(1./histo_L3->GetMean(2));;
+    P_L4->Scale(1./histo_L4->GetMean(2));;
+    P_D1S1->Scale(1./histo_D1S1->GetMean(2));;
+    P_D2S1->Scale(1./histo_D2S1->GetMean(2));;
+    P_D3S1->Scale(1./histo_D3S1->GetMean(2));;
+    P_D1S2->Scale(1./histo_D1S2->GetMean(2));;
+    P_D2S2->Scale(1./histo_D2S2->GetMean(2));;
+    P_D3S2->Scale(1./histo_D3S2->GetMean(2));;
+    P_L4->SetStats(0);
+    P_L4->GetYaxis()->SetRangeUser(1-StabilityMaxPerLayer,1+StabilityMaxPerLayer);
+    P_L4->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
+    P_L4->GetXaxis()->SetTitle("Lumi section");
  
- if(makePerLayerPlots){
+    C.Clear();
+    P_L4->Draw("histp");
+    P_L2->Draw("histpsame");
+    P_L3->Draw("histpsame");
+    P_D1S1->Draw("histpsame");
+    P_D2S1->Draw("histpsame");
+    P_D3S1->Draw("histpsame");
+    P_D1S2->Draw("histpsame");
+    P_D2S2->Draw("histpsame");
+    P_D3S2->Draw("histpsame");
+    legend->Draw();
+    C.Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk.png");
 
-   //////////Layer / Disk graphs
-   TProfile* P_L1 = histo_L1->ProfileX();
-   TProfile* P_L2 = histo_L2->ProfileX();
-   TProfile* P_L3 = histo_L3->ProfileX();
-   TProfile* P_L4 = histo_L4->ProfileX();
-   TProfile* P_D1S1 = histo_D1S1->ProfileX();
-   TProfile* P_D2S1 = histo_D2S1->ProfileX();
-   TProfile* P_D3S1 = histo_D3S1->ProfileX();
-   TProfile* P_D1S2 = histo_D1S2->ProfileX();
-   TProfile* P_D2S2 = histo_D2S2->ProfileX();
-   TProfile* P_D3S2 = histo_D3S2->ProfileX();
+
+    
    
-   cout<<histo_L1->GetMean(2)<<endl;;
-   cout<<histo_L2->GetMean(2)<<endl;;
-   cout<<histo_L3->GetMean(2)<<endl;;
-   cout<<histo_L4->GetMean(2)<<endl;;
-   cout<<histo_D1S1->GetMean(2)<<endl;;
-   cout<<histo_D2S1->GetMean(2)<<endl;;
-   cout<<histo_D3S1->GetMean(2)<<endl;;
-   cout<<histo_D1S2->GetMean(2)<<endl;;
-   cout<<histo_D2S2->GetMean(2)<<endl;;
-   cout<<histo_D3S2->GetMean(2)<<endl;;
+  }
 
+
+  if(makePerLayerPlotsLinearity){
+    //////////////////////////////////////////////////
+    ///Linearity
+    TProfile* PLinearityL2 = histoLinearity_L2->ProfileX();
+    TProfile* PLinearityL3 = histoLinearity_L3->ProfileX();
+    TProfile* PLinearityL4 = histoLinearity_L4->ProfileX();
+    TProfile* PLinearityD1S1 = histoLinearity_D1S1->ProfileX();
+    TProfile* PLinearityD2S1 = histoLinearity_D2S1->ProfileX();
+    TProfile* PLinearityD3S1 = histoLinearity_D3S1->ProfileX();
+    TProfile* PLinearityD1S2 = histoLinearity_D1S2->ProfileX();
+    TProfile* PLinearityD2S2 = histoLinearity_D2S2->ProfileX();
+    TProfile* PLinearityD3S2 = histoLinearity_D3S2->ProfileX();
+
+    cout<<histoLinearity_L2->GetMean(2)<<endl;;
+    cout<<histoLinearity_L3->GetMean(2)<<endl;;
+    cout<<histoLinearity_L4->GetMean(2)<<endl;;
+    cout<<histoLinearity_D1S1->GetMean(2)<<endl;;
+    cout<<histoLinearity_D2S1->GetMean(2)<<endl;;
+    cout<<histoLinearity_D3S1->GetMean(2)<<endl;;
+    cout<<histoLinearity_D1S2->GetMean(2)<<endl;;
+    cout<<histoLinearity_D2S2->GetMean(2)<<endl;;
+    cout<<histoLinearity_D3S2->GetMean(2)<<endl;;
+
+    PLinearityL2->SetMarkerColor(2);
+    PLinearityL3->SetMarkerColor(3);
+    PLinearityL4->SetMarkerColor(4);    
+    PLinearityD1S1->SetMarkerColor(1);
+    PLinearityD2S1->SetMarkerColor(6);
+    PLinearityD3S1->SetMarkerColor(7);
+    PLinearityD1S2->SetMarkerColor(8);
+    PLinearityD2S2->SetMarkerColor(9);
+    PLinearityD3S2->SetMarkerColor(11);
    
-   //P_L1->SetMarkerColor(1);
-   P_L2->SetMarkerColor(2);
-   P_L3->SetMarkerColor(3);
-   P_L4->SetMarkerColor(4);    
-   P_D1S1->SetMarkerColor(1);
-   P_D2S1->SetMarkerColor(6);
-   P_D3S1->SetMarkerColor(7);
-   P_D1S2->SetMarkerColor(8);
-   P_D2S2->SetMarkerColor(9);
-   P_D3S2->SetMarkerColor(11);
+    PLinearityL2->SetLineColor(2);
+    PLinearityL3->SetLineColor(3);
+    PLinearityL4->SetLineColor(4);    
+    PLinearityD1S1->SetLineColor(1);
+    PLinearityD2S1->SetLineColor(6);
+    PLinearityD3S1->SetLineColor(7);
+    PLinearityD1S2->SetLineColor(8);
+    PLinearityD2S2->SetLineColor(9);
+    PLinearityD3S2->SetLineColor(11);
    
-   //P_L1->SetMarkerStyle(8);
-   P_L2->SetMarkerStyle(8);
-   P_L3->SetMarkerStyle(8);
-   P_L4->SetMarkerStyle(8);    
-   P_D1S1->SetMarkerStyle(8);
-   P_D2S1->SetMarkerStyle(8);
-   P_D3S1->SetMarkerStyle(8);
-   P_D1S2->SetMarkerStyle(8);
-   P_D2S2->SetMarkerStyle(8);
-   P_D3S2->SetMarkerStyle(8);
-
-   //P_L1->SetMarkerSize(0.5);
-   P_L2->SetMarkerSize(0.5);
-   P_L3->SetMarkerSize(0.5);
-   P_L4->SetMarkerSize(0.5);    
-   P_D1S1->SetMarkerSize(0.5);
-   P_D2S1->SetMarkerSize(0.5);
-   P_D3S1->SetMarkerSize(0.5);
-   P_D1S2->SetMarkerSize(0.5);
-   P_D2S2->SetMarkerSize(0.5);
-   P_D3S2->SetMarkerSize(0.5);
-  
-   auto legend = new TLegend(0.905,0.2,1,0.92);
-   //legend->AddEntry(P_L1,"B1","p");
-   //legend->AddEntry(P_L2,"B2","p");
-   legend->AddEntry(P_L3,"B3","p");
-   legend->AddEntry(P_L4,"B4","p");
-   legend->AddEntry(P_D1S1,"F1S1","p");
-   legend->AddEntry(P_D2S1,"F2S1","p");
-   legend->AddEntry(P_D3S1,"F3S1","p");
-   legend->AddEntry(P_D1S2,"F1S2","p");
-   legend->AddEntry(P_D2S2,"F2S2","p");
-   legend->AddEntry(P_D3S2,"F3S2","p");
-   legend->SetFillColor(0);
-   legend->SetLineColor(1);
+    PLinearityL2->SetMarkerStyle(8);
+    PLinearityL3->SetMarkerStyle(8);
+    PLinearityL4->SetMarkerStyle(8);    
+    PLinearityD1S1->SetMarkerStyle(8);
+    PLinearityD2S1->SetMarkerStyle(8);
+    PLinearityD3S1->SetMarkerStyle(8);
+    PLinearityD1S2->SetMarkerStyle(8);
+    PLinearityD2S2->SetMarkerStyle(8);
+    PLinearityD3S2->SetMarkerStyle(8);
    
-
-   C.Clear();
-   P_L3->SetStats(0);
-   P_L3->GetYaxis()->SetRangeUser(0,0.4);
-   P_L3->GetYaxis()->SetTitle("Weight");
-   P_L3->GetYaxis()->SetNdivisions(8);
-   P_L3->GetXaxis()->SetTitle("Lumi section");
-   //P_L1->Draw("histp");
-   P_L3->Draw("histp");
-   //P_L2->Draw("histpsame");
-   P_L4->Draw("histpsame");
-   P_D1S1->Draw("histpsame");
-   P_D2S1->Draw("histpsame");
-   P_D3S1->Draw("histpsame");
-   P_D1S2->Draw("histpsame");
-   P_D2S2->Draw("histpsame");
-   P_D3S2->Draw("histpsame");
-   legend->Draw();
-   C.Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk_weight.png");    
-
+    PLinearityL2->SetMarkerSize(MARKERSIZE);
+    PLinearityL3->SetMarkerSize(MARKERSIZE);
+    PLinearityL4->SetMarkerSize(MARKERSIZE);    
+    PLinearityD1S1->SetMarkerSize(MARKERSIZE);
+    PLinearityD2S1->SetMarkerSize(MARKERSIZE);
+    PLinearityD3S1->SetMarkerSize(MARKERSIZE);
+    PLinearityD1S2->SetMarkerSize(MARKERSIZE);
+    PLinearityD2S2->SetMarkerSize(MARKERSIZE);
+    PLinearityD3S2->SetMarkerSize(MARKERSIZE);
    
-   C.Clear();
-   //P_L1->Scale(1./histo_L1->GetMean(2));;
-   P_L2->Scale(1./histo_L2->GetMean(2));;
-   P_L3->Scale(1./histo_L3->GetMean(2));;
-   P_L4->Scale(1./histo_L4->GetMean(2));;
-   P_D1S1->Scale(1./histo_D1S1->GetMean(2));;
-   P_D2S1->Scale(1./histo_D2S1->GetMean(2));;
-   P_D3S1->Scale(1./histo_D3S1->GetMean(2));;
-   P_D1S2->Scale(1./histo_D1S2->GetMean(2));;
-   P_D2S2->Scale(1./histo_D2S2->GetMean(2));;
-   P_D3S2->Scale(1./histo_D3S2->GetMean(2));;
-
-   P_L3->SetStats(0);
-   P_L3->GetYaxis()->SetRangeUser(1-StabilityMaxPerLayer,1+StabilityMaxPerLayer);
-   P_L3->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
-   P_L3->GetXaxis()->SetTitle("Lumi section");
-   //P_L1->Draw("histp");
-   P_L3->Draw("histp");
-   //P_L2->Draw("histpsame");
-   P_L4->Draw("histpsame");
-   P_D1S1->Draw("histpsame");
-   P_D2S1->Draw("histpsame");
-   P_D3S1->Draw("histpsame");
-   P_D1S2->Draw("histpsame");
-   P_D2S2->Draw("histpsame");
-   P_D3S2->Draw("histpsame");
-   legend->Draw();
-   C.Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk.png");    
+    auto legendLinearity = new TLegend(0.905,0.2,1,0.92);
+    legendLinearity->AddEntry(PLinearityL2,"B2","p");
+    legendLinearity->AddEntry(PLinearityL3,"B3","p");
+    legendLinearity->AddEntry(PLinearityL4,"B4","p");
+    legendLinearity->AddEntry(PLinearityD1S1,"F1S1","p");
+    legendLinearity->AddEntry(PLinearityD2S1,"F2S1","p");
+    legendLinearity->AddEntry(PLinearityD3S1,"F3S1","p");
+    legendLinearity->AddEntry(PLinearityD1S2,"F1S2","p");
+    legendLinearity->AddEntry(PLinearityD2S2,"F2S2","p");
+    legendLinearity->AddEntry(PLinearityD3S2,"F3S2","p");
+    legendLinearity->SetFillColor(0);
+    legendLinearity->SetLineColor(1);
    
 
-
-
-   //////////////////////////////////////////////////
-   ///Linearity
-   TProfile* PLinearityL1 = histoLinearity_L1->ProfileX();
-   TProfile* PLinearityL2 = histoLinearity_L2->ProfileX();
-   TProfile* PLinearityL3 = histoLinearity_L3->ProfileX();
-   TProfile* PLinearityL4 = histoLinearity_L4->ProfileX();
-   TProfile* PLinearityD1S1 = histoLinearity_D1S1->ProfileX();
-   TProfile* PLinearityD2S1 = histoLinearity_D2S1->ProfileX();
-   TProfile* PLinearityD3S1 = histoLinearity_D3S1->ProfileX();
-   TProfile* PLinearityD1S2 = histoLinearity_D1S2->ProfileX();
-   TProfile* PLinearityD2S2 = histoLinearity_D2S2->ProfileX();
-   TProfile* PLinearityD3S2 = histoLinearity_D3S2->ProfileX();
-
-   cout<<histoLinearity_L1->GetMean(2)<<endl;;
-   cout<<histoLinearity_L2->GetMean(2)<<endl;;
-   cout<<histoLinearity_L3->GetMean(2)<<endl;;
-   cout<<histoLinearity_L4->GetMean(2)<<endl;;
-   cout<<histoLinearity_D1S1->GetMean(2)<<endl;;
-   cout<<histoLinearity_D2S1->GetMean(2)<<endl;;
-   cout<<histoLinearity_D3S1->GetMean(2)<<endl;;
-   cout<<histoLinearity_D1S2->GetMean(2)<<endl;;
-   cout<<histoLinearity_D2S2->GetMean(2)<<endl;;
-   cout<<histoLinearity_D3S2->GetMean(2)<<endl;;
-
-   //PLinearityL1->SetMarkerColor(1);
-   PLinearityL2->SetMarkerColor(2);
-   PLinearityL3->SetMarkerColor(3);
-   PLinearityL4->SetMarkerColor(4);    
-   PLinearityD1S1->SetMarkerColor(1);
-   PLinearityD2S1->SetMarkerColor(6);
-   PLinearityD3S1->SetMarkerColor(7);
-   PLinearityD1S2->SetMarkerColor(8);
-   PLinearityD2S2->SetMarkerColor(9);
-   PLinearityD3S2->SetMarkerColor(11);
-   
-   //PLinearityL1->SetLineColor(1);
-   PLinearityL2->SetLineColor(2);
-   PLinearityL3->SetLineColor(3);
-   PLinearityL4->SetLineColor(4);    
-   PLinearityD1S1->SetLineColor(1);
-   PLinearityD2S1->SetLineColor(6);
-   PLinearityD3S1->SetLineColor(7);
-   PLinearityD1S2->SetLineColor(8);
-   PLinearityD2S2->SetLineColor(9);
-   PLinearityD3S2->SetLineColor(11);
-   
-   //PLinearityL1->SetMarkerStyle(8);
-   PLinearityL2->SetMarkerStyle(8);
-   PLinearityL3->SetMarkerStyle(8);
-   PLinearityL4->SetMarkerStyle(8);    
-   PLinearityD1S1->SetMarkerStyle(8);
-   PLinearityD2S1->SetMarkerStyle(8);
-   PLinearityD3S1->SetMarkerStyle(8);
-   PLinearityD1S2->SetMarkerStyle(8);
-   PLinearityD2S2->SetMarkerStyle(8);
-   PLinearityD3S2->SetMarkerStyle(8);
-   
-   //PLinearityL1->SetMarkerSize(0.5);
-   PLinearityL2->SetMarkerSize(0.5);
-   PLinearityL3->SetMarkerSize(0.5);
-   PLinearityL4->SetMarkerSize(0.5);    
-   PLinearityD1S1->SetMarkerSize(0.5);
-   PLinearityD2S1->SetMarkerSize(0.5);
-   PLinearityD3S1->SetMarkerSize(0.5);
-   PLinearityD1S2->SetMarkerSize(0.5);
-   PLinearityD2S2->SetMarkerSize(0.5);
-   PLinearityD3S2->SetMarkerSize(0.5);
-   
-   auto legendLinearity = new TLegend(0.905,0.2,1,0.92);
-   //legendLinearity->AddEntry(PLinearityL1,"B1","p");
-   //legendLinearity->AddEntry(PLinearityL2,"B2","p");
-   legendLinearity->AddEntry(PLinearityL3,"B3","p");
-   legendLinearity->AddEntry(PLinearityL4,"B4","p");
-   legendLinearity->AddEntry(PLinearityD1S1,"F1S1","p");
-   legendLinearity->AddEntry(PLinearityD2S1,"F2S1","p");
-   legendLinearity->AddEntry(PLinearityD3S1,"F3S1","p");
-   legendLinearity->AddEntry(PLinearityD1S2,"F1S2","p");
-   legendLinearity->AddEntry(PLinearityD2S2,"F2S2","p");
-   legendLinearity->AddEntry(PLinearityD3S2,"F3S2","p");
-   legendLinearity->SetFillColor(0);
-   legendLinearity->SetLineColor(1);
-   
-
-   C.Clear();
-   PLinearityL3->SetStats(0);
-   PLinearityL3->GetYaxis()->SetRangeUser(0,0.4);
-   PLinearityL3->GetYaxis()->SetTitle("Layer/Disk  Weight");
-   PLinearityL3->GetXaxis()->SetTitle("Total PCC / # of good modules");    
-   //PLinearityL1->Draw("histp");
-   PLinearityL3->Draw("histp");
-   //PLinearityL2->Draw("histpsame");
-   PLinearityL4->Draw("histpsame");
-   PLinearityD1S1->Draw("histpsame");
-   PLinearityD2S1->Draw("histpsame");
-   PLinearityD3S1->Draw("histpsame");
-   PLinearityD1S2->Draw("histpsame");
-   PLinearityD2S2->Draw("histpsame");
-   PLinearityD3S2->Draw("histpsame");
-   legendLinearity->Draw();
-   C.Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk_weight.png");    
+    C.Clear();
+    PLinearityL3->SetStats(0);
+    PLinearityL3->GetYaxis()->SetRangeUser(0,0.4);
+    PLinearityL3->GetYaxis()->SetTitle("Layer/Disk  Weight");
+    PLinearityL3->GetXaxis()->SetTitle("Average PCC per module");    
+    PLinearityL3->Draw("histp");
+    PLinearityL2->Draw("histpsame");
+    PLinearityL4->Draw("histpsame");
+    PLinearityD1S1->Draw("histpsame");
+    PLinearityD2S1->Draw("histpsame");
+    PLinearityD3S1->Draw("histpsame");
+    PLinearityD1S2->Draw("histpsame");
+    PLinearityD2S2->Draw("histpsame");
+    PLinearityD3S2->Draw("histpsame");
+    legendLinearity->Draw();
+    C.Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk_weight.png");    
  
    
-   C.Clear();
-   //PLinearityL1->Scale(1./histoLinearity_L1->GetMean(2));;
-   PLinearityL2->Scale(1./histoLinearity_L2->GetMean(2));;
-   PLinearityL3->Scale(1./histoLinearity_L3->GetMean(2));;
-   PLinearityL4->Scale(1./histoLinearity_L4->GetMean(2));;
-   PLinearityD1S1->Scale(1./histoLinearity_D1S1->GetMean(2));;
-   PLinearityD2S1->Scale(1./histoLinearity_D2S1->GetMean(2));;
-   PLinearityD3S1->Scale(1./histoLinearity_D3S1->GetMean(2));;
-   PLinearityD1S2->Scale(1./histoLinearity_D1S2->GetMean(2));;
-   PLinearityD2S2->Scale(1./histoLinearity_D2S2->GetMean(2));;
-   PLinearityD3S2->Scale(1./histoLinearity_D3S2->GetMean(2));;
-   PLinearityL3->SetStats(0);
-   PLinearityL3->GetYaxis()->SetRangeUser(1-LinearityMaxPerLayer,1+LinearityMaxPerLayer);
-   PLinearityL3->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
-   PLinearityL3->GetXaxis()->SetTitle("Total PCC / # of good modules");    
-   //PLinearityL1->Draw("histp");
-   PLinearityL3->Draw("histp");
-   //PLinearityL2->Draw("histpsame");
-   PLinearityL4->Draw("histpsame");
-   PLinearityD1S1->Draw("histpsame");
-   PLinearityD2S1->Draw("histpsame");
-   PLinearityD3S1->Draw("histpsame");
-   PLinearityD1S2->Draw("histpsame");
-   PLinearityD2S2->Draw("histpsame");
-   PLinearityD3S2->Draw("histpsame");
-   legendLinearity->Draw();
-   C.Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk.png");    
+    C.Clear();
+    PLinearityL2->Scale(1./histoLinearity_L2->GetMean(2));;
+    PLinearityL3->Scale(1./histoLinearity_L3->GetMean(2));;
+    PLinearityL4->Scale(1./histoLinearity_L4->GetMean(2));;
+    PLinearityD1S1->Scale(1./histoLinearity_D1S1->GetMean(2));;
+    PLinearityD2S1->Scale(1./histoLinearity_D2S1->GetMean(2));;
+    PLinearityD3S1->Scale(1./histoLinearity_D3S1->GetMean(2));;
+    PLinearityD1S2->Scale(1./histoLinearity_D1S2->GetMean(2));;
+    PLinearityD2S2->Scale(1./histoLinearity_D2S2->GetMean(2));;
+    PLinearityD3S2->Scale(1./histoLinearity_D3S2->GetMean(2));;
+    PLinearityL3->SetStats(0);
+    PLinearityL3->GetYaxis()->SetRangeUser(1-LinearityMaxPerLayer,1+LinearityMaxPerLayer);
+    PLinearityL3->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
+    PLinearityL3->GetXaxis()->SetTitle("Average PCC per module");    
+    PLinearityL3->Draw("histp");
+    PLinearityL2->Draw("histpsame");
+    PLinearityL4->Draw("histpsame");
+    PLinearityD1S1->Draw("histpsame");
+    PLinearityD2S1->Draw("histpsame");
+    PLinearityD3S1->Draw("histpsame");
+    PLinearityD1S2->Draw("histpsame");
+    PLinearityD2S2->Draw("histpsame");
+    PLinearityD3S2->Draw("histpsame");
+    legendLinearity->Draw();
+    C.Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk.png");    
     
 
 
- }
+  }
 
 
 
