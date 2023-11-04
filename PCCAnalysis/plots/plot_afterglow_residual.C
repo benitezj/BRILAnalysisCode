@@ -5,7 +5,7 @@
 
 
 TString pcctitle="Scale Factor"; 
-float collidingcountMin=100; //select fills with this number of bunches or larger
+float collidingcountMin=0; //select fills with this number of bunches or larger
 
 
 
@@ -65,6 +65,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, std::string runlis
     cout<<Run<<endl;  
     TFile InputFile(inpath+"/"+Run+".root");
     if(InputFile.IsZombie()) continue;
+    //InputFile.ls();
 
     TGraphErrors* gT1frac = (TGraphErrors*)InputFile.Get("Type1Fraction");
     TGraphErrors* gT1resid = (TGraphErrors*)InputFile.Get("Type1Res");
