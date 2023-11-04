@@ -17,8 +17,8 @@ period=$1 #Run2022A
 ##/eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/
 #eospath=/eos/cms/tier0/store/data
 ##/eos/cms//store/data/Run2022C/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/355/862/00000/87fecadb-45ce-4701-bb7f-6489b5689e0a.root
-#eospath=/eos/cms/store/data
-#dataset=AlCaPCCZeroBias-PromptReco
+eospath=/eos/cms/store/data
+dataset=AlCaPCCZeroBias-PromptReco
 
 #ZeroBias RawPCCProducer: 
 #/eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/
@@ -30,8 +30,8 @@ period=$1 #Run2022A
 #Random PCCIntegrator  
 #/store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/352/416/00000/fb9a0530-481e-416e-b621-1d15b74a9720.root
 #/store/express/Run2022F/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/*/*/*/*.root
-eospath=/eos/cms/store/express
-dataset=AlCaPCCRandom-Express
+#eospath=/eos/cms/store/express
+#dataset=AlCaPCCRandom-Express
 
 #Random RawPCC -> /store/express/Run2022A/StreamALCALumiPixelsCountsExpress/ALCAPROMPT/PromptCalibProdLumiPCC-Express-v1/000/352/416/00000/c96bf8ed-4934-4ff9-8560-bf836494a7cb.root
 #eospath=/eos/cms/store/express

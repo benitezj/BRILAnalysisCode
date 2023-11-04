@@ -1,7 +1,3 @@
-#########################
-#Author: Sam Higginbotham
-#Purpose: To investigate the AlCaPCCProducer input and output. 
-#########################
 import FWCore.ParameterSet.Config as cms
 import FWCore.PythonUtilities.LumiList as LumiList
 import os
@@ -9,14 +5,9 @@ import sys
 
 process = cms.Process("corrRECO")
 
-#process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
-
 inputlist=cms.untracked.vstring()
-#inputlist.insert(-1,'root://xrootd-cms.infn.it//store/data/Commissioning2018/AlCaLumiPixels0/ALCARECO/AlCaPCCRandom-02May2018-v1/70000/6CE65B93-D657-E811-BBB5-FA163E8006EF.root')
-#inputlist.insert(-1,'file:/eos/cms/store/data/Run2017G/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-17Nov2017-v1/20000/229B17F0-2B93-E811-9506-0025905B8568.root')
-#inputlist.insert(-1,'file:/eos/cms//store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v2/000/316/260/00000/C66E2804-6F59-E811-9495-FA163ED20DB8.root')
-#inputlist.insert(-1,'file:/eos/cms//store/data/Run2018B/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/317/661/00000/3A939C47-D16F-E811-84C5-FA163E909993.root')   
 #inputlist.insert(-1,'file:/eos/cms/store/express/Run2022E/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/360/327/00000/32c89930-ae66-4ed0-9ca2-01c62c8dbb1a.root')
+#inputlist.insert(-1,'file:/eos/cms/store/express/Run2022F/StreamALCALumiPixelsCountsExpress/ALCARECO/AlCaPCCRandom-Express-v1/000/361/913/00000/4520a73b-b3d5-44f9-862a-a593742488d4.root')
 
 ## read from file, environment variable must be set
 if len(inputlist) == 0 :
@@ -33,43 +24,20 @@ process.source = cms.Source("PoolSource",
 )
 
 
-jsonfile=os.getenv('JSONFILE')
-if jsonfile != '' :
-   #print('will apply json file: '+jsonfile)
-   process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
-   print('LumisToProcess: ')
-   print(process.source.lumisToProcess)
-
-
 #Make sure that variables match in producer.cc and .h
 process.rawPCCProd = cms.EDProducer("RawPCCProducer",
     RawPCCProducerParameters = cms.PSet(
-        #Mod factor to count lumi and the string to specify output 
-#        inputPccLabel = cms.string("alcaPCCProducerRandom"),
-#        ProdInst = cms.string("alcaPCCRandom"),
-       #Run3: recoPixelClusterCounts_alcaPCCIntegratorRandom_alcaPCCRandom_RECO.
         inputPccLabel = cms.string("alcaPCCIntegratorRandom"),
         ProdInst = cms.string("alcaPCCRandom"),
-        resetEveryNLumi = cms.untracked.int32(1),
         outputProductName = cms.untracked.string("rawPCCRandom"), 
+        ApplyCorrections=cms.untracked.bool(False),
+        OutputValue = cms.untracked.string(""), ##don't use "Average" , event averaging is done in the CorrPCCProducer
         modVeto=cms.vint32()
     )    
 )
 
 ###### veto list
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_master_VdM_ABCD_2018_newcuts.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/veto_lateRunD_lowcut_tight_F3P2.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/PCCTools/VetoModules/vetoModules_2017.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/vetoModules_2017.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018A.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_2018_vdM.txt' 
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018C.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D1.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D2.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D3.txt'
-#vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/plots/veto_Run2018D4.txt'
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt'
+vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt'
 
 
 print('reading from veto file: '+vetofilename)
@@ -95,8 +63,8 @@ process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducer",
         ProdInst = cms.string("rawPCCRandom"),
         approxLumiBlockSize=cms.int32(50),
         trigstring = cms.untracked.string("corrPCCRand"), 
-        type2_a= cms.double(0.00094),
-        type2_b= cms.double(0.018),
+        type2_a= cms.double(0.0008406),
+        type2_b= cms.double(0.01047),
         subSystemFolder=cms.untracked.string('AlCaReco')
     )
 )
