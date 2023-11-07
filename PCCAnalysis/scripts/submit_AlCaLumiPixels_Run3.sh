@@ -15,12 +15,16 @@ baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
 
+
+#source /cvmfs/cms-bril.cern.ch/cms-lumi-pog/brilws-docker/brilws-env
+#which brilcalc
+brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc'
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
 REFDET=hfet
 #REFNORM=${normtagdir}/normtag_hfet.json
 REFNORM=hfet22v10
 DATATAG=23v1
-
+BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
@@ -293,9 +297,13 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##run plotting scripts
     if [ "$action" == "4" ] ; then
-	command="brilcalc lumi -u hz/ub --byls --output-style csv -c offline -r ${run} --type ${REFDET} --normtag ${REFNORM} --datatag ${DATATAG}"
+	command="${brilcalc} lumi -u hz/ub --byls --output-style csv -c offline -r ${run} --type ${REFDET} --normtag ${REFNORM} --datatag ${DATATAG} "
+	if [ ! -z "$BCIDS" ] ; then
+	    command="${command} --xing --xingId ${BCIDS}"
+	fi
         echo $command
-        ${command} $goldenjson | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
+        #${command} | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
+	${command} | grep ${run}:  > $outputdir/${run}.ref
     fi 
 
     counter=`echo $counter | awk '{print $1+1}'`
@@ -312,7 +320,7 @@ fi
 
 if [ "$action" == "6" ] ; then
     NLS=`cat ${plotsdir}/ls.dat | wc -l`
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",${NLS},\"${REFDET}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",0,${NLS},\"${REFDET}\"\)
     #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\"\)
 fi
 

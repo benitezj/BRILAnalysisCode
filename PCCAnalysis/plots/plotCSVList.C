@@ -91,9 +91,9 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     std::string line;
     int run=0;
     int ls=0;
-    double rawL=0.;
-    double lsL=0; //lumi for given LS
-    double bxL=0.;
+    float rawL=0.;
+    float lsL=0; //lumi for given LS
+    float bxL=0.;
     int maxLS=0;  //find last LS with lumi
     float maxL=0.;
     float runL=0.;
@@ -129,7 +129,8 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       totLiss>>rawL;
       
       //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<rawL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<rawL/(sigmavis*modfrac[ls])<<std::endl;
-      
+      //cout<<Run<<" "<<ls<<":"<<endl;      
+
       lsL=0.;
       if(sigmavis>0)
 	lsL = rawL/sigmavis;
@@ -159,9 +160,12 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 	  std::getline(iss,token, ',');
 	  std::stringstream bxLiss(token);
 	  bxLiss>>rawL;
+	  //if(rawL>0.1) cout<<bx+1<<","<<endl;
+
 	  bxL = rawL/sigmavis;
 	  HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	  HLumiBX.AddBinContent(bx+1,bxL);
+
 	  
 	  if(rawL>0.5){
 	    ncoll++;
@@ -175,8 +179,8 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       if(ls > maxLS) maxLS=ls;
       if(lsL > maxL) maxL=lsL;
       
-      //lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
-      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      //lsfile<<Run<<","<<ls<<","<<lsL<<","<<refLumi[ls]<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;
