@@ -12,14 +12,16 @@ TCanvas C("C");
 #define MAXMODWEIGHT 0.02
 
 bool makeModuleGraphs=0;
-bool makePerLayerPlotsStability=0;
-float StabilityMaxPerLayer=0.015;
+
+bool makePerLayerPlotsStability=1;
+float StabilityMaxPerLayer=0.03;
+
 bool makePerLayerPlotsLinearity=0;
 float LinearityMaxPerLayer=0.01;
 
 float RMSThr=100000;
 
-bool makeModuleFitStability=1;
+bool makeModuleFitStability=0;
 float StabilityThr=10000;
 float StabilityMax=0.8;
 
@@ -30,12 +32,12 @@ float LinearityMax=0.03;
 bool fitModuleNoise=0;
 float VdMNoiseThr=10000;
 
-#define NLSBLOCK 10
+#define NLSBLOCK 1
 
-#define MINTOTPCC 450E6
+#define MINTOTPCC 500E6
 #define MAXTOTPCC 700E6
 
-#define NBINTOTPCCAVG 200
+#define NBINTOTPCCAVG 2000
 
 //#define MINTOTPCCAVG 100E3  //Layer0 veto
 //#define MAXTOTPCCAVG 300E3
@@ -50,7 +52,7 @@ float VdMNoiseThr=10000;
 //#define MAXTOTPCCAVG 155E3
 
 #define MINTOTPCCAVG 0E3    //vdM fill
-#define MAXTOTPCCAVG 200E3
+#define MAXTOTPCCAVG 130E3
 
 
 
@@ -106,9 +108,13 @@ TString InputPath = "./ModuleVeto2022/data/Run2022F";//"/eos/user/b/benitezj/BRI
 
 //std::vector<int> run_number = {360458,360459,360460}; //fill with linearity issue in Antonio's veto
 
+
 #define LS_ID_MIN 0
 #define LS_ID_MAX 3500
-std::vector<int> run_number = {361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdM fill 8385
+std::vector<int> run_number = {361909,361910,361912,361913,361915,361916,361917,361919,361921,361922,361923,361925,361926,361927,361929,361932,361933}; //vdm
+///SS1: 571 - 681
+///SS2: 2342 - 2354
+
 
 //#define LS_ID_MIN 140
 //#define LS_ID_MAX 180
@@ -258,6 +264,8 @@ void plot_Module_RMS_Stability() {
 
   TH1F ModVdmNoise("ModVdmNoise","Noise / Signal",100,0,0.05);
 
+  TGraph gModuleNoiseSS;
+  
   
   int ngood_mod=0;
   for (unsigned int i=0;i<NMOD;i++){
@@ -275,16 +283,16 @@ void plot_Module_RMS_Stability() {
 
   
 
-  TH2D* histo_L1=new TH2D("Histo_Layer1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_L2=new TH2D("Histo_Layer2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_L3=new TH2D("Histo_Layer3","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_L4=new TH2D("Histo_Layer4","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_D1S1=new TH2D("Histo_Disk1S1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_D2S1=new TH2D("Histo_Disk2S1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_D3S1=new TH2D("Histo_Disk3S1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_D1S2=new TH2D("Histo_Disk1S2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_D2S2=new TH2D("Histo_Disk2S2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
-  TH2D* histo_D3S2=new TH2D("Histo_Disk3S2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,2000,0,0.5);
+  TH2D* histo_L1=new TH2D("Histo_Layer1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_L2=new TH2D("Histo_Layer2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_L3=new TH2D("Histo_Layer3","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_L4=new TH2D("Histo_Layer4","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_D1S1=new TH2D("Histo_Disk1S1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_D2S1=new TH2D("Histo_Disk2S1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_D3S1=new TH2D("Histo_Disk3S1","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_D1S2=new TH2D("Histo_Disk1S2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_D2S2=new TH2D("Histo_Disk2S2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
+  TH2D* histo_D3S2=new TH2D("Histo_Disk3S2","",(LS_ID_MAX-LS_ID_MIN)/NLSBLOCK,LS_ID_MIN,LS_ID_MAX,4000,0,0.5);
 
   TH2D* histoLinearity_L1=new TH2D("HistoLinearity_Layer1","",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG,2000,0,0.5);
   TH2D* histoLinearity_L2=new TH2D("HistoLinearity_Layer2","",NBINTOTPCCAVG,MINTOTPCCAVG,MAXTOTPCCAVG,2000,0,0.5);
@@ -350,9 +358,16 @@ void plot_Module_RMS_Stability() {
 	std::stringstream countiss(token);
 	countiss>>m_count[i];
 	totcount += m_count[i];
-	 
+
+	
 	if(MODVETO[MODID[i]]==0){                                                                                        
 	  totcountgood += m_count[i];
+
+	  //if(ls_idx==100)
+	  if(ls_idx==575)
+	  //if(ls_idx==2345)
+	    gModuleNoiseSS.SetPoint(gModuleNoiseSS.GetN(),i,m_count[i]);
+	  
 	  
 	  if(BPIXorFPIX[MODID[i]]==1){
 	    if(LY[MODID[i]]==1)	      count_L1+=m_count[i];
@@ -375,18 +390,20 @@ void plot_Module_RMS_Stability() {
       
 
       
-      if(LS_ID_MIN < ls_idx && ls_idx < LS_ID_MAX && ngood_mod>0 ){ //need to cut ls_idx otherwise code crashes if wayt out of bounds
+      
+      if(LS_ID_MIN < ls_idx && ls_idx < LS_ID_MAX  //need to cut ls_idx otherwise code crashes if wayt out of bounds
+	 && ngood_mod>0
+	 ){
+	
 	PCC_vs_LS.Fill(ls_idx,totcount);
 
 	float totcountgood_avg=float(totcountgood)/ngood_mod;
 	PCCPerMod_vs_LS.Fill(ls_idx,totcountgood_avg);
 	    
 	if(MINTOTPCC < totcount  && totcount < MAXTOTPCC){	  
-	  //if(MINTOTPCCAVG < totcountgood_avg  && totcountgood_avg < MAXTOTPCCAVG){
-	    
 
 	    h_totcount_vs_LS.Fill(ls_idx,totcount);
-	    h_totcount_vs_totpcc.Fill(totcountgood_avg, totcount);
+	    h_totcount_vs_totpcc.Fill(totcountgood_avg,totcount);
 	  
 	    for (unsigned int i=0;i<NMOD;i++){
 	      if(MODVETO[MODID[i]]==0){
@@ -422,7 +439,7 @@ void plot_Module_RMS_Stability() {
 	      histoLinearity_D2S2->Fill(totcountgood_avg, float(count_D2S2)/totcountgood);
 	      histoLinearity_D3S2->Fill(totcountgood_avg, float(count_D3S2)/totcountgood);
 	    }
-	    // }
+
 	}
 	 
       }
@@ -463,7 +480,8 @@ void plot_Module_RMS_Stability() {
       }      
       if(mean<=0. || rms/mean>RMSThr) vetostream<<MODID[i]<<endl;
       
-      
+
+       
       ///module count graphs
       if(makeModuleGraphs){
 	C.Clear();
@@ -559,13 +577,14 @@ void plot_Module_RMS_Stability() {
 //  PCCPerMod_vs_LS_P->GetXaxis()->SetTitle("Lumi section");
 //  PCCPerMod_vs_LS_P->GetYaxis()->SetRangeUser(0,PCCPerMod_vs_LS_P->GetMaximum()*1.2);
   C.Clear();
+  C.SetLogy(1);
   PCCPerMod_vs_LS.GetYaxis()->SetTitle("Avg. PCC per module");
   PCCPerMod_vs_LS.GetXaxis()->SetTitle("Lumi section");
   PCCPerMod_vs_LS.SetStats(0);
-  PCCPerMod_vs_LS.Draw("scat");
-  //PCCPerMod_vs_LS_P->Draw("histp");                                                                                                                   
+  //PCCPerMod_vs_LS.Draw("scat");
+  PCCPerMod_vs_LS_P->Draw("histp");                                                                                                                   
   C.Print(OutPath+"/Module_RMS_Stability_totalcountavg.png");
-
+  C.SetLogy(0);
 
   /////////////////////
   /// Module weights
@@ -599,7 +618,17 @@ void plot_Module_RMS_Stability() {
   hRMS.Draw("hist");
   C.Print(OutPath+"/Module_RMS_Stability_RMS_hist.png");
 
+  ////Module noise from SS
+  gModuleNoiseSS.SetMarkerStyle(8);
+  gModuleNoiseSS.SetMarkerSize(MARKERSIZE);
+  gModuleNoiseSS.GetYaxis()->SetTitle("SS background");
+  gModuleNoiseSS.GetXaxis()->SetTitle("Module ID");
+  //gModuleNoiseSS.GetYaxis()->SetRangeUser(0,1000);     
+  C.Clear();
+  gModuleNoiseSS.Draw("ap");
+  C.Print(OutPath+"/Module_RMS_ModuleNoiseSS.png");
 
+  
   //// Noise level per module
   if(fitModuleNoise){
     C.Clear();
