@@ -179,8 +179,8 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       if(ls > maxLS) maxLS=ls;
       if(lsL > maxL) maxL=lsL;
       
-      lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
-      //lsfile<<Run<<","<<ls<<","<<lsL<<","<<refLumi[ls]<<std::endl;
+      //lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      lsfile<<Run<<","<<ls<<","<<lsL<<","<<refLumi[ls]<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;
