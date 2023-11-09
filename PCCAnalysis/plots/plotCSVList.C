@@ -180,7 +180,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       if(lsL > maxL) maxL=lsL;
       
       //lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
-      lsfile<<Run<<","<<ls<<","<<lsL<<","<<refLumi[ls]<<std::endl;
+      lsfile<<Run<<","<<ls<<","<<lsL<<","<<refLumi[ls]<<","<<ncoll<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;
