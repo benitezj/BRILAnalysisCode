@@ -317,9 +317,9 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
   //Lumi saved in the csv file
   if (saveCSVFile_) {
 
-    std::map<int, int> modmap;
+    std::map<int, float> modmap;
     for (unsigned int i=0;i<modlist.size();i++){
-      modmap.insert(std::pair<int, int>(modlist.at(i), 0));
+      modmap.insert(std::pair<int, float>(modlist.at(i), 0.));
     }
 
     int nevt=0;
@@ -333,7 +333,7 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
 	if(modID.at(j)==modlist.at(i))
 	  k=j;
 
-      int m_c=0;
+      float m_c=0;
       if(k>=0){
 	for (int bx=0;bx<int(LumiConstants::numBX);bx++)
 	  m_c += clustersPerBXInput.at(bx+k*int(LumiConstants::numBX));
@@ -341,7 +341,7 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
       }
 
       if(nevt>0) m_c /= nevt;
-      else m_c=0;
+      else m_c=0.;
 
       modmap.find(modlist.at(i))->second = m_c;
     }
@@ -351,7 +351,7 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
     std::ofstream csfile(csvOutLabel_, std::ios_base::app);
     csfile << std::to_string(lumiSeg.run()) << ",";
     csfile << std::to_string(lumiSeg.luminosityBlock()) << ",";
-    std::map<int, int>::iterator itr;
+    std::map<int, float>::iterator itr;
     for (itr = modmap.begin(); itr != modmap.end(); ++itr) {
       //csfile << itr->first<<",";
       csfile << itr->second<<",";

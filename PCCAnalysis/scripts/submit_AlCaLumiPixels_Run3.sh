@@ -284,6 +284,9 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	    echo $fullsubmitdir/${run}.log
 	    cat $fullsubmitdir/${run}.log | grep sqlite_file
 	    counterbad=`echo $counterbad | awk '{print $1+1}'`
+
+	    ##replace queue
+	    #`sed -i 's/workday/testmatch/g' $fullsubmitdir/${run}.sub` 
 	fi   
     fi
 
