@@ -14,7 +14,7 @@ condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
-
+CAF=1 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
 #source /cvmfs/cms-bril.cern.ch/cms-lumi-pog/brilws-docker/brilws-env
 #which brilcalc
@@ -178,12 +178,14 @@ make_sub_script(){
 
     echo "Universe   = vanilla" >>  $fullsubmitdir/${run}.sub
     echo "+JobFlavour = \"${condorqueue}\" " >> $fullsubmitdir/${run}.sub
+    if [ $CAF == 1 ] ; then echo "+AccountingGroup = \"group_u_CMS.CAF.COMM\"" >> $fullsubmitdir/${run}.sub ; fi
     echo "Executable = /bin/bash" >> $fullsubmitdir/${run}.sub 
     echo "Arguments  = ${fullsubmitdir}/${run}.sh" >> $fullsubmitdir/${run}.sub 
     echo "Log        = ${fullsubmitdir}/${run}.log" >> $fullsubmitdir/${run}.sub 
     echo "Output     = ${fullsubmitdir}/${run}.log" >> $fullsubmitdir/${run}.sub 
     echo "Error      = ${fullsubmitdir}/${run}.log" >> $fullsubmitdir/${run}.sub 
     echo "Queue  " >> $fullsubmitdir/${run}.sub 
+
 }
 
 
