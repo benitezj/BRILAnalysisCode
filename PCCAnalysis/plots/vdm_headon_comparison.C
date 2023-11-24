@@ -89,6 +89,13 @@ void vdm_headon_comparison(){
   float bkg=(bkgSS1+bkgSS2)/2;
   cout<<"PCC background value: ("<<bkgSS1<<" + "<<bkgSS2<<")/2 =  "<<bkg<<endl;
 
+
+  ofstream file("vdm2022HeadOnLumi_pcc_hfet_13bcid.csv");
+  if (!file.is_open()){
+    std::cout << "Unable to open output file "<<endl;
+    return;
+  }
+  
   
   TGraph GLumi;
   TGraph GLumiHF;
@@ -99,21 +106,40 @@ void vdm_headon_comparison(){
     if(iter->second<=0.) continue;
 
     float t=(iter->second - T0)/3600.;
-    if(t<MINTIME || t>MAXTIME)
-      continue;
+   
+    //print bad LS's
+    char* lsstr=(char*)((iter->first).c_str());
+    char runstr[100];
+    sprintf(runstr,"%c%c%c%c%c%c",lsstr[0],lsstr[1],lsstr[2],lsstr[3],lsstr[4],lsstr[5]);
+    lsstr+=6;
 
-    GLumi.SetPoint(GLumi.GetN(),t,pcclumi[iter->first]-bkg);
-    GLumiHF.SetPoint(GLumiHF.GetN(),t,hflumi[iter->first]);    
- 
 
-    if(hflumi[iter->first]<=MINLUMICUT)
-      continue;
-    GLumiRatio.SetPoint(GLumiRatio.GetN(),t,(pcclumi[iter->first]-bkg)/hflumi[iter->first]);
-    HPCC.Fill(t,pcclumi[iter->first]-bkg);
-    HHF.Fill(t,hflumi[iter->first]);
+
+    ///invalidate lumi sections where some modules went bad 
+    if((19<t && t<21)
+       && hflumi[iter->first] > 0 && pcclumi[iter->first] > 0 
+       && fabs((pcclumi[iter->first]-bkg)/hflumi[iter->first] - 1)>0.003
+       )
+      {
+	//cout<<iter->first<<" "<<runstr<<","<<lsstr<<","<<t<<","<<(pcclumi[iter->first]-bkg)<<","<<hflumi[iter->first]<<endl;
+	continue;
+      }
+
+    ///Write the final data to a csv
+    file<<runstr<<","<<lsstr<<","<<(long)(iter->second)<<","<<(pcclumi[iter->first]-bkg)<<","<<hflumi[iter->first]<<endl;
+
+    ///remove lumisections below with lumi below the headon position
+    if(hflumi[iter->first]>MINLUMICUT && MINTIME<t && t<MAXTIME){  
+      GLumi.SetPoint(GLumi.GetN(),t,pcclumi[iter->first]-bkg);
+      GLumiHF.SetPoint(GLumiHF.GetN(),t,hflumi[iter->first]);    
+      GLumiRatio.SetPoint(GLumiRatio.GetN(),t,(pcclumi[iter->first]-bkg)/hflumi[iter->first]);
+      HPCC.Fill(t,pcclumi[iter->first]-bkg);
+      HHF.Fill(t,hflumi[iter->first]);
+    }
     
   }
 
+  file.close();
 
   TCanvas C;
 

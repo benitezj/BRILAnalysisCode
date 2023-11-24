@@ -165,13 +165,15 @@ std::map<int,float> FPIX_R;
 std::map<int,float> FPIX_PHI;
 std::map<int,float> FPIX_Z;
 
+int NBPIX[4]={0,0,0,0};//modules per layer
+int NFPIX[6]={0,0,0,0,0,0};//modules per disk
+
+
 void readModRPhiZCoordinates(){
   std::cout<<"Starting to read the Module coordinates"<<endl;
   std::cout<<" MODID list size: "<<MODID.size()<<endl;
   
   int counter=0;
-  int NBPIX[4]={0,0,0,0};//modules per layer
-  int NFPIX[6]={0,0,0,0,0,0};//modules per disk
 
   //BPix
   ifstream cfile_bpix("./BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");

@@ -6,10 +6,12 @@
 
 void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/rootlogon.C");
 
-  readModCoordinates();
-  
+  //readModCoordinates();
+  readModRPhiZCoordinates();
+
+  //////////////////////////
   //BPIX
   TH2F B[4];
   int bins[4]={6,14,22,32};
@@ -21,7 +23,7 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     //B[l].SetMarkerStyle(8);
   }
 
-  
+  int BPIXNBAD=0;
   int BCountN[4]={0,0,0,0};
   int BCountP[4]={0,0,0,0};
   ifstream myfile(VetoList.c_str());
@@ -32,19 +34,18 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
   std::string line;
   while (std::getline(myfile,line)){
     int module=atoi(line.c_str());
-    
     if ( MD.find(module) == MD.end() ) continue;
-    
+    BPIXNBAD++;
     int md=MD[module]>4?MD[module]-4:MD[module]-5;
     int ld=LD[module]>bins[LY[module]-1]?LD[module]-bins[LY[module]-1]:LD[module]-bins[LY[module]-1]-1;
-    cout<<module<<" "<<LY[module]<<" "<<md<<" "<<ld<<endl;
+    //cout<<module<<" "<<LY[module]<<" "<<md<<" "<<ld<<endl;
 
     B[LY[module]-1].Fill(md,ld);
     if(md<0)BCountN[LY[module]-1]++;
     if(md>0)BCountP[LY[module]-1]++;
   }
 
-
+  ////////////////////////////////
   ////FPIX
   TH2F F[2];
   for(long l=0;l<2;l++){
@@ -61,16 +62,17 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
     return;
   }
 
+  int FPIXNBAD=0;
   int FCountN[2]={0,0};
   int FCountP[2]={0,0};
   while (std::getline(myfile_fpix,line)){
     int module=atoi(line.c_str());
-    
     if( SD.find(module) == SD.end() ) continue;
-
+    FPIXNBAD++;
+    
     int di=(SD[module]==2?1:-1)*DI[module];
     int bl=BL[module]>28?BL[module]-28:BL[module]-29;
-    cout<<module<<" "<<di<<" "<<bl<<" "<<PN[module]<<endl;
+    //cout<<module<<" "<<di<<" "<<bl<<" "<<PN[module]<<endl;
 
     F[PN[module]-1].Fill(di,bl);
     if(di<0)FCountN[PN[module]-1]++;
@@ -78,10 +80,17 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
   }
   
 
+  Int_t colors[] = {2}; // #colors >= #levels - 1
+  gStyle->SetPalette((sizeof(colors)/sizeof(Int_t)), colors);
+  Double_t levels[] = {-1.79e308,1.00,};
+
+ 
   TCanvas C;
   for(long l=0;l<4;l++){
     C.Clear();
-    B[l].SetTitle(TString("BPIX Layer ")+l);
+    B[l].SetTitle(TString("BPIX Layer ")+(l+1));
+    //B[l].GetZaxis()->SetRangeUser(0,0.5);
+    B[l].SetContour((sizeof(levels)/sizeof(Double_t)), levels);
     B[l].Draw("col");
     C.Print(TString("VetoMap_Layer")+(l+1)+".png");
   }
@@ -90,19 +99,21 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
   for(long l=0;l<2;l++){
     C.Clear();
     F[l].SetTitle(TString("FPIX ")+l);
-    F[l].Draw("col");
+    F[l].Draw("colz");
     C.Print(TString("VetoMap_FPIX")+(l+1)+".png");
   }
 
 
 
-  ///summary of counts
-  cout<<"BPIX 0 : "<<BCountN[0]<<" , "<<BCountP[0]<<endl;
-  cout<<"BPIX 1 : "<<BCountN[1]<<" , "<<BCountP[1]<<endl;
-  cout<<"BPIX 2 : "<<BCountN[2]<<" , "<<BCountP[2]<<endl;
-  cout<<"BPIX 3 : "<<BCountN[3]<<" , "<<BCountP[3]<<endl;
 
-  cout<<"FPIX 0 : "<<FCountN[0]<<" , "<<FCountP[0]<<endl;
-  cout<<"FPIX 1 : "<<FCountN[1]<<" , "<<FCountP[1]<<endl;
+  //distribution of negative and positive side
+  cout<<"BPIX 0 : "<<BCountN[0]<<"N + "<<BCountP[0]<<"P  / "<<NBPIX[0]<<endl;
+  cout<<"BPIX 1 : "<<BCountN[1]<<"N + "<<BCountP[1]<<"P  / "<<NBPIX[1]<<endl;
+  cout<<"BPIX 2 : "<<BCountN[2]<<"N + "<<BCountP[2]<<"P  / "<<NBPIX[2]<<endl;
+  cout<<"BPIX 3 : "<<BCountN[3]<<"N + "<<BCountP[3]<<"P  / "<<NBPIX[3]<<endl;
+  cout<<"# BPIX total= "<<BPIXNBAD<<" / "<<NBPIX[0]+NBPIX[1]+NBPIX[2]+NBPIX[3]<<endl;  
   
+  cout<<"FPIX 0 : "<<FCountN[0]<<"N + "<<FCountP[0]<<"P "<<endl;
+  cout<<"FPIX 1 : "<<FCountN[1]<<"N + "<<FCountP[1]<<"P "<<endl;
+  cout<<"# FPIX total= "<<FPIXNBAD<<" / "<<NFPIX[0]+NFPIX[1]+NFPIX[2]+NFPIX[3]+NFPIX[4]+NFPIX[5]<<endl;  
 }

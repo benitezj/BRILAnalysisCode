@@ -4,7 +4,7 @@
 
 #include "BRILAnalysisCode/PCCAnalysis/plots/globals.h"
 
-TString OutPath="/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/DynamicVeto";
+TString OutPath="./";
 
 TLine Line;
 TLatex text;
