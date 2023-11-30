@@ -18,11 +18,11 @@ float SSBkgMax=0;
 
 float RMSThr=0.;
 
-float StabilityThr=0.9;
-float StabilityMax=0.5;//for plot range
+float StabilityThr=0.0;
+float StabilityMax=0.10;//for plot range
 
-float LinearityThr=0.0;
-float LinearityMax=0.02;//for plot 
+float LinearityThr=0.1;
+float LinearityMax=0.015;//for plot 
 
 int selectLayer=0; //keep modules only in this layer (1,2,3,4), reject FPIX and other layers
 int selectDisk=0;  //keep modules only in this disk (1,2,3,4,5,6) , reject Barrel and other disks
@@ -42,7 +42,7 @@ bool makeModuleGraphs=0;//total counts per module , not the weights
 float StabilityMaxPerLayer=0.05;
 float LinearityMaxPerLayer=0.03;
 
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
 
 
 
@@ -51,8 +51,8 @@ TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
 #define MINTOTPCC 250E6
 #define MAXTOTPCC 700E6
 
-#define MINTOTPCCAVG 100E3  //Layer0 veto
-#define MAXTOTPCCAVG 300E3
+#define MINTOTPCCAVG 80E3  //Layer0 veto
+#define MAXTOTPCCAVG 250E3
 
 //#define MINTOTPCCAVG 70E3 //Old veto
 //#define MAXTOTPCCAVG 250E3  
@@ -69,7 +69,7 @@ TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
 
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p08p.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p08p_Linearity04p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p08p_Linearity04p025p.txt";
 
@@ -223,14 +223,15 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
   float diff=0.;
   int c=0;
   for(int b=1;b<=P.GetNbinsX();b++){
-    if(P.GetBinContent(b)>0 && P.GetBinCenter(b)< 3000 ){
+    if(P.GetBinContent(b)>0){ // && P.GetBinCenter(b)< 3000 ){
       if(P.GetBinContent(b)>=1)
 	diff += (P.GetBinContent(b)-1);
       else
 	diff += (1 - P.GetBinContent(b));
       c++;
     }
-  }  
+  }
+  cout<<"counter : "<<c<<endl;
   if(c>0) diff = diff/c;
   else diff=1000;
 
@@ -694,6 +695,9 @@ void plot_Module_RMS_Stability() {
     hStabilityDeviation.GetYaxis()->SetTitle("# of modules");
     C.Clear();
     hStabilityDeviation.Draw("hist");
+    drawCMSPrelim(0.16,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawFillYear(0,2022);
+    drawPCCLuminometer(0.16,0.80);
     C.SetLogy(1);
     C.Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
     C.SetLogy(0);
@@ -719,6 +723,9 @@ void plot_Module_RMS_Stability() {
     hLinearityDeviation.GetYaxis()->SetTitle("# of modules");
     C.Clear();
     hLinearityDeviation.Draw("hist");
+    drawCMSPrelim(0.16,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawFillYear(0,2022);
+    drawPCCLuminometer(0.16,0.80);
     C.SetLogy(1);
     C.Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");
     C.SetLogy(0);

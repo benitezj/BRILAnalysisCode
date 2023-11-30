@@ -38,7 +38,8 @@ void drawFillYear(long FILL=0,long year=0){
   float xpos=0.8;
   if(FILL!=0){FillYear+=TString(" Fill ")+(long)FILL+",";  xpos-=0.1;}
   if(year!=0){FillYear+=TString("  ")+year+",";  xpos-=0.1;}
-  FillYear+=TString("  ")+" #sqrt{s} = 13 TeV ";
+  if(year>=2022) FillYear+=TString("  ")+" #sqrt{s} = 13.6 TeV ";
+  else FillYear+=TString("  ")+" #sqrt{s} = 13 TeV ";
   text.DrawLatexNDC(xpos,0.94,FillYear.Data());
 }
 void drawCMSPrelim(float xpos=0.19,float ypos=0.85, TString label="#font[62]{CMS} #font[52]{Preliminary}"){

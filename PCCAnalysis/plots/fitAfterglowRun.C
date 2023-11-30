@@ -4,7 +4,7 @@ TString outputpath="./tmp";
 
 ///////////////
 //  2018 data
-TString inpath="./AfterglowModel2018"; //2018 data final veto
+//TString inpath="./AfterglowModel2018"; //2018 data final veto
 //void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={1}, int NCOLLIDINGBCIDS=11, int NTOTALBCIDS=100){//1-wagon
 //void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995,320996}, std::vector<int> LeadBCIDList={188,1070,1964,2858}, int NCOLLIDINGBCIDS=103, int NTOTALBCIDS=200){//2-wagons
 //std::vector<int> RunList={320995}; std::vector<int> LeadBCIDList={188}; int NCOLLIDINGBCIDS=103; int NTOTALBCIDS=200;
@@ -13,25 +13,26 @@ TString inpath="./AfterglowModel2018"; //2018 data final veto
 //void fitAfterglowRun(TString inpath=".", std::vector<int> RunList={320995}, std::vector<int> LeadBCIDList={3124}, int NCOLLIDINGBCIDS=158, int NTOTALBCIDS=240){
 
 //std::vector<int> RunList={320995}; std::vector<int> LeadBCIDList={188+55}; int NCOLLIDINGBCIDS=48; int NTOTALBCIDS=148;//shows fit to only one wagon
-std::vector<int> RunList={320995}; std::vector<int> LeadBCIDList={188}; int NCOLLIDINGBCIDS=103; int NTOTALBCIDS=250; //2-wagons
+//std::vector<int> RunList={320995}; std::vector<int> LeadBCIDList={188}; int NCOLLIDINGBCIDS=103; int NTOTALBCIDS=250; //2-wagons -> thesis
 
 ///////////////
 ///    2022 Data
-//TString inpath="./AfterglowModel_2022Data_SummerVeto/data_v2/Run2022F" ; //2022 final veto
+TString inpath="./AfterglowModel_2022Data_SummerVeto/data_v2/Run2022F" ; //2022 final veto
 //std::vector<int> RunList={361948}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250; //600b fill 8383 -> few blocks
 //std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250; //600b Fill 8307  
 //std::vector<int> RunList={361957}; std::vector<int> LeadBCIDList={66,2748}; int NCOLLIDINGBCIDS=208; int NTOTALBCIDS=270;//1800b fill 8385 -> mu scan fill, fit smooth part
 //std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018+153}; int NCOLLIDINGBCIDS=36; int NTOTALBCIDS=100; //Thesis plot Fill 8307
+std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=300; //Thesis plot Fill 8307
+//std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018}; int NCOLLIDINGBCIDS=79; int NTOTALBCIDS=110; //Thesis plot Fill 8307
 
 
 ////////////////////////////////////////////////////////////////
 //*//
 // This code fits one bunch train and the tail
 //*//
-
-
 bool makePlots=1;
-float yRangeMin=1;
+float yRangeMin=10;
+
 
 TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
 float fit_chi2;
@@ -168,14 +169,15 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     /// plot with the input data full orbit
     C.Clear();
     C.SetLogy(1);
-    H->GetYaxis()->SetRangeUser(0.1,10*AvgN);
+    H->GetYaxis()->SetRangeUser(yRangeMin,10*AvgN);
     H->SetStats(0);
     H->GetYaxis()->SetTitle("Raw PCC");
     H->GetXaxis()->SetTitle("BCID");
     H->Draw("hist");
-    drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Work in progress}");
-    //drawFillYear(8307,2022);
-    drawFillYear(7036,2018);
+    drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawFillYear(8307,2022);
+    //drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Work in progress}");
+    //drawFillYear(7036,2018);
     drawPCCLuminometer();
     C.Print(outpath+TString("/fitAfterglowTrain_inputdata-")+lsblockname+".png");
 
@@ -231,10 +233,11 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     leg.AddEntry(&HSel,"Data","p");
     leg.AddEntry(&HFit,"Fit","l");
     leg.Draw();
-    
-    drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Work in progress}");
-    //drawFillYear(8307,2022);
-    drawFillYear(7036,2018);
+
+    drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawFillYear(8307,2022);
+    //drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Work in progress}");
+    //drawFillYear(7036,2018);
     drawPCCLuminometer();
     C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
 
