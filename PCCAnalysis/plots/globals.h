@@ -41,11 +41,11 @@ void drawFillYear(long FILL=0,long year=0){
   FillYear+=TString("  ")+"(#sqrt{s} = 13 TeV)";
   text.DrawLatexNDC(xpos,0.94,FillYear.Data());
 }
-void drawCMSPrelim(float xpos=0.19,float ypos=0.85){
+void drawCMSPrelim(float xpos=0.19,float ypos=0.85, TString label="#font[62]{CMS} #font[52]{Preliminary}"){
   TLatex text;
   text.SetTextColor(1);
   text.SetTextSize(0.040);
-  text.DrawLatexNDC(xpos,ypos,TString("#font[62]{CMS} #font[52]{Preliminary}"));
+  text.DrawLatexNDC(xpos,ypos,label);
 }
 void drawPCCLuminometer(float xpos=0.19,float ypos=0.80){
   TLatex text;
