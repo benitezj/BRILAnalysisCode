@@ -38,7 +38,7 @@ void drawFillYear(long FILL=0,long year=0){
   float xpos=0.8;
   if(FILL!=0){FillYear+=TString(" Fill ")+(long)FILL+",";  xpos-=0.1;}
   if(year!=0){FillYear+=TString("  ")+year+",";  xpos-=0.1;}
-  FillYear+=TString("  ")+"(#sqrt{s} = 13 TeV)";
+  FillYear+=TString("  ")+" #sqrt{s} = 13 TeV ";
   text.DrawLatexNDC(xpos,0.94,FillYear.Data());
 }
 void drawCMSPrelim(float xpos=0.19,float ypos=0.85, TString label="#font[62]{CMS} #font[52]{Preliminary}"){
@@ -47,11 +47,12 @@ void drawCMSPrelim(float xpos=0.19,float ypos=0.85, TString label="#font[62]{CMS
   text.SetTextSize(0.040);
   text.DrawLatexNDC(xpos,ypos,label);
 }
-void drawPCCLuminometer(float xpos=0.19,float ypos=0.80){
+void drawPCCLuminometer(float xpos=0.19,float ypos=0.80, TString subdet=""){
   TLatex text;
   text.SetTextColor(1);
   text.SetTextSize(0.035);
   text.DrawLatexNDC(xpos,ypos,TString("#font[52]{PCC Luminometer} "));
+  if(subdet.CompareTo("")!=0) text.DrawLatexNDC(xpos,ypos-0.06,TString("#font[52]{")+subdet+"}");
 }
 
 
