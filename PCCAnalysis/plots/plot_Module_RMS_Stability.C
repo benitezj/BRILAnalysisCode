@@ -19,9 +19,9 @@ float SSBkgMax=0;
 float RMSThr=0.;
 
 float StabilityThr=0.0;
-float StabilityMax=0.10;//for plot range
+float StabilityMax=0.20;//for plot range
 
-float LinearityThr=0.1;
+float LinearityThr=0.0;
 float LinearityMax=0.015;//for plot 
 
 int selectLayer=0; //keep modules only in this layer (1,2,3,4), reject FPIX and other layers
@@ -30,7 +30,7 @@ int selectDisk=0;  //keep modules only in this disk (1,2,3,4,5,6) , reject Barre
 
 ///////////////////////////////////////
 /// Graph parameters (no module selections below)
-TCanvas C("Canvas","",800,600);
+TCanvas*C=NULL;
 TLine line;
 #define MARKERSIZE 0.3
 #define MAXMODWEIGHT 7E-2
@@ -39,10 +39,10 @@ TLine line;
 #define NLSBLOCK 100
 #define NBINTOTPCCAVG 1000
 bool makeModuleGraphs=0;//total counts per module , not the weights
-float StabilityMaxPerLayer=0.05;
-float LinearityMaxPerLayer=0.03;
+float StabilityMaxPerLayer=0.0;//0.05
+float LinearityMaxPerLayer=0.0;//0.03
 
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
 
 
 
@@ -69,7 +69,7 @@ float LinearityMaxPerLayer=0.03;
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_CDEFG_3_2022.txt";
 
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p.txt";
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08p.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08p.txt";//thesis
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p08p_Linearity04p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2022/veto_2022F_Stability2p08p_Linearity04p025p.txt";
 
@@ -231,7 +231,7 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
       c++;
     }
   }
-  cout<<"counter : "<<c<<endl;
+  //cout<<"counter : "<<c<<endl;
   if(c>0) diff = diff/c;
   else diff=1000;
 
@@ -243,15 +243,16 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
     P.SetStats(0);
     P.SetMarkerStyle(8);
     P.SetMarkerSize(MARKERSIZE);
-    P.GetYaxis()->SetRangeUser((1-StabilityMax),(1+StabilityMax));
-    C.Clear();
+    //P.GetYaxis()->SetRangeUser((1-StabilityMax),(1+StabilityMax));
+    P.GetYaxis()->SetRangeUser((1-0.5),(1+0.5));
+    C->Clear();
     P.Draw("histp");
     line.SetLineColor(2);
     line.DrawLine(Num->GetXaxis()->GetXmin(),1,Num->GetXaxis()->GetXmax(),1);
-    drawCMSPrelim(0.16,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
     drawFillYear(0,2022);
-    drawPCCLuminometer(0.16,0.80,TString("module ")+MODID[idx]);
-    C.Print(OutPath+"/Module_RMS_Stability_fit_"+P.GetName()+".png");
+    drawPCCLuminometer(0.18,0.80,TString("module ")+MODID[idx]);
+    C->Print(OutPath+"/Module_RMS_Stability_fit_"+P.GetName()+".png");
   }
   
   return diff;
@@ -263,8 +264,10 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
 
 void plot_Module_RMS_Stability() {  
 
+  
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
-    
+  C=new TCanvas("Canvas","",50,50,800,600);
+  
   readModRPhiZCoordinates();
  
   if(!readModVeto(ModVeto)) return;
@@ -546,12 +549,12 @@ void plot_Module_RMS_Stability() {
      
       ///module count vs LS 
       if(makeModuleGraphs){
-	C.Clear();
+	C->Clear();
 	//h_modcount_vs_LS[i]->SetStats(0);
 	h_modcount_vs_LS[i]->GetYaxis()->SetRangeUser(0,1.2*MAXTOTPCCAVG);
 	h_modcount_vs_LS[i]->SetTitle(TString("Module ")+MODID[i]);
 	h_modcount_vs_LS[i]->Draw("histp");
-	C.Print(OutPath+"/Module_RMS_Stability_modulecount_"+i+".png");
+	C->Print(OutPath+"/Module_RMS_Stability_modulecount_"+i+".png");
       }
 
     
@@ -599,13 +602,13 @@ void plot_Module_RMS_Stability() {
 //  PCC_vs_LS_P->GetYaxis()->SetTitle("Total PCC");
 //  PCC_vs_LS_P->GetXaxis()->SetTitle("Lumi section");
 //  PCC_vs_LS_P->GetYaxis()->SetRangeUser(0,PCC_vs_LS_P->GetMaximum()*1.2);
-  C.Clear();
+  C->Clear();
   PCC_vs_LS.GetYaxis()->SetTitle("Total PCC");
   PCC_vs_LS.GetXaxis()->SetTitle("Lumi section");
   PCC_vs_LS.SetStats(0);
   PCC_vs_LS.Draw("scat");
   //PCC_vs_LS_P->Draw("histp");                                                                                                                   
-  C.Print(OutPath+"/Module_RMS_Stability_totalcount.png");
+  C->Print(OutPath+"/Module_RMS_Stability_totalcount.png");
 
  
   /* TProfile* PCCPerMod_vs_LS_P=PCCPerMod_vs_LS.ProfileX(); */
@@ -613,15 +616,15 @@ void plot_Module_RMS_Stability() {
   /* PCCPerMod_vs_LS_P->GetYaxis()->SetTitle("Total PCC / # of good modules"); */
   /* PCCPerMod_vs_LS_P->GetXaxis()->SetTitle("Lumi section"); */
   /* PCCPerMod_vs_LS_P->GetYaxis()->SetRangeUser(0,PCCPerMod_vs_LS_P->GetMaximum()*1.2); */
-  C.Clear();
-  //C.SetLogy(1);
+  C->Clear();
+  //C->SetLogy(1);
   PCCPerMod_vs_LS.GetYaxis()->SetTitle("Avg. PCC per module");
   PCCPerMod_vs_LS.GetXaxis()->SetTitle("Lumi section");
   PCCPerMod_vs_LS.SetStats(0);
   PCCPerMod_vs_LS.Draw("scat");
   //PCCPerMod_vs_LS_P->Draw("histp");                                                                                                                   
-  C.Print(OutPath+"/Module_RMS_Stability_totalcountavg.png");
-  //C.SetLogy(0);
+  C->Print(OutPath+"/Module_RMS_Stability_totalcountavg.png");
+  //C->SetLogy(0);
 
   
   /////////////////////
@@ -633,11 +636,11 @@ void plot_Module_RMS_Stability() {
   ModWeight.GetXaxis()->SetTitle("Module ID");                                                                                 
   ModWeight.GetYaxis()->SetTitle("Module Weight");
   ModWeight.GetYaxis()->SetRangeUser(1E-5,MAXMODWEIGHT);
-  C.Clear();
-  //C.SetLogy(1);
+  C->Clear();
+  //C->SetLogy(1);
   ModWeight.Draw("AP"); 
-  C.Print(OutPath+"/Module_RMS_Stability_weights.png");
-  //C.SetLogy(0);
+  C->Print(OutPath+"/Module_RMS_Stability_weights.png");
+  //C->SetLogy(0);
 
 
 
@@ -648,11 +651,11 @@ void plot_Module_RMS_Stability() {
     gModuleNoiseSS.GetYaxis()->SetTitle("SS background");
     gModuleNoiseSS.GetXaxis()->SetTitle("Module ID");
     gModuleNoiseSS.GetYaxis()->SetRangeUser(1E-5,10);     
-    C.Clear();
-    C.SetLogy(1);
+    C->Clear();
+    C->SetLogy(1);
     gModuleNoiseSS.Draw("ap");
-    C.Print(OutPath+"/Module_RMS_ModuleNoiseSS.png");
-    C.SetLogy(0);
+    C->Print(OutPath+"/Module_RMS_ModuleNoiseSS.png");
+    C->SetLogy(0);
   }
 
 
@@ -664,15 +667,15 @@ void plot_Module_RMS_Stability() {
     ModWeightRMS.GetYaxis()->SetTitle("RMS / Mean");
     ModWeightRMS.GetXaxis()->SetTitle("Module ID");
     ModWeightRMS.GetYaxis()->SetRangeUser(0,StabilityMax);    
-    C.Clear();
+    C->Clear();
     ModWeightRMS.Draw("AP");
-    C.Print(OutPath+"/Module_RMS_Stability_RMS.png");
+    C->Print(OutPath+"/Module_RMS_Stability_RMS.png");
     
     hRMS.GetXaxis()->SetTitle("RMS / Mean");
     hRMS.GetYaxis()->SetTitle("# of modules");
-    C.Clear();
+    C->Clear();
     hRMS.Draw("hist");
-    C.Print(OutPath+"/Module_RMS_Stability_RMS_hist.png");
+    C->Print(OutPath+"/Module_RMS_Stability_RMS_hist.png");
   }
 
 
@@ -686,21 +689,21 @@ void plot_Module_RMS_Stability() {
     gStabilityDeviation.GetYaxis()->SetTitle("Stability Deviation");
     gStabilityDeviation.GetXaxis()->SetTitle("Module ID");
     gStabilityDeviation.GetYaxis()->SetRangeUser(0,StabilityMax);    
-    C.Clear();
+    C->Clear();
     gStabilityDeviation.Draw("AP");
-    C.Print(OutPath+"/Module_RMS_StabilityDeviation.png");
+    C->Print(OutPath+"/Module_RMS_StabilityDeviation.png");
 
     gStyle->SetOptStat(1111111);
     hStabilityDeviation.GetXaxis()->SetTitle("Stability Deviation");
     hStabilityDeviation.GetYaxis()->SetTitle("# of modules");
-    C.Clear();
+    C->Clear();
     hStabilityDeviation.Draw("hist");
-    drawCMSPrelim(0.16,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
     drawFillYear(0,2022);
-    drawPCCLuminometer(0.16,0.80);
-    C.SetLogy(1);
-    C.Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
-    C.SetLogy(0);
+    drawPCCLuminometer(0.18,0.80);
+    C->SetLogy(1);
+    C->Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
+    C->SetLogy(0);
     gStyle->SetOptStat(0);
   }
 
@@ -714,21 +717,21 @@ void plot_Module_RMS_Stability() {
     gLinearityDeviation.GetYaxis()->SetTitle("Linearity Deviation");
     gLinearityDeviation.GetXaxis()->SetTitle("Module ID");
     gLinearityDeviation.GetYaxis()->SetRangeUser(0,LinearityMax);    
-    C.Clear();
+    C->Clear();
     gLinearityDeviation.Draw("AP");
-    C.Print(OutPath+"/Module_RMS_LinearityDeviation.png");
+    C->Print(OutPath+"/Module_RMS_LinearityDeviation.png");
 
     gStyle->SetOptStat(1111111);
     hLinearityDeviation.GetXaxis()->SetTitle("Linearity Deviation");
     hLinearityDeviation.GetYaxis()->SetTitle("# of modules");
-    C.Clear();
+    C->Clear();
     hLinearityDeviation.Draw("hist");
-    drawCMSPrelim(0.16,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
     drawFillYear(0,2022);
-    drawPCCLuminometer(0.16,0.80);
-    C.SetLogy(1);
-    C.Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");
-    C.SetLogy(0);
+    drawPCCLuminometer(0.18,0.80);
+    C->SetLogy(1);
+    C->Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");
+    C->SetLogy(0);
     gStyle->SetOptStat(0);
   }
 
@@ -804,7 +807,7 @@ void plot_Module_RMS_Stability() {
     P_L4->GetYaxis()->SetTitle("Weight");
     P_L4->GetYaxis()->SetNdivisions(8);
     P_L4->GetXaxis()->SetTitle("Lumi section");
-    C.Clear();
+    C->Clear();
     P_L4->Draw("histp");
     P_L2->Draw("histpsame");
     P_L3->Draw("histpsame");
@@ -815,7 +818,7 @@ void plot_Module_RMS_Stability() {
     P_D2S2->Draw("histpsame");
     P_D3S2->Draw("histpsame");
     legend->Draw();
-    C.Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk_weight.png");    
+    C->Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk_weight.png");    
 
 
     P_L2->Scale(1./histo_L2->GetMean(2));;
@@ -832,7 +835,7 @@ void plot_Module_RMS_Stability() {
     P_L4->GetYaxis()->SetTitle("Layer/Disk Normalized Weight");
     P_L4->GetXaxis()->SetTitle("Lumi section");
  
-    C.Clear();
+    C->Clear();
     P_L4->Draw("histp");
     P_L2->Draw("histpsame");
     P_L3->Draw("histpsame");
@@ -843,7 +846,7 @@ void plot_Module_RMS_Stability() {
     P_D2S2->Draw("histpsame");
     P_D3S2->Draw("histpsame");
     legend->Draw();
-    C.Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk.png");
+    C->Print(OutPath+"/Module_RMS_Stability_internal_perlayerdisk.png");
 
 
     
@@ -929,7 +932,7 @@ void plot_Module_RMS_Stability() {
     legendLinearity->SetLineColor(1);
    
 
-    C.Clear();
+    C->Clear();
     PLinearityL3->SetStats(0);
     PLinearityL3->GetYaxis()->SetRangeUser(0,MAXLAYERWEIGHT);
     PLinearityL3->GetYaxis()->SetTitle("Layer/Disk  Weight");
@@ -944,10 +947,10 @@ void plot_Module_RMS_Stability() {
     PLinearityD2S2->Draw("histpsame");
     PLinearityD3S2->Draw("histpsame");
     legendLinearity->Draw();
-    C.Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk_weight.png");    
+    C->Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk_weight.png");    
  
    
-    C.Clear();
+    C->Clear();
     PLinearityL2->Scale(1./histoLinearity_L2->GetMean(2));;
     PLinearityL3->Scale(1./histoLinearity_L3->GetMean(2));;
     PLinearityL4->Scale(1./histoLinearity_L4->GetMean(2));;
@@ -971,7 +974,7 @@ void plot_Module_RMS_Stability() {
     PLinearityD2S2->Draw("histpsame");
     PLinearityD3S2->Draw("histpsame");
     legendLinearity->Draw();
-    C.Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk.png");    
+    C->Print(OutPath+"/Module_RMS_Stability_linearity_perlayerdisk.png");    
     
 
 
