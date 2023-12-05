@@ -5,14 +5,19 @@ import sys
 
 process = cms.Process("corrRECO")
 inputlist=cms.untracked.vstring()
+
 if len(inputlist) == 0 :
    inputfile=os.getenv('INPUTFILE')
    if inputfile == '' : sys.exit('invalid INPUTFILE')
+   print('reading from input file: '+inputfile)
    infile = open(inputfile,'r')
    inputlist=cms.untracked.vstring(infile.readlines())
    infile.close()
+   
 print(inputlist)
-process.source = cms.Source("PoolSource",fileNames=inputlist)
+process.source = cms.Source("PoolSource",
+    fileNames =     inputlist
+)
 
 
 process.rawPCCProd = cms.EDProducer("RawPCCProducer",
@@ -26,8 +31,9 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
     )    
 )
 
+vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt'
 
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03pFPIXveto.txt'
+
 print('reading from veto file: '+vetofilename)
 vetofile = open(vetofilename,'r')
 with vetofile as f:
@@ -36,22 +42,25 @@ with vetofile as f:
 vetofile.close()
 print(process.rawPCCProd.RawPCCProducerParameters.modVeto)
 
-
 from DQMServices.Core.DQMEDAnalyzer import DQMEDAnalyzer
 DQMStore = cms.Service("DQMStore")
+
 process.load("DQMServices.Core.DQM_cfg")
+
 process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducer",
     CorrPCCProducerParameters = cms.PSet(
         inLumiObLabel = cms.string("rawPCCProd"),
         ProdInst = cms.string("rawPCCRandom"),
         approxLumiBlockSize=cms.int32(50),
         trigstring = cms.untracked.string("corrPCCRand"), 
-        type2_a= cms.double(0.001048),
-        type2_b= cms.double(0.0156),
+        type2_a= cms.double(0.0008406),
+        type2_b= cms.double(0.01047),
         subSystemFolder=cms.untracked.string('AlCaReco')
     )
 )
-process.dqmEnvLumiPCC = DQMEDAnalyzer('DQMEventInfo',subSystemFolder=cms.untracked.string('AlCaRecoEventInfo'))
+
+process.dqmEnvLumiPCC = DQMEDAnalyzer('DQMEventInfo',
+                              subSystemFolder=cms.untracked.string('AlCaRecoEventInfo'))
 
 process.load("CondCore.CondDB.CondDB_cfi")
 process.CondDB.connect = "sqlite_file:PCC_Corr.db"
@@ -73,7 +82,6 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep *_corrPCCProd_*_*')
 )
 process.outpath = cms.EndPath(process.out)
-
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
 

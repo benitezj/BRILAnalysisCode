@@ -9,7 +9,7 @@ cfg=$3  ## only for action=0
 #######
 ## hard coded options
 jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
-condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
+condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
@@ -22,9 +22,9 @@ brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/p
 normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
 REFDET=hfet
 #REFNORM=${normtagdir}/normtag_hfet.json
-REFNORM=hfet22v10
-DATATAG=23v1
-BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
+#REFNORM=hfet22v10
+#DATATAG=23v1
+#BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 

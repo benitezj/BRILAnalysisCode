@@ -20,6 +20,12 @@ period=$1 #Run2022A
 eospath=/eos/cms/store/data
 dataset=AlCaPCCZeroBias-PromptReco
 
+#Integrator Random
+#DAS: /AlCaLumiPixelsCountsPrompt/Run2023A-AlCaPCCRandom-PromptReco-v1/ALCARECO
+#EOS: /store/data/Run2023A/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/365/753/00000/39f9fc82-5f50-489a-894c-6e48bd54c31f.root
+#eospath=/eos/cms/store/data
+#dataset=AlCaPCCRandom-PromptReco
+
 #ZeroBias RawPCCProducer: 
 #/eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/
 #eospath=/eos/cms/tier0/store/data
@@ -92,6 +98,9 @@ search(){
 
 
 if [ "$dataset" == "AlCaPCCZeroBias-PromptReco" ] ; then
+    search ${eospath}/${period}/AlCaLumiPixelsCountsPrompt/ALCARECO
+fi
+if [ "$dataset" == "AlCaPCCRandom-PromptReco" ] ; then
     search ${eospath}/${period}/AlCaLumiPixelsCountsPrompt/ALCARECO
 fi
 
