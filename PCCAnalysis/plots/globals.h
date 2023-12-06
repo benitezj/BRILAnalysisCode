@@ -60,7 +60,9 @@ void drawPCCLuminometer(float xpos=0.19,float ypos=0.80, TString subdet=""){
 ///////////crossection
 float getSigmaVis(int run){
 
-  if(run>=359268){ //2022 EFG
+  if(run>=366403){ //2023
+    return 0.9104*1.403e6/ORBITF;  // first veto (264 modules) by Luis
+  }else if(run>=359268){ //2022 EFG
     //return 6.037e6/ORBITF;  // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
     //return 4.1533e6/ORBITF; // veto_CDEFG_3_2022.txt, Luis thesis 6/28/2023 
     return 1.0760e6/ORBITF;  // final veto, vdM by Nimmitha+Joanna (AN 18Sept2023)

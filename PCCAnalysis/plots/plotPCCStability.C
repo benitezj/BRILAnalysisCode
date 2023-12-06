@@ -8,7 +8,7 @@ float minratio=0.90;
 float maxratio=1.10;
 float plotYrangeMin=0.01;
 float plotYrangeMax;//code will find max lumi below
-float plotYrangeMaxLog=10;//log plot
+float plotYrangeMaxLog=10;//scale factor for log plot
 float plotYrangeZoomMin=0.0;
 float plotYrangeZoomMax=0.2;//zoomed plot
 
@@ -44,33 +44,23 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
   std::string line;
   int run=0;
   int ls=0;
-  double totL=0;   //lumi for given LS
-  double totLRef=0;//lumi for given LS
-  //int ncollb=0;
+  double totL=0;    //lumi for given LS
+  double totLRef=0; //lumi for given LS
   while (std::getline(myfile, line)){
-    //cout<<line;
     std::stringstream iss(line);    
-
-    iss>>run>>ls>>totL;//space separated
-
-//    std::string token;//comma separated
-//    std::getline(iss,token, ',');run=atoi(token.c_str());
-//    std::getline(iss,token, ',');ls=atoi(token.c_str());
-//    std::getline(iss,token, ',');totL=strtof(token.c_str(),NULL); 
-//    cout<<run<<" "<<ls<<" "<<totL<<endl;
+    iss>>run>>ls>>totL; //space separated
 
     if(RefLumi.CompareTo("")!=0) iss>>totLRef; //>>ncollb;
+    //cout<<run<<" "<<ls<<" "<<totL<<" "<<totLRef<<endl;
 
     if(totL<minL) continue;
 
-    //if( !(runselection.Contains(TString("")+run)) ) continue;
-    //counterLumi++; //total number of lumi sections
-
     if(run!=prevrun){
-      counter_ls_run_tot+=counter_ls_run;
+      counter_ls_run_tot += counter_ls_run;
       counter_ls_run=0;
       prevrun=run;
     }
+
     counter_ls_run++;
     counterLumi = counter_ls_run_tot + ls;
 
@@ -108,7 +98,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
 
 
   /////////////////////////////
-  TLegend leg(0.75,0.9,0.95,0.99);
+  TLegend leg(0.70,0.92,0.90,0.99);
   leg.SetLineWidth(0);
   leg.SetFillStyle(0);
   leg.SetNColumns(2);
@@ -118,8 +108,8 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
   Lumi.SetStats(0);
   Lumi.SetMarkerStyle(8);
   Lumi.SetMarkerSize(0.3);
-  Lumi.GetXaxis()->SetTitle("lumi section");
-  Lumi.GetYaxis()->SetTitle(" rate ");
+  Lumi.GetXaxis()->SetTitle("Lumi Section");
+  Lumi.GetYaxis()->SetTitle("Inst. Lumi [Hz/ub]");
   Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrangeMax);
   Lumi.Draw("histp");
   leg.AddEntry(&Lumi,"pcc","p");
@@ -174,7 +164,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     LumiRatio.GetYaxis()->SetRangeUser(minratio,maxratio);
     LumiRatio.SetMarkerStyle(8);
     LumiRatio.SetMarkerSize(0.4);
-    LumiRatio.GetXaxis()->SetTitle("lumi section");
+    LumiRatio.GetXaxis()->SetTitle("Lumi Section");
     LumiRatio.GetYaxis()->SetTitle(TString("pcc / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");

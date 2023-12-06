@@ -24,24 +24,39 @@ void getRefLumi(TString inputfile){
     return;
   }
 
+  cout<<"Opened Ref lumi: "<<inputfile<<endl;
+
   std::string line;
   int run=0;
   int ls=0;
   string tmp;
-  float lumiBX;
+
   while (std::getline(myfile, line)){
     std::stringstream iss(line);
-    //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
-    iss>>run>>tmp>>ls>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
-    iss>>refLumi[ls];
-    iss>>tmp>>tmp;
-    for(int j=0;j<NBX;j++){
-      iss>>tmp>>tmp>>lumiBX;
-      HRefLumiBXvsLS.SetBinContent(ls,j+1,lumiBX/23.31);
+
+    //369802:8999,3791:3791,06/29/23 22:19:35,STABLE BEAMS,6800,1.075448824,1.067225496,0.1,HFET
+    string field;
+    int pos=0;
+    while (getline(iss, field, ',' )){
+	stringstream fs( field );
+	fs >> tmp;
+	if(pos==0){ string tmprun; stringstream tmpfs(tmp); getline(tmpfs,tmprun,':'); run=atoi(tmprun.c_str()); } //get run number
+	if(pos==1){ string tmpls; stringstream tmpfs(tmp); getline(tmpfs,tmpls,':'); ls=atoi(tmpls.c_str()); } //get ls number
+	if(pos==5)refLumi[ls]=atof(tmp.c_str());
+	pos++;
     }
+
+
+    ///old data
+    //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
+    //iss>>run>>tmp>>ls>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
+    //iss>>refLumi[ls];
+    //iss>>tmp>>tmp;
+
+    //cout<<run<<" "<<ls<<" "<<refLumi[ls]<<endl;
   }
 
-  cout<<"Ref lumi: "<<inputfile<<endl;
+
 }
 
 
@@ -54,9 +69,6 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     cout << "Unable to open output run file"; 
     return;
   }
-
-
-
 
 
   std::stringstream ss(runlist.c_str());
@@ -155,40 +167,25 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       ///fill lumi per BX plots
       unsigned ncoll=0;
       if(perBXRatioPlots) { 
-	//cout<<"bx colliding: ";
 	for(int bx=0;bx<NBX;bx++){
 	  std::getline(iss,token, ',');
 	  std::stringstream bxLiss(token);
 	  bxLiss>>rawL;
-	  //if(rawL>0.1) cout<<bx+1<<","<<endl;
-
 	  bxL = rawL/sigmavis;
 	  HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	  HLumiBX.AddBinContent(bx+1,bxL);
-
-	  
-	  if(rawL>0.5){
+	  if(rawL>0.5)
 	    ncoll++;
-	    //cout<<","<<bx+1;
-	  }
-	  
 	}
-	//cout<<endl;
       }
       
       if(ls > maxLS) maxLS=ls;
       if(lsL > maxL) maxL=lsL;
-      
-      //lsfile<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<lsL<<" "<<setw(10)<<refLumi[ls]<<" "<<ncoll<<std::endl;
-      lsfile<<Run<<","<<ls<<","<<lsL<<","<<refLumi[ls]<<","<<ncoll<<std::endl;
+      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;
-    //cout<<"Done processing input file"<<endl;
-    
-    ///close files
     myfile.close();
-    
 
     /////////////////////////////////////////////////////
     ///   make the plots

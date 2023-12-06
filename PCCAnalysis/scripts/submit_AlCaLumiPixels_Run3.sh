@@ -16,24 +16,26 @@ plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
 MAXJOBS=1000000 #useful for testing
 CAF=1 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
-#source /cvmfs/cms-bril.cern.ch/cms-lumi-pog/brilws-docker/brilws-env
-#which brilcalc
+
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc'
-normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
+#normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
 REFDET=hfet
 #REFNORM=${normtagdir}/normtag_hfet.json
 #REFNORM=hfet22v10
 #DATATAG=23v1
 #BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
+REFNORM=hfet23v02
+DATATAG=online
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
-DBDIR=""
+#DBDIR=""
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Commissioning2021_v2/AlCaLumiPixelsCountsExpress/step4/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random_Run2Type2Params/Run2022E/
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v2/Run2022F
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v4/Run2022G
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random
 
 ###########################################################
 ### 
