@@ -17,14 +17,14 @@ period=$1 #Run2022A
 ##/eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/
 #eospath=/eos/cms/tier0/store/data
 ##/eos/cms//store/data/Run2022C/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCZeroBias-PromptReco-v1/000/355/862/00000/87fecadb-45ce-4701-bb7f-6489b5689e0a.root
-eospath=/eos/cms/store/data
-dataset=AlCaPCCZeroBias-PromptReco
+#eospath=/eos/cms/store/data
+#dataset=AlCaPCCZeroBias-PromptReco
 
 #Integrator Random
 #DAS: /AlCaLumiPixelsCountsPrompt/Run2023A-AlCaPCCRandom-PromptReco-v1/ALCARECO
 #EOS: /store/data/Run2023A/AlCaLumiPixelsCountsPrompt/ALCARECO/AlCaPCCRandom-PromptReco-v1/000/365/753/00000/39f9fc82-5f50-489a-894c-6e48bd54c31f.root
-#eospath=/eos/cms/store/data
-#dataset=AlCaPCCRandom-PromptReco
+eospath=/eos/cms/store/data
+dataset=AlCaPCCRandom-PromptReco
 
 #ZeroBias RawPCCProducer: 
 #/eos/cms/tier0/store/data/Run2022B/AlCaLumiPixelsCountsPrompt/ALCARECO/RawPCCProducer-PromptReco-v1/
