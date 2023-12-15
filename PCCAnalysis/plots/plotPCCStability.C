@@ -4,8 +4,8 @@
 #include "globals.h"
 
 float minL=0;
-float minratio=0.90;
-float maxratio=1.10;
+float minratio=0.95;
+float maxratio=1.05;
 float plotYrangeMin=0.01;
 float plotYrangeMax;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot
@@ -13,7 +13,7 @@ float plotYrangeZoomMin=0.0;
 float plotYrangeZoomMax=0.2;//zoomed plot
 
 
-void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100, TString REF="HFET",TString runselection=""){
+void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100, TString REF="HFET"){
 
   RefLumi=REF;
 
@@ -112,7 +112,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
   Lumi.GetYaxis()->SetTitle("Inst. Lumi [Hz/ub]");
   Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrangeMax);
   Lumi.Draw("histp");
-  leg.AddEntry(&Lumi,"pcc","p");
+  leg.AddEntry(&Lumi,"PCC","p");
 
   TLine li;
   li.SetLineStyle(2);
@@ -165,7 +165,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     LumiRatio.SetMarkerStyle(8);
     LumiRatio.SetMarkerSize(0.4);
     LumiRatio.GetXaxis()->SetTitle("Lumi Section");
-    LumiRatio.GetYaxis()->SetTitle(TString("pcc / ")+RefLumi);
+    LumiRatio.GetYaxis()->SetTitle(TString("PCC / ")+RefLumi);
     LumiRatio.SetMarkerColor(2);
     LumiRatio.Draw("histp");
     li.SetLineWidth(2);

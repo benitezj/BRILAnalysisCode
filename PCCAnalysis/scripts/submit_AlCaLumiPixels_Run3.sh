@@ -8,7 +8,7 @@ cfg=$3  ## only for action=0
 
 #######
 ## hard coded options
-jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
+jobtype=corr ##step2, step3, step4, step5 , csv ,  corr
 condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
