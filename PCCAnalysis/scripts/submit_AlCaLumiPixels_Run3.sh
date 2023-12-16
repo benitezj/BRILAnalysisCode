@@ -17,14 +17,18 @@ MAXJOBS=1000000 #useful for testing
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
 #brilcalc='brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
 BRILCALCDATATAG=online #online, 23v1
-BRILCALCREFDETNAME=Online
-BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
+BRILCALCTYPE=hfet
+#BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
-#BRILCALCTYPE=hfet
 #BRILCALCNORM=hfet22v10
-#BRILCALCNORM=hfet23v02
+BRILCALCNORM=hfet23v02
+#BRILCALCNORM=dt23v03
+#BRILCALCNORM=hfoc23v03
+#BRILCALCNORM=bcm1futca23v02
+#BRILCALCNORM=pltzero23v5
+#BRILCALCNORM=bcm1f23v02
 #BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
-
+BRILCALCREFDETNAME=$BRILCALCNORM
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
