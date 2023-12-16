@@ -6,7 +6,7 @@
 float minL=0;
 float minratio=0.95;
 float maxratio=1.05;
-float plotYrangeMin=0.01;
+float plotYrangeMin=1;
 float plotYrangeMax;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot
 float plotYrangeZoomMin=0.0;

@@ -1,31 +1,30 @@
 #!/bin/bash
 
-#arguments
 submitdir=$1 ## path to submission directory
-action=$2 ## option for: 0=create scripts, 1=submit, 2=check
+action=$2 ## option for: 0=create scripts, 1=submit, 2=check, ..
 cfg=$3  ## only for action=0
 
 
 #######
 ## hard coded options
-jobtype=corr ##step2, step3, step4, step5 , csv ,  corr
+jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
+
 condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
-
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
-plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
-MAXJOBS=1000000 #useful for testing
 CAF=1 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
+MAXJOBS=1000000 #useful for testing
 
 
-brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc'
-#normtagdir=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/
-REFDET=hfet
-#REFNORM=${normtagdir}/normtag_hfet.json
-#REFNORM=hfet22v10
-#DATATAG=23v1
+brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
+#brilcalc='brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
+BRILCALCDATATAG=online #online, 23v1
+BRILCALCREFDETNAME=Online
+BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
+#BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
+#BRILCALCTYPE=hfet
+#BRILCALCNORM=hfet22v10
+#BRILCALCNORM=hfet23v02
 #BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
-REFNORM=hfet23v02
-DATATAG=online
+
 
 
 ##Afterglow corrections for RawPCCProducer (csv) jobs 
@@ -36,6 +35,11 @@ DATATAG=online
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v2/Run2022F
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v4/Run2022G
 DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random
+
+
+baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
+plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
+
 
 ###########################################################
 ### 
@@ -304,7 +308,16 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     ##run plotting scripts
     if [ "$action" == "4" ] ; then
-	command="${brilcalc} lumi -u hz/ub --byls --output-style csv -c offline -r ${run} --type ${REFDET} --normtag ${REFNORM} --datatag ${DATATAG} "
+	command="${brilcalc} -r ${run}"
+	if [ ! -z "$BRILCALCDATATAG" ] ; then
+	    command="${command} --datatag ${BRILCALCDATATAG}"
+	fi
+	if [ ! -z "$BRILCALCTYPE" ] ; then
+	    command="${command} --type ${BRILCALCTYPE}"
+	fi
+	if [ ! -z "$BRILCALCNORM" ] ; then
+	    command="${command} --normtag ${BRILCALCNORM}"
+	fi
 	if [ ! -z "$BCIDS" ] ; then
 	    command="${command} --xing --xingId ${BCIDS}"
 	fi
@@ -322,12 +335,12 @@ echo ${RUNLIST:1}
 
 
 if [ "$action" == "5" ] ; then
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${REFDET}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${BRILCALCREFDETNAME}\"\)
 fi
 
 if [ "$action" == "6" ] ; then
     NLS=`cat ${plotsdir}/ls.dat | wc -l`
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",0,${NLS},\"${REFDET}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCStability.C\(\"${plotsdir}\",0,${NLS},\"${BRILCALCREFDETNAME}\"\)
     #root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotPCCruns.C\(\"${plotsdir}\"\)
 fi
 
