@@ -10,7 +10,7 @@ cfg=$3  ## only for action=0
 jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
 
 condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), # note in resubmission to change queue need to modify the .sub job file
-CAF=1 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
+CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 MAXJOBS=1000000 #useful for testing
 
 
@@ -38,8 +38,8 @@ BRILCALCREFDETNAME=$BRILCALCNORM
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Moriond2023PAS/Random/Run2022E
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v2/Run2022F
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v4/Run2022G
-DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random
-
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/2024Data/Random/Run2024A
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
 plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
