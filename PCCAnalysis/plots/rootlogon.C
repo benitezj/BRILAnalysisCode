@@ -89,5 +89,5 @@ void rootlogon(){
   //gROOT->SetStyle("Style");
 
 
-  //std::cout<<"done style"<<std::endl;
+  std::cout<<"Done executing rootlogon.C gStyle"<<std::endl;
 }
