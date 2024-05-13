@@ -4,7 +4,6 @@ submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check, ..
 cfg=$3  ## only for action=0
 
-
 #######
 ## hard coded options
 jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
@@ -16,17 +15,24 @@ MAXJOBS=1000000 #useful for testing
 
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
 #brilcalc='brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
-BRILCALCDATATAG=online #online, 23v1
-BRILCALCTYPE=hfet
+#BRILCALCDATATAG=online 
+BRILCALCDATATAG=23v1
+#BRILCALCTYPE=hfet
+#BRILCALCTYPE=pxl
+#BRILCALCTYPE=bcm1futca
+BRILCALCTYPE=dt
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
 #BRILCALCNORM=hfet22v10
-BRILCALCNORM=hfet23v02
+#BRILCALCNORM=hfet23v07
 #BRILCALCNORM=dt23v03
+BRILCALCNORM=dt23v04b
 #BRILCALCNORM=hfoc23v03
 #BRILCALCNORM=bcm1futca23v02
 #BRILCALCNORM=pltzero23v5
 #BRILCALCNORM=bcm1f23v02
+#BRILCALCNORM=bcm1futca23v07c
+#BRILCALCNORM=pcc23VdMRescaledv0
 #BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
 BRILCALCREFDETNAME=$BRILCALCNORM
 
@@ -39,11 +45,12 @@ BRILCALCREFDETNAME=$BRILCALCNORM
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v2/Run2022F
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v4/Run2022G
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random
-DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/2024Data/Random/Run2024A
+#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/2024Data/Random/Run2024A
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023_v2/Random/Run2023D
 
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC_Run3
-plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
-
+#plotsdir=/afs/cern.ch/user/b/benitezj/www/BRIL/PCC_lumi/$submitdir
+plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 
 ###########################################################
 ### 
@@ -87,15 +94,12 @@ if [ "$action" == "0" ]; then
     mkdir -p $outputdir
     /bin/ls $outputdir
 
-    rm -rf $plotsdir
-    mkdir -p $plotsdir
 fi
 
-## clean up the runs file
+## clean up the plots
 if [ "$action" == "5" ] ; then
-    rm -f $fullsubmitdir/runs.dat
-    rm -f $fullsubmitdir/ls.dat
-    rm -f $fullsubmitdir/slope.dat
+    rm -rf $plotsdir
+    mkdir -p $plotsdir
 fi
 
 

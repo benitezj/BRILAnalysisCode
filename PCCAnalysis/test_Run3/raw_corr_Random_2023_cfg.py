@@ -31,7 +31,8 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
     )    
 )
 
-vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/veto_2022/veto2022_FStab2p08pLin04p025p_CStab2p1pLin04p03p_EStab06pLin03p_GStab06pLin03p_DStab06pLin03p_vdmStab1p04pNoise05p.txt'
+vetofilename ='/afs/cern.ch/user/b/benitezj/public/BRIL/PCC/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03pFPIXveto_BStab06p.txt'
+
 
 
 print('reading from veto file: '+vetofilename)
@@ -53,8 +54,8 @@ process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducer",
         ProdInst = cms.string("rawPCCRandom"),
         approxLumiBlockSize=cms.int32(50),
         trigstring = cms.untracked.string("corrPCCRand"), 
-        type2_a= cms.double(0.0008406),
-        type2_b= cms.double(0.01047),
+        type2_a= cms.double(0.001048),
+        type2_b= cms.double(0.0156),
         subSystemFolder=cms.untracked.string('AlCaReco')
     )
 )

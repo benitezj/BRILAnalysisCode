@@ -9,8 +9,8 @@
 
 period=$1 #Run2022A
 
-#eospath=/eos/cms/store/data
-eospath=/eos/cms/tier0/store/data/
+eospath=/eos/cms/store/data
+#eospath=/eos/cms/tier0/store/data/
 
 ########
 ## choose type of data: 
