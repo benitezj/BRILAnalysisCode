@@ -1,6 +1,7 @@
 #include "globals.h"
 
-float yrange=0.05;
+float yrangeMax=30000;
+float yrange=0.15;
 std::map<int,float> lumimap;
 float cutreflumi=300;
 std::map<int,int> lastLSmap;//for each run stores the last LS number
@@ -141,19 +142,22 @@ void comparePCCLumiVersions(TString refDir, TString newDir, TString refTitle="Re
   HRatio.Draw("hist");
   C.Print(newDir+"/comparePCCLumiVersions_histo.png");
 
-  C.SetLogy(1);
+  C.SetLogy(0);
   C.Clear();
-  LumiRef.GetYaxis()->SetRangeUser(1,25000);
-  LumiRef.GetYaxis()->SetTitle(refTitle+" lumi [hz/ub]");
+  LumiRef.GetYaxis()->SetRangeUser(1,yrangeMax);
+  LumiRef.GetYaxis()->SetTitle(" Lumi ");
   LumiRef.GetXaxis()->SetTitle("lumi section");
   LumiRef.Draw("ap");
-  C.Print(newDir+"/comparePCCLumiVersions_lumiRef.png");
-
-  C.Clear();
-  LumiNew.GetYaxis()->SetRangeUser(1,25000);
-  LumiNew.GetYaxis()->SetTitle(newTitle+" lumi [hz/ub]");
-  LumiNew.GetXaxis()->SetTitle("lumi section");
-  LumiNew.Draw("ap");
+  LumiNew.SetMarkerColor(4);
+  LumiNew.SetLineColor(4);
+  LumiNew.Draw("psame");
+  TLegend leg(0.7,0.7,0.89,0.89);
+  leg.SetFillColor(0);
+  leg.SetFillStyle(0);
+  leg.SetLineColor(0);
+  leg.AddEntry(&LumiRef,refTitle,"pl");
+  leg.AddEntry(&LumiNew,newTitle,"pl");
+  leg.Draw();
   C.Print(newDir+"/comparePCCLumiVersions_lumiNew.png");
   
   
