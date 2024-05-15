@@ -4,10 +4,10 @@
 #include "globals.h"
 
 float minL=0;
-float minratio=0.95;
-float maxratio=1.05;
+float minratio=0.90;
+float maxratio=1.20;
 float plotYrangeMin=1;
-float plotYrangeMax;//code will find max lumi below
+float plotYrangeMax=30000;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot
 float plotYrangeZoomMin=0.0;
 float plotYrangeZoomMax=0.2;//zoomed plot
@@ -66,7 +66,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
 
 
     Lumi.SetBinContent(counterLumi-plotXrangeMin,totL);
-    if(totL>plotYrangeMax) plotYrangeMax=totL;
+    //if(totL>plotYrangeMax) plotYrangeMax=totL;
 
 
     float ratio=0;
@@ -110,7 +110,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
   Lumi.SetMarkerSize(0.3);
   Lumi.GetXaxis()->SetTitle("Lumi Section");
   Lumi.GetYaxis()->SetTitle("Inst. Lumi [Hz/ub]");
-  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,1.5*plotYrangeMax);
+  Lumi.GetYaxis()->SetRangeUser(plotYrangeMin,plotYrangeMax);
   Lumi.Draw("histp");
   leg.AddEntry(&Lumi,"PCC","p");
 
