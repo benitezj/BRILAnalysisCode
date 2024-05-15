@@ -7,14 +7,18 @@
 
 TString OutPath = "./tmp";
 
-///cut on the weights
+
+////////////////////////////////////////
+//Module selections
+///////////////////////////////////////
+// cut on the weights
 float weightMin=0.;//1E-5;
 float weightMax=0.;
 
 /////for vdM data cut on the noise
-//int SSBIN=575;//SS1 2022
+//int SSBIN=575; //SS1 2022
 //int SSBIN=2345;//SS2 2022
-int SSBIN=160;//SS1 2023
+int SSBIN=160;   //SS1 2023
 float SSBkgMax=0;
 
 //cut on the RMS of per LS data
@@ -22,15 +26,16 @@ float RMSThr=0.;
 
 //cut on stability profile per 100 LS
 float StabilityThr=0.0;
-float StabilityMax=0.03;//for plot range
+float StabilityMax=0.03; //for histogram distribution
 
 //cut on linearity profile
-float LinearityThr=0.0;
-float LinearityMax=0.02;//for plot 
+float LinearityThr=0.9;
+float LinearityMax=0.01; //for histogram distribution
 
 //select layers/disks
 int selectLayer=0; //keep modules only in this layer (1,2,3,4), reject FPIX and other layers
 int selectDisk=0;  //keep modules only in this disk (1,2,3,4,5,6) , reject Barrel and other disks
+
 
 
 ///////////////////////////////////////
@@ -44,7 +49,7 @@ TLine line;
 #define NLSBLOCK 100
 #define NBINTOTPCCAVG 200
 bool makeModuleGraphs=0;//total counts per module , not the weights
-float StabilityMaxPerMod=0.05;
+float StabilityMaxPerMod=0.3;
 float StabilityMaxPerLayer=0.05; //0.05
 float LinearityMaxPerLayer=0.0;  //0.03
 
@@ -154,7 +159,7 @@ float LinearityMaxPerLayer=0.0;  //0.03
 //////////////////////////////////////////////////////////////////////
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkg.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1p.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p.txt";
@@ -162,7 +167,7 @@ float LinearityMaxPerLayer=0.0;  //0.03
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03p_BL4.txt";///verify that BLayer 4 is ok at beggining of Period D
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03pFPIXveto.txt";
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03pFPIXveto_BStab06p.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CStab1pLin05pStab04pLin025p_DStab07pLin03pFPIXveto_BStab06p.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/
 
 ////// vdM  Fill
@@ -176,21 +181,22 @@ TString ModVeto = "BRILAnalysisCode/PCCAnalysis/veto_2023/veto_vdMBkgStab04p_CSt
 //std::vector<int> run_number = {369802}; 
 
 
-///Period C, D
+///Period B, C, D
 #define MINTOTPCC 6000
 #define MAXTOTPCC 20000
-#define MINTOTPCCAVG 1.5
-#define MAXTOTPCCAVG 8.0
+#define MINTOTPCCAVG 2.5
+#define MAXTOTPCCAVG 6.5
 TString InputPath = "./ModuleVeto2023/data";
 
-#define LS_ID_MIN 0
-#define LS_ID_MAX 13000
-std::vector<int> run_number = {366403,366406,366409,366410,366413,366419,366422,366424,366426,366427,366429,366432,366434,366436,366437,366438,366439,366440,366441,366442,366449,366450,366451,366469,366470,366471,366494,366495,366496,366497,366498,366499,366500,366504,366533,366724,366727,366728,366729,366793,366794,366795,366797,366798,366800,366801,366802,366804,366820,366821,366829,366832,366833,366838,366839,366840,366841,366850,366873,366874,366876,366891,366892,366893,366895,366933,367062,367063,367064,367065,367070,367071,367072,367073,367079};
-
-
+////Period B
 //#define LS_ID_MIN 0
-//#define LS_ID_MAX 60000
-//std::vector<int> run_number = {367095,367100,367102,367103,367104,367111,367112,367127,367128,367129,367130,367131,367132,367133,367134,367228,367229,367230,367231,367232,367234,367260,367261,367262,367263,367264,367267,367268,367269,367270,367271,367312,367314,367315,367334,367336,367337,367355,367385,367406,367413,367415,367416,367475,367476,367477,367515,367516,367552,367553,367554,367589,367591,367592,367593,367615,367616,367617,367618,367619,367622,367661,367662,367663,367664,367665,367666,367691,367692,367693,367694,367695,367696,367697,367699,367730,367742,367758,367770,367771,367772,367790,367823,367831,367836,367838,367840,367881,367882,367883,367884,367902,367904,367905,367906,367907,367908,367910,368151,368223,368224,368229,368247,368318,368320,368321,368326,368331,368332,368333,368334,368336,368337,368338,368339,368340,368341,368343,368382,368383,368384,368388,368389,368400,368406,368410,368411,368412,368423,368437,368440,368443,368451,368452,368453,368454,368489,368542,368546,368547,368548,368566,368567,368609,368611,368612,368613,368636,368669,368670,368671,368672,368673,368674,368675,368676,368678,368684,368685,368723,368724,368746,368748,368749,368752,368753,368762,368763,368764,368765,368774,368815,368816,368817,368818,368822,368823,369279,369436,369444,369447,369794,369795,369797};
+//#define LS_ID_MAX 13000
+//std::vector<int> run_number = {366403,366406,366409,366410,366413,366419,366422,366424,366426,366427,366429,366432,366434,366436,366437,366438,366439,366440,366441,366442,366449,366450,366451,366469,366470,366471,366494,366495,366496,366497,366498,366499,366500,366504,366533,366724,366727,366728,366729,366793,366794,366795,366797,366798,366800,366801,366802,366804,366820,366821,366829,366832,366833,366838,366839,366840,366841,366850,366873,366874,366876,366891,366892,366893,366895,366933,367062,367063,367064,367065,367070,367071,367072,367073,367079};
+
+////Period C
+#define LS_ID_MIN 0
+#define LS_ID_MAX 60000
+std::vector<int> run_number = {367095,367100,367102,367103,367104,367111,367112,367127,367128,367129,367130,367131,367132,367133,367134,367228,367229,367230,367231,367232,367234,367260,367261,367262,367263,367264,367267,367268,367269,367270,367271,367312,367314,367315,367334,367336,367337,367355,367385,367406,367413,367415,367416,367475,367476,367477,367515,367516,367552,367553,367554,367589,367591,367592,367593,367615,367616,367617,367618,367619,367622,367661,367662,367663,367664,367665,367666,367691,367692,367693,367694,367695,367696,367697,367699,367730,367742,367758,367770,367771,367772,367790,367823,367831,367836,367838,367840,367881,367882,367883,367884,367902,367904,367905,367906,367907,367908,367910,368151,368223,368224,368229,368247,368318,368320,368321,368326,368331,368332,368333,368334,368336,368337,368338,368339,368340,368341,368343,368382,368383,368384,368388,368389,368400,368406,368410,368411,368412,368423,368437,368440,368443,368451,368452,368453,368454,368489,368542,368546,368547,368548,368566,368567,368609,368611,368612,368613,368636,368669,368670,368671,368672,368673,368674,368675,368676,368678,368684,368685,368723,368724,368746,368748,368749,368752,368753,368762,368763,368764,368765,368774,368815,368816,368817,368818,368822,368823,369279,369436,369444,369447,369794,369795,369797};
 
 ///Period D
 //#define LS_ID_MIN 0
@@ -261,7 +267,7 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
     P.Draw("histp");
     line.SetLineColor(2);
     line.DrawLine(Num->GetXaxis()->GetXmin(),1,Num->GetXaxis()->GetXmax(),1);
-    drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    //drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
     drawFillYear(0,2023);
     drawPCCLuminometer(0.18,0.80,TString("module ")+MODID[idx]);
     C->Print(OutPath+"/Module_RMS_Stability_fit_"+P.GetName()+".png");
@@ -710,7 +716,7 @@ void plot_Module_RMS_Stability() {
     hStabilityDeviation.GetYaxis()->SetTitle("# of modules");
     C->Clear();
     hStabilityDeviation.Draw("hist");
-    drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    //drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
     drawFillYear(0,2023);
     drawPCCLuminometer(0.18,0.80);
     C->SetLogy(1);
@@ -738,7 +744,7 @@ void plot_Module_RMS_Stability() {
     hLinearityDeviation.GetYaxis()->SetTitle("# of modules");
     C->Clear();
     hLinearityDeviation.Draw("hist");
-    drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    //drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
     drawFillYear(0,2023);
     drawPCCLuminometer(0.18,0.80);
     C->SetLogy(1);

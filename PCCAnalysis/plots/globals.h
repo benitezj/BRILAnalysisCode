@@ -52,7 +52,7 @@ void drawPCCLuminometer(float xpos=0.19,float ypos=0.80, TString subdet=""){
   TLatex text;
   text.SetTextColor(1);
   text.SetTextSize(0.035);
-  text.DrawLatexNDC(xpos,ypos,TString("#font[52]{PCC Luminometer} "));
+  text.DrawLatexNDC(xpos,ypos,TString("#font[52]{PCC} "));
   if(subdet.CompareTo("")!=0) text.DrawLatexNDC(xpos,ypos-0.06,TString("#font[52]{")+subdet+"}");
 }
 

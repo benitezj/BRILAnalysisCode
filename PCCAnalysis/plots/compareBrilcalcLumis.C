@@ -9,13 +9,13 @@
 float ymax=30000;
 float ratiomin=0.97;
 float ratiomax=1.03;
-int MAXNLS = 135000;
+int MAXNLS = 600;
 int firstrun=999999;
 int lastrun=1;
 
 ///selections
-int firstLS=190;//100;//select LS range
-int lastLS=10000;//280;
+int firstLS=170;//100;//select LS range
+int lastLS=290;//280;
 int ncolliding=2345;//fill 9029
 
 
@@ -39,6 +39,9 @@ void getLumi(TString inputfile, std::map<long,float> & lumi){
     //366724 8675 82 82 1682632854 STABLE BEAMS 6800 1730.787678365 1575.919689397 30.9 PLTZERO
     iss>>tmp>>tmp>>tmp>>tmp>>tmp>>lumi[run*10000+ls];
     //cout<<run<<"="<<ls<<"="<<run*10000+ls<<":"<<lumi[run*10000+ls]<<endl;
+
+    //370093 9029 2 2 07/03/23 23 52 44 STABLE BEAMS 6800 323125.324314945 319559.242762172 42.1 DT
+    
     if(run<firstrun)firstrun=run;
     if(run>lastrun)lastrun=run;
     nls++;
@@ -46,6 +49,37 @@ void getLumi(TString inputfile, std::map<long,float> & lumi){
 
   cout<<"Done reading: "<<inputfile<<", NLS="<<nls<<endl;
 }
+
+
+void getLumi2(TString inputfile, std::map<long,float> & lumi){
+
+  ifstream myfile(inputfile.Data());
+  if (!myfile.is_open()){
+    std::cout << "Unable to open ref lumi file: "<<inputfile.Data()<<std::endl;
+    return;
+  }
+
+  std::string line;
+  long run=0;
+  long ls=0;
+  string tmp;
+  int nls=0;
+  while (std::getline(myfile, line)){
+    std::stringstream iss(line);
+    iss>>run>>tmp>>ls;
+    if(run<=100000 || run>=1000000 || ls<=0) continue;
+    //370093 9029 2 2 07/03/23 23 52 44 STABLE BEAMS 6800 323125.324314945 319559.242762172 42.1 DT
+    iss>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>lumi[run*10000+ls];
+    lumi[run*10000+ls]/=23.3;
+    
+    if(run<firstrun)firstrun=run;
+    if(run>lastrun)lastrun=run;
+    nls++;
+  }
+
+  cout<<"Done reading: "<<inputfile<<", NLS="<<nls<<endl;
+}
+
 
 
 void getLumiPCC(TString inputfile, std::map<long,float> & lumi){
@@ -86,7 +120,6 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
   std::map<long,float> lumi2;
   std::map<long,float> lumi3;
 
-
   
   getLumi(path+"/"+file1,lumi1);
   //getLumiPCC(path+"/"+file1,lumi1);
@@ -123,18 +156,21 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
 
 
     //cout<<it->first<<" "<<lumi2[it->first]<<" "<<it->second<<endl;
-
     HL1.SetBinContent(ls,it->second);
+    //if(lumi2[it->first]/it->second>0.975 && lumi2[it->first]/it->second<0.995){
     HL2.SetBinContent(ls,lumi2[it->first]);
     HL12R.SetBinContent(ls,lumi2[it->first]/it->second);
     H12R.Fill(lumi2[it->first]/it->second,it->second);
     G12R_vsLumi.SetPoint(G12R_vsLumi.GetN(),sbil,lumi2[it->first]/it->second);
+    //}
     
     if(file3.CompareTo("")!=0){
+      //if(lumi3[it->first]/it->second>0.975 && lumi3[it->first]/it->second<0.995){
       HL3.SetBinContent(ls,lumi3[it->first]);
       HL13R.SetBinContent(ls,lumi3[it->first]/it->second);
       H13R.Fill(lumi3[it->first]/it->second,it->second);
       G13R_vsLumi.SetPoint(G13R_vsLumi.GetN(),sbil,lumi3[it->first]/it->second);
+      //}
     }
     
     if(it->second>maxlumi) maxlumi=it->second;
@@ -161,7 +197,7 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
 
   can_1.cd();
   HL1.GetXaxis()->SetTitle("Lumisection");
-  HL1.GetYaxis()->SetTitle("Inst. Lumi");
+  HL1.GetYaxis()->SetTitle("Lumi");
   HL1.GetXaxis()->SetLabelSize(0.05);
   HL1.GetXaxis()->SetTitleSize(0.07);
   HL1.GetXaxis()->SetTitleOffset(0.9);
@@ -183,12 +219,12 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
   HL3.SetMarkerStyle(8);
   HL3.SetMarkerSize(0.3);
   HL3.SetMarkerColor(4);
-  if(file3.CompareTo("")!=0)HL3.Draw("histpsame");
+  if(file3.CompareTo("")!=0) HL3.Draw("histpsame");
 
   
   TLatex text;
   text.SetTextSize(0.06);
-  text.DrawLatexNDC(0.1,0.89,TString("Runs: ")+firstrun+" - "+lastrun);
+  text.DrawLatexNDC(0.1,0.92,TString("Runs: ")+firstrun+" - "+lastrun);
   text.SetTextColor(1);
   text.DrawLatexNDC(0.4,0.89,TString(file1.Data()).ReplaceAll(".dat",""));
   text.SetTextColor(2);
@@ -233,9 +269,19 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
   tline.SetLineColor(1);
   tline.DrawLine(0,1,ls,1);  
 
+  char txt12[100];  
+  sprintf(txt12,"-- %s ",(TString("")+file2.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data());
+  text.SetTextColor(2);
+  text.DrawLatexNDC(0.6,0.90,txt12);
 
-  TString ofilename=TString("")+file1.ReplaceAll(".dat","")+"_"+TString(file2.Data()).ReplaceAll(".dat","")+"_"+TString(file3.Data()).ReplaceAll(".dat","");
+  char txt13[100];  
+  sprintf(txt13,"-- %s ",(TString("")+file3.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data());
+  text.SetTextColor(4);
+  if(file3.CompareTo("")!=0)
+    text.DrawLatexNDC(0.6,0.85,txt13);
+
   
+  TString ofilename=TString("")+file1.ReplaceAll(".dat","")+"_"+TString(file2.Data()).ReplaceAll(".dat","")+"_"+TString(file3.Data()).ReplaceAll(".dat","");  
   C.Clear();
   can_1.Draw();
   can_2.Draw();
@@ -252,17 +298,14 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
 
   text.SetTextSize(0.03);
   text.SetTextColor(1);
-  text.DrawLatexNDC(0.1,0.95,TString("Runs: ")+firstrun+" - "+lastrun);
+  text.DrawLatexNDC(0.1,0.96,TString("Runs: ")+firstrun+" - "+lastrun);
   
-  char txt[100];  
-  sprintf(txt,"-- %s , Mean = %.4f, RMS=%.4f",(TString("")+file2.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data(), H12R.GetMean(),H12R.GetRMS());
   text.SetTextColor(2);
-  text.DrawLatexNDC(0.4,0.97,txt);
-  
-  sprintf(txt,"-- %s , Mean = %.4f, RMS=%.4f",(TString("")+file3.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data(), H13R.GetMean(),H13R.GetRMS());
+  text.DrawLatexNDC(0.4,0.97,txt12);
+
   text.SetTextColor(4);
   if(file3.CompareTo("")!=0)
-    text.DrawLatexNDC(0.4,0.93,txt);
+    text.DrawLatexNDC(0.4,0.93,txt13);
 
   C.Print(ofilename+"_hist.png");
 
@@ -277,27 +320,32 @@ void compareBrilcalcLumis(TString path, TString file1, TString file2, TString fi
   G12R_vsLumi.GetXaxis()->SetTitle("SBIL");
   G12R_vsLumi.GetYaxis()->SetRangeUser(ratiomin,ratiomax);
   G12R_vsLumi.Draw("ap");
+
   TF1 FLin12("FLin12","[0]+[1]*x",0,12);
   FLin12.SetLineColor(2);
   G12R_vsLumi.Fit(&FLin12);
-  text.SetTextColor(2);
+
+  char txt[100];
   sprintf(txt,"-- %s: p0 = %.3f,   p1=%.5f",(TString("")+file2.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data(), FLin12.GetParameter(0),FLin12.GetParameter(1));
-  text.DrawLatexNDC(0.2,0.85,txt);
+  text.SetTextColor(2);
+  text.DrawLatexNDC(0.4,0.97,txt);
 
   text.SetTextColor(1);
-  text.DrawLatexNDC(0.1,0.95,TString("Runs: ")+firstrun+" - "+lastrun);
+  text.DrawLatexNDC(0.1,0.98,TString("Runs: ")+firstrun+" - "+lastrun);
   
   if(file3.CompareTo("")!=0){
     G13R_vsLumi.SetMarkerStyle(8);
     G13R_vsLumi.SetMarkerSize(0.3);
     G13R_vsLumi.SetMarkerColor(4);
     G13R_vsLumi.Draw("psame");
+
     TF1 FLin13("FLin13","[0]+[1]*x",0,12);
     FLin13.SetLineColor(4);
     G13R_vsLumi.Fit(&FLin13);
+
+    sprintf(txt,"-- %s: p0 = %.3f,   p1 = %.5f",(TString("")+file3.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data(),FLin13.GetParameter(0),FLin13.GetParameter(1));
     text.SetTextColor(4);
-    sprintf(txt,"-- %s: p0 = %.3f,   p1=%.5f",(TString("")+file3.ReplaceAll(".dat","")+"/"+TString(file1.Data()).ReplaceAll(".dat","")).Data(),FLin13.GetParameter(0),FLin13.GetParameter(1));
-    text.DrawLatexNDC(0.2,0.80,txt);
+    text.DrawLatexNDC(0.4,0.93,txt);
   }
   C.Print(ofilename+"_lin.png");
 

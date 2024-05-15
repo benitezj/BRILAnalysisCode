@@ -54,7 +54,7 @@ process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducer",
         ProdInst = cms.string("rawPCCRandom"),
         approxLumiBlockSize=cms.int32(50),
         trigstring = cms.untracked.string("corrPCCRand"), 
-        type2_a= cms.double(0.001048),
+        type2_a= cms.double(0.001048), #values from https://indico.cern.ch/event/1352837/
         type2_b= cms.double(0.0156),
         subSystemFolder=cms.untracked.string('AlCaReco')
     )
