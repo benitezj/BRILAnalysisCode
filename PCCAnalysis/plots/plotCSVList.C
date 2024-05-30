@@ -3,9 +3,9 @@
 #include <string>
 #include "globals.h"
 
-bool perBXRatioPlots=0;
-float ratiomin=0.7;
-float ratiomax=1.3;
+bool perBXRatioPlots=1;
+float ratiomin=0.8;
+float ratiomax=1.2;
 
 //set to 0 to retrieve nominal value
 //float sigmavis=1.24*4.1533e6/ORBITF; 
@@ -246,7 +246,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       HLumiLSRatio.GetXaxis()->SetTitle("lumi section");
       HLumiLSRatio.GetYaxis()->SetTitle(TString("ratio"));
       HLumiLSRatio.GetXaxis()->SetRangeUser(0,maxLS);
-      HLumiLSRatio.GetYaxis()->SetRangeUser(0.7,1.3);
+      HLumiLSRatio.GetYaxis()->SetRangeUser(ratiomin,ratiomax);
       HLumiLSRatio.GetXaxis()->SetLabelSize(0.05);
       HLumiLSRatio.GetXaxis()->SetTitleSize(0.07);
       HLumiLSRatio.GetXaxis()->SetTitleOffset(0.9);
