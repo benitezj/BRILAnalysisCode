@@ -166,12 +166,14 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       
       ///fill lumi per BX plots
       unsigned ncoll=0;
+      float bxlumi=0.;
       if(perBXRatioPlots) { 
 	for(int bx=0;bx<NBX;bx++){
 	  std::getline(iss,token, ',');
 	  std::stringstream bxLiss(token);
 	  bxLiss>>rawL;
 	  bxL = rawL/sigmavis;
+	  bxlumi+=bxL;
 	  HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
 	  HLumiBX.AddBinContent(bx+1,bxL);
 	  if(rawL>0.5)
@@ -181,7 +183,8 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       
       if(ls > maxLS) maxLS=ls;
       if(lsL > maxL) maxL=lsL;
-      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      //lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<bxlumi<<" "<<ncoll<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;

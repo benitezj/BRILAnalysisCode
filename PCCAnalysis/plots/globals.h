@@ -62,7 +62,8 @@ float getSigmaVis(int run){
 
   if(run>=366403){ //2023
     //return 0.9104*1.403e6/ORBITF;  // first veto (264 modules) by Luis, scaled by the 24 removed modules
-    return 1.29843e6/ORBITF;  // Luis analysis 12 December https://docs.google.com/presentation/d/1h-ID3W8VFmSQBEhrFkKsymI7uuIHoap9WyPMLWLX7AU/edit#slide=id.g263901dc7ed_0_52
+    //return 1.29843e6/ORBITF;  // Luis analysis 12 December https://docs.google.com/presentation/d/1h-ID3W8VFmSQBEhrFkKsymI7uuIHoap9WyPMLWLX7AU/edit#slide=id.g263901dc7ed_0_52
+    return 1.30773239e6/ORBITF; // Fabio pcc23VdMRescaledv0
   }else if(run>=359268){ //2022 EFG
     //return 6.037e6/ORBITF;  // 2018 ABC veto, Luis calibration using fill 8178 (Sept. 2022), Mattermost slides Dec 5 
     //return 4.1533e6/ORBITF; // veto_CDEFG_3_2022.txt, Luis thesis 6/28/2023 
