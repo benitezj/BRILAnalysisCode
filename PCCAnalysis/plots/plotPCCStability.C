@@ -4,8 +4,8 @@
 #include "globals.h"
 
 float minL=0;
-float minratio=0.90;
-float maxratio=1.20;
+float minratio=0.95;
+float maxratio=1.05;
 float plotYrangeMin=1;
 float plotYrangeMax=30000;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot

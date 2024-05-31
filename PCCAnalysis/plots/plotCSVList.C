@@ -4,8 +4,8 @@
 #include "globals.h"
 
 bool perBXRatioPlots=1;
-float ratiomin=0.8;
-float ratiomax=1.2;
+float ratiomin=0.95;
+float ratiomax=1.05;
 
 //set to 0 to retrieve nominal value
 //float sigmavis=1.24*4.1533e6/ORBITF; 
@@ -88,8 +88,6 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 
     ///read the reference lumi
     if(REF.CompareTo("")!=0) getRefLumi(inpath+"/"+Run+".ref");
-
-    
     
     ///create histograms
     TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
@@ -132,39 +130,26 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 	std::cout<<"lumi section out of bounds"<<std::endl;
 	return;
       }
-      
-      //cout<<","<<ls;
-      
+
+      if(HLumiLS.GetBinContent(ls)>0)
+	cout<<run<<","<<ls<<"  duplicated"<<endl;    
+
+  
       ///read the  Lumi per ls
       std::getline(iss,token, ',');
       std::stringstream totLiss(token);
       totLiss>>rawL;
       
-      //std::cout<<Run<<" "<<left<<setw(3)<<ls<<" "<<setw(10)<<rawL<<" "<<setw(10)<<refLumi[ls]<<" "<<sigmavis<<" "<<modfrac[ls]<<" "<<rawL/(sigmavis*modfrac[ls])<<std::endl;
-      //cout<<Run<<" "<<ls<<":"<<endl;      
-
       lsL=0.;
       if(sigmavis>0)
 	lsL = rawL/sigmavis;
            
       runL+=lsL;
-      
       Nls++;
       
-      ////fill lumi per LS plots
-      if(HLumiLS.GetBinContent(ls)>0)
-	cout<<run<<","<<ls<<"  duplicated"<<endl;    
-      HLumiLS.SetBinContent(ls,lsL);
       
-      //ratio to ref luminometer
-      if(refLumi[ls]>0){
-	//HLumiLSRatio.SetBinContent(ls,(lsL/refLumi[ls]-ratiomin)/(ratiomax-ratiomin));
-	HLumiLSRatio.SetBinContent(ls,lsL/refLumi[ls]);
-	HLumiLSRef.SetBinContent(ls,refLumi[ls]);
-	runLRef+=refLumi[ls];
-      }
       
-      ///fill lumi per BX plots
+      ///Lumi per BX
       unsigned ncoll=0;
       float bxlumi=0.;
       if(perBXRatioPlots) { 
@@ -180,16 +165,33 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 	    ncoll++;
 	}
       }
+
+      lsL=bxlumi;//temp fix
+
+      //Lumi per LS
+      HLumiLS.SetBinContent(ls,lsL);
+      if(refLumi[ls]>0){
+	HLumiLSRatio.SetBinContent(ls,lsL/refLumi[ls]);
+	HLumiLSRef.SetBinContent(ls,refLumi[ls]);
+	runLRef+=refLumi[ls];
+      }
+      
+      
+      //// write ouput
+      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
+      //lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<bxlumi<<" "<<ncoll<<std::endl;
+
+
       
       if(ls > maxLS) maxLS=ls;
       if(lsL > maxL) maxL=lsL;
-      //lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<refLumi[ls]<<" "<<ncoll<<std::endl;
-      lsfile<<Run<<" "<<ls<<" "<<lsL<<" "<<bxlumi<<" "<<ncoll<<std::endl;
       Ncoll+=ncoll;
     }
     cout<<endl;
     myfile.close();
 
+
+    
     /////////////////////////////////////////////////////
     ///   make the plots
     ///////////////////////////////////////////////////

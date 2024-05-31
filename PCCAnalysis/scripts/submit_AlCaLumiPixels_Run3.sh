@@ -22,6 +22,7 @@ MAXJOBS=1000000 #useful for testing
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/SummerLUMPAS22/Random_v4/Run2022G
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/2024Data/Random/Run2024A
+DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
 #DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023_v2/Random/Run2023D
 
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
@@ -29,19 +30,20 @@ brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/p
 #BRILCALCDATATAG=online 
 BRILCALCDATATAG=23v1
 
-BRILCALCTYPE=hfet
+#BRILCALCTYPE=hfet
 #BRILCALCTYPE=pxl
-#BRILCALCTYPE=bcm1futca
+BRILCALCTYPE=bcm1futca
 #BRILCALCTYPE=dt
 
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
 #BRILCALCNORM=hfet22v10
-BRILCALCNORM=hfet23v07
+#BRILCALCNORM=hfet23v07
 #BRILCALCNORM=dt23v03
 #BRILCALCNORM=dt23v04b
 #BRILCALCNORM=hfoc23v03
 #BRILCALCNORM=bcm1futca23v02
+BRILCALCNORM=bcm1futcav07d
 #BRILCALCNORM=pltzero23v5
 #BRILCALCNORM=bcm1f23v02
 #BRILCALCNORM=bcm1futca23v07c
