@@ -24,7 +24,8 @@ with open(args.inputfile) as f:
 tree.SetBranchStatus("*",0)                                                                                                                      
 tree.SetBranchStatus("run",1)                                                                                                                    
 tree.SetBranchStatus("LS",1)                                                                                                                     
-tree.SetBranchStatus("LN",1)                                                                                                                     
+tree.SetBranchStatus("LN",1)            
+tree.SetBranchStatus("bunchCrossing",1)
 tree.SetBranchStatus("event",1)                                                                                                                  
 tree.SetBranchStatus("nPixelClusters",1)
 #uncoment for tuples 2022                                                                             
@@ -91,7 +92,7 @@ event_count = numpy.zeros(16)
 
 numBunchesLHC = 3564                                                                                                                            
 k = 11246.                                                                                                                                       
-fill = 8385  #2018->6868 #2017->6016                                                                                                        
+fill = 8999  #2018->6868 #2017->6016                                                                                                        
                                                                                                         
 ################## Loop over events ###########################                                                                            
 
@@ -102,25 +103,24 @@ for iev in range(nentries):
     tree.GetEntry(iev)                                                                                                         
     if iev%30000==0:                                                                                                           
         print (tree.run,tree.LS,iev)                                                                                            
-    pixelCount=[0]*26                                                                                                          
-    if tree.nPixelClusters.size() == 0:                                                                                           
-        continue                                                                                                 
-    for item in tree.nPixelClusters:                                                                                
-        bxid=item.first.first            #item[0][0]                                             
-        module=item.first.second         #item[0][1]                                                    
-        clusters=item.second             #item[1] 
-        print(bxid,module,clusters)           
-        if module in vetoModules or module/1000000==303:#when starts in 303 is  barrel layer 0                  
-            continue                                                                                         
-        a.add(module)                                                                                           
-        pixelCount[0]=pixelCount[0]+clusters      
+    pixelCount=[0]*26                                                                                                           
 
-    run=tree.run                                                                                                     
-    LS=tree.LS #LS = 23s                                                             
-    LN=tree.LN #LN=0.3s                                                                                         
-    event=tree.event                                                                                         
-    timeStamp = tree.timeStamp_begin    
-    BXid = bxid                                                                                                
+    if tree.nPixelClusters.size()!= 0:                                                     
+        for item in tree.nPixelClusters:                                                            
+            module=item[0][1]         #item[0][1]                                                    
+            clusters=item[1]             #item[1] 
+        #print(bxid,module,clusters)           
+            if module in vetoModules or module/1000000==303:#when starts in 303 is  barrel layer 0                  
+                continue                                                                                      
+            pixelCount[0]=pixelCount[0]+clusters 
+    
+    run[0]=tree.run                                                                                                     
+    LS[0]=tree.LS #LS = 23s                                                             
+    LN[0]=tree.LN #LN=0.3s                                                                                         
+    event[0]=tree.event                                                                                         
+    timeStamp[0] = tree.timeStamp_begin    
+    #bunchCrossing[0]=tree.bunchCrossing
+    BXid = tree.bunchCrossing                                                                                                
     nCluster=pixelCount[0]                                                                              
                     
     PCC_NB[LN][BXid]+= nCluster
