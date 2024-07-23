@@ -70,12 +70,13 @@ make_sh_script(){
     #echo "export X509_USER_PROXY=${HOME}/x509up_u55361 " >> $fullsubmitdir/${run}.sh
     echo "cd ${INSTALLATION} " >> $fullsubmitdir/${run}.sh
     echo "eval \`scramv1 runtime -sh\` " >> $fullsubmitdir/${run}.sh
+  #  echo "export LD_LIBRARY_PATH=/path/to/libs:\$LD_LIBRARY_PATH" >> $fullsubmitdir/${run}.sh
     echo "cd \$TMPDIR  "   >> $fullsubmitdir/${run}.sh
     echo "pwd  "   >> $fullsubmitdir/${run}.sh
 
     echo "env" >> $fullsubmitdir/${run}.sh
     
-    echo "python  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017.txt --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+    echo "python3  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017.txt --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
 
    # echo "python  /afs/cern.ch/user/l/lcuevasp/CMSSW/CMSSW_10_6_29/src/BRILAnalysisCode/PCCAnalysis/vdM/pccminitree_to_hd5_vtx.py --minitreefile=./pccVdmMiniTree.root" >> $fullsubmitdir/${run}.sh
  
@@ -93,7 +94,7 @@ make_sub_script(){
 
     echo "Universe   = vanilla" >>  $fullsubmitdir/${run}.sub
     echo "+JobFlavour = \"${condorqueue}\" " >> $fullsubmitdir/${run}.sub
-    echo "requirements = (OpSysAndVer =?= \"CentOS7\")" >> $fullsubmitdir/${run}.sub
+#    echo "requirements = (OpSysAndVer =?= \"CentOS7\")" >> $fullsubmitdir/${run}.sub
 #    echo "+AccountingGroup = \"group_u_CMS.CAF.COMM\"" >> $fullsubmitdir/${run}.sub  
     echo "Executable = /bin/bash" >> $fullsubmitdir/${run}.sub 
     echo "Arguments  = ${fullsubmitdir}/${run}.sh" >> $fullsubmitdir/${run}.sub 
