@@ -46,7 +46,7 @@ outfilename='/eos/user/j/jmorenoc/PCC_hd5_fill6868/NewVeto/Period_D_4/PLTreproce
 
 
 outfile = t.open_file(outfilename,mode='w')
-outtablename = 'pltlumizero'
+outtablename = 'pcchd5'
 compr_filter = t.Filters(complevel=9, complib='blosc')
 chunkshape=(100,)
 outtable = outfile.create_table('/',outtablename,Lumitable,filters=compr_filter,chunkshape=chunkshape)
@@ -62,7 +62,7 @@ for f in inputfiles:
   table = hd5file.root.pltlumizero
   print 'Number of rows: '+str(len(table))
   for row in table.iterrows(): 
-   if row['runnum']== run_number: #new
+   #if row['runnum']== run_number: #new
     #print row['fillnum'], row['runnum'], row['lsnum'], row['nbnum'], row['timestampsec'], row['avg']
     rownew['fillnum'] = row['fillnum']
     rownew['runnum'] = row['runnum']
