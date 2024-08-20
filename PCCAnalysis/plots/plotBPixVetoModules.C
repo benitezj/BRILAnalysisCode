@@ -6,7 +6,7 @@
 
 void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
-  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/rootlogon.C");
+  gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
   //readModCoordinates();
   readModRPhiZCoordinates();
