@@ -213,9 +213,9 @@ void fitAfterglowDavid(){
 
 
   //Fit the last train
-  int FIRSTBCID=3340; int LASTBCID=3500;
-  CollidingBCIDList=std::vector<int>{};
-  for(int k=3347;k<=3382;k++) CollidingBCIDList.push_back(k);
+  //int FIRSTBCID=3340; int LASTBCID=3500;
+  //CollidingBCIDList=std::vector<int>{};
+  //for(int k=3347;k<=3382;k++) CollidingBCIDList.push_back(k);
 
   
   fitAfterglowTrain(H, FIRSTBCID, LASTBCID);
