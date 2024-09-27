@@ -8,7 +8,7 @@ void verify_CSV_NBX(TString inpath, std::string runlist=""){
   std::stringstream ss(runlist.c_str());
   int Run;
   while(ss >> Run) {
-    cout<<Run<<":"<<endl;
+    //cout<<Run<<":"<<endl;
     
     ///Open the lumi csv file
     TString infile=inpath+"/"+Run+".csv";
@@ -67,9 +67,11 @@ void verify_CSV_NBX(TString inpath, std::string runlist=""){
 	if(bxL>0.1) ncoll++;
       }
 
-      cout<<run<<" "<<ls<<" "<<ncoll<<" "<<nbx<<endl;
-      if(nbx!=3564)cout<<"ERROR with number total BX in LS"<<endl;
-      
+
+      if(nbx!=3564){
+	cout<<"ERROR with number total BX in LS:";
+	cout<<run<<" "<<ls<<" "<<ncoll<<" "<<nbx<<endl;
+      }
     }
 
     csvfile.close();
