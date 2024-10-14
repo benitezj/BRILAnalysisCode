@@ -298,14 +298,16 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
   auto clustersPerBXInput = inputPcc.readCounts();
 
  
-//  std::cout<< std::to_string(lumiSeg.run()) << ",";
-//  std::cout << std::to_string(lumiSeg.luminosityBlock()) << ",";
-//  std::cout<<modID.size()<<std::endl;
-//  for (unsigned int j=0;j<modID.size();j++)
-//    if (std::count(modlist.begin(), modlist.end(), modID.at(j))==0) 
-//      std::cout << "Module id not found in modlist: "<<modID.at(j)<<std::endl;
-//  for (unsigned int j=0;j<modID.size();j++)
-//    std::cout<<modID.at(j)<<std::endl;
+  std::cout<<std::to_string(lumiSeg.run()) << ",";
+  std::cout<<std::to_string(lumiSeg.luminosityBlock()) << ",";
+  std::cout<<" Mod list size:"<<modID.size()<<std::endl;
+  std::cout<<" Mod list ids:"<<std::endl;
+  for (unsigned int j=0;j<modID.size();j++){
+    std::cout<<"mod "<<modID.at(j)<<std::endl;
+    if (std::count(modlist.begin(), modlist.end(), modID.at(j))==0) 
+      std::cout << "Module id not found in modlist: "<<modID.at(j)<<std::endl;
+  }
+
 
 
   ///////////////////////////////////////////////////////
