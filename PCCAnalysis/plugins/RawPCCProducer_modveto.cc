@@ -300,13 +300,14 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
  
   std::cout<<std::to_string(lumiSeg.run()) << ",";
   std::cout<<std::to_string(lumiSeg.luminosityBlock()) << ",";
-  std::cout<<" Mod list size:"<<modID.size()<<std::endl;
-  std::cout<<" Mod list ids:"<<std::endl;
-  for (unsigned int j=0;j<modID.size();j++){
-    std::cout<<"mod "<<modID.at(j)<<std::endl;
-    if (std::count(modlist.begin(), modlist.end(), modID.at(j))==0) 
-      std::cout << "Module id not found in modlist: "<<modID.at(j)<<std::endl;
-  }
+  std::cout<<"Input event mod list size:"<<modID.size()<<std::endl;
+
+//  std::cout<<" Mod list ids:"<<std::endl;
+//  for (unsigned int j=0;j<modID.size();j++){
+//    std::cout<<"mod "<<modID.at(j)<<std::endl;
+//    if (std::count(modlist.begin(), modlist.end(), modID.at(j))==0) 
+//      std::cout << "Module id not found in modlist: "<<modID.at(j)<<std::endl;
+//  }
 
 
 
@@ -319,36 +320,40 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
   //Lumi saved in the csv file
   if (saveCSVFile_) {
 
+    //initialize the module counts to 0
     std::map<int, float> modmap;
     for (unsigned int i=0;i<modlist.size();i++){
       modmap.insert(std::pair<int, float>(modlist.at(i), 0.));
     }
+    std::cout<<"Code array list size:"<<modlist.size()<<std::endl;
 
+    //count total number of events in the LS (sum over all bx)
     int nevt=0;
     for (int bx = 0; bx < int(LumiConstants::numBX); bx++)
       nevt+=events[bx];
 
-    //calculate total of clusters per module
-    for (unsigned int i=0;i<modlist.size();i++){
-      int k=-1;
-      for (unsigned int j=0;j<modID.size();j++)
-	if(modID.at(j)==modlist.at(i))
-	  k=j;
+    //calculate total of clusters for each module
+    if(nevt>0){//check there were events in this LS
+      for (unsigned int i=0;i<modlist.size();i++){
 
-      float m_c=0;
-      if(k>=0){
+	//find the location of the module in the array
+	int k=-1;
+	for (unsigned int j=0;j<modID.size();j++)
+	  if(modID.at(j)==modlist.at(i)) k=j;
+	if(k==-1) continue;
+	
+	//sum the clusters for module
+	float m_c=0.;
 	for (int bx=0;bx<int(LumiConstants::numBX);bx++)
-	  m_c += clustersPerBXInput.at(bx+k*int(LumiConstants::numBX));
+	    m_c += clustersPerBXInput.at(bx+k*int(LumiConstants::numBX));
 
+	//fill the pcc value for the module
+	modmap.find(modlist.at(i))->second = m_c/nevt;
       }
-
-      if(nevt>0) m_c /= nevt;
-      else m_c=0.;
-
-      modmap.find(modlist.at(i))->second = m_c;
     }
 
 
+    //write the pcc per module in the output csv file
     std::lock_guard<std::mutex> lock(fileLock_);
     std::ofstream csfile(csvOutLabel_, std::ios_base::app);
     csfile << std::to_string(lumiSeg.run()) << ",";
@@ -359,7 +364,7 @@ void RawPCCProducer_modveto::globalEndLuminosityBlockProduce(edm::LuminosityBloc
       csfile << itr->second<<",";
     }
     
-    csfile<<'\n';
+    csfile<<std::endl;
     csfile.close();
   }
 }
