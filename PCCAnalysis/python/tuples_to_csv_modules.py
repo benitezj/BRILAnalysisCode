@@ -6,7 +6,7 @@ import struct
 import argparse
 
 numMods = 1856
-inputmodsfile='/afs/cern.ch/user/b/benitezj/public/BRIL/PCC/modules.txt'
+inputmodsfile='BRILAnalysisCode/PCCAnalysis/plots/modules.txt'
 output_path = '.'
 
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')             
@@ -38,14 +38,13 @@ if not os.path.exists(output_path):
     print("output path does not exist")
     sys.exit()
 
-of = open(output_path+'/pcc_mod.csv', "a")
+of = open(output_path+'/tuples_to_csv_modules.csv', "a")
 
 #######################################################
 ## get the Pixel detector module list
 print("opening:"+inputmodsfile)
 modf = open(inputmodsfile, "r")
 DEFAULTMODS={}
-#for m in range(numMods):
 while True:
     line=modf.readline()
     if not line:
@@ -53,7 +52,8 @@ while True:
     modid=int(line)
     if modid>0:
         DEFAULTMODS[modid]=0
-print(f'Number of modules: {len(DEFAULTMODS):d}')
+print(f'Number of modules in module file: {len(DEFAULTMODS):d}, number expected: {numMods}')
+
 
 ##############################################################
 ################## Loop over events ###########################                                                                            
@@ -99,30 +99,30 @@ of.close()
 
 
 
-##verify the module list
-print(f'{inputmodsfile}: number of modules {len(DEFAULTMODS):d}')
-DEFAULTMODSKeys = list(DEFAULTMODS.keys())
-DEFAULTMODSKeys.sort()
-DEFAULTMODS_sorted= {i: DEFAULTMODS[i] for i in DEFAULTMODSKeys}
-
-print(f'root file  : number of modules {len(ROOTMODS):d}')
-ROOTMODSKeys = list(ROOTMODS.keys())
-ROOTMODSKeys.sort()
-ROOTMODS_sorted= {i: ROOTMODS[i] for i in ROOTMODSKeys}
-
-modsfile = open(output_path+'/modules_not_in_root.txt', "a")
-for key in DEFAULTMODS_sorted:
-    if key not in ROOTMODS_sorted:
-        print(f'{key:d} not in root file')
-    modsfile.write(f'{key:d}\n')
-modsfile.close()
-
-modsrootfile = open(output_path+'/modules_not_in_default.txt', "a")
-for key in ROOTMODS_sorted:
-    if key not in DEFAULTMODS_sorted:
-        print(f'{key:d} not in {inputmodsfile}')
-    modsrootfile.write(f'{key:d}\n')
-modsrootfile.close()
+###verify the module list
+#print(f'{inputmodsfile}: number of modules {len(DEFAULTMODS):d}')
+#DEFAULTMODSKeys = list(DEFAULTMODS.keys())
+#DEFAULTMODSKeys.sort()
+#DEFAULTMODS_sorted= {i: DEFAULTMODS[i] for i in DEFAULTMODSKeys}
+#
+#print(f'root file  : number of modules {len(ROOTMODS):d}')
+#ROOTMODSKeys = list(ROOTMODS.keys())
+#ROOTMODSKeys.sort()
+#ROOTMODS_sorted= {i: ROOTMODS[i] for i in ROOTMODSKeys}
+#
+#modsfile = open(output_path+'/modules_not_in_root.txt', "a")
+#for key in DEFAULTMODS_sorted:
+#    if key not in ROOTMODS_sorted:
+#        print(f'{key:d} not in root file')
+#        modsfile.write(f'{key:d}\n')
+#modsfile.close()
+#
+#modsrootfile = open(output_path+'/modules_not_in_default.txt', "a")
+#for key in ROOTMODS_sorted:
+#    if key not in DEFAULTMODS_sorted:
+#        print(f'{key:d} not in {inputmodsfile}')
+#        modsrootfile.write(f'{key:d}\n')
+#modsrootfile.close()
 
         
 print("Done")
