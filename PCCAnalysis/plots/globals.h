@@ -1,7 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "modules.h"
+#include "modules.h" // this is matches to the table in the RawPCCProducer_modveto plugin
+//#include "modules_361913.h" //list extracted from a vdm run
+
 
 #define NBX 3564
 #define NMOD 1856
