@@ -7,30 +7,31 @@
 
 TString OutPath = "./tmp";
 
-
-#define MARKERSIZE 0.3
 #define MAXMODWEIGHT 0.01
 #define NBINMODWEIGHT 500 //for TH1 distribution
-
 #define NLSBLOCK 1
-#define LS_ID_MIN 0
-#define LS_ID_MAX 2500
-
 #define NBINTOTPCC 500
 #define MINTOTPCC 0
-#define MAXTOTPCC 20000
 #define MINTOTPCCAVG 0
-#define MAXTOTPCCAVG 10
-
-bool makeModuleGraphs=0;//total counts per module , not the weights
+bool makeModuleGraphs=0;//graphs per module
 
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/veto_B0.txt";//initial veto
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017.txt";//2017 veto from Sam
 TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt";
 
+//#define LS_ID_MIN 0
+//#define LS_ID_MAX 2500
+//#define MAXTOTPCC 20000
+//#define MAXTOTPCCAVG 10
+//TString InputPath = "./AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/Run2017B/";
+//std::vector<std::string> run_number = {"181E6C2A-1E12-FF49-88E5-556411741312.csv","91A1032B-93B8-2946-9701-690A0CB1CDCA.csv","E57DFC3F-F7D0-8B40-8067-C6512B09FE63.csv", "670BF0D8-3ED8-224F-B750-E85BEBAE2EAE.csv", "D72ECBEC-6CD4-AC4D-A02A-EDAB07C08D50.csv", "FD3B4EC4-2B4D-C840-9223-7188F6DBCD01.csv"};
 
-TString InputPath = "./AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/Run2017B/";
-std::vector<std::string> run_number = {"181E6C2A-1E12-FF49-88E5-556411741312.csv","91A1032B-93B8-2946-9701-690A0CB1CDCA.csv","E57DFC3F-F7D0-8B40-8067-C6512B09FE63.csv", "670BF0D8-3ED8-224F-B750-E85BEBAE2EAE.csv", "D72ECBEC-6CD4-AC4D-A02A-EDAB07C08D50.csv", "FD3B4EC4-2B4D-C840-9223-7188F6DBCD01.csv"};
+#define LS_ID_MIN 0
+#define LS_ID_MAX 120
+#define MAXTOTPCC 100
+#define MAXTOTPCCAVG 0.2
+TString InputPath = "./2017ModuleVetoChecks/";
+std::vector<std::string> run_number = {"tuples_to_csv_modules.csv"};
 
 
 
@@ -45,9 +46,9 @@ void plot_Module_weights() {
   readModRPhiZCoordinates();
 
   //dump print the module list:
-  for (unsigned int i=0;i<NMOD;i++)
-    std::cout<<MODID[i]<<std::endl;
-  return;
+  //for (unsigned int i=0;i<NMOD;i++)
+  //std::cout<<MODID[i]<<std::endl;
+  //return;
 
 
   
@@ -243,7 +244,7 @@ void plot_Module_weights() {
   /// Module weights
   ////////////////////
   ModWeight.SetMarkerStyle(8);
-  ModWeight.SetMarkerSize(MARKERSIZE);
+  ModWeight.SetMarkerSize(0.3);
   ModWeight.SetMarkerColor(4);
   ModWeight.GetXaxis()->SetTitle("Module ID");                                                                                 
   ModWeight.GetYaxis()->SetTitle("Module Weight");
