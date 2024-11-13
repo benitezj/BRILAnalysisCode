@@ -13,6 +13,9 @@
 <use   name="DataFormats/Luminosity"/>
 <use name="CondFormats/DataRecord"/>
 
+<use   name="DQMServices/Core"/>
+<use   name="DQMServices/Components"/>
+
 <flags EDM_PLUGIN="1"/>
 
 
@@ -42,6 +45,11 @@
 
 
 <library   file="RawPCCProducer_modveto.cc" name="RawPCCProducer_modveto">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
+
+<library   file="CorrPCCProducerReReco.cc" name="CorrPCCProducerReReco">
   <flags   EDM_PLUGIN="1"/>
 </library>
 

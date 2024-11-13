@@ -1,4 +1,8 @@
 #!/bin/bash
+#Note: this script only works for PromptReco data which is organized by run numbers
+
+#period=Run2018D
+period=$1
 
 eospath=/eos/cms/store
 
@@ -8,7 +12,6 @@ eospath=/eos/cms/store
 ## * this script takes no arguments, need to set options below
 #######################################
 
-period=Run2018D
 
 ########
 ## choose type of data: 
@@ -18,13 +21,13 @@ period=Run2018D
 
 
 #2 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels/ALCARECO/AlCaPCCZeroBias-PromptReco-v2/000/316/239/00000/0CEC4AA3-1259-E811-9384-02163E01A168.root
-datatype=2
-dataset=AlCaPCCZeroBias-PromptReco
-
+#datatype=2
+#dataset=AlCaPCCZeroBias-PromptReco
 
 #3 -> /eos/cms/store/data/Run2018A/AlCaLumiPixels0/RAW/v1/000/316/524/00000/
 #datatype=3
 #dataset=v1
+
 
 echo $period
 echo $datatype
