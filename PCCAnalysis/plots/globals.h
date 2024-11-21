@@ -87,6 +87,8 @@ float getSigmaVis(int run){
     return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
   }else if(run>=306473){
     return 0.9702*3.2074e6/ORBITF; // Run2017G
+  }else if(run>=297046){ // 2017 veto (Run2017B >)  
+    return 4.6470e6/ORBITF; //result from Peter in Run 2 paper AN (14/Nov2024) https://www.overleaf.com/project/65af85cc5c3a839be2bffb71 , with bkg values from tail averates: 4.6693, with Const: 4.6745
   }
 
   cout<<"sigma vis not found for run : "<<run<<endl;
@@ -95,7 +97,6 @@ float getSigmaVis(int run){
 
 
 float getsigmavis_as(int run1){
-
   //New veto list, Ashish Sehrawat
   if(run1>=324564){
     return 6.72261000001e6/ORBITF;   // for Period D4 
@@ -120,29 +121,19 @@ float getsigmavis_as(int run1){
 
 
 float getsigmavis_as_veto1701(int run2){
-
-  //2% rms common veto list, Ashish Sehrawat                                                                                                                                            
-  if(run2>=315252){
-    return 0.959939e6/ORBITF;   // for entire 2018 period                                                                                                                         
-  }
-
+  //2% rms common veto list, Ashish Sehrawat                                                                                                                      if(run2>=315252){
+    return 0.959939e6/ORBITF;   // for entire 2018 period                                                                                                         }
   cout<<"sigma vis not found for run : "<<run2<<endl;
   return 1;
-
 }
 
 
 
 float getsigmavis_as_veto1615(int run3){
-
-  //4% rms common veto list, Ashish Sehrawat                                                                                                                                                                        
-  if(run3>=315252){
-    return 1.673490e6/ORBITF;   // for entire 2018 period                                                                                                                                                   
-  }
-
+  //4% rms common veto list, Ashish Sehrawat                                                                                                                      if(run3>=315252){
+    return 1.673490e6/ORBITF;   // for entire 2018 period                                                                                                         }
   cout<<"sigma vis not found for run : "<<run3<<endl;
   return 1;
-
 }
 
 

@@ -6,7 +6,7 @@
 
 void plotlabels(){
   //drawCMSPrelim();
-  drawFillYear(0,2023);
+  drawFillYear(0,2017);
   //drawPCCLuminometer();
 }
 
@@ -24,7 +24,11 @@ float MinPCCColliding=100;
 //std::string runlist="366403,366406,366409,366410,366413,366419,366422,366424,366426,366427,366429,366432,366434,366436,366437,366438,366439,366440,366441,366442,366449,366450,366451,366469,366470,366471,366494,366495,366496,366497,366498,366499,366500,366504,366533,366724,366727,366728,366729,366793,366794,366795,366797,366798,366800,366801,366802,366804,366820,366821,366829,366832,366833,366838,366839,366840,366841,366850,366873,366874,366876,366891,366892,366893,366895,366933,367062,367063,367064,367065,367070,367071,367072,367073,367079,367516,367552,367553,367554,367589,367591,367592,367593,367615,367616,367617,367618,367619,367622,367661,367662,367663,367664,367665,367666,367691,367692,367693,367694,367695,367696,367697,367699,367730,367742,367758,367770,367771,367772,367790,367823,367831,367836,367838,367840,367881,367882,367883,367884,367902,367904,367905,367906,367907,367908,367910,368151,368223,368224,368229,368247,368318,368320,368321,368326,368331,368332,368333,368334,368336,368337,368338,368339,368340,368341,368343,368382,368383,368384,368388,368389,368400,368406,368410,368411,368412,368423,368437,368440,368443,368451,368452,368453,368454,368489,368542,368546,368547,368548,368566,368567,368609,368611,368612,368613,368636,368669,368670,368671,368672,368673,368674,368675,368676,368678,368684,368685,368723,368724,368746,368748,368749,368752,368753,368762,368763,368764,368765,368774,368815,368816,368817,368818,368822,368823,369279,369436,369444,369447,369794,369795,369797,369802,369867,369869,369870,369872,369873,369901,369927,369937,369938,369941,369942,369943,369956,369978,369994,369998,369999,370000,370005,370091,370092,370093,370095,370096,370097,370100,370101,370102,370129,370144,370169,370171,370172,370175,370192,370195,370196,370293,370294,370300,370302,370304,370307,370321,370332,370340,370354,370355,370357,370406,370436,370460,370472,370497,370522,370560,370579,370580,370664,370665,370666,370667,370717,370725,370749,370750,370751,370753,370772,370774,370775,370776,370790,371225";
 
 //2023 mu-scan fill
-std::string runlist="370091,370093,370095,370096,370097,370102";
+//std::string runlist="370091,370093,370095,370096,370097,370102";
+
+
+//2017
+std::string runlist="297046,297047,297048,297049,297050,297056,297057,297099,297100,297101,297113,297114,297168,297169,297170,297171,297175,297176,297177,297178,297179,297180,297181,297211,297215,297218,297219,297224,297225,297227,297281,297282,297283,297284,297285,297286,297287,297288,297289,297290,297291,297292,297293,297296,297308,297359,297411,297424,297425,297426,297429,297430,297431,297432,297433,297434,297435,297467,297468,297469,297474,297483,297484,297485,297486,297487,297488,297494,297495,297496,297497,297498,297499,297500,297501,297502,297503,297504,297505,297557,297558,297559,297560,297562,297563,297598,297599,297603,297604,297605,297606,297620,297656,297657,297658,297659,297660,297661,297662,297663,297664,297665,297666,297670,297671,297672,297673,297674,297675,297678,297722,297723,298809,298853,298855,298996,298997,298998,299000,299042,299061,299062,299064,299065,299067,299084,299096,299149,299178,299180,299183,299184,299185,299316,299317,299318,299324,299325,299326,299327,299329";
 
 
 float getNColl(TFile*F=NULL, int Run=-1, int I=-1,int type=0){
@@ -49,8 +53,6 @@ float getNColl(TFile*F=NULL, int Run=-1, int I=-1,int type=0){
 	  sf+=HIST->GetBinContent(j);
       }
     }
-
-    ///if(ncoll<2000) cout<<"ncoll="<<ncoll<<" : "<<kname<<endl;
   }
   
   if(type==1) return sf/ncoll; 
@@ -188,13 +190,13 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
       std::pair<float,float> pccavg=getPCCAvg(&InputFile,Run,l);
       if(pccavg.first>MinPCCColliding){
 	gAvgVsIOV->SetPoint(gAvgVsIOV->GetN(),gAvgVsIOV->GetN(),pccavg.first);
-	gT1fracVsPCC->SetPoint(gT1fracVsPCC->GetN(),pccavg.first, YT1frac[l]); 
-	gT1fracVsIOV->SetPoint(gT1fracVsIOV->GetN(),gT1fracVsIOV->GetN(), YT1frac[l]); 
-	gT1ResidVsPCC->SetPoint(gT1ResidVsPCC->GetN(),pccavg.first, YT1resid[l]); 
-	gT1ResidVsIOV->SetPoint(gT1ResidVsIOV->GetN(),gT1ResidVsIOV->GetN(), YT1resid[l]); 
-	gT2ResidVsPCC->SetPoint(gT2ResidVsPCC->GetN(),pccavg.first, YT2resid[l]); 
-	gT2ResidVsIOV->SetPoint(gT2ResidVsIOV->GetN(),gT2ResidVsIOV->GetN(), YT2resid[l]);
-	gPedVsIOV->SetPoint(gPedVsIOV->GetN(),gPedVsIOV->GetN(), YPed[l]/pccavg.first); 
+	gT1fracVsPCC->SetPoint(gT1fracVsPCC->GetN(),pccavg.first, YT1frac[l]*100); 
+	gT1fracVsIOV->SetPoint(gT1fracVsIOV->GetN(),gT1fracVsIOV->GetN(), YT1frac[l]*100); 
+	gT1ResidVsPCC->SetPoint(gT1ResidVsPCC->GetN(),pccavg.first, YT1resid[l]*100); 
+	gT1ResidVsIOV->SetPoint(gT1ResidVsIOV->GetN(),gT1ResidVsIOV->GetN(), YT1resid[l]*100);  
+	gT2ResidVsPCC->SetPoint(gT2ResidVsPCC->GetN(),pccavg.first, YT2resid[l]*100);  
+	gT2ResidVsIOV->SetPoint(gT2ResidVsIOV->GetN(),gT2ResidVsIOV->GetN(), YT2resid[l]*100); 
+	gPedVsIOV->SetPoint(gPedVsIOV->GetN(),gPedVsIOV->GetN(), (YPed[l]/pccavg.first)*100);  
 	
       }
       
@@ -212,9 +214,9 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
   ///////////////////////////////////
   ///type 1 fraction
   Canvas.Clear();
-  gT1fracVsPCC->GetYaxis()->SetTitle("Type 1 Afterglow Fraction");
-  gT1fracVsPCC->GetXaxis()->SetTitle("Average Raw PCC per BCID");
-  gT1fracVsPCC->GetYaxis()->SetRangeUser(0.,0.04);
+  gT1fracVsPCC->GetYaxis()->SetTitle("Type 1 Afterglow Fraction [%]");
+  gT1fracVsPCC->GetXaxis()->SetTitle("Average PCC");
+  gT1fracVsPCC->GetYaxis()->SetRangeUser(0.,6);
   gT1fracVsPCC->SetMarkerStyle(8);
   gT1fracVsPCC->SetMarkerSize(0.6);
   gT1fracVsPCC->Draw("ap");
@@ -223,9 +225,9 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
   Canvas.Print(outpath+"/afterglow_t1f_vsinstlumi.png");
 
   Canvas.Clear();
+  gT1fracVsIOV->GetYaxis()->SetTitle("Type 1 Afterglow Fraction [%]");
   gT1fracVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gT1fracVsIOV->GetYaxis()->SetTitle("Type 1 Afterglow Fraction");
-  gT1fracVsIOV->GetYaxis()->SetRangeUser(0,0.04);
+  gT1fracVsIOV->GetYaxis()->SetRangeUser(0,6);
   gT1fracVsIOV->SetMarkerStyle(8);
   gT1fracVsIOV->SetMarkerSize(0.6);
   gT1fracVsIOV->Draw("ap");
@@ -236,9 +238,9 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
   ///////////////////////////////////////
   ///Type 1 residual
   Canvas.Clear();
-  gT1ResidVsPCC->GetYaxis()->SetTitle("Type 1 Afterglow Residual");
-  gT1ResidVsPCC->GetXaxis()->SetTitle("Average Raw PCC per BCID");
-  gT1ResidVsPCC->GetYaxis()->SetRangeUser(-0.0001,0.0001);
+  gT1ResidVsPCC->GetYaxis()->SetTitle("Type 1 Afterglow Residual [%]");
+  gT1ResidVsPCC->GetXaxis()->SetTitle("Average PCC");
+  gT1ResidVsPCC->GetYaxis()->SetRangeUser(-0.01,0.01);
   gT1ResidVsPCC->SetMarkerStyle(8);
   gT1ResidVsPCC->SetMarkerSize(0.6);
   gT1ResidVsPCC->Draw("ap");
@@ -248,8 +250,8 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
 
   Canvas.Clear();
   gT1ResidVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gT1ResidVsIOV->GetYaxis()->SetTitle("Type 1 Afterglow Residual");
-  gT1ResidVsIOV->GetYaxis()->SetRangeUser(-0.0001,0.0001);
+  gT1ResidVsIOV->GetYaxis()->SetTitle("Type 1 Afterglow Residual [%]");
+  gT1ResidVsIOV->GetYaxis()->SetRangeUser(-0.01,0.01);
   gT1ResidVsIOV->SetMarkerStyle(8);
   gT1ResidVsIOV->SetMarkerSize(0.6);
   gT1ResidVsIOV->Draw("ap");
@@ -261,9 +263,9 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
   ////////////////////////
   ///Type 2 residual
   Canvas.Clear();
-  gT2ResidVsPCC->GetYaxis()->SetTitle("Type 2 Afterglow Residual");
-  gT2ResidVsPCC->GetXaxis()->SetTitle("Average Raw PCC per BCID");
-  gT2ResidVsPCC->GetYaxis()->SetRangeUser(-0.005,0.005);
+  gT2ResidVsPCC->GetYaxis()->SetTitle("Type 2 Afterglow Residual [%]");
+  gT2ResidVsPCC->GetXaxis()->SetTitle("Average PCC ");
+  gT2ResidVsPCC->GetYaxis()->SetRangeUser(-2,2);
   gT2ResidVsPCC->SetMarkerStyle(8);
   gT2ResidVsPCC->SetMarkerSize(0.6);
   gT2ResidVsPCC->Draw("ap");
@@ -273,8 +275,8 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
 
   Canvas.Clear();
   gT2ResidVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gT2ResidVsIOV->GetYaxis()->SetTitle("Type 2 Afterglow Residual");
-  gT2ResidVsIOV->GetYaxis()->SetRangeUser(-0.005,0.005);
+  gT2ResidVsIOV->GetYaxis()->SetTitle("Type 2 Afterglow Residual [%]");
+  gT2ResidVsIOV->GetYaxis()->SetRangeUser(-2,2);
   gT2ResidVsIOV->SetMarkerStyle(8);
   gT2ResidVsIOV->SetMarkerSize(0.6);
   gT2ResidVsIOV->Draw("ap");
@@ -286,8 +288,8 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
   /////////Pedestal
   Canvas.Clear();
   gPedVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gPedVsIOV->GetYaxis()->SetTitle("Pedestal fraction [%]");
-  gPedVsIOV->GetYaxis()->SetRangeUser(-0.01,0.01);
+  gPedVsIOV->GetYaxis()->SetTitle("Pedestal Fraction [%]");
+  gPedVsIOV->GetYaxis()->SetRangeUser(-2,2);
   gPedVsIOV->SetMarkerStyle(8);
   gPedVsIOV->SetMarkerSize(0.6);
   gPedVsIOV->Draw("ap");
@@ -299,8 +301,7 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
   /////////Avg Colliding 
   Canvas.Clear();
   gAvgVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gAvgVsIOV->GetYaxis()->SetTitle("Avg. PCC");
-  //gAvgVsIOV->GetYaxis()->SetRangeUser(0,0.005);
+  gAvgVsIOV->GetYaxis()->SetTitle("Avg. PCC colliding");
   gAvgVsIOV->SetMarkerStyle(8);
   gAvgVsIOV->SetMarkerSize(0.6);
   gAvgVsIOV->Draw("ap");
@@ -310,7 +311,7 @@ void plot_afterglow_residual(TString inpath, TString outpath) {
 
   Canvas.Clear();
   gNCollVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gNCollVsIOV->GetYaxis()->SetTitle("N colliding");
+  gNCollVsIOV->GetYaxis()->SetTitle("# of colliding bunches");
   gNCollVsIOV->SetMarkerStyle(8);
   gNCollVsIOV->SetMarkerSize(0.6);
   gNCollVsIOV->Draw("ap");

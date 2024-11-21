@@ -3,14 +3,19 @@
 #include <string>
 #include "globals.h"
 
-float minL=0;
-float minratio=0.95;
-float maxratio=1.05;
+//cuts for the ratio histogram
+float minL=3000;
+float minratio=0.94;
+float maxratio=1.06;
+int minLS=0,maxLS=24000;
+
+///plots ranges
 float plotYrangeMin=1;
 float plotYrangeMax=30000;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot
 float plotYrangeZoomMin=0.0;
 float plotYrangeZoomMax=0.2;//zoomed plot
+
 
 
 void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100, TString REF="HFET"){
@@ -50,11 +55,6 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     std::stringstream iss(line);    
     iss>>run>>ls>>totL; //space separated
 
-    if(RefLumi.CompareTo("")!=0) iss>>totLRef; //>>ncollb;
-    //cout<<run<<" "<<ls<<" "<<totL<<" "<<totLRef<<endl;
-
-    if(totL<minL) continue;
-
     if(run!=prevrun){
       counter_ls_run_tot += counter_ls_run;
       counter_ls_run=0;
@@ -64,20 +64,21 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     counter_ls_run++;
     counterLumi = counter_ls_run_tot + ls;
 
-
+    if(RefLumi.CompareTo("")!=0)
+      iss>>totLRef;
+     float ratio=0;
+      if(totLRef>0 )
+	ratio=totL/totLRef;
+ 
     Lumi.SetBinContent(counterLumi-plotXrangeMin,totL);
-    //if(totL>plotYrangeMax) plotYrangeMax=totL;
-
-
-    float ratio=0;
-    if(totLRef>0 ){
-      ratio=totL/totLRef;
-    }
     LumiRef.SetBinContent(counterLumi-plotXrangeMin,totLRef);
-    HistoLumiRatio.Fill(ratio);
     LumiRatio.SetBinContent(counterLumi-plotXrangeMin,ratio);
-    H2LumiRatioVsLumi.Fill(totL,ratio);
-
+	  
+    if(totL>minL && counterLumi>minLS && counterLumi<maxLS) {	
+      HistoLumiRatio.Fill(ratio);
+      H2LumiRatioVsLumi.Fill(totL,ratio);      
+    }
+    
     if(run>lastrun){
       runlist[counterLumi]=run;
       lastrun=run;
@@ -186,6 +187,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     C.Clear();
     HistoLumiRatio.GetYaxis()->SetTitle(" # of lumi sections ");
     HistoLumiRatio.GetXaxis()->SetTitle(TString("ratio"));
+    HistoLumiRatio.GetXaxis()->SetNdivisions(10);
     HistoLumiRatio.SetMarkerStyle(8);
     HistoLumiRatio.SetMarkerSize(0.4);
     HistoLumiRatio.Draw("hist");

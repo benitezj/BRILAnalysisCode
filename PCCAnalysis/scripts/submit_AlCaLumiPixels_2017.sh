@@ -4,50 +4,46 @@ submitdir=$1 ## path to submission directory
 action=$2 ## option for: 0=create scripts, 1=submit, 2=check, ..
 cfg=$3  ## only for action=0
 
-#######
-## hard coded options
-jobtype=csv ##step2, step3, step4, step5 , csv ,  corr
+##output paths
+baseoutdir=/eos/user/b/benitezj/BRIL/PCC
+plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
+
+##########################
+####### Options
+jobtype=ZB ##RD (Randoms), ZB (ZeroBias) 
 
 condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
+
 CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
-##Afterglow corrections for RawPCCProducer (csv) jobs 
-DBDIR=
-#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
-#DBDIR=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023_v2/Random/Run2023D
+## afterglow corrections
+DBFILE=
+#DBFILE=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
+DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v4/Run2017B/merged.db
 
+## options for brilcalc lumi
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
 #brilcalc='brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
 BRILCALCDATATAG=
 #BRILCALCDATATAG=online 
-BRILCALCDATATAG=23v1
+#BRILCALCDATATAG=23v1
 
 BRILCALCTYPE=
-BRILCALCTYPE=hfet
-#BRILCALCTYPE=pxl
-#BRILCALCTYPE=bcm1futca
-#BRILCALCTYPE=dt
+#BRILCALCTYPE=hfet
+BRILCALCTYPE=pxl
 
-BRILCALCREFDETNAME=
+BRILCALCNORM=
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
-#BRILCALCNORM=hfet22v10
-#BRILCALCNORM=hfet23v07
-#BRILCALCNORM=dt23v03
-#BRILCALCNORM=dt23v04b
-#BRILCALCNORM=hfoc23v03
-#BRILCALCNORM=bcm1futca23v02
-#BRILCALCNORM=bcm1futcav07d
-#BRILCALCNORM=pltzero23v5
-#BRILCALCNORM=bcm1f23v02
-#BRILCALCNORM=bcm1futca23v07c
-#BRILCALCNORM=pcc23VdMRescaledv0
+#BRILCALCNORM=hfet17New_v5
+BRILCALCNORM=pcc17_run2_legacy_v6_pccvtx
+
+BRILCALCREFDETNAME=
+BRILCALCREFDETNAME=$BRILCALCNORM
+
+BCIDS=
 #BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
-#BRILCALCREFDETNAME=$BRILCALCNORM
 
-
-baseoutdir=/eos/user/b/benitezj/BRIL/PCC
-plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 
 
 ###########################################################
@@ -74,7 +70,7 @@ echo "output: $outputdir"
 echo "condor queue: $condorqueue"
 echo "job type: $jobtype"
 echo "plots dir: $plotsdir"
-echo "afterglow corrections: $DBDIR $DBROOTDIR"
+echo "afterglow corrections: $DBFILE $DBROOTDIR"
 
 
 #####################################################
@@ -91,18 +87,9 @@ if [ "$action" == "0" ]; then
 
 fi
 
-## clean up the plots
-if [ "$action" == "5" ] ; then
-    rm -rf $plotsdir
-    mkdir -p $plotsdir
-fi
-
-
-##################################################
-#### helper functions
 submit(){
     local run=$1
-    rm -f $fullsubmitdir/${run}.log
+    rm -f ${fullsubmitdir}/${run}.log
     rm -f ${outputdir}/${run}.root
     rm -f ${outputdir}/${run}.db
     rm -f ${outputdir}/${run}.txt
@@ -128,20 +115,18 @@ make_sh_script(){
     echo "eval \`scramv1 runtime -sh\` " >> $fullsubmitdir/${run}.sh
     echo "cd \$TMPDIR  "   >> $fullsubmitdir/${run}.sh
     echo "pwd  "   >> $fullsubmitdir/${run}.sh
-
     echo "export INPUTFILE=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
 
-    ###if DBDIR is set this will override the Afterglow corrections 
-    if [ "$DBDIR" != "" ]; then
-	echo "export DBFILE=${DBDIR}/${run}.db" >> $fullsubmitdir/${run}.sh
-    fi
-    if [ "$DBROOTDIR" != "" ]; then
-	echo "export DBROOT=${DBROOTDIR}/${run}.root" >> $fullsubmitdir/${run}.sh
+    ## for ReReco samples need specify the run number for the CorrPCCProducerReReco
+    if [ "$jobtype" == "RD" ] ; then
+	echo "export RUNNUMBER=$run" >> $fullsubmitdir/${run}.sh
     fi
     
-    ###if run.json file is there, this will apply a json when processing  
-    if [ -f ${fullsubmitdir}/${run}.json ]; then
-	echo "export JSONFILE=${fullsubmitdir}/${run}.json" >> $fullsubmitdir/${run}.sh
+    ###if DBFILE is set this will override the Afterglow corrections 
+    if [ "$jobtype" == "ZB" ] ; then
+	if [ "$DBFILE" != "" ]; then
+	    echo "export DBFILE=${DBFILE}" >> $fullsubmitdir/${run}.sh
+	fi
     fi
     
     ##print all environment into log file right before executing
@@ -150,30 +135,12 @@ make_sh_script(){
     ### cmsRun 
     echo "cmsRun  ${fullsubmitdir}/cfg.py" >> $fullsubmitdir/${run}.sh
 
-    ###product that should be saved to output
-    if [ "$jobtype" == "step2" ] ; then
-	echo "cp step2_ALCAPRODUCER.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
-    fi
-
-    if [ "$jobtype" == "step3" ] ; then
-	echo "cp PromptCalibProdLumiPCC.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
-    fi
-    
-    if [ "$jobtype" == "step4" ] ; then
-	echo "cp promptCalibConditions.db $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
-	echo "cp CorrectionHisto.root $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
-    fi
-
-    if [ "$jobtype" == "step5" ] ; then
-	echo "cp step5_onlyRawPCCProducer_ALCAPRODUCER.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
-    fi
-
-    if [ "$jobtype" == "csv" ] ; then
+    ## copy output
+    if [ "$jobtype" == "ZB" ] ; then
 	echo "cp rawPCC.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
     fi
 
-    ###
-    if [ "$jobtype" == "corr" ] ; then
+    if [ "$jobtype" == "RD" ] ; then
         echo "cp PCC_Corr.db  $outputdir/${run}.db " >> $fullsubmitdir/${run}.sh
         echo "cp CorrectionHisto.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
     fi
@@ -201,63 +168,22 @@ make_sub_script(){
 check_log(){
     local run=$1
     fail=0
-    
-#    if [ ! -f $fullsubmitdir/${run}.log ]; then
-#	echo "no log"
-#	fail=1
-#    fi
-    
-#    if [ "$fail" == "0" ]; then
-#	success=`cat $fullsubmitdir/${run}.log | grep "Normal termination"`
-#	if [ "$success" == "" ]; then
-#	    echo "no Success"
-#	    fail=1
-#	fi
-#    fi
-    
-#    if [ "$fail" == "0" ]; then
-#	fatal=`cat $fullsubmitdir/${run}.log | grep Fatal`
-#	if [ "$fatal" != "" ]; then
-#	    echo "Fatal"
-#	    fail=1
-#	fi
-#    fi
-    
-    
-    ### error check for lumi jobs	
-#    if [ "$jobtype" == "lumi" ] && [ "$fail" == "0" ]; then
-#	if [  ! -f  $outputdir/${run}.csv ]; then
-#	    echo "no csv"
-#	    fail=1
-#	fi
-#    fi
-    
-    
+      
     ### error check for corrections jobs
-    if [ "$jobtype" == "step4" ] && [ "$fail" == "0" ] ; then
-	if [ ! -f $outputdir/${run}.db ]; then
-	    echo "no db"
-	    fail=1
-	fi
-    fi
-
-    ### error check for corrections jobs
-    if [ "$jobtype" == "csv" ] && [ "$fail" == "0" ] ; then
+    if [ "$jobtype" == "ZB" ] && [ "$fail" == "0" ] ; then
 	if [ ! -f $outputdir/${run}.csv ]; then
 	    echo "no csv"
 	    fail=1
 	fi
     fi
 
-
     ### error check for corrections jobs
-    if [ "$jobtype" == "corr" ] && [ "$fail" == "0" ] ; then
+    if [ "$jobtype" == "RD" ] && [ "$fail" == "0" ] ; then
         if [ ! -f $outputdir/${run}.db ]; then
             echo "no db"
             fail=1
         fi
     fi
-    
 }
 
 
@@ -269,12 +195,8 @@ export RUNLIST=""
 counter=0
 counterbad=0
 for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
-    if [[ $counter -gt 100000 ]]; then
-	 break
-    fi
 
     run=`echo $f | awk -F".txt" '{print $1}'`
-    #echo $run
     RUNLIST=$RUNLIST,$run
 
     ##create the scripts
@@ -295,9 +217,6 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	    echo $fullsubmitdir/${run}.log
 	    cat $fullsubmitdir/${run}.log | grep sqlite_file
 	    counterbad=`echo $counterbad | awk '{print $1+1}'`
-
-	    ##replace queue
-	    #`sed -i 's/workday/testmatch/g' $fullsubmitdir/${run}.sub` 
 	fi   
     fi
 
@@ -309,7 +228,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     fi
 
 
-    ##run plotting scripts
+    ##get input lumi data for comparisons
     if [ "$action" == "4" ] ; then
 	command="${brilcalc} -r ${run}"
 	if [ ! -z "$BRILCALCDATATAG" ] ; then
@@ -326,18 +245,26 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	fi
         echo $command
         #${command} | grep ${run}: | sed -e 's/,/ /g' | sed -e 's/:/ /g' | sed -e 's/\[//g'  | sed -e 's/\]//g' > $outputdir/${run}.ref
-	${command} | grep ${run}:  > $outputdir/${run}.ref
+	#${command} | grep ${run}:  > $outputdir/${run}.ref
+	${command} | grep ${run}:  > $outputdir/${run}.${BRILCALCREFDETNAME}
+
     fi 
 
     counter=`echo $counter | awk '{print $1+1}'`
 done
-echo "Total runs: $counter"
-echo "Total bad runs: $counterbad"
 
+
+if [ "$action" == "2" ] ; then
+    echo "Total bad runs: $counterbad"
+fi
+
+echo "Total runs: $counter"
 echo ${RUNLIST:1}
 
 
 if [ "$action" == "5" ] ; then
+    mkdir -p $plotsdir
+    rm -f $plotsdir/*
     root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${BRILCALCREFDETNAME}\"\)
 fi
 
@@ -348,5 +275,5 @@ if [ "$action" == "6" ] ; then
 fi
 
 if [ "$action" == "7" ] ; then
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plot_afterglow_residual.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plot_afterglow_residual.C\(\"${outputdir}\",\"${plotsdir}\"\)
 fi

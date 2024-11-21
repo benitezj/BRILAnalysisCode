@@ -3,13 +3,14 @@
 #include <string>
 #include "globals.h"
 
-bool perBXRatioPlots=1;
-float ratiomin=0.95;
-float ratiomax=1.05;
+bool perBXRatioPlots=0;
+float ratiomin=0.8;
+float ratiomax=1.2;
 
 //set to 0 to retrieve nominal value
-//float sigmavis=1.24*4.1533e6/ORBITF; 
-float sigmavis=0;//0.9807*0.38*4.1533e6/ORBITF;  
+float sigmavis=0;
+//sigmavis=1.24*4.1533e6/ORBITF; 
+//sigmavis=0.9807*0.38*4.1533e6/ORBITF;  
 
 float refLumi[NLS];
 TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
@@ -87,7 +88,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     
 
     ///read the reference lumi
-    if(REF.CompareTo("")!=0) getRefLumi(inpath+"/"+Run+".ref");
+    if(REF.CompareTo("")!=0) getRefLumi(inpath+"/"+Run+"."+REF);
     
     ///create histograms
     TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
@@ -147,12 +148,12 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       runL+=lsL;
       Nls++;
       
-      
+   
       
       ///Lumi per BX
       unsigned ncoll=0;
-      float bxlumi=0.;
       if(perBXRatioPlots) { 
+	float bxlumi=0.;
 	for(int bx=0;bx<NBX;bx++){
 	  std::getline(iss,token, ',');
 	  std::stringstream bxLiss(token);
@@ -164,9 +165,10 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 	  if(rawL>0.5)
 	    ncoll++;
 	}
+	lsL=bxlumi;//temp fix
       }
 
-      lsL=bxlumi;//temp fix
+
 
       //Lumi per LS
       HLumiLS.SetBinContent(ls,lsL);

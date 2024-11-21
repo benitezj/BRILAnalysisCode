@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.PythonUtilities.LumiList as LumiList
 import os
 import sys
-from message_logger_cfi import MessageLogger
+from BRILAnalysisCode.PCCAnalysis.message_logger_cfi import MessageLogger
 
 process = cms.Process("corrRECO")
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
@@ -45,7 +45,7 @@ process.rawPCCProd = cms.EDProducer("RawPCCProducer",
 )
 
 vetofilename = os.getenv('CMSSW_BASE')+'/src/BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt'
-
+if vetofilename == '' : sys.exit('invalid veto file')
 print('reading from veto file: '+vetofilename)
 vetofile = open(vetofilename,'r')
 with vetofile as f:
@@ -61,21 +61,24 @@ DQMStore = cms.Service("DQMStore")
 process.load("DQMServices.Core.DQM_cfg")
 
 process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducerReReco",
-    CorrPCCProducerReRecoParameters = cms.PSet(
-        inLumiObLabel = cms.string("rawPCCProd"),
-        ProdInst = cms.string("rawPCCRandom"),
-        approxLumiBlockSize=cms.int32(50),
-        trigstring = cms.untracked.string("corrPCCRand"), 
-        type2_a= cms.double(0.00072),
-        type2_b= cms.double(0.014),
-        subSystemFolder=cms.untracked.string('AlCaReco')
+      CorrPCCProducerReRecoParameters = cms.PSet(
+         inLumiObLabel = cms.string("rawPCCProd"),
+         ProdInst = cms.string("rawPCCRandom"),
+         approxLumiBlockSize=cms.int32(50),
+         trigstring = cms.untracked.string("corrPCCRand"),
+         #From Jingyu email: a=0.00072, b=0.014
+         type2_a= cms.double(0.00072),
+         type2_b= cms.double(0.014),
+         subSystemFolder=cms.untracked.string('AlCaReco')
     )
 )
 
-process.corrPCCProd.CorrPCCProducerReRecoParameters.run = cms.int32(297219)
+runnumber=os.getenv('RUNNUMBER')
+if runnumber == '' : sys.exit('invalid run number')
+process.corrPCCProd.CorrPCCProducerReRecoParameters.run = cms.int32(int(runnumber))
 
+### schedule the modules
 process.dqmEnvLumiPCC = DQMEDAnalyzer('DQMEventInfo',subSystemFolder=cms.untracked.string('AlCaRecoEventInfo'))
-
 process.path1 = cms.Path(process.rawPCCProd+process.corrPCCProd+process.dqmEnvLumiPCC)
 
 ##### Output DB 
@@ -97,6 +100,4 @@ process.out = cms.OutputModule("PoolOutputModule",
         'keep *_rawPCCProd_*_*',
         'keep *_corrPCCProd_*_*')
 )
-
-
 process.outpath = cms.EndPath(process.out)
