@@ -36,10 +36,13 @@ BRILCALCNORM=
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
 #BRILCALCNORM=hfet17New_v5
-BRILCALCNORM=pcc17_run2_legacy_v6_pccvtx
+#BRILCALCNORM=pcc17_run2_legacy_v6_pccvtx
+BRILCALCNORM=NoCorr
 
 BRILCALCREFDETNAME=
 BRILCALCREFDETNAME=$BRILCALCNORM
+
+
 
 BCIDS=
 #BCIDS="282,822,1881,2453,2474,2579,2632,2653,2716,2758,2944,3123,3302"
@@ -238,7 +241,11 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	    command="${command} --type ${BRILCALCTYPE}"
 	fi
 	if [ ! -z "$BRILCALCNORM" ] ; then
-	    command="${command} --normtag ${BRILCALCNORM}"
+	    if [ "$BRILCALCNORM" == "NoCorr" ] ; then
+		command="${command} --without-correction"
+	    else
+		command="${command} --normtag ${BRILCALCNORM}"
+	    fi
 	fi
 	if [ ! -z "$BCIDS" ] ; then
 	    command="${command} --xing --xingId ${BCIDS}"
