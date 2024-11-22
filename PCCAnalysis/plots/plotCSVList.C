@@ -8,7 +8,7 @@ float ratiomin=0.8;
 float ratiomax=1.2;
 
 //set to 0 to retrieve nominal value
-float sigmavis=0;
+float sigmavis=1;
 //sigmavis=1.24*4.1533e6/ORBITF; 
 //sigmavis=0.9807*0.38*4.1533e6/ORBITF;  
 
