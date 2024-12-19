@@ -10,7 +10,7 @@ plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 
 ##########################
 ####### Options
-jobtype=ZB ##RD (Randoms), ZB (ZeroBias) 
+jobtype=RD ##RD (Randoms), ZB (ZeroBias) 
 
 condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
 
@@ -19,7 +19,8 @@ CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_C
 ## afterglow corrections
 DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
-DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v4/Run2017B/merged.db
+DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v4/Run2017C/merged.db
+
 
 ## options for brilcalc lumi
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
@@ -169,9 +170,12 @@ make_sub_script(){
 
 
 check_log(){
-    local run=$1
-    fail=0
-      
+
+    if [ ! -f $fullsubmitdir/${run}.log ]; then
+	echo "no log"
+	fail=1
+    fi
+    
     ### error check for corrections jobs
     if [ "$jobtype" == "ZB" ] && [ "$fail" == "0" ] ; then
 	if [ ! -f $outputdir/${run}.csv ]; then
@@ -214,17 +218,18 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     fi
 
     ##check failed jobs
+    fail=0
     if [ "$action" == "2" ] ; then
-	check_log $run
+	check_log
 	if [ "$fail" == "1" ]; then
 	    echo $fullsubmitdir/${run}.log
-	    cat $fullsubmitdir/${run}.log | grep sqlite_file
+	    #cat $fullsubmitdir/${run}.log | grep sqlite_file
 	    counterbad=`echo $counterbad | awk '{print $1+1}'`
 	fi   
     fi
 
     if [ "$action" == "3" ]; then
-	check_log $run
+	check_log
 	if [ "$fail" == "1" ]; then
 	    submit $run
 	fi   
@@ -282,5 +287,5 @@ if [ "$action" == "6" ] ; then
 fi
 
 if [ "$action" == "7" ] ; then
-    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plot_afterglow_residual.C\(\"${outputdir}\",\"${plotsdir}\"\)
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plot_afterglow_residual.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
 fi

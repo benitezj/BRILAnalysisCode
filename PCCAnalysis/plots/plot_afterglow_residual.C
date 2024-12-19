@@ -145,8 +145,14 @@ std::pair<float,float> getPCCAvg(TFile*F=NULL, int Run=-1, int I=-1, int type=1)
   return bincontent_avg;
 }
 
-void plot_afterglow_residual(TString inpath, TString outpath) {
+void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST="") {
   cout<<"input path: "<<inpath<<endl;
+  cout<<"output path: "<<outpath<<endl;
+
+  if(RUNLIST.CompareTo("")!=0) runlist=RUNLIST.Data();
+  cout<<runlist<<endl;
+
+  
   rootlogon();
   
   TGraph* gAvgVsIOV=new TGraph();

@@ -3,7 +3,7 @@
 RUNLIST=$1 # file with list of runs
 PERIOD=$2 # eg. Run2017B
 
-DATASET=AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v2
+DATASET=AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1
 DASDATASET=/AlCaLumiPixels/${PERIOD}-${DATASET}/ALCARECO
 
 #eg. /eos/cms/store/data/Run2017B/AlCaLumiPixels/ALCARECO/AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v2

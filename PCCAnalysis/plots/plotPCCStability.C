@@ -5,9 +5,9 @@
 
 //cuts for the ratio histogram
 float minL=3000;
-float minratio=0.97;
-float maxratio=1.00;
-int minLS=0,maxLS=24000;
+float minratio=0.94;
+float maxratio=1.06;
+int minLS=0,maxLS=165000;
 
 ///plots ranges
 float plotYrangeMin=1;
@@ -189,7 +189,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     F.SetParameter(0,100);
     F.SetParameter(1,HistoLumiRatio.GetMean());
     F.SetParameter(2,HistoLumiRatio.GetRMS());
-    HistoLumiRatio.Fit(&F,"","same",0.982,0.987);
+    //HistoLumiRatio.Fit(&F,"","same",0.982,0.987);
     F.SetLineColor(2);
 
     C.Clear();
@@ -199,7 +199,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     HistoLumiRatio.SetMarkerStyle(8);
     HistoLumiRatio.SetMarkerSize(0.4);
     HistoLumiRatio.Draw("hist");
-    F.Draw("lsame");
+    //F.Draw("lsame");
     C.Print(inpath+"/ls_ratio_histo.png");
 
 
