@@ -12,14 +12,14 @@ plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 ####### Options
 jobtype=RD ##RD (Randoms), ZB (ZeroBias) 
 
-condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
+condorqueue=local  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
 
 CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
 ## afterglow corrections
 DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
-DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v4/Run2017C/merged.db
+#DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v4/Run2017C/merged.db
 
 
 ## options for brilcalc lumi
@@ -42,7 +42,6 @@ BRILCALCNORM=NoCorr
 
 BRILCALCREFDETNAME=
 BRILCALCREFDETNAME=$BRILCALCNORM
-
 
 
 BCIDS=
@@ -288,4 +287,9 @@ fi
 
 if [ "$action" == "7" ] ; then
     root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plot_afterglow_residual.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\"\)
+fi
+
+
+if [ "$action" == "71" ] ; then
+    root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/test_afterglow_blockLSranges.C\(\"${outputdir}\",\"${RUNLIST:1}\"\)
 fi
