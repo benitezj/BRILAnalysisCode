@@ -17,13 +17,20 @@ TString outputpath="./tmp";
 
 ///////////////
 ///    2022 Data
-TString inpath="./AfterglowModel_2022Data_SummerVeto/data_v2/Run2022F" ; //2022 final veto
+//TString inpath="./AfterglowModel_2022Data_SummerVeto/data_v2/Run2022F" ; //2022 final veto
 //std::vector<int> RunList={361948}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250; //600b fill 8383 -> few blocks
 //std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018,2806}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=250; //600b Fill 8307  
 //std::vector<int> RunList={361957}; std::vector<int> LeadBCIDList={66,2748}; int NCOLLIDINGBCIDS=208; int NTOTALBCIDS=270;//1800b fill 8385 -> mu scan fill, fit smooth part
 //std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018+153}; int NCOLLIDINGBCIDS=36; int NTOTALBCIDS=100; //Thesis plot Fill 8307
-std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=300; //Thesis plot Fill 8307
+//std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018}; int NCOLLIDINGBCIDS=189; int NTOTALBCIDS=300; //Thesis plot Fill 8307
 //std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018}; int NCOLLIDINGBCIDS=79; int NTOTALBCIDS=110; //Thesis plot Fill 8307
+
+
+////////////
+/// 2017 ReReco
+TString inpath="./2017ReReco/Afterglow/Random_v5/Run2017B" ; 
+std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={3236}; int NCOLLIDINGBCIDS=48; int NTOTALBCIDS=200; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+
 
 
 ////////////////////////////////////////////////////////////////
@@ -31,7 +38,7 @@ std::vector<int> RunList={360991}; std::vector<int> LeadBCIDList={1018}; int NCO
 // This code fits one bunch train and the tail
 //*//
 bool makePlots=1;
-float yRangeMin=10;
+float yRangeMin=1;
 
 
 TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
@@ -171,14 +178,15 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     C.SetLogy(1);
     H->GetYaxis()->SetRangeUser(yRangeMin,10*AvgN);
     H->SetStats(0);
+    H->SetTitle(lsblockname);
     H->GetYaxis()->SetTitle("Raw PCC");
     H->GetXaxis()->SetTitle("BCID");
     H->Draw("hist");
-    drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
-    drawFillYear(8307,2022);
+    //drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    //drawFillYear(8307,2022);
     //drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Work in progress}");
     //drawFillYear(7036,2018);
-    drawPCCLuminometer();
+    //drawPCCLuminometer();
     C.Print(outpath+TString("/fitAfterglowTrain_inputdata-")+lsblockname+".png");
 
 
@@ -190,6 +198,7 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HSel.SetMarkerStyle(8);
     HSel.SetMarkerSize(0.5);
     HSel.GetYaxis()->SetRangeUser(yRangeMin,10*AvgN);
+    HSel.SetTitle(lsblockname);
     HSel.GetYaxis()->SetTitle("Raw PCC");
     HSel.GetXaxis()->SetTitle("BCID");
     HSel.Draw("histp");
@@ -234,11 +243,11 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     leg.AddEntry(&HFit,"Fit","l");
     leg.Draw();
 
-    drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
-    drawFillYear(8307,2022);
+    //drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
+    //drawFillYear(8307,2022);
     //drawCMSPrelim(0.19,0.85,"#font[62]{CMS} #font[52]{Work in progress}");
     //drawFillYear(7036,2018);
-    drawPCCLuminometer();
+    //drawPCCLuminometer();
     C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+".png");
 
     ////////////
@@ -249,31 +258,15 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     HFitRes.SetMarkerStyle(8);
     HFitRes.SetMarkerSize(1);
     HFitRes.GetXaxis()->SetTitle("BCID");
-    HFitRes.GetYaxis()->SetTitle("100 * (Data - Fit) / <N>   [%]");
+    HFitRes.GetYaxis()->SetTitle("(Data - Fit) / Avg. Colliding Rate  [%]");
     HFitRes.GetYaxis()->SetTitleOffset(1.2);
-    HFitRes.GetYaxis()->SetRangeUser(-3,3);
+    HFitRes.GetYaxis()->SetRangeUser(-1.,1.);
+    HFitRes.SetTitle(lsblockname);
     HFitRes.Draw("histp");
     TLine line;
     line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
     C.Print(outpath+TString("/fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+".png");
 
-    ////////////
-    //plot with zoom
-
-    C.Clear();
-    C.SetLogy(0);
-    HSel.GetYaxis()->SetRangeUser(0,100);
-    HSel.GetXaxis()->SetRangeUser(ncolliding,nbins);
-    HSel.Draw("histp");
-    HFit.Draw("histsame");
-    //    C.Print(outpath+TString("/fitAfterglowTrain_fit-")+lsblockname+"-"+firstb+"_zoom.png");
-
-    C.Clear();
-    C.SetLogy(0);
-    HFitRes.GetXaxis()->SetRangeUser(ncolliding,nbins);
-    HFitRes.Draw("histp");
-    line.DrawLine(-0.5,0,(nbins-1)+0.5,0);
-    //    C.Print(outpath+TString("/fitAfterglowTrain_residuals-")+lsblockname+"-"+firstb+"_zoom.png");
  
   }
 
@@ -316,7 +309,7 @@ void fitAfterglowRun(){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
   
-  TString OutfileName=inpath+"/fitAfterglow_output.root";
+  TString OutfileName=outputpath+"/fitAfterglow_output.root";
   TFile outputfile(OutfileName,"recreate");
   
   gROOT->cd();
@@ -343,7 +336,7 @@ void fitAfterglowRun(){
       for(int i=0;i<LeadBCIDList.size();i++)
 	fitAfterglowTrain(H,key->GetName(), LeadBCIDList[i], NCOLLIDINGBCIDS, NTOTALBCIDS,outputpath);
 
-
+      //break;
     }
 
   }

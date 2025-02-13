@@ -8,10 +8,10 @@ void fitAfterglowPlots(TString inputfile=""){
   TTree* T= (TTree*)InputFile.Get("Tree");
   if(!T) return;
 
-  int nbinsX=7; int xmin=0, xmax=7;
+  int nbinsX=7; int xmin=0, xmax=52;
   int nbinsY=100;
-  float yminA=6e-4, ymaxA=12e-4;
-  float yminB=7e-3, ymaxB=15e-3;
+  float yminA=5e-4, ymaxA=20e-4;
+  float yminB=5e-3, ymaxB=15e-3;
   float yminF=0, ymaxF=0.06;
   
   TCanvas C;
