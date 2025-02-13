@@ -18,12 +18,13 @@ MessageLogger = cms.Service("MessageLogger",
     cerr = cms.untracked.PSet(
         FwkJob = cms.untracked.PSet(
             limit = cms.untracked.int32(0),
+            reportEvery = cms.untracked.int32(10000),
             optionalPSet = cms.untracked.bool(True)
         ),
         FwkReport = cms.untracked.PSet(
             limit = cms.untracked.int32(10000000),
             optionalPSet = cms.untracked.bool(True),
-            reportEvery = cms.untracked.int32(100000)
+            reportEvery = cms.untracked.int32(10000)
         ),
         FwkSummary = cms.untracked.PSet(
             limit = cms.untracked.int32(10000000),
@@ -76,7 +77,7 @@ MessageLogger = cms.Service("MessageLogger",
         #),
         #optionalPSet = cms.untracked.bool(True),
         #placeholder = cms.untracked.bool(True)
-        threshold = cms.untracked.string('INFO')
+        threshold = cms.untracked.string('WARNING')
     ),
     statistics = cms.untracked.vstring('cerr_stats'),
     suppressDebug = cms.untracked.vstring(),

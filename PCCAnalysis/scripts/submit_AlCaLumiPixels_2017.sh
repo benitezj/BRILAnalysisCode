@@ -12,7 +12,7 @@ plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 ####### Options
 jobtype=RD ##RD (Randoms), ZB (ZeroBias) 
 
-condorqueue=local  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
+condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
 
 CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
@@ -273,9 +273,9 @@ echo "Total runs: $counter"
 echo ${RUNLIST:1}
 
 
+mkdir -p $plotsdir
 if [ "$action" == "5" ] ; then
-    mkdir -p $plotsdir
-    rm -f $plotsdir/*
+    #rm -f $plotsdir/*
     root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${BRILCALCREFDETNAME}\"\)
 fi
 
