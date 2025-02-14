@@ -1,20 +1,25 @@
+#include "rootlogon.C"
+
+int nbinsX=60; int xmin=0, xmax=60;
 
 
-void fitAfterglowPlots(TString inputfile=""){
-  if(inputfile.CompareTo("")==0) return;
+void fitAfterglowPlots(TString inputpath=""){
+  if(inputpath.CompareTo("")==0) return;
 
-  TFile InputFile(inputfile.Data(),"read");
+  rootlogon();
+  gStyle->SetOptStat(1110);
+  
+  TFile InputFile(inputpath+"/fitAfterglow_output.root","read");
   
   TTree* T= (TTree*)InputFile.Get("Tree");
   if(!T) return;
 
-  int nbinsX=7; int xmin=0, xmax=52;
   int nbinsY=100;
-  float yminA=5e-4, ymaxA=20e-4;
-  float yminB=5e-3, ymaxB=15e-3;
+  float yminA=0e-4, ymaxA=15e-4;
+  float yminB=0e-3, ymaxB=20e-3;
   float yminF=0, ymaxF=0.06;
   
-  TCanvas C;
+  TCanvas C("C","",800,700);
   
   TH2F hT2a("hT2a","",nbinsX,xmin,xmax,nbinsY,yminA,ymaxA);
   hT2a.SetMarkerStyle(8);
@@ -24,7 +29,7 @@ void fitAfterglowPlots(TString inputfile=""){
   T->Draw("Type2a:lsblock>>hT2a");
   C.Clear();
   hT2a.Draw("scat");
-  C.Print("Type2a.png");
+  C.Print(inputpath+"/Type2a.png");
 
 
   TH2F hT2b("hT2b","",nbinsX,xmin,xmax,nbinsY,yminB,ymaxB);
@@ -35,7 +40,7 @@ void fitAfterglowPlots(TString inputfile=""){
   T->Draw("Type2b:lsblock>>hT2b");
   C.Clear();
   hT2b.Draw("scat");
-  C.Print("Type2b.png");
+  C.Print(inputpath+"/Type2b.png");
 
 
   TH2F hT1f("hT1f","",nbinsX,xmin,xmax,nbinsY,yminF,ymaxF);
@@ -46,7 +51,7 @@ void fitAfterglowPlots(TString inputfile=""){
   T->Draw("Type1f:lsblock>>hT1f");
   C.Clear();
   hT1f.Draw("scat");
-  C.Print("Type1f.png");
+  C.Print(inputpath+"/Type1f.png");
   
 
 }

@@ -28,8 +28,10 @@ TString outputpath="./tmp";
 
 ////////////
 /// 2017 ReReco
-TString inpath="./2017ReReco/Afterglow/Random_v5/Run2017B" ; 
-std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={3236}; int NCOLLIDINGBCIDS=48; int NTOTALBCIDS=200; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+TString inpath="./2017ReReco/Afterglow/Random_v6/Run2017B" ; 
+//std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={566,1448,2342,3236}; int NCOLLIDINGBCIDS=48; int NTOTALBCIDS=150; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+//std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={72}; int NCOLLIDINGBCIDS=542; int NTOTALBCIDS=740; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={72}; int NCOLLIDINGBCIDS=160; int NTOTALBCIDS=190; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
 
 
 
@@ -38,7 +40,7 @@ std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={3236}; int NCO
 // This code fits one bunch train and the tail
 //*//
 bool makePlots=1;
-float yRangeMin=1;
+float yRangeMin=10;
 
 
 TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
@@ -137,11 +139,17 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
 
   }
 
-  Fit.SetParLimits(1,0.0001,0.3);  //type 1 frac
-  Fit.SetParameter(2,0.001); //type2 a init
-  Fit.SetParameter(3,0.015); //type2 b init
-  Fit.SetParLimits(3,0.0001,0.5); //type 2 b, range
+  Fit.SetParLimits(1,0,0.2);  //type 1 frac
+  Fit.SetParLimits(2,0.0,0.01); //type 2 b, range
+  //Fit.SetParLimits(3,0.0001,0.5); //type 2 b, range
+  //Fit.SetParameter(2,0.001); //type2 a init
+  //Fit.SetParameter(2,0.001); //type2 a init
+  //Fit.SetParameter(3,0.015); //type2 b init
 
+  //Fit.FixParameter(2,0.00072); //2017 PAS
+  //Fit.FixParameter(3,0.0140); //2017 PAS 
+
+  
   
   TVirtualFitter::SetMaxIterations(50000); 
   TFitResultPtr r=HSel.Fit(&Fit,"SQ"); //simple ROOT fit
@@ -221,15 +229,16 @@ void fitAfterglowTrain(TH1F* H, TString lsblockname, int firstb, int ncolliding,
     /* formula.ReplaceAll("[3]","B"); */
     /* text.DrawLatexNDC(0.2,0.85,TString("F_{k}(x) = ")+formula); */
 
-//    //print param values
-//    char s[100];
-//    snprintf(s,40,"Type 1 f=%0.5f, ",float(Fit.GetParameter(1)));
-//    text.DrawLatexNDC(0.2,0.85,s);
-//    snprintf(s,40,"Type 2: A=%0.7f,  ",float(Fit.GetParameter(2)));
-//    text.DrawLatexNDC(0.45,0.85,s);
-//    snprintf(s,40,"B=%0.5f",float(Fit.GetParameter(3)));
-//    text.DrawLatexNDC(0.7,0.85,s);
-//
+    //print param values
+    text.SetTextSize(0.02);
+    char s[100];
+    snprintf(s,40,"Type 1 f = %0.5f",float(Fit.GetParameter(1)));
+    text.DrawLatexNDC(0.5,0.85,s);
+    snprintf(s,40,"Type 2 A = %0.7f",float(Fit.GetParameter(2)));
+    text.DrawLatexNDC(0.5,0.80,s);
+    snprintf(s,40,"Type 2 B = %0.5f",float(Fit.GetParameter(3)));
+    text.DrawLatexNDC(0.5,0.75,s);
+
     //print fit status
     // snprintf(s,40,"Chi2/NDF=%.1f/%d",Fit.GetChisquare(),Fit.GetNDF());
     //text.DrawLatexNDC(0.7,0.85,s);
