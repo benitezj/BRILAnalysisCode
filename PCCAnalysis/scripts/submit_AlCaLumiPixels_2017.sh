@@ -10,16 +10,16 @@ plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 
 ##########################
 ####### Options
-jobtype=RD ##RD (Randoms), ZB (ZeroBias) 
+jobtype=ZB ##RD (Randoms), ZB (ZeroBias) 
 
-condorqueue=local  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
+condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
 
 CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
 ## afterglow corrections
 DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
-#DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v4/Run2017C/merged.db
+DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v8/Run2017F/merged.db
 
 
 ## options for brilcalc lumi
@@ -73,7 +73,9 @@ echo "output: $outputdir"
 echo "condor queue: $condorqueue"
 echo "job type: $jobtype"
 echo "plots dir: $plotsdir"
-echo "afterglow corrections: $DBFILE $DBROOTDIR"
+if [ "$jobtype" == "ZB" ]; then
+    echo "afterglow corrections: $DBFILE $DBROOTDIR"
+fi
 
 
 #####################################################
@@ -87,7 +89,6 @@ if [ "$action" == "0" ]; then
     echo "mkdir -p $outputdir"
     mkdir -p $outputdir
     /bin/ls $outputdir
-
 fi
 
 submit(){
@@ -270,12 +271,12 @@ if [ "$action" == "2" ] ; then
 fi
 
 echo "Total runs: $counter"
-echo ${RUNLIST:1}
+#echo ${RUNLIST:1}
 
 
+mkdir -p $plotsdir
 if [ "$action" == "5" ] ; then
-    mkdir -p $plotsdir
-    rm -f $plotsdir/*
+    #rm -f $plotsdir/*
     root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C  ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/plotCSVList.C\(\"${outputdir}\",\"${plotsdir}\",\"${RUNLIST:1}\",\"${BRILCALCREFDETNAME}\"\)
 fi
 

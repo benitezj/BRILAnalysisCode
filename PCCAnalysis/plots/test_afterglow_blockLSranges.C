@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-//#include <dirent.h>
 #include "globals.h"
 
 void test_afterglow_blockLSranges(TString inpath, TString RUNLIST="") {
@@ -14,12 +13,13 @@ void test_afterglow_blockLSranges(TString inpath, TString RUNLIST="") {
   std::stringstream ss(runlist.c_str());
   int Run;
   while (ss >> Run) {
-    cout<<Run<<endl;  
-    ss.ignore(1);   
-
+    ss.ignore(1);
+        
     TString filename=inpath+"/"+Run+".root";
+    //cout<<filename<<endl;
     if(gSystem->AccessPathName(filename.Data())){ cout<<"bad file: "<<filename<<endl; continue;}
 
+    
     TFile InputFile(filename.Data(),"read");
     if(InputFile.IsZombie()) continue;
 
@@ -48,11 +48,13 @@ void test_afterglow_blockLSranges(TString inpath, TString RUNLIST="") {
       first[l]=ls1;
       last[l]=ls2;
       
-      cout<<r<<" "<<l<<" "<<ls1<<" "<<ls2<<endl;
+      //cout<<r<<" "<<l<<" "<<ls1<<" "<<ls2<<endl;
     }
-
-    for(int c=0; c<counter; c++){
-      std::cout<<c<<" "<<first[c]<<" "<<last[c]<<std::endl;
+    
+    cout<<"Run:"<<Run<<" N blocks:"<<counter<<endl;
+    for(int c=1; c<counter; c++){
+      if(first[c]>=last[c] || first[c]<=first[c-1] || first[c]<=last[c-1])
+	std::cout<<c<<" "<<first[c]<<" "<<last[c]<<"   ----BAD SEQUENCE"<<std::endl;
     }
     
   }

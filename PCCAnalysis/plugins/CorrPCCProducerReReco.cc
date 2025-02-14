@@ -82,7 +82,7 @@ private:
   float overallCorrection_;                    //The Overall correction to the integrated luminosity
 
   unsigned int iBlock = 0;
-  unsigned int minimumNumberOfEvents;
+  unsigned int minimumNumberOfEvents = 1000;
 
   std::map<unsigned int, LumiInfo*> lumiInfoMapPerLS;
   std::vector<unsigned int> lumiSections;
@@ -99,9 +99,9 @@ private:
   TH1F* type2resHist;
 
   unsigned int maxLS = 3500;
-  MonitorElement* Type1FracMon;
-  MonitorElement* Type1ResMon;
-  MonitorElement* Type2ResMon;
+//  MonitorElement* Type1FracMon;
+//  MonitorElement* Type1ResMon;
+//  MonitorElement* Type2ResMon;
 
   TGraphErrors* type1FracGraph;
   TGraphErrors* type1resGraph;
@@ -115,15 +115,15 @@ private:
   float mean_type1_residual_unc;      //Type 1 residual uncertainty rms
   float mean_type2_residual_unc;      //Type 2 residual uncertainty rms
   unsigned int nTrain;                //Number of bunch trains used in calc type 1 and 2 res, frac.
-  unsigned int countLumi_;            //The lumisection count... the size of the lumiblock
   unsigned int approxLumiBlockSize_;  //The number of lumisections per block.
   unsigned int thisLS;                //Ending lumisection for the iov that we save with the lumiInfo object.
 
   double type2_a_;  //amplitude for the type 2 correction
   double type2_b_;  //decay width for the type 2 correction
 
-  unsigned int run_; //Run to be selected in cfg , needed for processing ReReco samples where Runs are scattered over root files
-  
+  unsigned int run_; //Run to be selected in cfg , needed for processing ReReco samples where Runs are scattered over many root files
+
+  bool applyPedestal_ = 0;
   float pedestal;
   float pedestal_unc;
   TGraphErrors* pedestalGraph;
@@ -142,9 +142,9 @@ CorrPCCProducerReReco::CorrPCCProducerReReco(const edm::ParameterSet& iConfig) {
   type2_a_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<double>("type2_a");
   type2_b_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<double>("type2_b");
   run_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<int>("run");
-  countLumi_ = 0;
-  minimumNumberOfEvents = 1000;
-
+  minimumNumberOfEvents = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<int>("minimumNumberOfEvents");
+  applyPedestal_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<bool>("applyPedestal");
+    
   totalLumiByBX_.resize(LumiConstants::numBX);
   totalLumiByBXAvg_.resize(LumiConstants::numBX);
   events_.resize(LumiConstants::numBX);
@@ -290,22 +290,22 @@ void CorrPCCProducerReReco::evaluateCorrectionResiduals(std::vector<float> corre
   mean_type1_residual_unc = type1.GetMeanError();
   mean_type2_residual_unc = type2.GetMeanError();
 
-  histoFile->cd();
-  type1.Write();
-  type2.Write();
+//  histoFile->cd();
+//  type1.Write();
+//  type2.Write();
 }
 
 //--------------------------------------------------------------------------------------------------
 void CorrPCCProducerReReco::calculateCorrections(std::vector<float> uncorrected,
                                            std::vector<float>& correctionScaleFactors_,
                                            float& overallCorrection_) {
-  type1Frac = 0;
+  type1Frac = 0.;
 
   int nTrials = 4;
 
   for (int trial = 0; trial < nTrials; trial++) {
     estimateType1Frac(uncorrected, type1Frac);
-    edm::LogInfo("INFO") << "type 1 fraction after iteration " << trial << " is  " << type1Frac;
+    edm::LogInfo("WARNING") << "type 1 fraction after iteration " << trial << " is  " << type1Frac;
   }
 
   //correction should never be negative
@@ -340,21 +340,23 @@ void CorrPCCProducerReReco::calculateCorrections(std::vector<float> uncorrected,
   //here subtract the pedestal
   pedestal = 0.;
   pedestal_unc = 0.;
-  int nped = 0;
-  for (size_t i = 0; i < LumiConstants::numBX; i++) {
-    if (corrected_tmp_.at(i) < threshold) {
-      pedestal += corrected_tmp_.at(i);
-      nped++;
+  if(applyPedestal_){
+    int nped = 0;
+    for (size_t i = 0; i < LumiConstants::numBX; i++) {
+      if (corrected_tmp_.at(i) < threshold) {
+	pedestal += corrected_tmp_.at(i);
+	nped++;
+      }
+    }
+    if (nped > 0) {
+      pedestal_unc = sqrt(pedestal) / nped;
+      pedestal = pedestal / nped;
+    }
+    for (size_t i = 0; i < LumiConstants::numBX; i++) {
+      corrected_tmp_.at(i) = corrected_tmp_.at(i) - pedestal;
     }
   }
-  if (nped > 0) {
-    pedestal_unc = sqrt(pedestal) / nped;
-    pedestal = pedestal / nped;
-  }
-  for (size_t i = 0; i < LumiConstants::numBX; i++) {
-    corrected_tmp_.at(i) = corrected_tmp_.at(i) - pedestal;
-  }
-
+  
   evaluateCorrectionResiduals(corrected_tmp_);
 
   float integral_uncorr_clusters = 0;
@@ -378,14 +380,16 @@ void CorrPCCProducerReReco::calculateCorrections(std::vector<float> uncorrected,
 
 //--------------------------------------------------------------------------------------------------
 void CorrPCCProducerReReco::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup) {
-  countLumi_++;
+
 }
 
 //--------------------------------------------------------------------------------------------------
 void CorrPCCProducerReReco::endLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup) {
-  thisLS = lumiSeg.luminosityBlock();
+
   if(lumiSeg.run()!=run_) return;
 
+  thisLS = lumiSeg.luminosityBlock();
+  
   edm::Handle<LumiInfo> PCCHandle;
   lumiSeg.getByToken(lumiInfoToken, PCCHandle);
 
@@ -399,18 +403,18 @@ void CorrPCCProducerReReco::endLuminosityBlock(edm::LuminosityBlock const& lumiS
   }
 
   if (totalEvents < minimumNumberOfEvents) {
-    edm::LogInfo("INFO") << "number of events in this LS is too few " << totalEvents;
-    //return;
-  } else {
-    edm::LogInfo("INFO") << "Skipping Lumisection " << thisLS;
-  }
+    std::cout<< " Number of events in this LS="<<thisLS<<" is too few " << totalEvents<<std::endl;
+  }else{
+    
+    totalLumiByBX_ = inLumiOb.getInstLumiAllBX();
+    events_ = inLumiOb.getErrorLumiAllBX();
 
-  lumiInfoMapPerLS[thisLS] = new LumiInfo();
-  totalLumiByBX_ = inLumiOb.getInstLumiAllBX();
-  events_ = inLumiOb.getErrorLumiAllBX();
-  lumiInfoMapPerLS[thisLS]->setInstLumiAllBX(totalLumiByBX_);
-  lumiInfoMapPerLS[thisLS]->setErrorLumiAllBX(events_);
-  lumiSections.push_back(thisLS);
+    lumiInfoMapPerLS[thisLS] = new LumiInfo(); 
+    lumiInfoMapPerLS[thisLS]->setInstLumiAllBX(totalLumiByBX_);
+    lumiInfoMapPerLS[thisLS]->setErrorLumiAllBX(events_);
+    lumiSections.push_back(thisLS);
+    std::cout<<"Added Run="<<run_<<"  LS="<<thisLS<<"  N-events="<<totalEvents<<std::endl;
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -421,13 +425,37 @@ void CorrPCCProducerReReco::dqmEndRun(edm::Run const& runSeg, const edm::EventSe
 
 //--------------------------------------------------------------------------------------------------
 void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::EventSetup& iSetup) {
+
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void CorrPCCProducerReReco::resetBlock() {
+  for (unsigned int bx = 0; bx < LumiConstants::numBX; bx++) {
+    totalLumiByBX_[bx] = 0;
+    totalLumiByBXAvg_[bx] = 0;
+    events_[bx] = 0;
+    correctionScaleFactors_[bx] = 1.0;
+  }
+}
+//--------------------------------------------------------------------------------------------------
+void CorrPCCProducerReReco::bookHistograms(DQMStore::IBooker& ibooker, edm::Run const& iRun, edm::EventSetup const& context) {
+//  ibooker.setCurrentFolder("AlCaReco/LumiPCC/");
+//  auto scope = DQMStore::IBooker::UseRunScope(ibooker);
+//  Type1FracMon = ibooker.book1D("type1Fraction", "Type1Fraction;Lumisection;Type 1 Fraction", maxLS, 0, maxLS);
+//  Type1ResMon = ibooker.book1D("type1Residual", "Type1Residual;Lumisection;Type 1 Residual", maxLS, 0, maxLS);
+//  Type2ResMon = ibooker.book1D("type2Residual", "Type2Residual;Lumisection;Type 2 Residual", maxLS, 0, maxLS);
+}
+//--------------------------------------------------------------------------------------------------
+void CorrPCCProducerReReco::endJob() {
+
   if (lumiSections.empty()) {
+    std::cout << "Empty lumisection list for run  " << run_ <<std::endl;
     return;
   }
-
+  std::cout << "Number of Lumisections " << lumiSections.size() << " in run " << run_ <<std::endl;
+  
   std::sort(lumiSections.begin(), lumiSections.end());
-
-  edm::LogInfo("INFO") << "Number of Lumisections " << lumiSections.size() << " in run " << runSeg.run();
 
   //Determining integer number of blocks
   float nBlocks_f = float(lumiSections.size()) / approxLumiBlockSize_;
@@ -501,9 +529,9 @@ void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::
   char* histTitle1 = new char[100];
   char* histTitle2 = new char[100];
   char* histTitle3 = new char[100];
-  sprintf(histTitle1, "Type1Fraction_%d", runSeg.run());
-  sprintf(histTitle2, "Type1Res_%d", runSeg.run());
-  sprintf(histTitle3, "Type2Res_%d", runSeg.run());
+  sprintf(histTitle1, "Type1Fraction_%d", run_);
+  sprintf(histTitle2, "Type1Res_%d", run_);
+  sprintf(histTitle3, "Type2Res_%d", run_);
   type1FracHist = new TH1F(histTitle1, histTitle1, 1000, -0.5, 0.5);
   type1resHist = new TH1F(histTitle2, histTitle2, 4000, -0.2, 0.2);
   type2resHist = new TH1F(histTitle3, histTitle3, 4000, -0.2, 0.2);
@@ -511,32 +539,38 @@ void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::
   delete[] histTitle2;
   delete[] histTitle3;
 
+  iBlock=0;
   for (lumiInfoMapIterator = lumiInfoMap.begin(); (lumiInfoMapIterator != lumiInfoMap.end()); ++lumiInfoMapIterator) {
     totalLumiByBX_ = lumiInfoMapIterator->second->getInstLumiAllBX();
     events_ = lumiInfoMapIterator->second->getErrorLumiAllBX();
-
+    
     if (events_.empty()) {
+      edm::LogInfo("WARNING") << "events are empty for this run:"<<run_<<"  block:" << lumiInfoMapIterator->first.first ;
       continue;
     }
 
-    edm::LuminosityBlockID lu(runSeg.id().run(), edm::LuminosityBlockNumber_t(lumiInfoMapIterator->first.first));
+    //for (unsigned int bx = 0; bx < LumiConstants::numBX; bx++) 
+    //  std::cout<<"iBlock:"<<iBlock<<" bx:"<<bx<<"  N:"<<totalLumiByBX_[bx]<<"  PCC:"<<events_[bx]<<std::endl;
+    
+    
+    edm::LuminosityBlockID lu(run_, edm::LuminosityBlockNumber_t(lumiInfoMapIterator->first.first));
     thisIOV = (cond::Time_t)(lu.value());
 
     sprintf(histname1,
             "CorrectedLumiAvg_%d_%d_%d_%d",
-            runSeg.run(),
+            run_,
             iBlock,
             lumiInfoMapIterator->first.first,
             lumiInfoMapIterator->first.second);
     sprintf(histname2,
             "ScaleFactorsAvg_%d_%d_%d_%d",
-            runSeg.run(),
+            run_,
             iBlock,
             lumiInfoMapIterator->first.first,
             lumiInfoMapIterator->first.second);
     sprintf(histname3,
             "RawLumiAvg_%d_%d_%d_%d",
-            runSeg.run(),
+            run_,
             iBlock,
             lumiInfoMapIterator->first.first,
             lumiInfoMapIterator->first.second);
@@ -596,18 +630,18 @@ void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::
     type1resHist->Fill(mean_type1_residual);
     type2resHist->Fill(mean_type2_residual);
 
-    for (unsigned int ils = lumiInfoMapIterator->first.first; ils < lumiInfoMapIterator->first.second + 1; ils++) {
-      if (ils > maxLS) {
-        std::cout << "ils out of maxLS range!!" << std::endl;
-        break;
-      }
-      Type1FracMon->setBinContent(ils, type1Frac);
-      Type1FracMon->setBinError(ils, mean_type1_residual_unc);
-      Type1ResMon->setBinContent(ils, mean_type1_residual);
-      Type1ResMon->setBinError(ils, mean_type1_residual_unc);
-      Type2ResMon->setBinContent(ils, mean_type2_residual);
-      Type2ResMon->setBinError(ils, mean_type2_residual_unc);
-    }
+//    for (unsigned int ils = lumiInfoMapIterator->first.first; ils < lumiInfoMapIterator->first.second + 1; ils++) {
+//      if (ils > maxLS) {
+//        std::cout << "ils out of maxLS range!!" << std::endl;
+//        break;
+//      }
+//      Type1FracMon->setBinContent(ils, type1Frac);
+//      Type1FracMon->setBinError(ils, mean_type1_residual_unc);
+//      Type1ResMon->setBinContent(ils, mean_type1_residual);
+//      Type1ResMon->setBinError(ils, mean_type1_residual_unc);
+//      Type2ResMon->setBinContent(ils, mean_type2_residual);
+//      Type2ResMon->setBinError(ils, mean_type2_residual_unc);
+//    }
 
     type1FracGraph->SetPoint(iBlock, thisIOV + approxLumiBlockSize_ / 2.0, type1Frac);
     type1resGraph->SetPoint(iBlock, thisIOV + approxLumiBlockSize_ / 2.0, mean_type1_residual);
@@ -618,10 +652,12 @@ void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::
     pedestalGraph->SetPoint(iBlock, thisIOV + approxLumiBlockSize_ / 2.0, pedestal);
     pedestalGraph->SetPointError(iBlock, approxLumiBlockSize_ / 2.0, pedestal_unc);
 
-    edm::LogInfo("INFO")
-        << "iBlock type1Frac mean_type1_residual mean_type2_residual mean_type1_residual_unc mean_type2_residual_unc "
-        << iBlock << " " << type1Frac << " " << mean_type1_residual << " " << mean_type2_residual << " "
-        << mean_type1_residual_unc << " " << mean_type2_residual_unc;
+    //edm::LogInfo("INFO")
+    std::cout << "iBlock type1Frac mean_type1_residual mean_type2_residual mean_type1_residual_unc mean_type2_residual_unc "<<std::endl
+	      << iBlock << " " << type1Frac <<" "
+	      << mean_type1_residual << " " << mean_type2_residual << " "
+	      << mean_type1_residual_unc << " " << mean_type2_residual_unc
+	      <<std::endl;
 
     type1Frac = 0.0;
     mean_type1_residual = 0.0;
@@ -635,6 +671,7 @@ void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::
 
     resetBlock();
   }
+  
   histoFile->cd();
   type1FracHist->Write();
   type1resHist->Write();
@@ -659,27 +696,10 @@ void CorrPCCProducerReReco::dqmEndRunProduce(edm::Run const& runSeg, const edm::
   lumiInfoMapPerLS.clear();
   lumiSections.clear();
   lumiInfoCounter.clear();
-}
 
-//--------------------------------------------------------------------------------------------------
-void CorrPCCProducerReReco::resetBlock() {
-  for (unsigned int bx = 0; bx < LumiConstants::numBX; bx++) {
-    totalLumiByBX_[bx] = 0;
-    totalLumiByBXAvg_[bx] = 0;
-    events_[bx] = 0;
-    correctionScaleFactors_[bx] = 1.0;
-  }
-}
-//--------------------------------------------------------------------------------------------------
-void CorrPCCProducerReReco::bookHistograms(DQMStore::IBooker& ibooker, edm::Run const& iRun, edm::EventSetup const& context) {
-  ibooker.setCurrentFolder("AlCaReco/LumiPCC/");
-  auto scope = DQMStore::IBooker::UseRunScope(ibooker);
-  Type1FracMon = ibooker.book1D("type1Fraction", "Type1Fraction;Lumisection;Type 1 Fraction", maxLS, 0, maxLS);
-  Type1ResMon = ibooker.book1D("type1Residual", "Type1Residual;Lumisection;Type 1 Residual", maxLS, 0, maxLS);
-  Type2ResMon = ibooker.book1D("type2Residual", "Type2Residual;Lumisection;Type 2 Residual", maxLS, 0, maxLS);
-}
-//--------------------------------------------------------------------------------------------------
-void CorrPCCProducerReReco::endJob() {
+
+
+  
   histoFile->cd();
   type1FracGraph->Write();
   type1resGraph->Write();

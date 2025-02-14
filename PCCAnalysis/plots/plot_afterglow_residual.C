@@ -271,7 +271,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gT2ResidVsPCC->GetYaxis()->SetTitle("Type 2 Afterglow Residual [%]");
   gT2ResidVsPCC->GetXaxis()->SetTitle("Average PCC ");
-  gT2ResidVsPCC->GetYaxis()->SetRangeUser(-2,2);
+  gT2ResidVsPCC->GetYaxis()->SetRangeUser(-1,1);
   gT2ResidVsPCC->SetMarkerStyle(8);
   gT2ResidVsPCC->SetMarkerSize(0.6);
   gT2ResidVsPCC->Draw("ap");
@@ -282,7 +282,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gT2ResidVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gT2ResidVsIOV->GetYaxis()->SetTitle("Type 2 Afterglow Residual [%]");
-  gT2ResidVsIOV->GetYaxis()->SetRangeUser(-2,2);
+  gT2ResidVsIOV->GetYaxis()->SetRangeUser(-1,1);
   gT2ResidVsIOV->SetMarkerStyle(8);
   gT2ResidVsIOV->SetMarkerSize(0.6);
   gT2ResidVsIOV->Draw("ap");
