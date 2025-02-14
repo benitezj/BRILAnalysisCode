@@ -115,15 +115,15 @@ private:
   float mean_type1_residual_unc;      //Type 1 residual uncertainty rms
   float mean_type2_residual_unc;      //Type 2 residual uncertainty rms
   unsigned int nTrain;                //Number of bunch trains used in calc type 1 and 2 res, frac.
-  unsigned int countLumi_;            //The lumisection count... the size of the lumiblock
   unsigned int approxLumiBlockSize_;  //The number of lumisections per block.
   unsigned int thisLS;                //Ending lumisection for the iov that we save with the lumiInfo object.
 
   double type2_a_;  //amplitude for the type 2 correction
   double type2_b_;  //decay width for the type 2 correction
 
-  unsigned int run_; //Run to be selected in cfg , needed for processing ReReco samples where Runs are scattered over root files
-  
+  unsigned int run_; //Run to be selected in cfg , needed for processing ReReco samples where Runs are scattered over many root files
+
+  bool applyPedestal_ = 0;
   float pedestal;
   float pedestal_unc;
   TGraphErrors* pedestalGraph;
@@ -142,10 +142,9 @@ CorrPCCProducerReReco::CorrPCCProducerReReco(const edm::ParameterSet& iConfig) {
   type2_a_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<double>("type2_a");
   type2_b_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<double>("type2_b");
   run_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<int>("run");
-  countLumi_ = 0;
-  //minimumNumberOfEvents = 1000;
   minimumNumberOfEvents = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<int>("minimumNumberOfEvents");
-
+  applyPedestal_ = iConfig.getParameter<edm::ParameterSet>("CorrPCCProducerReRecoParameters").getParameter<bool>("applyPedestal");
+    
   totalLumiByBX_.resize(LumiConstants::numBX);
   totalLumiByBXAvg_.resize(LumiConstants::numBX);
   events_.resize(LumiConstants::numBX);
@@ -341,21 +340,23 @@ void CorrPCCProducerReReco::calculateCorrections(std::vector<float> uncorrected,
   //here subtract the pedestal
   pedestal = 0.;
   pedestal_unc = 0.;
-  int nped = 0;
-  for (size_t i = 0; i < LumiConstants::numBX; i++) {
-    if (corrected_tmp_.at(i) < threshold) {
-      pedestal += corrected_tmp_.at(i);
-      nped++;
+  if(applyPedestal_){
+    int nped = 0;
+    for (size_t i = 0; i < LumiConstants::numBX; i++) {
+      if (corrected_tmp_.at(i) < threshold) {
+	pedestal += corrected_tmp_.at(i);
+	nped++;
+      }
+    }
+    if (nped > 0) {
+      pedestal_unc = sqrt(pedestal) / nped;
+      pedestal = pedestal / nped;
+    }
+    for (size_t i = 0; i < LumiConstants::numBX; i++) {
+      corrected_tmp_.at(i) = corrected_tmp_.at(i) - pedestal;
     }
   }
-  if (nped > 0) {
-    pedestal_unc = sqrt(pedestal) / nped;
-    pedestal = pedestal / nped;
-  }
-  for (size_t i = 0; i < LumiConstants::numBX; i++) {
-    corrected_tmp_.at(i) = corrected_tmp_.at(i) - pedestal;
-  }
-
+  
   evaluateCorrectionResiduals(corrected_tmp_);
 
   float integral_uncorr_clusters = 0;
@@ -379,7 +380,7 @@ void CorrPCCProducerReReco::calculateCorrections(std::vector<float> uncorrected,
 
 //--------------------------------------------------------------------------------------------------
 void CorrPCCProducerReReco::beginLuminosityBlock(edm::LuminosityBlock const& lumiSeg, const edm::EventSetup& iSetup) {
-  countLumi_++;
+
 }
 
 //--------------------------------------------------------------------------------------------------

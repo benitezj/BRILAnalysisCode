@@ -71,10 +71,11 @@ process.corrPCCProd = DQMEDAnalyzer("CorrPCCProducerReReco",
          ProdInst = cms.string("rawPCCRandom"),
          approxLumiBlockSize=cms.int32(50),
          trigstring = cms.untracked.string("corrPCCRand"), 
-         type2_a= cms.double(0.001344),
-         type2_b= cms.double(0.01002),
+         type2_a= cms.double(0.0008228),
+         type2_b= cms.double(0.01316),
          subSystemFolder=cms.untracked.string('AlCaReco'),
          minimumNumberOfEvents=cms.int32(1000),
+         applyPedestal=cms.bool(True),
     )
 )
 
