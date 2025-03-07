@@ -285,7 +285,7 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
     //P.GetYaxis()->SetRangeUser((1-0.5),(1+0.5));
     TString title = TString("Module ") + MODID[idx] + TString(" Weight=") +int(weight * 100000) + TString("E-5 Linearity=") + int(slope * 100000) + TString("E-5");                                                                                                                                                                                              
     TString title_Lty = TString("Module ") + MODID[idx] + TString("slope=") + int(slope * 100000) + TString("E-5") + TString("Intercept=") + int(intercept);
-
+    TString histoname = Form("Filter_%d", MODID[idx]);
     
     Filter.GetYaxis()->SetTitle("Normalized module weight");                       
     Filter.GetXaxis()->SetTitle(xtitle.Data());                                    
@@ -295,6 +295,7 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
     Filter.GetYaxis()->SetRangeUser((1-StabilityMaxPerMod),(1+StabilityMaxPerMod));
 
     Filter.SetTitle(title);
+    Filter.SetName(histoname);
     Filter.Write();
     file->Close();  
     
