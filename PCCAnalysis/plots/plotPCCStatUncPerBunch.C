@@ -1,7 +1,8 @@
 #include "globals.h"
 
 #define PURANGE 65    //x-range 
-#define PLOTYRANGE 3  // y-range in percent
+#define PLOTYRANGE 3  // y-range in percent per bunch
+#define PLOTYRANGEORBIT 0.15  // y-range in percent per orbit
 #define NSTEP 3               //number of steps in trigger rate
 #define TotalTriggerStep  500 //Total trigger rate for all bunches 
 #define TotalBunches 2300     //number of colliding bunches
@@ -34,17 +35,19 @@ void plotPCCStatUncPerBunch(){
 
 
   
-  TCanvas C;
-  C.SetLeftMargin(0.15);
-
+  TCanvas C("C","",1200,500);
+  //C.SetLeftMargin(0.15);
+  C.Divide(2,1);
+  
+  //////////////////////////////
   ///Stat precision per bunch
-  C.Clear(); 
+  C.cd(1);
   TH1F HFrame("HFrame","",1,0,PURANGE); //pileup range
   HFrame.GetYaxis()->SetRangeUser(0,PLOTYRANGE);
-  HFrame.GetYaxis()->SetTitle("Stat unc. per bunch [%]");
+  HFrame.GetYaxis()->SetTitle("Stat precision per bunch [%]");
   HFrame.GetXaxis()->SetTitle("Pileup");
   HFrame.SetStats(0);
-  HFrame.Draw("hist");
+  HFrame.DrawClone("hist");
   TLegend leg(0.6,0.9-0.05*NSTEP,0.9,0.9);
   for(int I=1;I<=NSTEP;I++){ 
     G[I]->SetLineColor(I);
@@ -57,21 +60,22 @@ void plotPCCStatUncPerBunch(){
   TLatex text;
   text.SetTextSize(0.03);
   TString params=TString("# of bunches = ")+TotalBunches;
-  params+=TString(",   PCC per p.u. = ")+PCCPerInteraction;
-  params+=TString(",   Integration time = ")+TStep+"s ";
-  text.DrawLatexNDC(0.15,0.92,params);
-  C.Print("plotPCCStatUncPerBunch.png");
+  params+=TString(", PCC per pu = ")+PCCPerInteraction;
+  params+=TString(", Integration  = ")+TStep+"s ";
+  text.DrawLatexNDC(0.1,0.92,params);
+  TLine line;
+  line.SetLineStyle(2);
+  line.DrawLine(0,1,PURANGE,1);
+  //C.Print("plotPCCStatUncPerBunch.png");
 
 
-
-
-
+  /////////////////////////////
   ///Stat precision per orbit
-  C.Clear();
-  HFrame.GetYaxis()->SetRangeUser(0,PLOTYRANGE/10);
-  HFrame.GetYaxis()->SetTitle("Stat unc. per orbit [%]");
+  C.cd(2);
+  HFrame.GetYaxis()->SetRangeUser(0,PLOTYRANGEORBIT);
+  HFrame.GetYaxis()->SetTitle("Stat precision per orbit [%]");
   HFrame.GetXaxis()->SetTitle("Pileup");
-  HFrame.Draw("hist");
+  HFrame.DrawClone("hist");
   TLegend legorbit(0.6,0.9-0.05*NSTEP,0.9,0.9);
   
   for(int I=1;I<=NSTEP;I++){ 
@@ -81,9 +85,10 @@ void plotPCCStatUncPerBunch(){
     legorbit.AddEntry(Gorbit[I],TString("Trigger: ")+(I*TotalTriggerStep)+" Hz","pl");
   }
   legorbit.Draw();
-  text.DrawLatexNDC(0.15,0.92,params);
-  C.Print("plotPCCStatUncPerBunch_orbit.png");
+  text.DrawLatexNDC(0.1,0.92,params);
+  line.DrawLine(0,0.05,PURANGE,0.05);
+  //C.Print("plotPCCStatUncPerBunch_orbit.png");
+  C.Print("plotPCCStatPrecision.png");
   
-  
-  
+   
 }
