@@ -10,7 +10,7 @@ plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 
 ##########################
 ####### Options
-jobtype=ZB ##RD (Randoms), ZB (ZeroBias) 
+jobtype=RD ##RD (Randoms), ZB (ZeroBias) 
 
 condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
 
@@ -19,7 +19,7 @@ CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_C
 ## afterglow corrections
 DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
-DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v8/Run2017F/merged.db
+#DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v8/Run2017F/merged.db
 
 
 ## options for brilcalc lumi

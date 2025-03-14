@@ -5,12 +5,12 @@
 #include "rootlogon.C"
 
 void plotlabels(){
-  //drawCMSPrelim();
-  drawFillYear(0,2017);
-  //drawPCCLuminometer();
+  drawFillYear(0,2018);
 }
 
 float MinPCCColliding=100; 
+
+TH1F* HResid=0;
 
 //std::string runlist="362064";
 
@@ -28,7 +28,10 @@ float MinPCCColliding=100;
 
 
 //2017
-std::string runlist="297046,297047,297048,297049,297050,297056,297057,297099,297100,297101,297113,297114,297168,297169,297170,297171,297175,297176,297177,297178,297179,297180,297181,297211,297215,297218,297219,297224,297225,297227,297281,297282,297283,297284,297285,297286,297287,297288,297289,297290,297291,297292,297293,297296,297308,297359,297411,297424,297425,297426,297429,297430,297431,297432,297433,297434,297435,297467,297468,297469,297474,297483,297484,297485,297486,297487,297488,297494,297495,297496,297497,297498,297499,297500,297501,297502,297503,297504,297505,297557,297558,297559,297560,297562,297563,297598,297599,297603,297604,297605,297606,297620,297656,297657,297658,297659,297660,297661,297662,297663,297664,297665,297666,297670,297671,297672,297673,297674,297675,297678,297722,297723,298809,298853,298855,298996,298997,298998,299000,299042,299061,299062,299064,299065,299067,299084,299096,299149,299178,299180,299183,299184,299185,299316,299317,299318,299324,299325,299326,299327,299329";
+//std::string runlist="297046,297047,297048,297049,297050,297056,297057,297099,297100,297101,297113,297114,297168,297169,297170,297171,297175,297176,297177,297178,297179,297180,297181,297211,297215,297218,297219,297224,297225,297227,297281,297282,297283,297284,297285,297286,297287,297288,297289,297290,297291,297292,297293,297296,297308,297359,297411,297424,297425,297426,297429,297430,297431,297432,297433,297434,297435,297467,297468,297469,297474,297483,297484,297485,297486,297487,297488,297494,297495,297496,297497,297498,297499,297500,297501,297502,297503,297504,297505,297557,297558,297559,297560,297562,297563,297598,297599,297603,297604,297605,297606,297620,297656,297657,297658,297659,297660,297661,297662,297663,297664,297665,297666,297670,297671,297672,297673,297674,297675,297678,297722,297723,298809,298853,298855,298996,298997,298998,299000,299042,299061,299062,299064,299065,299067,299084,299096,299149,299178,299180,299183,299184,299185,299316,299317,299318,299324,299325,299326,299327,299329";
+
+//2017B test all non-colliding residuals distribution
+std::string runlist="297219";
 
 
 float getNColl(TFile*F=NULL, int Run=-1, int I=-1,int type=0){
@@ -145,6 +148,37 @@ std::pair<float,float> getPCCAvg(TFile*F=NULL, int Run=-1, int I=-1, int type=1)
   return bincontent_avg;
 }
 
+
+void fillResidual(TFile*F=NULL, int Run=-1, int I=-1, float collidingrate=0){
+  if(F==NULL || Run<0 || I<0 || collidingrate<=0) return std::pair<float,float>();
+  
+  TIter next(F->GetListOfKeys());
+  TObject* key;
+  while ((key = next())) {
+    TString kname(key->GetName());
+    if(!kname.Contains("CorrectedLumiAvg_")) continue;//CorrectedLumiAvg_297723_3_169_224
+    
+    TObjArray * a = kname.Tokenize("_");
+    long r=atoi(((TObjString*)(*a)[1])->GetName());
+    long l=atoi(((TObjString*)(*a)[2])->GetName());
+    long ls1=atoi(((TObjString*)(*a)[3])->GetName());
+    long ls2=atoi(((TObjString*)(*a)[4])->GetName());
+  
+    if(r!=Run || l!=I) continue; //select the desired block
+    
+    TH1F* Lumi = (TH1F*) F->Get(kname.Data());
+    if(!Lumi)      continue;
+
+    for(int j = 1; j <= Lumi->GetNbinsX(); j++) {
+      float bincontent = Lumi->GetBinContent(j);
+      if(bincontent < MinPCCColliding)
+	HResid->Fill(bincontent/collidingrate);
+    }
+    
+  }
+}
+
+    
 void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST="") {
   cout<<"input path: "<<inpath<<endl;
   cout<<"output path: "<<outpath<<endl;
@@ -167,6 +201,10 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   TGraph* gNCollVsIOV=new TGraph();
   TGraph* gAvgSFVsIOV=new TGraph();
 
+
+  HResid = new TH1F("HResid","",100,-0.05,0.05);
+
+  
   ////////////////////
   std::stringstream ss(runlist.c_str());
   int Run;
@@ -184,16 +222,19 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
     TGraphErrors* gT1frac = (TGraphErrors*)InputFile.Get("Type1Fraction");
     TGraphErrors* gT1resid = (TGraphErrors*)InputFile.Get("Type1Res");
     TGraphErrors* gT2resid = (TGraphErrors*)InputFile.Get("Type2Res"); 
-    TGraphErrors* gPed = (TGraphErrors*)InputFile.Get("Pedestal");
+    //TGraphErrors* gPed = (TGraphErrors*)InputFile.Get("Pedestal");
     if(!gT1frac || !gT2resid || !gT2resid){cout<<" objects  not found. run="<<Run<<endl; continue;}
 
     double *YT1frac = gT1frac->GetY();
     double *YT1resid = gT1resid->GetY();
     double *YT2resid = gT2resid->GetY();
-    double *YPed = gPed->GetY();
+    //double *YPed = gPed->GetY();
     for (int l = 0; l < gT1frac->GetN(); l++) {
       cout<<gAvgVsIOV->GetN()<<",";  
       std::pair<float,float> pccavg=getPCCAvg(&InputFile,Run,l);
+
+      fillResidual(&InputFile,Run,l,pccavg.first);
+      
       if(pccavg.first>MinPCCColliding){
 	gAvgVsIOV->SetPoint(gAvgVsIOV->GetN(),gAvgVsIOV->GetN(),pccavg.first);
 	gT1fracVsPCC->SetPoint(gT1fracVsPCC->GetN(),pccavg.first, YT1frac[l]*100); 
@@ -202,7 +243,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
 	gT1ResidVsIOV->SetPoint(gT1ResidVsIOV->GetN(),gT1ResidVsIOV->GetN(), YT1resid[l]*100);  
 	gT2ResidVsPCC->SetPoint(gT2ResidVsPCC->GetN(),pccavg.first, YT2resid[l]*100);  
 	gT2ResidVsIOV->SetPoint(gT2ResidVsIOV->GetN(),gT2ResidVsIOV->GetN(), YT2resid[l]*100); 
-	gPedVsIOV->SetPoint(gPedVsIOV->GetN(),gPedVsIOV->GetN(), (YPed[l]/pccavg.first)*100);  
+	//gPedVsIOV->SetPoint(gPedVsIOV->GetN(),gPedVsIOV->GetN(), (YPed[l]/pccavg.first)*100);  
 	
       }
       
@@ -291,17 +332,17 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Print(outpath+"/afterglow_t2res_vsLSBlock.png");
 
 
-  /////////Pedestal
-  Canvas.Clear();
-  gPedVsIOV->GetXaxis()->SetTitle("50 LS Block");
-  gPedVsIOV->GetYaxis()->SetTitle("Pedestal Fraction [%]");
-  gPedVsIOV->GetYaxis()->SetRangeUser(-2,2);
-  gPedVsIOV->SetMarkerStyle(8);
-  gPedVsIOV->SetMarkerSize(0.6);
-  gPedVsIOV->Draw("ap");
-  plotlabels();
-  line.DrawLine(gPedVsIOV->GetXaxis()->GetXmin(),0,gPedVsIOV->GetXaxis()->GetXmax(),0);
-  Canvas.Print(outpath+"/afterglow_pedestal_vsLSBlock.png");
+//  /////////Pedestal
+//  Canvas.Clear();
+//  gPedVsIOV->GetXaxis()->SetTitle("50 LS Block");
+//  gPedVsIOV->GetYaxis()->SetTitle("Pedestal Fraction [%]");
+//  gPedVsIOV->GetYaxis()->SetRangeUser(-2,2);
+//  gPedVsIOV->SetMarkerStyle(8);
+//  gPedVsIOV->SetMarkerSize(0.6);
+//  gPedVsIOV->Draw("ap");
+//  plotlabels();
+//  line.DrawLine(gPedVsIOV->GetXaxis()->GetXmin(),0,gPedVsIOV->GetXaxis()->GetXmax(),0);
+//  Canvas.Print(outpath+"/afterglow_pedestal_vsLSBlock.png");
 
 
   /////////Avg Colliding 
@@ -330,12 +371,25 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gAvgSFVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gAvgSFVsIOV->GetYaxis()->SetTitle("Avg. Scale Factor");
+  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.8,1.0);
   gAvgSFVsIOV->SetMarkerStyle(8);
   gAvgSFVsIOV->SetMarkerSize(0.6);
   gAvgSFVsIOV->Draw("ap");
   plotlabels();
   Canvas.Print(outpath+"/afterglow_avgsf_vsLSBlock.png");
 
+
+
+  /////Noncolliding residual distribution
+  if(HResid){
+    Canvas.Clear();
+    HResid->GetXaxis()->SetTitle("noncolliding bx residual / avg. colliding rate");
+    HResid->GetYaxis()->SetTitle("Number of noncolliding bx");
+    HResid->Draw("hist");
+    plotlabels();
+    Canvas.Print(outpath+"/afterglow_noncolliding_residual.png");
+    delete HResid;
+  }
   
 }
 
