@@ -16,6 +16,8 @@
 <use   name="DQMServices/Core"/>
 <use   name="DQMServices/Components"/>
 
+<use name="CommonTools/UtilAlgos"/>
+
 <flags EDM_PLUGIN="1"/>
 
 
@@ -53,4 +55,8 @@
   <flags   EDM_PLUGIN="1"/>
 </library>
 
+
+<library   file="PCCEventToTuple.cc" name="PCCEventToTuple">
+  <flags   EDM_PLUGIN="1"/>
+</library>
 
