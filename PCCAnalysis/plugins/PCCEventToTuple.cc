@@ -37,36 +37,44 @@ private:
   
   virtual void beginJob() override {}; 
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-  //  void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override {};
-  //  void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override {};
 
   const edm::EDGetTokenT<reco::PixelClusterCountsInEvent> pccToken_;
+
   TTree* tree;
-  int run=0;
-  int LS = -99;
-  int LN = -99;
-  int orbit = -99;             
-  int bunchCrossing = -99;
-  std::map<std::pair<int, int>, int> nPixelClusters;
-  float timeStamp_begin;  
+  unsigned int run = 0;
+  unsigned short LS = 0;
+  unsigned short LN = 0;
+  unsigned short bunchCrossing = 0;
+  UInt_t timeStamp_begin;
+  unsigned short pcc=0;
+  std::map<unsigned int, unsigned short> nPixelClusters;
+
+
+  const std::vector<int> modVeto_;
+  //std::vector< std::pair<int,std::pair<int,int> > goodrunlist_;
+  std::map<unsigned int,std::pair<unsigned short,unsigned short>> goodrunlist_;
 };
 
 
 PCCEventToTuple::PCCEventToTuple(const edm::ParameterSet& iConfig):
-  pccToken_(consumes<reco::PixelClusterCountsInEvent>(iConfig.getParameter<edm::InputTag>("inputTag")))
+  pccToken_(consumes<reco::PixelClusterCountsInEvent>(iConfig.getParameter<edm::InputTag>("inputTag"))),
+  modVeto_(iConfig.getParameter<std::vector<int>>("modVeto"))
 {
   
   
   edm::Service<TFileService> fs;
   tree = fs->make<TTree>("tree", "Pixel Cluster Counters");
-
   tree->Branch("run", &run, "run/I");
-  tree->Branch("LS", &LS, "LS/I");
-  tree->Branch("LN", &LN, "LN/I");
+  tree->Branch("LS", &LS, "LS/s");
+  tree->Branch("LN", &LN, "LN/s");
+  tree->Branch("bunchCrossing", &bunchCrossing, "bunchCrossing/s");
   tree->Branch("timeStamp_begin", &timeStamp_begin, "timeStamp_begin/i");
-  tree->Branch("bunchCrossing", &bunchCrossing, "bunchCrossing/I");
-  tree->Branch("nPixelClusters", "map<std::pair<int,int>,int>", &nPixelClusters);
-    
+  tree->Branch("pcc", &pcc, "pcc/s");
+  tree->Branch("nPixelClusters", "map<unsigned int, unsigned short>", &nPixelClusters);
+  
+  ///good run list hard coded for now ! 
+  goodrunlist_[392382]=std::pair<unsigned short,unsigned short>(40,76);
+  
 }
 
 
@@ -75,33 +83,49 @@ PCCEventToTuple::~PCCEventToTuple(){}
 
 void PCCEventToTuple::analyze(const edm::Event& iEvent, const edm::EventSetup&)
 {
+  run = iEvent.id().run();
+  LS = iEvent.getLuminosityBlock().luminosityBlock();
+  //std::cout<<run<<" , "<<LS<<std::endl;
+  
+  //Check if this run and lumisection are in the good list.
+  bool pass=0;
+  for (std::map<unsigned int,std::pair<unsigned short,unsigned short>>::iterator it = goodrunlist_.begin();
+       it != goodrunlist_.end();
+       it++){
+    //std::cout << it->first<<":"<<(it->second).first<<":"<<(it->second).second<< std::endl;
+    if(run==it->first && LS>=(it->second).first && LS<=(it->second).second)
+      pass=1;
+  }
+  if(!pass) return;
+  
+  
+  LN = ((int)(iEvent.orbitNumber() >> 12) % 64);
+  bunchCrossing = iEvent.bunchCrossing();
+  timeStamp_begin = iEvent.time().unixTime();
+
+
+  ///retrive the clusters from the event
+  pcc=0;
   edm::Handle<reco::PixelClusterCountsInEvent> pccHandle;
   iEvent.getByToken(pccToken_, pccHandle);
-    
   if (!pccHandle.isValid()) {
     return;
   }
-
-
-  
-  
-  run = iEvent.id().run();
-  LS = iEvent.getLuminosityBlock().luminosityBlock();
-  orbit = iEvent.orbitNumber();
-  LN = ((int)(orbit >> 12) % 64);
-  bunchCrossing = iEvent.bunchCrossing();
-  
-  if (timeStamp_begin > iEvent.time().unixTime())
-    timeStamp_begin = iEvent.time().unixTime();
-
-  std::pair<int, int> bxModKey; 
-  bxModKey.first = bunchCrossing;
-  bxModKey.second = -1;
-  //bxModKey.second = detId();
-
   const reco::PixelClusterCountsInEvent inputPcc = *pccHandle;
-  //streamCache(iID)->add(inputPcc);
+  std::vector<int> inputpcc = inputPcc.counts();
+  std::vector<int> inputmodid = inputPcc.modID();
+  for(long unsigned int i=0;i<inputmodid.size();i++){
+    if (std::find(modVeto_.begin(), modVeto_.end(), inputmodid[i]) == modVeto_.end()) {
+      //std::pair<int, int> bxModKey(bunchCrossing,inputmodid[i]);
+      unsigned int bxModKey=inputmodid[i];
+      nPixelClusters[bxModKey]=(unsigned short)(inputpcc[i]);
+      pcc+=inputpcc[i];
+    }
+  }
+
   
+  tree->Fill();
+  nPixelClusters.clear();
 }
 
 
