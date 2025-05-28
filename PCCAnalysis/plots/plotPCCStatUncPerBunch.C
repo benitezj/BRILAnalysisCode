@@ -1,13 +1,13 @@
 #include "globals.h"
 
 #define PURANGE 65    //x-range 
-#define PLOTYRANGE 3  // y-range in percent per bunch
+#define PLOTYRANGE 0.5  // y-range in percent per bunch
 #define PLOTYRANGEORBIT 0.15  // y-range in percent per orbit
-#define NSTEP 3               //number of steps in trigger rate
-#define TotalTriggerStep  500 //Total trigger rate for all bunches 
-#define TotalBunches 2300     //number of colliding bunches
+#define NSTEP 5               //number of steps in trigger rate
+#define TotalTriggerStep 50 //Total trigger rate for all bunches 
+#define TotalBunches 1     //number of colliding bunches
 #define PCCPerInteraction 20  //2017 veto:100, 2023 veto:20 
-#define TStep 23              //integration time step
+#define TStep 10              //integration time step
 
 
 void plotPCCStatUncPerBunch(){
