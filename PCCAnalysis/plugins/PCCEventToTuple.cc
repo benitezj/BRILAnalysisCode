@@ -47,12 +47,9 @@ private:
   unsigned short bunchCrossing = 0;
   UInt_t timeStamp_begin;
   unsigned short pcc=0;
-  std::map<unsigned int, unsigned short> nPixelClusters;
-
+  //std::map<unsigned int, unsigned short> nPixelClusters;
 
   const std::vector<int> modVeto_;
-  //std::vector< std::pair<int,std::pair<int,int> > goodrunlist_;
-  std::map<unsigned int,std::pair<unsigned short,unsigned short>> goodrunlist_;
 };
 
 
@@ -70,11 +67,8 @@ PCCEventToTuple::PCCEventToTuple(const edm::ParameterSet& iConfig):
   tree->Branch("bunchCrossing", &bunchCrossing, "bunchCrossing/s");
   tree->Branch("timeStamp_begin", &timeStamp_begin, "timeStamp_begin/i");
   tree->Branch("pcc", &pcc, "pcc/s");
-  tree->Branch("nPixelClusters", "map<unsigned int, unsigned short>", &nPixelClusters);
-  
-  ///good run list hard coded for now ! 
-  goodrunlist_[392382]=std::pair<unsigned short,unsigned short>(40,76);
-  
+  //tree->Branch("nPixelClusters", "map<unsigned int, unsigned short>", &nPixelClusters);
+    
 }
 
 
@@ -85,20 +79,6 @@ void PCCEventToTuple::analyze(const edm::Event& iEvent, const edm::EventSetup&)
 {
   run = iEvent.id().run();
   LS = iEvent.getLuminosityBlock().luminosityBlock();
-  //std::cout<<run<<" , "<<LS<<std::endl;
-  
-  //Check if this run and lumisection are in the good list.
-  bool pass=0;
-  for (std::map<unsigned int,std::pair<unsigned short,unsigned short>>::iterator it = goodrunlist_.begin();
-       it != goodrunlist_.end();
-       it++){
-    //std::cout << it->first<<":"<<(it->second).first<<":"<<(it->second).second<< std::endl;
-    if(run==it->first && LS>=(it->second).first && LS<=(it->second).second)
-      pass=1;
-  }
-  if(!pass) return;
-  
-  
   LN = ((int)(iEvent.orbitNumber() >> 12) % 64);
   bunchCrossing = iEvent.bunchCrossing();
   timeStamp_begin = iEvent.time().unixTime();
@@ -114,18 +94,19 @@ void PCCEventToTuple::analyze(const edm::Event& iEvent, const edm::EventSetup&)
   const reco::PixelClusterCountsInEvent inputPcc = *pccHandle;
   std::vector<int> inputpcc = inputPcc.counts();
   std::vector<int> inputmodid = inputPcc.modID();
+
+  //apply the module veto and calculate total PCC
   for(long unsigned int i=0;i<inputmodid.size();i++){
     if (std::find(modVeto_.begin(), modVeto_.end(), inputmodid[i]) == modVeto_.end()) {
-      //std::pair<int, int> bxModKey(bunchCrossing,inputmodid[i]);
-      unsigned int bxModKey=inputmodid[i];
-      nPixelClusters[bxModKey]=(unsigned short)(inputpcc[i]);
+      //unsigned int bxModKey=inputmodid[i];
+      //nPixelClusters[bxModKey]=(unsigned short)(inputpcc[i]);
       pcc+=inputpcc[i];
     }
   }
 
   
   tree->Fill();
-  nPixelClusters.clear();
+  //nPixelClusters.clear();
 }
 
 
