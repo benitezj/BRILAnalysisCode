@@ -13,7 +13,6 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
-//#include "DataFormats/Luminosity/interface/LumiInfo.h"
 #include "FWCore/Framework/interface/LuminosityBlock.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -47,7 +46,6 @@ private:
   unsigned short bunchCrossing = 0;
   UInt_t timeStamp_begin;
   unsigned short pcc=0;
-  //std::map<unsigned int, unsigned short> nPixelClusters;
 
   const std::vector<int> modVeto_;
 };
@@ -67,7 +65,6 @@ PCCEventToTuple::PCCEventToTuple(const edm::ParameterSet& iConfig):
   tree->Branch("bunchCrossing", &bunchCrossing, "bunchCrossing/s");
   tree->Branch("timeStamp_begin", &timeStamp_begin, "timeStamp_begin/i");
   tree->Branch("pcc", &pcc, "pcc/s");
-  //tree->Branch("nPixelClusters", "map<unsigned int, unsigned short>", &nPixelClusters);
     
 }
 
@@ -89,6 +86,7 @@ void PCCEventToTuple::analyze(const edm::Event& iEvent, const edm::EventSetup&)
   edm::Handle<reco::PixelClusterCountsInEvent> pccHandle;
   iEvent.getByToken(pccToken_, pccHandle);
   if (!pccHandle.isValid()) {
+    std::cout<<"Invalid pccHandle"<<std::endl;
     return;
   }
   const reco::PixelClusterCountsInEvent inputPcc = *pccHandle;
@@ -98,15 +96,12 @@ void PCCEventToTuple::analyze(const edm::Event& iEvent, const edm::EventSetup&)
   //apply the module veto and calculate total PCC
   for(long unsigned int i=0;i<inputmodid.size();i++){
     if (std::find(modVeto_.begin(), modVeto_.end(), inputmodid[i]) == modVeto_.end()) {
-      //unsigned int bxModKey=inputmodid[i];
-      //nPixelClusters[bxModKey]=(unsigned short)(inputpcc[i]);
       pcc+=inputpcc[i];
     }
   }
 
   
   tree->Fill();
-  //nPixelClusters.clear();
 }
 
 
