@@ -17,11 +17,11 @@ fi
 
 ### step0: setup environment
 cd $installation
-source /cvmfs/cms.cern.ch/common/scramv1 runtime -sh
+`/cvmfs/cms.cern.ch/common/scramv1 runtime -sh`
 
 ### step1: look for new runs in tier0 eos
 rm -rf ./$period
-source $installation/BRILAnalysisCode/PCCAnalysis/emmit_scans/findrootfiles_emmittance.sh $period
+`${installation}/BRILAnalysisCode/PCCAnalysis/emmit_scans/findrootfiles_emmittance.sh ${period}`
 
 
 ### step2: loop over the new runs and check if each run is already processed
@@ -39,16 +39,16 @@ for r in `/usr/bin/ls ${installation}/${period}/ | grep .txt | awk -F".txt" '{pr
 	`cmsRun ${installation}/BRILAnalysisCode/PCCAnalysis/emmit_scans/PCCEventToTuple_cfg.py`
 
 	## TUPLE -> HD5
-	$python ${installation}/BRILAnalysisCode/PCCAnalysis/emmit_scans/tuple_to_hd5_emmittance.py --inputfile=./pcctuple.root  --moduleveto=${installation}/BRILAnalysisCode/PCCAnalysis/veto_2024/veto_B0+vdMBgdSS1_SS2_wights0+vdMSty+Block1_Sty1_Sty2_+Block2_Sty1_Sty2+Block3_Sty1_Sty2+Block4_Sty1_Sty2+Block5_Sty1_Sty2+Block6_Sty1_Sty2+All_Blocks_Sty_Lty.txt
+	`${python} ${installation}/BRILAnalysisCode/PCCAnalysis/emmit_scans/tuple_to_hd5_emmittance.py --inputfile=./pcctuple.root  --moduleveto=${installation}/BRILAnalysisCode/PCCAnalysis/veto_2024/veto_B0+vdMBgdSS1_SS2_wights0+vdMSty+Block1_Sty1_Sty2_+Block2_Sty1_Sty2+Block3_Sty1_Sty2+Block4_Sty1_Sty2+Block5_Sty1_Sty2+Block6_Sty1_Sty2+All_Blocks_Sty_Lty.txt`
 
 	## simple plot
-	$python  ${installation}/BRILAnalysisCode/PCCAnalysis/emmit_scans/pcchd5_reader_emmittance.py --outpath=. --lsmax=200 --bcid=56
+	`${python}  ${installation}/BRILAnalysisCode/PCCAnalysis/emmit_scans/pcchd5_reader_emmittance.py --outpath=. --lsmax=200 --bcid=56`
 	
 	## save outputs
 	/usr/bin/cp -f pcctuple.root  $outpath/${r}.root
 	/usr/bin/cp -f pcc_ZB.hd5  $outpath/${r}.hd5
 	/usr/bin/cp -f pcchd5_reader_emmittance.png  $plotspath/${r}.png
-#	break
+	break
     fi
 done
 
