@@ -4,7 +4,7 @@
 #include "globals.h"
 
 
-void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
+void plotVetoModuleMaps(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 

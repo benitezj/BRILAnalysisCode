@@ -29,9 +29,6 @@ tree.SetBranchStatus("event",1)
 tree.SetBranchStatus("bunchCrossing",1)                                                                                                          
 tree.SetBranchStatus("nPixelClusters",1)
 
-tree.SetBranchStatus("nVtx",1)                                                                                                 
-tree.SetBranchStatus("vtx_isGood",1)                                                                                           
-tree.SetBranchStatus("vtx_isFake",1)
 
 #uncoment for tuples 2022                                                                             
 tree.SetBranchStatus("nPixelClusters.first.first",1)
@@ -66,10 +63,7 @@ class Lumitable(t.IsDescription):
  avg = t.Float32Col(shape=(), dflt=0.0, pos=6) 
  bxraw = t.Float32Col(shape=(3564,), dflt=0.0, pos=7) 
  bx = t.Float32Col(shape=(3564,), dflt=0.0, pos=8) 
- avgraw_Vtx = t.Float32Col(shape=(), dflt=0.0, pos=9)                                                               
- avg_Vtx = t.Float32Col(shape=(), dflt=0.0, pos=10)                                                            
- bxraw_Vtx = t.Float32Col(shape=(3564,), dflt=0.0, pos=11)                                                    
- bx_Vtx = t.Float32Col(shape=(3564,), dflt=0.0, pos=12)
+
 
 
 ################ open outputfile #####################
@@ -90,8 +84,6 @@ nentries = tree.GetEntries()
 
 PCC_NB= [numpy.zeros(3564) for i in range(64)]
 PCC_NB4= [numpy.zeros(3564) for i in range(16)] 
-Vtx_NB= [numpy.zeros(3564) for i in range(64)]                                                                                                   
-Vtx_NB4= [numpy.zeros(3564) for i in range(16)]
 
 time_count= [numpy.zeros(3564) for i in range(64)]
 time_countNB4= [numpy.zeros(3564) for i in range(16)]
@@ -110,48 +102,33 @@ fill = 6016  #2018->6868 #2017->6016
 
 tree.GetEntry(0)                                                                    
 LS_prev=tree.LS                                                                                                       
-#a = set()
 bcids = set()
-#veto = set()
-#modules = set()
 for iev in range(nentries):
     if tree.LS == -99:                                                                                                        
-     #  print(type(tree.LS))                                                                                                  
        continue      
     tree.GetEntry(iev)                                                                                                        
-    if iev%30000==0:                                                                                                                   print(tree.run,tree.LS,iev)                                                                                            
+    if iev%30000==0:
+        print(tree.run,tree.LS,iev)                                                                                            
     pixelCount=[0]*26 
 
     if tree.nPixelClusters.size()!=0:                                                                                                        
         for item in tree.nPixelClusters:                                                                                
-            module=item[0][1] #item[0][1]
-          #  print(module)
-          #  modules.add(module)
-            clusters=item[1]             #item[1] 
-        #print(bxid,module,clusters)           
+            module=item[0][1]
+            clusters=item[1]
             if module in vetoModules or module/1000000==303:#when starts in 303 is  barrel layer 0                  
-             #   veto.add(module)
                 continue                                                                                      
             pixelCount[0]=pixelCount[0]+clusters      
-     
- #   nVtx[0]=0
- #   for i in range(0,tree.nVtx):                                                                                               
- #       if tree.vtx_isGood[i]==True and tree.vtx_isFake[i]==False:                                   
- #           nVtx[0]=nVtx[0]+1 
 
     run=tree.run                                                                                                     
     LS=tree.LS #LS = 23s                                                             
     LN=tree.LN #LN=0.3s                                                                                         
     event=tree.event                                                                                         
     timeStamp = tree.timeStamp_begin    
-   # BXid = bxid
     BXid=tree.bunchCrossing
     bcids.add(BXid)                                                                                                
     nCluster=pixelCount[0]                                                                              
-#    nVtx[0]=nVtx[0] 
                 
     PCC_NB[LN][BXid]+= nCluster
-#    Vtx_NB[LN][BXid]+= nVtx 
     time_count[LN][BXid]+= timeStamp 
     ev_count[LN][BXid]+=1 
      
@@ -162,19 +139,15 @@ for iev in range(nentries):
         for j in range(3564):
             for i in range(64):
                 PCC_NB4[int(i/4)][j] +=PCC_NB[i][j]
- #               Vtx_NB4[int(i/4)][j] +=Vtx_NB[i][j]
                 time_countNB4[int(i/4)][j]+=time_count[i][j] 
                 ev_countNB4[int(i/4)][j] += ev_count[i][j] 
-        
          
         for l in range(3564):
             for k in range(16):
                 if ev_countNB4[k][l]!=0:
                     time_countNB4[k][l]/=ev_countNB4[k][l]
                     PCC_NB4[k][l]/=ev_countNB4[k][l]
-                    Vtx_NB4[k][l]/=ev_countNB4[k][l]
      
-   
         for r in range(16):  
             count_nonzero=0
             for q in range(3564): 
@@ -190,33 +163,23 @@ for iev in range(nentries):
             rownew['fillnum'] = fill
             rownew['runnum'] = run
             rownew['lsnum'] = LS_prev
-            #rownew['nevent'] = 
             rownew['nbnum'] = m #0 to 15  
             rownew['timestampsec'] = time_count_NB4avg[m]  
             bxsum=0
-            bxsum_Vtx=0
             for b in range(3564): 
                 bxsum= bxsum+PCC_NB4[m][b]
-                bxsum_Vtx= bxsum_Vtx+Vtx_NB4[m][b]  
             rownew['avgraw'] = bxsum
             rownew['avg'] = bxsum
             rownew['bxraw'] = PCC_NB4[m]
             rownew['bx'] = PCC_NB4[m]
 
-  #          rownew['avgraw_Vtx'] = bxsum_Vtx                                              
-  #          rownew['avg_Vtx'] = bxsum_Vtx                                                                                      #             
-  #          rownew['bxraw_Vtx'] = Vtx_NB4[m]                                                                                                   
-  #          rownew['bx_Vtx'] = Vtx_NB4[m] 
-
             rownew.append()
             outtable.flush() 
     
-   #reset array
    
         for j in range(3564):
             for i in range(64):
                 PCC_NB[i][j]= 0.
-    #            Vtx_NB[i][j]= 0.  
                 time_count[i][j]= 0
                 ev_count[i][j]=0
         for p in range(16):  
@@ -224,14 +187,11 @@ for iev in range(nentries):
         for i in range(16):
             for j in range(3564):
                 PCC_NB4[i][j]=0
-   #             Vtx_NB4[i][j]=0
                 time_countNB4[i][j]=0
                 ev_countNB4[i][j] =0
       
     LS_prev=LS
       
 print(bcids)
-#print(modules)
-#print(veto)
 h5out.close()
 print("Done")
