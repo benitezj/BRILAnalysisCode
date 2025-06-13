@@ -7,6 +7,7 @@ import argparse
 
 numMods = 1856
 inputmodsfile='BRILAnalysisCode/PCCAnalysis/plots/modules.txt'
+
 output_path = '.'
 
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')             
@@ -61,16 +62,16 @@ print(os.system("diff "+inputmodsfile+" ./modules_tmp.txt"))
 if not os.path.exists(output_path):
     print("output path does not exist")
     sys.exit()
-
+    
+os.system('rm -f '+output_path+'/tuples_to_csv_modules.csv')
 of = open(output_path+'/tuples_to_csv_modules.csv', "a")
+
 
 ##############################################################
 ################## Loop over events ###########################                                                                            
 nentries = tree.GetEntries()
-time_c=0
 event_count=0
 LS_prev=0
-#ROOTMODS={}
 for iev in range(nentries):
     tree.GetEntry(iev)
     if iev%10000==0:
@@ -81,12 +82,10 @@ for iev in range(nentries):
         continue
 
     event_count+=1
-    #time_c+=tree.timeStamp_begin
 
     # integrate the module counts
     for item in tree.nPixelClusters:                                                                                
         module=int(item[0][1])
-        #ROOTMODS[module]=1
         DEFAULTMODS[module]+=int(item[1])
         
     #if this event is the begginning of next LS then write the module counts to output
@@ -94,14 +93,11 @@ for iev in range(nentries):
         if iev==nentries-1: 
             print("last entry")
             
-        #of.write(f'{tree.run:d},{LS_prev:d},{time_c/event_count:.1f}')
         of.write(f'{tree.run:d},{LS_prev:d}')
         for key in DEFAULTMODS:
-            #of.write(f',{DEFAULTMODS[key]/event_count:.6f}')
             of.write(f',{DEFAULTMODS[key]:d}')
             DEFAULTMODS[key]=0
         of.write("\n")
-        time_c=0
         event_count=0
         
     LS_prev=tree.LS
@@ -109,6 +105,4 @@ for iev in range(nentries):
 of.close()
 
 
-
-        
 print("Done")

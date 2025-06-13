@@ -9,7 +9,8 @@ action=$2
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
 #baseoutdir=/eos/user/l/lcuevasp/BRIL/PCC/VDM_2017
 
-moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt
+moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_FPIXD1.txt
+
 
 ###########################################################
 ### 
@@ -166,5 +167,14 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 
     counter=`echo $counter | awk '{print $1+1}'`
 done
+
 echo "Total runs: $counter"
-echo "Total runs failed: $counter_fail"
+if [ "$action" == "2" ]; then
+    echo "Total runs failed: $counter_fail"
+fi
+
+#run the merging
+if [ "$action" == "4" ]; then
+    python3 ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/vdM/pcchd5_merger.py --inputdir=${outputdir}
+fi
+

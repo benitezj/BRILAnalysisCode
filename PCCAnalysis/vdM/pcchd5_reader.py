@@ -2,22 +2,14 @@ import ROOT
 import tables as t, pandas as pd, pylab as py, sys, numpy, math, os
 import struct
 import os,sys
+import argparse
+ROOT.gROOT.SetBatch(True) ## run with batch mode always
 
+parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
+parser.add_argument('--inputfile', type=str, default="", help='The input hd5 file')
+args = parser.parse_args()
 
-
-#Input hd5 file:
-#input_file='./pcc_ZB.hd5'
-input_file='./pcchd5_merge.hd5'
-#input_file='/eos/user/l/lcuevasp/BRIL/PCC/VDM_2022/PCC2022_8385/PCC_merge_2022_8385_veto_2022.hd5'
-#input_file='/eos/user/l/lcuevasp/BRIL/PCC/VDM_2022/PCC2022_8381_new_veto/PCC_merge_2022_8381_veto_2022.hd5'
-#input_file='/eos/user/l/lcuevasp/BRIL/PCC/VDM_2022/PCC2022_8385/ZB0/pcc_Data_PixVtx_Event_90X_50.hd5'
-#input_file='/eos/cms/store/group/dpg_bril/comm_bril/vdmdata/2022/PCCreprocessed/8385/PCC_merge_2022_8385_veto_2022.hd5'
-#input_file='/afs/cern.ch/user/l/lcuevasp/public/PCC/Ratefile/8381_PCC_NewVeto.hd5' # 2022 last veto (1693 bad modules)
-#input_file='/eos/user/b/benitezj/BRIL/PCC/VDM/CapsigmaProblem_ModuleStudy_PerLayer/ZeroBias1/pcc_Data_PixVtx_Event_90X_10.hd5'
-
-
-
-
+input_file=args.inputfile 
 
 #2017
 pcc_bx=[41] #,281,872,1783,2063]
@@ -68,7 +60,7 @@ for bx in pcc_bx:
  h5in = t.open_file(input_file,mode='r')
  table = h5in.root.pcchd5
  
- h2d=ROOT.TH2F('h2d_'+str(bx)," ",int((tmax-tmin)/10),0,tmax-tmin,200,0,200)
+ h2d=ROOT.TH2F('h2d_'+str(bx)," ",int((tmax-tmin)/10),0,tmax-tmin,1000,0,100)
 
  for row in table.iterrows():
   if row['timestampsec'] <= 0:
