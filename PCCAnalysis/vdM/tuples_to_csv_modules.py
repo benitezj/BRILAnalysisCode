@@ -6,15 +6,14 @@ import struct
 import argparse
 
 numMods = 1856
-inputmodsfile='BRILAnalysisCode/PCCAnalysis/plots/modules.txt'
-
 output_path = '.'
 
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')             
-parser.add_argument('--inputfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')                            
-
+parser.add_argument('--inputfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
+parser.add_argument('--modules', type=str, default="BRILAnalysisCode/PCCAnalysis/plots/modules.txt", help='file with  all module ids')                            
 args = parser.parse_args()                                               
 
+inputmodsfile=args.modules #'BRILAnalysisCode/PCCAnalysis/plots/modules.txt'
 
 ################# open file #################
 tree=TChain("lumi/tree")                                                                                                                        
@@ -50,6 +49,7 @@ while True:
 print(f'Number of modules in module file: {len(DEFAULTMODS):d}, number expected: {numMods}')
 
 #check the order of the keys is the same as in the input file
+os.system('rm -f ./modules_tmp.txt')
 modfile_tmp = open('./modules_tmp.txt', "a")
 for key in DEFAULTMODS:
     modfile_tmp.write(f'{key:d}\n')

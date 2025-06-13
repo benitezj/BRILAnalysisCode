@@ -6,10 +6,11 @@ submitdir=$1
 ## option for: 0=create scripts, 1=submit, 2=check
 action=$2
 
+## fixed options
+type=csv #hd5, csv
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
-#baseoutdir=/eos/user/l/lcuevasp/BRIL/PCC/VDM_2017
-
 moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_FPIXD1.txt
+modules=BRILAnalysisCode/PCCAnalysis/plots/modules.txt
 
 
 ###########################################################
@@ -58,6 +59,8 @@ submit(){
     local run=$1
     rm -f $fullsubmitdir/${run}.log
     rm -f ${outputdir}/${run}.hd5
+    rm -f ${outputdir}/${run}.csv
+
     condor_submit $fullsubmitdir/${run}.sub 
 }
 
@@ -71,8 +74,17 @@ make_sh_script(){
     echo "cd \$TMPDIR  "   >> $fullsubmitdir/${run}.sh
     echo "pwd  "   >> $fullsubmitdir/${run}.sh
     echo "env" >> $fullsubmitdir/${run}.sh
-    echo "python3  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/${moduleveto} --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
-    echo "cp pcc_ZB.hd5  $outputdir/${run}.hd5 " >> $fullsubmitdir/${run}.sh
+
+    if [ "$type" == "hd5" ]; then
+	echo "python3  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/${moduleveto} --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+	echo "cp pcc_ZB.hd5  $outputdir/${run}.hd5 " >> $fullsubmitdir/${run}.sh
+    fi
+
+    if [ "$type" == "csv" ]; then
+	echo "python3  ${fullsubmitdir}/cfg.py --modules=${INSTALLATION}/${modules} --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+	echo "cp tuples_to_csv_modules.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
+    fi
+    
 }    
     
 
@@ -102,9 +114,18 @@ check_log(){
 	fail=1
     fi
 
-    if [ ! -f ${outputdir}/${run}.hd5 ]; then
-	echo "no hd5"
-	fail=1
+    if [ "$type" == "hd5" ]; then
+	if [ ! -f ${outputdir}/${run}.hd5 ]; then
+	    echo "no hd5"
+	    fail=1
+	fi
+    fi
+
+    if [ "$type" == "csv" ]; then
+	if [ ! -f ${outputdir}/${run}.csv ]; then
+	    echo "no csv"
+	    fail=1
+	fi
     fi
 
     if [ "$fail" == "0" ]; then
@@ -175,6 +196,8 @@ fi
 
 #run the merging
 if [ "$action" == "4" ]; then
-    python3 ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/vdM/pcchd5_merger.py --inputdir=${outputdir}
+    if [ "$type" == "hd5" ]; then
+	python3 ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/vdM/pcchd5_merger.py --inputdir=${outputdir}
+    fi
 fi
 
