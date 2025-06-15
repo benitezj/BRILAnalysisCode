@@ -7,14 +7,18 @@ ROOT.gROOT.SetBatch(True) ## run with batch mode always
 
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
 parser.add_argument('--inputfile', type=str, default="", help='The input hd5 file')
+parser.add_argument('--outpath', type=str, default=".", help='The path to  write output')
 args = parser.parse_args()
 
 input_file=args.inputfile 
 
 #2017
 pcc_bx=[41] #,281,872,1783,2063]
-tmin=1501226983
-tmax=tmin+8000 #1501272473 # note: between tmin+25000 and tmax its the length scale scans ??
+#tmin=1501226983 
+#tmax=tmin+8000 #cover vdM scans only
+tmin=1501226983+1950 #first X scan
+tmax=tmin+900 
+
 
 #2018
 #pcc_bx=[265,865,1780,2192,3380]
@@ -60,7 +64,7 @@ for bx in pcc_bx:
  h5in = t.open_file(input_file,mode='r')
  table = h5in.root.pcchd5
  
- h2d=ROOT.TH2F('h2d_'+str(bx)," ",int((tmax-tmin)/10),0,tmax-tmin,1000,0,100)
+ h2d=ROOT.TH2F('h2d_'+str(bx)," ",int((tmax-tmin)/5),0,tmax-tmin,1000,0,100)
 
  for row in table.iterrows():
   if row['timestampsec'] <= 0:
@@ -106,14 +110,39 @@ for bx in pcc_bx:
  P.GetYaxis().SetTitle("PCC")
  P.GetXaxis().SetTitle("Time [s]")
  for b in range(1,P.GetXaxis().GetNbins()+1):
-  if P.GetBinContent(b) > 0.  and P.GetBinError(b)/P.GetBinContent(b) > 0.1:
+  if P.GetBinContent(b) > 0.  and P.GetBinError(b)/P.GetBinContent(b) > 0.2:
    P.SetBinError(b,0)
    P.SetBinContent(b,0)
    
  c2.Clear()
  c2.SetLogy(0)
  P.Draw("histp")
- c2.Print('./BX_'+str(bx)+'_ProfX.png')
+
+
+ fit=ROOT.TF1("fit","[0]*exp(-0.5*(x-[1])**2/[2]**2)+[3]",0,900)
+ fit.SetParameters(P.GetMaximum(),P.GetMean(),P.GetRMS())
+ #fit.SetParLimits(0,P.GetMaximum()*0.9,P.GetMaximum()*1.2)
+ #fit.SetParLimits(1,P.GetMean()-500,P.GetMean()+500)
+ #fit.SetParLimits(2,P.GetRMS()*0.1,P.GetRMS()*2)
+
+ #calculate the background from the tail
+ bkg=0.
+ bkgc=0
+ for b in range(1,P.GetXaxis().GetNbins()+1):
+  if P.GetBinCenter(b)< 50 or P.GetBinCenter(b)>850:
+   bkg+=P.GetBinContent(b)
+   bkgc+=1
+ bkg/=bkgc
+ fit.FixParameter(3,bkg)
+
+ 
+ P.Fit(fit,"LQ","l",0,900)
+ fit.Draw("lsame")
+ txt=ROOT.TText()
+ txt.DrawTextNDC(0.7,0.85,'Mean {:.1f}'.format(fit.GetParameter(1)))
+ txt.DrawTextNDC(0.7,0.80,'Sigma {:.1f}'.format(fit.GetParameter(2)))
+ txt.DrawTextNDC(0.7,0.75,'Const {:.3f}'.format(fit.GetParameter(3)))
+ c2.Print(args.outpath+'/BX_'+str(bx)+'_ProfX.png')
  
 
 

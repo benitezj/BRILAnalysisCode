@@ -61,7 +61,7 @@ void drawPCCLuminometer(float xpos=0.19,float ypos=0.80, TString subdet=""){
 
 ///////////crossection
 float getSigmaVis(int run){
-
+  
   if(run>=366403){ //2023
     //return 0.9104*1.403e6/ORBITF;  // first veto (264 modules) by Luis, scaled by the 24 removed modules
     //return 1.29843e6/ORBITF;  // Luis analysis 12 December https://docs.google.com/presentation/d/1h-ID3W8VFmSQBEhrFkKsymI7uuIHoap9WyPMLWLX7AU/edit#slide=id.g263901dc7ed_0_52
@@ -116,13 +116,14 @@ float getsigmavis_as(int run1){
 
   cout<<"sigma vis not found for run : "<<run1<<endl;
   return 1;
-
 }
 
 
 float getsigmavis_as_veto1701(int run2){
-  //2% rms common veto list, Ashish Sehrawat                                                                                                                      if(run2>=315252){
-    return 0.959939e6/ORBITF;   // for entire 2018 period                                                                                                         }
+  //2% rms common veto list, Ashish Sehrawat
+  if(run2>=315252){
+    return 0.959939e6/ORBITF;   // for entire 2018 period
+  }
   cout<<"sigma vis not found for run : "<<run2<<endl;
   return 1;
 }
@@ -130,8 +131,9 @@ float getsigmavis_as_veto1701(int run2){
 
 
 float getsigmavis_as_veto1615(int run3){
-  //4% rms common veto list, Ashish Sehrawat                                                                                                                      if(run3>=315252){
-    return 1.673490e6/ORBITF;   // for entire 2018 period                                                                                                         }
+  if(run3>=315252){ //4% rms common veto list, Ashish Sehrawat
+    return 1.673490e6/ORBITF;   // for entire 2018 period
+  }
   cout<<"sigma vis not found for run : "<<run3<<endl;
   return 1;
 }
