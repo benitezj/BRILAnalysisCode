@@ -125,9 +125,17 @@ void plotVetoModuleMaps(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.
   //cout<<"FPIX 0 : "<<FCountN[0]<<"N + "<<FCountP[0]<<"P "<<endl;
   //cout<<"FPIX 1 : "<<FCountN[1]<<"N + "<<FCountP[1]<<"P "<<endl;
 
-  cout<<"FPIX Disk 1 : "<<FCountDiskN[0]<<"N + "<<FCountDiskP[0]<<"P "<<endl;
-  cout<<"FPIX Disk 2 : "<<FCountDiskN[1]<<"N + "<<FCountDiskP[1]<<"P "<<endl;
-  cout<<"FPIX Disk 3 : "<<FCountDiskN[2]<<"N + "<<FCountDiskP[2]<<"P "<<endl;
+  //cout<<"FPIX Disk 1 : "<<FCountDiskN[0]<<"N + "<<FCountDiskP[0]<<"P "<<endl;
+  //cout<<"FPIX Disk 2 : "<<FCountDiskN[1]<<"N + "<<FCountDiskP[1]<<"P "<<endl;
+  //cout<<"FPIX Disk 3 : "<<FCountDiskN[2]<<"N + "<<FCountDiskP[2]<<"P "<<endl;
   
+  //LAYERDISK FPIX (2,1,0,3,4,5) order of z position (?)
+  cout<<"FPIX Disk 0 : "<<FCountDiskN[2]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 1 : "<<FCountDiskN[1]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 2 : "<<FCountDiskN[0]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 3 : "<<FCountDiskP[0]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 4 : "<<FCountDiskP[1]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 5 : "<<FCountDiskP[2]<<" / 112 "<<endl;
+
   cout<<"# FPIX total= "<<FPIXNBAD<<" / "<<NFPIX[0]+NFPIX[1]+NFPIX[2]+NFPIX[3]+NFPIX[4]+NFPIX[5]<<endl;  
 }
