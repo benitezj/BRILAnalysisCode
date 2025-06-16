@@ -170,7 +170,7 @@ int NBPIX[4]={0,0,0,0};//modules per layer
 int NFPIX[6]={0,0,0,0,0,0};//modules per disk
 
 
-void readModRPhiZCoordinates(){
+bool readModRPhiZCoordinates(){
   std::cout<<"Starting to read the Module coordinates"<<endl;
   std::cout<<" MODID list size: "<<MODID.size()<<endl;
   
@@ -180,7 +180,7 @@ void readModRPhiZCoordinates(){
   ifstream cfile_bpix("./BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");
   if (!cfile_bpix.is_open()){
     std::cout << "Unable to open BPIXcoordinates"<<endl;
-    return;
+    return 0;
   }
   
   std::cout<<"opened: BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt"<<endl;
@@ -218,7 +218,7 @@ void readModRPhiZCoordinates(){
   ifstream cfile_fpix("./BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt");
   if (!cfile_fpix.is_open()){
     std::cout << "Unable to open FPIX coordinates"<<endl;
-    return;
+    return 0;
   }
   std::cout<<"opened: BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt"<<endl;
   std::string cline_fpix;
@@ -261,6 +261,7 @@ void readModRPhiZCoordinates(){
   cout<<"Total number of modules in coordinate files: "<<counter<<endl;
 
   cout<<"Done reading the  module coordinates."<<endl;
+  return 1;
 }
 
 
