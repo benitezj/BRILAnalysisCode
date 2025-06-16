@@ -7,11 +7,15 @@ submitdir=$1
 action=$2
 
 ## fixed options
-type=hd5 #hd5:for vdMFW per NB4, csv:per module,per LS
+type=hd5 #hd5:vdMFW per NB4, csv:per module, per LS
+
 baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
+
 #moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt
-moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt
-modules=BRILAnalysisCode/PCCAnalysis/plots/modules.txt
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt
+moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25.txt
+
+modules=BRILAnalysisCode/PCCAnalysis/plots/modules.txt ## used for type=csv 
 
 
 ###########################################################

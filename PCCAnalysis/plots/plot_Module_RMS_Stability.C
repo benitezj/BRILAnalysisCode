@@ -17,7 +17,7 @@ float weightMax=0.;
 //int SSBIN=575; //SS1 2022
 //int SSBIN=2345;//SS2 2022
 int SSBIN=780;   //2017 Offset Scan 
-float SSBkgMax=0;
+float SSBkgMax=25;
 
 //cut on the RMS of per LS data
 float RMSThr=0.;
@@ -215,11 +215,12 @@ float LinearityMaxPerLayer=0.0;  //0.03
 TString InputPath = "/eos/user/b/benitezj/BRIL/PCC/VDM/CapsigmaProblem_ModuleStudy/ZeroBias1";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt";
 //TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0.txt";
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt";
-#define MINTOTPCC 1e6
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly.txt";
+#define MINTOTPCC 0e6
 #define MAXTOTPCC 10e6
 #define MINTOTPCCAVG 0
-#define MAXTOTPCCAVG 3500
+#define MAXTOTPCCAVG 5000
 #define LS_ID_MIN 0
 #define LS_ID_MAX 1000
 std::vector<std::string> run_number = {"pcc_Data_PixVtx_Event_90X_10","pcc_Data_PixVtx_Event_90X_11","pcc_Data_PixVtx_Event_90X_12","pcc_Data_PixVtx_Event_90X_13","pcc_Data_PixVtx_Event_90X_14","pcc_Data_PixVtx_Event_90X_15","pcc_Data_PixVtx_Event_90X_16","pcc_Data_PixVtx_Event_90X_17","pcc_Data_PixVtx_Event_90X_18","pcc_Data_PixVtx_Event_90X_19","pcc_Data_PixVtx_Event_90X_1","pcc_Data_PixVtx_Event_90X_20","pcc_Data_PixVtx_Event_90X_21","pcc_Data_PixVtx_Event_90X_22","pcc_Data_PixVtx_Event_90X_23","pcc_Data_PixVtx_Event_90X_24","pcc_Data_PixVtx_Event_90X_25","pcc_Data_PixVtx_Event_90X_26","pcc_Data_PixVtx_Event_90X_27","pcc_Data_PixVtx_Event_90X_28","pcc_Data_PixVtx_Event_90X_29","pcc_Data_PixVtx_Event_90X_2","pcc_Data_PixVtx_Event_90X_30","pcc_Data_PixVtx_Event_90X_31","pcc_Data_PixVtx_Event_90X_32","pcc_Data_PixVtx_Event_90X_33","pcc_Data_PixVtx_Event_90X_34","pcc_Data_PixVtx_Event_90X_35","pcc_Data_PixVtx_Event_90X_36","pcc_Data_PixVtx_Event_90X_37","pcc_Data_PixVtx_Event_90X_38","pcc_Data_PixVtx_Event_90X_39","pcc_Data_PixVtx_Event_90X_3","pcc_Data_PixVtx_Event_90X_4","pcc_Data_PixVtx_Event_90X_5","pcc_Data_PixVtx_Event_90X_6","pcc_Data_PixVtx_Event_90X_7","pcc_Data_PixVtx_Event_90X_8","pcc_Data_PixVtx_Event_90X_9"};
