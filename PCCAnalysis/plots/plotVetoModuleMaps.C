@@ -116,10 +116,10 @@ void plotVetoModuleMaps(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.
 
   //distribution of negative and positive side
   cout<<"Distibution of bad modules:"<<endl;
-  cout<<"BPIX 0 : "<<BCountN[0]<<"N + "<<BCountP[0]<<"P  / "<<NBPIX[0]<<endl;
-  cout<<"BPIX 1 : "<<BCountN[1]<<"N + "<<BCountP[1]<<"P  / "<<NBPIX[1]<<endl;
-  cout<<"BPIX 2 : "<<BCountN[2]<<"N + "<<BCountP[2]<<"P  / "<<NBPIX[2]<<endl;
-  cout<<"BPIX 3 : "<<BCountN[3]<<"N + "<<BCountP[3]<<"P  / "<<NBPIX[3]<<endl;
+  cout<<"BPIX 0 : "<<BCountN[0]+BCountP[0]<<"  / "<<NBPIX[0]<<endl;
+  cout<<"BPIX 1 : "<<BCountN[1]+BCountP[1]<<"  / "<<NBPIX[1]<<endl;
+  cout<<"BPIX 2 : "<<BCountN[2]+BCountP[2]<<"  / "<<NBPIX[2]<<endl;
+  cout<<"BPIX 3 : "<<BCountN[3]+BCountP[3]<<"  / "<<NBPIX[3]<<endl;
   cout<<"# BPIX total= "<<BPIXNBAD<<" / "<<NBPIX[0]+NBPIX[1]+NBPIX[2]+NBPIX[3]<<endl;  
   
   //cout<<"FPIX 0 : "<<FCountN[0]<<"N + "<<FCountP[0]<<"P "<<endl;
