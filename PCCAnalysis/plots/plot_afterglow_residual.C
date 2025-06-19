@@ -5,7 +5,7 @@
 #include "rootlogon.C"
 
 void plotlabels(){
-  drawFillYear(0,2018);
+  drawFillYear(0,2017);
 }
 
 float MinPCCColliding=100; 
@@ -317,7 +317,10 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   gT2ResidVsPCC->SetMarkerSize(0.6);
   gT2ResidVsPCC->Draw("ap");
   plotlabels();
+  TLine line2; line2.SetLineColor(4); line2.SetLineStyle(2);
   line.DrawLine(gT2ResidVsPCC->GetXaxis()->GetXmin(),0,gT2ResidVsPCC->GetXaxis()->GetXmax(),0);
+  line2.DrawLine(gT2ResidVsPCC->GetXaxis()->GetXmin(),0.1,gT2ResidVsPCC->GetXaxis()->GetXmax(),0.1);
+  line2.DrawLine(gT2ResidVsPCC->GetXaxis()->GetXmin(),-0.1,gT2ResidVsPCC->GetXaxis()->GetXmax(),-0.1);
   Canvas.Print(outpath+"/afterglow_t2res_vsinstlumi.png");
 
   Canvas.Clear();
@@ -329,6 +332,8 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   gT2ResidVsIOV->Draw("ap");
   plotlabels();
   line.DrawLine(gT2ResidVsIOV->GetXaxis()->GetXmin(),0,gT2ResidVsIOV->GetXaxis()->GetXmax(),0);
+  line2.DrawLine(gT2ResidVsIOV->GetXaxis()->GetXmin(),0.1,gT2ResidVsIOV->GetXaxis()->GetXmax(),0.1);
+  line2.DrawLine(gT2ResidVsIOV->GetXaxis()->GetXmin(),-0.1,gT2ResidVsIOV->GetXaxis()->GetXmax(),-0.1);
   Canvas.Print(outpath+"/afterglow_t2res_vsLSBlock.png");
 
 
@@ -371,7 +376,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gAvgSFVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gAvgSFVsIOV->GetYaxis()->SetTitle("Avg. Scale Factor");
-  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.8,1.0);
+  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.9,1.0);
   gAvgSFVsIOV->SetMarkerStyle(8);
   gAvgSFVsIOV->SetMarkerSize(0.6);
   gAvgSFVsIOV->Draw("ap");
