@@ -20,8 +20,9 @@ CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_C
 DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC_Run3/Reprocess2023/Random/Run2023D
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v8/Run2017F/merged.db
-DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25/Random_v2/Run2017F/merged.db
-
+#DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25/Random_v2/Run2017F/merged.db
+#DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25/Random/Run2017H/merged.db
+DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02/Random/Run2017H/merged.db
 
 ## options for brilcalc lumi
 brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
@@ -31,15 +32,15 @@ BRILCALCDATATAG=
 #BRILCALCDATATAG=23v1
 
 BRILCALCTYPE=
-#BRILCALCTYPE=hfet
-BRILCALCTYPE=pxl
+BRILCALCTYPE=hfet
+#BRILCALCTYPE=pxl
 
 BRILCALCNORM=
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
-#BRILCALCNORM=hfet17New_v5
+BRILCALCNORM=hfet17New_v5
 #BRILCALCNORM=pcc17_run2_legacy_v6_pccvtx
-BRILCALCNORM=NoCorr
+#BRILCALCNORM=NoCorr
 
 BRILCALCREFDETNAME=
 BRILCALCREFDETNAME=$BRILCALCNORM
@@ -293,5 +294,6 @@ fi
 
 
 if [ "$action" == "71" ] ; then
+    ## this was needed only for the ReReco samples because the normal Corr module didn't work
     root -b -q -l ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/plots/test_afterglow_blockLSranges.C\(\"${outputdir}\",\"${RUNLIST:1}\"\)
 fi

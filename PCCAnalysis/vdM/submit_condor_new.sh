@@ -13,9 +13,11 @@ baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
 
 #moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt
 #moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt
-moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25.txt
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25.txt
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25.txt
+moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02.txt
 
-modules=BRILAnalysisCode/PCCAnalysis/plots/modules.txt ## used for type=csv 
+modules=BRILAnalysisCode/PCCAnalysis/plots/modules.txt ## used only for type=csv jobs 
 
 
 ###########################################################

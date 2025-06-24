@@ -11,19 +11,19 @@ TString OutPath = "/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/2017CapSigmaIssu
 ///////////////////////////////////////
 // cut on the weights
 float weightMin=0;
-float weightMax=0.;
+float weightMax=1;
 
 /////for vdM data cut on the noise
 //int SSBIN=575; //SS1 2022
 //int SSBIN=2345;//SS2 2022
 int SSBIN=780;   //2017 Offset Scan 
-float SSBkgMax=25;
+float SSBkgMax=0;
 
 //cut on the RMS of per LS data
 float RMSThr=0.;
 
 //cut on stability profile per 100 LS
-float StabilityThr=0.0;
+float StabilityThr=0.9;
 float StabilityMax=0.1; //for histogram distribution
 
 //cut on linearity profile
@@ -41,7 +41,7 @@ int selectDisk=0;  //keep modules only in this disk (1,2,3,4,5,6) , reject Barre
 TCanvas* C=NULL;
 TLine line;
 #define MARKERSIZE 0.3
-#define MAXMODWEIGHT 0.01 //2E-2
+#define MAXMODWEIGHT 0.05
 #define MAXLAYERWEIGHT 0.7
 #define NBINMODWEIGHT 1000
 #define NLSBLOCK 10
@@ -212,18 +212,34 @@ float LinearityMaxPerLayer=0.0;  //0.03
 
 //////////////////////////
 /// 2017 vdm Tuples
-TString InputPath = "/eos/user/b/benitezj/BRIL/PCC/VDM/CapsigmaProblem_ModuleStudy/ZeroBias1";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0.txt";
-//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt";
-TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly.txt";
-#define MINTOTPCC 0e6
-#define MAXTOTPCC 10e6
+//TString InputPath = "/eos/user/b/benitezj/BRIL/PCC/VDM/CapsigmaProblem_ModuleStudy/ZeroBias1";
+////TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt";
+////TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0.txt";
+////TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt";
+////TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05.txt";
+//#define MINTOTPCC 0e6
+//#define MAXTOTPCC 10e6
+//#define MINTOTPCCAVG 0
+//#define MAXTOTPCCAVG 5000
+//#define LS_ID_MIN 0
+//#define LS_ID_MAX 1000
+//std::vector<std::string> run_number = {"pcc_Data_PixVtx_Event_90X_10","pcc_Data_PixVtx_Event_90X_11","pcc_Data_PixVtx_Event_90X_12","pcc_Data_PixVtx_Event_90X_13","pcc_Data_PixVtx_Event_90X_14","pcc_Data_PixVtx_Event_90X_15","pcc_Data_PixVtx_Event_90X_16","pcc_Data_PixVtx_Event_90X_17","pcc_Data_PixVtx_Event_90X_18","pcc_Data_PixVtx_Event_90X_19","pcc_Data_PixVtx_Event_90X_1","pcc_Data_PixVtx_Event_90X_20","pcc_Data_PixVtx_Event_90X_21","pcc_Data_PixVtx_Event_90X_22","pcc_Data_PixVtx_Event_90X_23","pcc_Data_PixVtx_Event_90X_24","pcc_Data_PixVtx_Event_90X_25","pcc_Data_PixVtx_Event_90X_26","pcc_Data_PixVtx_Event_90X_27","pcc_Data_PixVtx_Event_90X_28","pcc_Data_PixVtx_Event_90X_29","pcc_Data_PixVtx_Event_90X_2","pcc_Data_PixVtx_Event_90X_30","pcc_Data_PixVtx_Event_90X_31","pcc_Data_PixVtx_Event_90X_32","pcc_Data_PixVtx_Event_90X_33","pcc_Data_PixVtx_Event_90X_34","pcc_Data_PixVtx_Event_90X_35","pcc_Data_PixVtx_Event_90X_36","pcc_Data_PixVtx_Event_90X_37","pcc_Data_PixVtx_Event_90X_38","pcc_Data_PixVtx_Event_90X_39","pcc_Data_PixVtx_Event_90X_3","pcc_Data_PixVtx_Event_90X_4","pcc_Data_PixVtx_Event_90X_5","pcc_Data_PixVtx_Event_90X_6","pcc_Data_PixVtx_Event_90X_7","pcc_Data_PixVtx_Event_90X_8","pcc_Data_PixVtx_Event_90X_9"};
+
+//////////////////////////
+/// 2017 low PU dataset
+TString InputPath = "/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_permodule/ZeroBias/Run2017H_runs";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25.txt";
+//TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0.txt";
+TString ModVeto = "BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02.txt";
+#define MINTOTPCC 0
+#define MAXTOTPCC 3e3
 #define MINTOTPCCAVG 0
-#define MAXTOTPCCAVG 5000
+#define MAXTOTPCCAVG 1
 #define LS_ID_MIN 0
-#define LS_ID_MAX 1000
-std::vector<std::string> run_number = {"pcc_Data_PixVtx_Event_90X_10","pcc_Data_PixVtx_Event_90X_11","pcc_Data_PixVtx_Event_90X_12","pcc_Data_PixVtx_Event_90X_13","pcc_Data_PixVtx_Event_90X_14","pcc_Data_PixVtx_Event_90X_15","pcc_Data_PixVtx_Event_90X_16","pcc_Data_PixVtx_Event_90X_17","pcc_Data_PixVtx_Event_90X_18","pcc_Data_PixVtx_Event_90X_19","pcc_Data_PixVtx_Event_90X_1","pcc_Data_PixVtx_Event_90X_20","pcc_Data_PixVtx_Event_90X_21","pcc_Data_PixVtx_Event_90X_22","pcc_Data_PixVtx_Event_90X_23","pcc_Data_PixVtx_Event_90X_24","pcc_Data_PixVtx_Event_90X_25","pcc_Data_PixVtx_Event_90X_26","pcc_Data_PixVtx_Event_90X_27","pcc_Data_PixVtx_Event_90X_28","pcc_Data_PixVtx_Event_90X_29","pcc_Data_PixVtx_Event_90X_2","pcc_Data_PixVtx_Event_90X_30","pcc_Data_PixVtx_Event_90X_31","pcc_Data_PixVtx_Event_90X_32","pcc_Data_PixVtx_Event_90X_33","pcc_Data_PixVtx_Event_90X_34","pcc_Data_PixVtx_Event_90X_35","pcc_Data_PixVtx_Event_90X_36","pcc_Data_PixVtx_Event_90X_37","pcc_Data_PixVtx_Event_90X_38","pcc_Data_PixVtx_Event_90X_39","pcc_Data_PixVtx_Event_90X_3","pcc_Data_PixVtx_Event_90X_4","pcc_Data_PixVtx_Event_90X_5","pcc_Data_PixVtx_Event_90X_6","pcc_Data_PixVtx_Event_90X_7","pcc_Data_PixVtx_Event_90X_8","pcc_Data_PixVtx_Event_90X_9"};
+#define LS_ID_MAX 12000
+std::vector<std::string> run_number = {"306896","306897","306926","306929","306936","307014","307015","307016","307017","307042","307044","307045","307046","307047","307048","307049","307050","307051","307052","307053","307054","307055","307062","307063","307073","307075","307076","307082"};
+
 
 
 
@@ -271,27 +287,17 @@ float evaluateModuleStability(TH1F* Num, TH1F* Den, float weight, int idx=0, TSt
 
 
   if(idx!=0){
-    //P.SetTitle(TString("Module ")+idx+" ID:"+MODID[idx]+",    weight="+int(weight*100000)+"E-5"+ ",     stability="+int(diff*10000)+"E-4");
     P.GetYaxis()->SetTitle("Normalized module weight");
     P.GetXaxis()->SetTitle(xtitle.Data());
     P.SetStats(0);
     P.SetMarkerStyle(8);
     P.SetMarkerSize(MARKERSIZE);
     P.GetYaxis()->SetRangeUser((1-StabilityMaxPerMod),(1+StabilityMaxPerMod));
-    //P.GetYaxis()->SetRangeUser((1-0.5),(1+0.5));
     C->Clear();
-     P.Draw("histp");
-     line.SetLineColor(2);
-     line.DrawLine(Num->GetXaxis()->GetXmin(),1,Num->GetXaxis()->GetXmax(),1);
-     //drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
-     //drawFillYear(0,2023);
-     drawPCCLuminometer(0.18,0.80,TString("module ")+MODID[idx]);
-
-//    Den->GetYaxis()->SetRangeUser(1,1e7);
-//    Den->Draw("hist");
-//    Num->SetLineColor(2);
-//    Num->Draw("histsame");
-//    C->SetLogy(1);
+    P.Draw("histp");
+    line.SetLineColor(2);
+    line.DrawLine(Num->GetXaxis()->GetXmin(),1,Num->GetXaxis()->GetXmax(),1);
+    drawPCCLuminometer(0.18,0.85,TString("module ")+MODID[idx]+",   Q="+(long)(diff*1000)+"/1000");
     C->Print(OutPath+"/Module_RMS_Stability_fit_"+P.GetName()+".png");
   }
   
@@ -719,9 +725,11 @@ void plot_Module_RMS_Stability() {
   ModWeight.GetYaxis()->SetTitle("Module Weight");
   ModWeight.GetYaxis()->SetRangeUser(0,MAXMODWEIGHT);
   C->Clear();
-  ModWeight.Draw("AP"); 
+  ModWeight.Draw("AP");
+  C->SetLogy(0);
   C->Print(OutPath+"/Module_RMS_Stability_weights.png");
-
+  C->SetLogy(0);
+  
   //1D projection
   TH1F hModWeight("hModWeight","",NBINMODWEIGHT,-MAXMODWEIGHT*0.05,MAXMODWEIGHT);
   hModWeight.GetYaxis()->SetTitle("number of modules");
@@ -805,7 +813,7 @@ void plot_Module_RMS_Stability() {
     C->Clear();
     hStabilityDeviation.Draw("hist");
     //drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
-    drawFillYear(0,2023);
+    //drawFillYear(0,2023);
     drawPCCLuminometer(0.18,0.80);
     C->SetLogy(1);
     C->Print(OutPath+"/Module_RMS_StabilityDeviation_hist.png");
@@ -833,7 +841,7 @@ void plot_Module_RMS_Stability() {
     C->Clear();
     hLinearityDeviation.Draw("hist");
     //drawCMSPrelim(0.18,0.85,"#font[62]{CMS} #font[52]{Preliminary}");
-    drawFillYear(0,2023);
+    //drawFillYear(0,2023);
     drawPCCLuminometer(0.18,0.80);
     C->SetLogy(1);
     C->Print(OutPath+"/Module_RMS_LinearityDeviation_hist.png");

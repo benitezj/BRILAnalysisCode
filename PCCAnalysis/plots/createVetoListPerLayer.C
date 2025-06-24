@@ -39,8 +39,6 @@ void createVetoListPerLayer(string InputVeto="inputveto.txt", int BPIXFPIX=0, in
 	o<<MODID[i]<<std::endl;
       else if(BPIXorFPIX[MODID[i]]==1) // modules in the all the BPIX layers 
 	o<<MODID[i]<<std::endl;
-      else if(BPIXorFPIX[MODID[i]]==2 && DISK[MODID[i]]==0) // modules in the FPIX D0
-	o<<MODID[i]<<std::endl;
     }
     
   }

@@ -4,14 +4,14 @@
 #include "globals.h"
 
 //cuts for the ratio histogram
-float minL=3000;
+float minL=0;
 float minratio=0.94;
 float maxratio=1.06;
-int minLS=0,maxLS=165000;
+int minLS=0,maxLS=15000;
 
 ///plots ranges
 float plotYrangeMin=1;
-float plotYrangeMax=30000;//code will find max lumi below
+float plotYrangeMax=1000;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot
 float plotYrangeZoomMin=0.0;
 float plotYrangeZoomMax=0.2;//zoomed plot

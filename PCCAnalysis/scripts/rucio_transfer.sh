@@ -15,7 +15,7 @@ site=T2_CH_CERN
 #dataset=/AlCaLumiPixels/Run2017C-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
 #dataset=/AlCaLumiPixels/Run2017D-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
 #dataset=/AlCaLumiPixels/Run2017E-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
-dataset=/AlCaLumiPixels/Run2017F-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
+#dataset=/AlCaLumiPixels/Run2017F-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
 #
 #dataset=/AlCaLumiPixels/Run2017B-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
 #dataset=/AlCaLumiPixels/Run2017C-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
@@ -23,10 +23,14 @@ dataset=/AlCaLumiPixels/Run2017F-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCAR
 #dataset=/AlCaLumiPixels/Run2017E-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
 #dataset=/AlCaLumiPixels/Run2017F-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
 
+#dataset=/AlCaLumiPixels/Run2017H-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
+dataset=/AlCaLumiPixels/Run2017H-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
+
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025B-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-v1/RAW
 
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-AlCaPCCRandom-PromptReco-v1/ALCARECO
+
 
 
 rucio add-rule \

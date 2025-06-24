@@ -55,7 +55,7 @@ void drawPCCLuminometer(float xpos=0.19,float ypos=0.80, TString subdet=""){
   text.SetTextColor(1);
   text.SetTextSize(0.035);
   text.DrawLatexNDC(xpos,ypos,TString("#font[52]{PCC} "));
-  if(subdet.CompareTo("")!=0) text.DrawLatexNDC(xpos,ypos-0.06,TString("#font[52]{")+subdet+"}");
+  if(subdet.CompareTo("")!=0) text.DrawLatexNDC(xpos+0.07,ypos,TString("#font[52]{")+subdet+"}");
 }
 
 
@@ -85,9 +85,11 @@ float getSigmaVis(int run){
   }else if(run>=315252){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
     return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
-  }else if(run>=306473){
-    return 0.9702*3.2074e6/ORBITF; // Run2017G
-  }else if(run>=297046){ // 2017 veto (Run2017B >)  
+  }else if(run>=306896){// Run2017H
+    return 0.975*0.38*0.9702*3.2074e6/ORBITF; 
+  }else if(run>=306473){// Run2017G
+    return 0.9702*3.2074e6/ORBITF; 
+  }else if(run>=297046){ // 2017B 
     return 4.6470e6/ORBITF; //result from Peter in Run 2 paper AN (14/Nov2024) https://www.overleaf.com/project/65af85cc5c3a839be2bffb71 , with bkg values from tail averates: 4.6693, with Const: 4.6745
   }
 
