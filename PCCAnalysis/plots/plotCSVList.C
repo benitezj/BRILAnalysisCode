@@ -3,9 +3,9 @@
 #include <string>
 #include "globals.h"
 
-bool perBXRatioPlots=0;
-float ratiomin=0.8;
-float ratiomax=1.2;
+bool perBXRatioPlots=1;
+float ratiomin=0.5;
+float ratiomax=1.5;
 
 //set to 0 to retrieve nominal value
 float sigmavis=0;

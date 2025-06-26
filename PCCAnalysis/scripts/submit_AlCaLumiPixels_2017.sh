@@ -25,7 +25,8 @@ DBFILE=
 DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02/Random/Run2017H/merged.db
 
 ## options for brilcalc lumi
-brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
+#brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
+brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --xing --output-style csv -c offline'
 #brilcalc='brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
 BRILCALCDATATAG=
 #BRILCALCDATATAG=online 
