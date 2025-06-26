@@ -354,6 +354,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gAvgVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gAvgVsIOV->GetYaxis()->SetTitle("Avg. PCC colliding");
+  gAvgVsIOV->GetYaxis()->SetRangeUser(0,50);
   gAvgVsIOV->SetMarkerStyle(8);
   gAvgVsIOV->SetMarkerSize(0.6);
   gAvgVsIOV->Draw("ap");
@@ -364,6 +365,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gNCollVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gNCollVsIOV->GetYaxis()->SetTitle("# of colliding bunches");
+  gNCollVsIOV->GetYaxis()->SetRangeUser(1000,2400);
   gNCollVsIOV->SetMarkerStyle(8);
   gNCollVsIOV->SetMarkerSize(0.6);
   gNCollVsIOV->Draw("ap");
@@ -376,7 +378,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gAvgSFVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gAvgSFVsIOV->GetYaxis()->SetTitle("Avg. Scale Factor");
-  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.9,1.0);
+  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.85,1.0);
   gAvgSFVsIOV->SetMarkerStyle(8);
   gAvgSFVsIOV->SetMarkerSize(0.6);
   gAvgSFVsIOV->Draw("ap");

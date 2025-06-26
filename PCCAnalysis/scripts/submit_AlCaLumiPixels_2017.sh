@@ -12,7 +12,7 @@ plotsdir=/eos/user/b/benitezj/www/plots/BRIL/PCC_lumi/$submitdir
 ####### Options
 jobtype=ZB ##RD (Randoms), ZB (ZeroBias) 
 
-condorqueue=testmatch  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
+condorqueue=workday  #microcentury , workday, testmatch,  local (lxplus jobs in series, not condor), 
 
 CAF=0 # Use the T0 cluster : https://batchdocs.web.cern.ch/local/specifics/CMS_CAF_tzero.html  , need to:  module load lxbatch/tzero
 
@@ -22,7 +22,7 @@ DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v8/Run2017F/merged.db
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25/Random_v2/Run2017F/merged.db
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25/Random/Run2017H/merged.db
-DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02/Random/Run2017H/merged.db
+DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02/Random_v2/Run2017H/merged.db
 
 ## options for brilcalc lumi
 #brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
