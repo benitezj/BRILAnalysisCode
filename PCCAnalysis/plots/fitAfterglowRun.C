@@ -29,10 +29,16 @@ TString outputpath="./tmp";
 ////////////
 /// 2017 ReReco
 //TString inpath="./2017ReReco/Afterglow/Random_v6/Run2017B" ;
-TString inpath="./2017Afterglow_28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25/Run2017B"  ;//FPIX veto
+//TString inpath="./2017Afterglow_28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25/Run2017B"  ;//FPIX veto
 //std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={566,1448,2342,3236}; int NCOLLIDINGBCIDS=48; int NTOTALBCIDS=150; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
 //std::vector<int> RunList={297219}; std::vector<int> LeadBCIDList={72}; int NCOLLIDINGBCIDS=542; int NTOTALBCIDS=740; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
-std::vector<int>   RunList={297219}; std::vector<int> LeadBCIDList={72}; int NCOLLIDINGBCIDS=160; int NTOTALBCIDS=190; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+//std::vector<int>   RunList={297219}; std::vector<int> LeadBCIDList={72}; int NCOLLIDINGBCIDS=160; int NTOTALBCIDS=190; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+
+/// 2017 ReReco Low PU
+TString inpath="/Users/josebenitez/Documents/SONORA/Talks/PCC-Studies/2017CapsigmaIssue/AfterglowModel_LowPu/vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02"  ;
+std::vector<int>   RunList={307076}; std::vector<int> LeadBCIDList={2}; int NCOLLIDINGBCIDS=10; int NTOTALBCIDS=40; //https://cmsoms.cern.ch/cms/fills/report?cms_fill=5849
+
+
 
 
 
@@ -41,7 +47,7 @@ std::vector<int>   RunList={297219}; std::vector<int> LeadBCIDList={72}; int NCO
 // This code fits one bunch train and the tail
 //*//
 bool makePlots=1;
-float yRangeMin=0.5;
+float yRangeMin=0.05;
 
 
 TTree* Tree=NULL;//This tree will be created in the function that calls this fitAfterglowTrain (in a different file).
