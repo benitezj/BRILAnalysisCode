@@ -13,7 +13,8 @@ float sigmavis=0;
 //sigmavis=0.9807*0.38*4.1533e6/ORBITF;  
 
 float refLumi[NLS];
-TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
+//TH2F HRefLumiBXvsLS("HRefLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
+TH1F *HRefLumiBX=NULL;
 
 void getRefLumi(TString inputfile){
 
@@ -34,27 +35,38 @@ void getRefLumi(TString inputfile){
 
   while (std::getline(myfile, line)){
     std::stringstream iss(line);
-
+    
     //369802:8999,3791:3791,06/29/23 22:19:35,STABLE BEAMS,6800,1.075448824,1.067225496,0.1,HFET
     string field;
     int pos=0;
     while (getline(iss, field, ',' )){
-	stringstream fs( field );
-	fs >> tmp;
-	if(pos==0){ string tmprun; stringstream tmpfs(tmp); getline(tmpfs,tmprun,':'); run=atoi(tmprun.c_str()); } //get run number
-	if(pos==1){ string tmpls; stringstream tmpfs(tmp); getline(tmpfs,tmpls,':'); ls=atoi(tmpls.c_str()); } //get ls number
-	if(pos==5)refLumi[ls]=atof(tmp.c_str());
-	pos++;
+      std::stringstream fs( field );
+      fs >> tmp;
+      if(pos==0){ string tmprun; stringstream tmpfs(tmp); getline(tmpfs,tmprun,':'); run=atoi(tmprun.c_str()); } //get run number
+      if(pos==1){ string tmpls; stringstream tmpfs(tmp); getline(tmpfs,tmpls,':'); ls=atoi(tmpls.c_str()); } //get ls number
+      if(pos==5) refLumi[ls]=atof(tmp.c_str()); //total lumi
+      pos++;
     }
-
-
-    ///old data
-    //325310 7358 2 2 10/26/18 07 27 01 STABLE BEAMS 6500 8368.161 6041.397 98.2 HFOC 1 0.0760 0.0549 ...
-    //iss>>run>>tmp>>ls>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp>>tmp;//>>tmp;
-    //iss>>refLumi[ls];
-    //iss>>tmp>>tmp;
-
-    //cout<<run<<" "<<ls<<" "<<refLumi[ls]<<endl;
+    
+    
+    // here fill per bx lumi histo
+    // 306896:6402,8:8,11/21/17 12:43:17,ADJUST,6500,10.089148267,9.694906209,35.9,HFET,[1 4.752641441 4.566927930
+    if(perBXRatioPlots && HRefLumiBX!=NULL){
+      std::string token = line.substr(line.find("[")+1,line.find("]")-1);
+      std::stringstream lumibxss(token);
+      string tmpb, tmpld, tmplr;
+      int bcid; float lumid; float lumir;
+      for(int b=1;b<=NBX;b++){
+	lumibxss>>tmpb>>tmpld>>tmplr;
+	bcid=atoi(tmpb.c_str());
+	lumid=atof(tmpld.c_str());
+	lumir=atof(tmplr.c_str());
+	//cout<<b<<" "<<tmpb<<" "<<tmpld<<" "<<tmplr<<endl;
+	//cout<<bcid<<" "<<lumid<<" "<<lumir<<endl;
+	HRefLumiBX->AddBinContent(bcid,lumid);
+      }
+    }
+	
   }
 
 
@@ -88,16 +100,17 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     
 
     ///read the reference lumi
+    HRefLumiBX=new TH1F(TString("HRefLumiBX_")+Run,"",NBX,0.5,NBX+0.5);
     if(REF.CompareTo("")!=0) getRefLumi(inpath+"/"+Run+"."+REF);
     
     ///create histograms
-    TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
+    //TH2F HLumiBXvsLS("HLumiBXvsLS","",NLS,0.5,NLS+0.5,NBX,0.5,NBX+0.5);
     TH1F HLumiLS("HLumiLS","",NLS,0.5,NLS+0.5);
     TH1F HLumiLSRef("HLumiLSRef","",NLS,0.5,NLS+0.5);
     TH1F HLumiLSRatio("HLumiLSRatio","",NLS,0.5,NLS+0.5);
     TH1F HLumiBX("HLumiBX","",NBX,0.5,NBX+0.5);
-    TH1F HLumiBXRatio("HLumiBXRatio","",NBX,0.5,NBX+0.5);
-    
+    //    TH1F HLumiBXRatio("HLumiBXRatio","",NBX,0.5,NBX+0.5);
+
     
     std::string line;
     int run=0;
@@ -127,7 +140,7 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       std::getline(iss,token, ',');
       std::stringstream lsiss(token);
       lsiss>>ls;
-      if(ls<0 || ls>=NLS){
+      if(ls<=0 || ls>=NLS){
 	std::cout<<"lumi section out of bounds"<<std::endl;
 	return;
       }
@@ -160,14 +173,14 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
 	  bxLiss>>rawL;
 	  bxL = rawL/sigmavis;
 	  bxlumi+=bxL;
-	  HLumiBXvsLS.SetBinContent(ls,bx+1,bxL);
+
 	  HLumiBX.AddBinContent(bx+1,bxL);
-	  if(rawL>0.5)
+
+	  if(rawL>0.01)
 	    ncoll++;
 	}
-	lsL=bxlumi;//temp fix
+	//lsL=bxlumi;//temp fix
       }
-
 
 
       //Lumi per LS
@@ -191,8 +204,13 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     }
     cout<<endl;
     myfile.close();
-
-
+    
+    if(Nls==0){
+      cout << "empty file: "<<infile.Data()<<endl; 
+      ss.ignore(1); 
+      continue;
+    }
+    
     
     /////////////////////////////////////////////////////
     ///   make the plots
@@ -285,7 +303,6 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
     //////////////////////////////////////////
     if(perBXRatioPlots) {
     
-      
       TCanvas C2("C2","",1200,400);
       C2.Clear();
       if(Nls>0) HLumiBX.Scale(1./Nls);
@@ -295,10 +312,16 @@ void plotCSVList(TString inpath, TString outpath=".", std::string runlist="",TSt
       HLumiBX.GetXaxis()->SetTitle("bcid");
       HLumiBX.GetYaxis()->SetRangeUser(0,HLumiBX.GetMaximum()*1.3);
       HLumiBX.Draw("histp");
+      if(HRefLumiBX){
+	if(Nls>0) HRefLumiBX->Scale(1./Nls);
+	HRefLumiBX->SetMarkerStyle(8);
+	HRefLumiBX->SetMarkerSize(0.5);
+	HRefLumiBX->SetMarkerColor(4);
+	HRefLumiBX->Draw("histpsame");
+      }
       text.DrawLatexNDC(0.75,0.85,TString("# colliding ")+(long)(Ncoll/Nls));
       C2.Print(outpath+"/"+(long)Run+"_AvgLumiBX.png");
-      
-      
+      delete HRefLumiBX;
     }
 
 
