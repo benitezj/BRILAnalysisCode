@@ -86,7 +86,8 @@ float getSigmaVis(int run){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
     return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
   }else if(run>=306896){// Run2017H
-    return 0.973*(117/158.)*1591.9e3/ORBITF; //calibration from Peter  (june 26) https://mattermost.web.cern.ch/dr-benitez/pl/yncai3zg6ir6zpprohmbid1dmh 
+    //return 0.973*(117/158.)*1591.9e3/ORBITF; //calibration from Peter  (june 26) https://mattermost.web.cern.ch/dr-benitez/pl/yncai3zg6ir6zpprohmbid1dmh
+    return 1178.8e3/ORBITF; //value from Luis calibration sent by MM of the veto for Low PU data July 2.
   }else if(run>=306473){// Run2017G
     return 0.9702*3.2074e6/ORBITF; 
   }else if(run>=297046){ // 2017B 

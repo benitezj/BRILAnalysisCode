@@ -5,8 +5,8 @@
 
 //cuts for the ratio histogram
 float minL=0;
-float minratio=0.94;
-float maxratio=1.06;
+float minratio=0.7;
+float maxratio=1.1;
 int minLS=0,maxLS=15000;
 
 ///plots ranges
@@ -15,7 +15,6 @@ float plotYrangeMax=1000;//code will find max lumi below
 float plotYrangeMaxLog=10;//scale factor for log plot
 float plotYrangeZoomMin=0.0;
 float plotYrangeZoomMax=0.2;//zoomed plot
-
 
 
 void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100, TString REF="HFET"){
@@ -62,14 +61,16 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     }
 
     counter_ls_run++;
-    counterLumi = counter_ls_run_tot + ls;
-
+    //counterLumi = counter_ls_run_tot + ls;
+    counterLumi = counter_ls_run_tot + counter_ls_run;
+    
     if(RefLumi.CompareTo("")!=0)
       iss>>totLRef;
-     float ratio=0;
-      if(totLRef>0 )
-	ratio=totL/totLRef;
- 
+
+    float ratio=0;
+    if(totLRef>0 )
+      ratio=totL/totLRef;
+    
     Lumi.SetBinContent(counterLumi-plotXrangeMin,totL);
     LumiRef.SetBinContent(counterLumi-plotXrangeMin,totLRef);
     LumiRatio.SetBinContent(counterLumi-plotXrangeMin,ratio);
@@ -80,7 +81,7 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     }
     
     if(run>lastrun){
-      runlist[counterLumi]=run;
+      runlist[counterLumi-plotXrangeMin]=run;
       lastrun=run;
     }
     if(run<firstrun){
@@ -121,9 +122,10 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
   ltxt.SetTextAngle(90);
   ltxt.SetTextSize(0.03);
   TString rtxt("");
-  //for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
-  //li.DrawLine(it->first,plotYrangeMin,it->first,plotYrangeMax);
-  //}
+  for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
+    li.DrawLine(it->first,plotYrangeMin,it->first,plotYrangeMax);
+    ltxt.DrawLatex(it->first+50,plotYrangeMin+(plotYrangeMax-plotYrangeMin)*0.2,TString("")+it->second);
+  }
 
 
   if(RefLumi.CompareTo("")!=0){
@@ -182,6 +184,10 @@ void plotPCCStability(TString inpath, int plotXrangeMin=0, int plotXrangeMax=100
     Meantxt.SetTextColor(4);
     char meantxt[100];
     sprintf(meantxt,"r=%.3f",HistoLumiRatio.GetBinCenter(HistoLumiRatio.GetMaximumBin()));
+    for ( std::map<int,int>::iterator it = runlist.begin(); it != runlist.end(); it++){
+      li.DrawLine(it->first,minratio,it->first,maxratio);
+      ltxt.DrawLatex(it->first+50,minratio+(maxratio-minratio)*0.2,TString("")+it->second);
+    }
     C.Print(inpath+"/ls_ratio.png");
 
 

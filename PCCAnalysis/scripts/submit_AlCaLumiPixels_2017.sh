@@ -22,7 +22,7 @@ DBFILE=
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias/Random_v8/Run2017F/merged.db
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25/Random_v2/Run2017F/merged.db
 #DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25/Random/Run2017H/merged.db
-DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02/Random_v2/Run2017H/merged.db
+#DBFILE=/eos/user/b/benitezj/BRIL/PCC/28Aug24_UL2017_PCCZeroBias_vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02/Random_v2/Run2017H/merged.db
 
 ## options for brilcalc lumi
 #brilcalc='/usr/bin/singularity -s exec  --env PYTHONPATH=/home/bril/.local/lib/python3.10/site-packages /cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cloud/brilws-docker:latest brilcalc lumi -u hz/ub --byls --output-style csv -c offline'
@@ -34,12 +34,14 @@ BRILCALCDATATAG=
 
 BRILCALCTYPE=
 BRILCALCTYPE=hfet
+#BRILCALCTYPE=pltzero
 #BRILCALCTYPE=pxl
 
 BRILCALCNORM=
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_BRIL.json
 #BRILCALCNORM=/cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_hfet.json
 BRILCALCNORM=hfet17New_v5
+#BRILCALCNORM=pltzero17_run2_legacy_v4 #pltzero17_run2_legacy_v5_sqrt
 #BRILCALCNORM=pcc17_run2_legacy_v6_pccvtx
 #BRILCALCNORM=NoCorr
 
