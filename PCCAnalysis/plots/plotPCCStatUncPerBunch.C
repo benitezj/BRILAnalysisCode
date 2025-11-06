@@ -1,13 +1,13 @@
 #include "globals.h"
 
-#define PURANGE 65    //x-range 
-#define PLOTYRANGE 0.5  // y-range in percent per bunch
-#define PLOTYRANGEORBIT 0.15  // y-range in percent per orbit
-#define NSTEP 5               //number of steps in trigger rate
-#define TotalTriggerStep 50 //Total trigger rate for all bunches 
-#define TotalBunches 1     //number of colliding bunches
-#define PCCPerInteraction 20  //2017 veto:100, 2023 veto:20 
-#define TStep 10              //integration time step
+#define PURANGE 65            //x-range 
+#define PLOTYRANGE 5        // y-range in percent per bunch
+#define PLOTYRANGEORBIT 2  // y-range in percent per orbit
+#define NSTEP 3               //number of steps in trigger rate
+#define TotalTriggerStep 5   //Total trigger rate for all bunches 
+#define TotalBunches 1        //number of colliding bunches
+#define PCCPerInteraction 20*0.001  //2017 veto:100, 2023 veto:20 
+#define TStep 5*60              //integration time step
 
 
 void plotPCCStatUncPerBunch(){
@@ -41,7 +41,9 @@ void plotPCCStatUncPerBunch(){
   
   //////////////////////////////
   ///Stat precision per bunch
-  C.cd(1);
+  TVirtualPad*p1=C.cd(1);
+  p1->SetGrid();
+  
   TH1F HFrame("HFrame","",1,0,PURANGE); //pileup range
   HFrame.GetYaxis()->SetRangeUser(0,PLOTYRANGE);
   HFrame.GetYaxis()->SetTitle("Stat precision per bunch [%]");
@@ -68,10 +70,12 @@ void plotPCCStatUncPerBunch(){
   line.DrawLine(0,1,PURANGE,1);
   //C.Print("plotPCCStatUncPerBunch.png");
 
-
+  
   /////////////////////////////
   ///Stat precision per orbit
-  C.cd(2);
+  TVirtualPad*p2=C.cd(2);
+  p2->SetGrid();
+    
   HFrame.GetYaxis()->SetRangeUser(0,PLOTYRANGEORBIT);
   HFrame.GetYaxis()->SetTitle("Stat precision per orbit [%]");
   HFrame.GetXaxis()->SetTitle("Pileup");
@@ -86,8 +90,9 @@ void plotPCCStatUncPerBunch(){
   }
   legorbit.Draw();
   text.DrawLatexNDC(0.1,0.92,params);
-  line.DrawLine(0,0.05,PURANGE,0.05);
+  //line.DrawLine(0,0.05,PURANGE,0.05);
   //C.Print("plotPCCStatUncPerBunch_orbit.png");
+
   C.Print("plotPCCStatPrecision.png");
   
    
