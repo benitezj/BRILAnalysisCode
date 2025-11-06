@@ -1,8 +1,4 @@
 import tables as t
-# pandas as pd, pylab as py, sys, numpy, math, os, Queue, csv
-#import struct
-#import os,sys
-
 
 class Lumitable(t.IsDescription):
  fillnum = t.UInt32Col(shape=(), dflt=0, pos=0)

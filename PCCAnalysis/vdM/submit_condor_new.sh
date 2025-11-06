@@ -6,11 +6,19 @@ submitdir=$1
 ## option for: 0=create scripts, 1=submit, 2=check
 action=$2
 
+## fixed options
+type=hd5 #hd5:vdMFW per NB4, csv:per module, per LS
 
-#baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
-baseoutdir=/eos/user/l/lcuevasp/BRIL/PCC/VDM_2017
+baseoutdir=/eos/user/b/benitezj/BRIL/PCC/VDM
 
-#python makeVdMMiniTree.py --pccfile=/eos/cms/store/group/comm_luminosity/PCC/ForLumiComputation/2018/NormalFills/6847_And_6854_And_6868/ZeroBias8/crab_CMSSW_10_3_2_ZeroBias8_splitPerBXTrue/211021_070146/0000/pcc_Data_PixVtx_Event_90X_3.root --vetoModules=vetoModules_2018.txt --outputDir=skimPCCjobs_test/output/Data_3.root
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed.txt
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_SSBkg5.txt
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXOnly_SSBkg25.txt
+#moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25.txt
+moduleveto=BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017_fixed_W0_FPIXD05_Bkg25_lowPU_W0_Stab0p02.txt
+
+modules=BRILAnalysisCode/PCCAnalysis/plots/modules.txt ## used only for type=csv jobs 
+
 
 ###########################################################
 ### 
@@ -57,7 +65,8 @@ fi
 submit(){
     local run=$1
     rm -f $fullsubmitdir/${run}.log
-    rm -f ${outputdir}/${run}.root
+    rm -f ${outputdir}/${run}.hd5
+    rm -f ${outputdir}/${run}.csv
 
     condor_submit $fullsubmitdir/${run}.sub 
 }
@@ -67,24 +76,22 @@ make_sh_script(){
 
     rm -f $fullsubmitdir/${run}.sh
 
-    #echo "export X509_USER_PROXY=${HOME}/x509up_u55361 " >> $fullsubmitdir/${run}.sh
     echo "cd ${INSTALLATION} " >> $fullsubmitdir/${run}.sh
     echo "eval \`scramv1 runtime -sh\` " >> $fullsubmitdir/${run}.sh
-  #  echo "export LD_LIBRARY_PATH=/path/to/libs:\$LD_LIBRARY_PATH" >> $fullsubmitdir/${run}.sh
     echo "cd \$TMPDIR  "   >> $fullsubmitdir/${run}.sh
     echo "pwd  "   >> $fullsubmitdir/${run}.sh
-
     echo "env" >> $fullsubmitdir/${run}.sh
-    
-    echo "python3  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/vetoModules_2017.txt --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
 
-   # echo "python  /afs/cern.ch/user/l/lcuevasp/CMSSW/CMSSW_10_6_29/src/BRILAnalysisCode/PCCAnalysis/vdM/pccminitree_to_hd5_vtx.py --minitreefile=./pccVdmMiniTree.root" >> $fullsubmitdir/${run}.sh
- 
-#Using new veto:   
-    #echo "python  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/test/Veto-2018-B-vdM.txt --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+    if [ "$type" == "hd5" ]; then
+	echo "python3  ${fullsubmitdir}/cfg.py --vetoModules=${INSTALLATION}/${moduleveto} --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+	echo "cp pcc_ZB.hd5  $outputdir/${run}.hd5 " >> $fullsubmitdir/${run}.sh
+    fi
+
+    if [ "$type" == "csv" ]; then
+	echo "python3  ${fullsubmitdir}/cfg.py --modules=${INSTALLATION}/${modules} --inputfile=${fullsubmitdir}/${run}.txt" >> $fullsubmitdir/${run}.sh
+	echo "cp tuples_to_csv_modules.csv  $outputdir/${run}.csv " >> $fullsubmitdir/${run}.sh
+    fi
     
-    #echo "cp pccVdmMiniTree.root  $outputdir/${run}.root " >> $fullsubmitdir/${run}.sh
-    echo "cp pcc_ZB.hd5  $outputdir/${run}.hd5 " >> $fullsubmitdir/${run}.sh
 }    
     
 
@@ -113,9 +120,23 @@ check_log(){
 	echo "no log"
 	fail=1
     fi
-    
+
+    if [ "$type" == "hd5" ]; then
+	if [ ! -f ${outputdir}/${run}.hd5 ]; then
+	    echo "no hd5"
+	    fail=1
+	fi
+    fi
+
+    if [ "$type" == "csv" ]; then
+	if [ ! -f ${outputdir}/${run}.csv ]; then
+	    echo "no csv"
+	    fail=1
+	fi
+    fi
+
     if [ "$fail" == "0" ]; then
-	success=`cat $fullsubmitdir/${run}.log | grep "Normal termination"`
+	success=`cat $fullsubmitdir/${run}.log | grep "exit-code 0."`
 	if [ "$success" == "" ]; then
 	    echo "no Success"
 	    fail=1
@@ -139,9 +160,10 @@ check_log(){
 ##################################################################
 export RUNLIST=""
 counter=0
+counter_fail=0
 for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     run=`echo $f | awk -F".txt" '{print $1}'`
-    echo $run
+    #echo $run
 
     ##create the scripts
     if [ "$action" == "0" ]; then
@@ -159,6 +181,7 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
 	check_log $run
 	if [ "$fail" == "1" ]; then
 	    echo $fullsubmitdir/${run}.log
+	    counter_fail=`echo $counter_fail | awk '{print $1+1}'`
 	fi   
     fi
 
@@ -170,7 +193,18 @@ for f in `/bin/ls $fullsubmitdir | grep .txt | grep -v "~" `; do
     fi
 
 
-    RUNLIST=$RUNLIST,$run
     counter=`echo $counter | awk '{print $1+1}'`
 done
+
 echo "Total runs: $counter"
+if [ "$action" == "2" ]; then
+    echo "Total runs failed: $counter_fail"
+fi
+
+#run the merging
+if [ "$action" == "4" ]; then
+    if [ "$type" == "hd5" ]; then
+	python3 ${INSTALLATION}/BRILAnalysisCode/PCCAnalysis/vdM/pcchd5_merger.py --inputdir=${outputdir}
+    fi
+fi
+

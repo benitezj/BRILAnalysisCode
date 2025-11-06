@@ -5,10 +5,10 @@
 #include "rootlogon.C"
 
 void plotlabels(){
-  drawFillYear(0,2018);
+  drawFillYear(0,2017);
 }
 
-float MinPCCColliding=100; 
+float MinPCCColliding=20; 
 
 TH1F* HResid=0;
 
@@ -222,13 +222,13 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
     TGraphErrors* gT1frac = (TGraphErrors*)InputFile.Get("Type1Fraction");
     TGraphErrors* gT1resid = (TGraphErrors*)InputFile.Get("Type1Res");
     TGraphErrors* gT2resid = (TGraphErrors*)InputFile.Get("Type2Res"); 
-    //TGraphErrors* gPed = (TGraphErrors*)InputFile.Get("Pedestal");
+    TGraphErrors* gPed = (TGraphErrors*)InputFile.Get("Pedestal");
     if(!gT1frac || !gT2resid || !gT2resid){cout<<" objects  not found. run="<<Run<<endl; continue;}
 
     double *YT1frac = gT1frac->GetY();
     double *YT1resid = gT1resid->GetY();
     double *YT2resid = gT2resid->GetY();
-    //double *YPed = gPed->GetY();
+    double *YPed = gPed->GetY();
     for (int l = 0; l < gT1frac->GetN(); l++) {
       cout<<gAvgVsIOV->GetN()<<",";  
       std::pair<float,float> pccavg=getPCCAvg(&InputFile,Run,l);
@@ -243,7 +243,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
 	gT1ResidVsIOV->SetPoint(gT1ResidVsIOV->GetN(),gT1ResidVsIOV->GetN(), YT1resid[l]*100);  
 	gT2ResidVsPCC->SetPoint(gT2ResidVsPCC->GetN(),pccavg.first, YT2resid[l]*100);  
 	gT2ResidVsIOV->SetPoint(gT2ResidVsIOV->GetN(),gT2ResidVsIOV->GetN(), YT2resid[l]*100); 
-	//gPedVsIOV->SetPoint(gPedVsIOV->GetN(),gPedVsIOV->GetN(), (YPed[l]/pccavg.first)*100);  
+	gPedVsIOV->SetPoint(gPedVsIOV->GetN(),gPedVsIOV->GetN(), (YPed[l]/pccavg.first)*100);  
 	
       }
       
@@ -317,7 +317,10 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   gT2ResidVsPCC->SetMarkerSize(0.6);
   gT2ResidVsPCC->Draw("ap");
   plotlabels();
+  TLine line2; line2.SetLineColor(4); line2.SetLineStyle(2);
   line.DrawLine(gT2ResidVsPCC->GetXaxis()->GetXmin(),0,gT2ResidVsPCC->GetXaxis()->GetXmax(),0);
+  line2.DrawLine(gT2ResidVsPCC->GetXaxis()->GetXmin(),0.1,gT2ResidVsPCC->GetXaxis()->GetXmax(),0.1);
+  line2.DrawLine(gT2ResidVsPCC->GetXaxis()->GetXmin(),-0.1,gT2ResidVsPCC->GetXaxis()->GetXmax(),-0.1);
   Canvas.Print(outpath+"/afterglow_t2res_vsinstlumi.png");
 
   Canvas.Clear();
@@ -329,26 +332,29 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   gT2ResidVsIOV->Draw("ap");
   plotlabels();
   line.DrawLine(gT2ResidVsIOV->GetXaxis()->GetXmin(),0,gT2ResidVsIOV->GetXaxis()->GetXmax(),0);
+  line2.DrawLine(gT2ResidVsIOV->GetXaxis()->GetXmin(),0.1,gT2ResidVsIOV->GetXaxis()->GetXmax(),0.1);
+  line2.DrawLine(gT2ResidVsIOV->GetXaxis()->GetXmin(),-0.1,gT2ResidVsIOV->GetXaxis()->GetXmax(),-0.1);
   Canvas.Print(outpath+"/afterglow_t2res_vsLSBlock.png");
 
 
-//  /////////Pedestal
-//  Canvas.Clear();
-//  gPedVsIOV->GetXaxis()->SetTitle("50 LS Block");
-//  gPedVsIOV->GetYaxis()->SetTitle("Pedestal Fraction [%]");
-//  gPedVsIOV->GetYaxis()->SetRangeUser(-2,2);
-//  gPedVsIOV->SetMarkerStyle(8);
-//  gPedVsIOV->SetMarkerSize(0.6);
-//  gPedVsIOV->Draw("ap");
-//  plotlabels();
-//  line.DrawLine(gPedVsIOV->GetXaxis()->GetXmin(),0,gPedVsIOV->GetXaxis()->GetXmax(),0);
-//  Canvas.Print(outpath+"/afterglow_pedestal_vsLSBlock.png");
+  /////////Pedestal
+  Canvas.Clear();
+  gPedVsIOV->GetXaxis()->SetTitle("50 LS Block");
+  gPedVsIOV->GetYaxis()->SetTitle("Pedestal Fraction [%]");
+  gPedVsIOV->GetYaxis()->SetRangeUser(-15,15);
+  gPedVsIOV->SetMarkerStyle(8);
+  gPedVsIOV->SetMarkerSize(0.6);
+  gPedVsIOV->Draw("ap");
+  plotlabels();
+  line.DrawLine(gPedVsIOV->GetXaxis()->GetXmin(),0,gPedVsIOV->GetXaxis()->GetXmax(),0);
+  Canvas.Print(outpath+"/afterglow_pedestal_vsLSBlock.png");
 
 
   /////////Avg Colliding 
   Canvas.Clear();
   gAvgVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gAvgVsIOV->GetYaxis()->SetTitle("Avg. PCC colliding");
+  gAvgVsIOV->GetYaxis()->SetRangeUser(0,50);
   gAvgVsIOV->SetMarkerStyle(8);
   gAvgVsIOV->SetMarkerSize(0.6);
   gAvgVsIOV->Draw("ap");
@@ -359,6 +365,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gNCollVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gNCollVsIOV->GetYaxis()->SetTitle("# of colliding bunches");
+  gNCollVsIOV->GetYaxis()->SetRangeUser(1000,2400);
   gNCollVsIOV->SetMarkerStyle(8);
   gNCollVsIOV->SetMarkerSize(0.6);
   gNCollVsIOV->Draw("ap");
@@ -371,7 +378,7 @@ void plot_afterglow_residual(TString inpath, TString outpath, TString RUNLIST=""
   Canvas.Clear();
   gAvgSFVsIOV->GetXaxis()->SetTitle("50 LS Block");
   gAvgSFVsIOV->GetYaxis()->SetTitle("Avg. Scale Factor");
-  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.8,1.0);
+  gAvgSFVsIOV->GetYaxis()->SetRangeUser(0.85,1.0);
   gAvgSFVsIOV->SetMarkerStyle(8);
   gAvgSFVsIOV->SetMarkerSize(0.6);
   gAvgSFVsIOV->Draw("ap");

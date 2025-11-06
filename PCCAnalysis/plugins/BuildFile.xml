@@ -56,6 +56,11 @@
 </library>
 
 
+<library   file="CorrPCCProducerReRecoLowPU.cc" name="CorrPCCProducerReRecoLowPU">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
+
 <library   file="PCCEventToTuple.cc" name="PCCEventToTuple">
   <flags   EDM_PLUGIN="1"/>
 </library>

@@ -55,13 +55,13 @@ void drawPCCLuminometer(float xpos=0.19,float ypos=0.80, TString subdet=""){
   text.SetTextColor(1);
   text.SetTextSize(0.035);
   text.DrawLatexNDC(xpos,ypos,TString("#font[52]{PCC} "));
-  if(subdet.CompareTo("")!=0) text.DrawLatexNDC(xpos,ypos-0.06,TString("#font[52]{")+subdet+"}");
+  if(subdet.CompareTo("")!=0) text.DrawLatexNDC(xpos+0.07,ypos,TString("#font[52]{")+subdet+"}");
 }
 
 
 ///////////crossection
 float getSigmaVis(int run){
-
+  
   if(run>=366403){ //2023
     //return 0.9104*1.403e6/ORBITF;  // first veto (264 modules) by Luis, scaled by the 24 removed modules
     //return 1.29843e6/ORBITF;  // Luis analysis 12 December https://docs.google.com/presentation/d/1h-ID3W8VFmSQBEhrFkKsymI7uuIHoap9WyPMLWLX7AU/edit#slide=id.g263901dc7ed_0_52
@@ -85,9 +85,12 @@ float getSigmaVis(int run){
   }else if(run>=315252){
     //#define SigmaPCC 5.8e6/ORBITF // old veto list, before stability analysis
     return 1.00895*5.91e6/ORBITF; // new veto list, Georgios fixed pixel double counting    
-  }else if(run>=306473){
-    return 0.9702*3.2074e6/ORBITF; // Run2017G
-  }else if(run>=297046){ // 2017 veto (Run2017B >)  
+  }else if(run>=306896){// Run2017H
+    //return 0.973*(117/158.)*1591.9e3/ORBITF; //calibration from Peter  (june 26) https://mattermost.web.cern.ch/dr-benitez/pl/yncai3zg6ir6zpprohmbid1dmh
+    return 1178.8e3/ORBITF; //value from Luis calibration sent by MM of the veto for Low PU data July 2.
+  }else if(run>=306473){// Run2017G
+    return 0.9702*3.2074e6/ORBITF; 
+  }else if(run>=297046){ // 2017B 
     return 4.6470e6/ORBITF; //result from Peter in Run 2 paper AN (14/Nov2024) https://www.overleaf.com/project/65af85cc5c3a839be2bffb71 , with bkg values from tail averates: 4.6693, with Const: 4.6745
   }
 
@@ -116,13 +119,14 @@ float getsigmavis_as(int run1){
 
   cout<<"sigma vis not found for run : "<<run1<<endl;
   return 1;
-
 }
 
 
 float getsigmavis_as_veto1701(int run2){
-  //2% rms common veto list, Ashish Sehrawat                                                                                                                      if(run2>=315252){
-    return 0.959939e6/ORBITF;   // for entire 2018 period                                                                                                         }
+  //2% rms common veto list, Ashish Sehrawat
+  if(run2>=315252){
+    return 0.959939e6/ORBITF;   // for entire 2018 period
+  }
   cout<<"sigma vis not found for run : "<<run2<<endl;
   return 1;
 }
@@ -130,8 +134,9 @@ float getsigmavis_as_veto1701(int run2){
 
 
 float getsigmavis_as_veto1615(int run3){
-  //4% rms common veto list, Ashish Sehrawat                                                                                                                      if(run3>=315252){
-    return 1.673490e6/ORBITF;   // for entire 2018 period                                                                                                         }
+  if(run3>=315252){ //4% rms common veto list, Ashish Sehrawat
+    return 1.673490e6/ORBITF;   // for entire 2018 period
+  }
   cout<<"sigma vis not found for run : "<<run3<<endl;
   return 1;
 }
@@ -168,7 +173,7 @@ int NBPIX[4]={0,0,0,0};//modules per layer
 int NFPIX[6]={0,0,0,0,0,0};//modules per disk
 
 
-void readModRPhiZCoordinates(){
+bool readModRPhiZCoordinates(){
   std::cout<<"Starting to read the Module coordinates"<<endl;
   std::cout<<" MODID list size: "<<MODID.size()<<endl;
   
@@ -178,7 +183,7 @@ void readModRPhiZCoordinates(){
   ifstream cfile_bpix("./BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt");
   if (!cfile_bpix.is_open()){
     std::cout << "Unable to open BPIXcoordinates"<<endl;
-    return;
+    return 0;
   }
   
   std::cout<<"opened: BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_BPix_raw.txt"<<endl;
@@ -216,7 +221,7 @@ void readModRPhiZCoordinates(){
   ifstream cfile_fpix("./BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt");
   if (!cfile_fpix.is_open()){
     std::cout << "Unable to open FPIX coordinates"<<endl;
-    return;
+    return 0;
   }
   std::cout<<"opened: BRILAnalysisCode/PCCAnalysis/test/ModuleCoords_FPix_raw.txt"<<endl;
   std::string cline_fpix;
@@ -259,6 +264,7 @@ void readModRPhiZCoordinates(){
   cout<<"Total number of modules in coordinate files: "<<counter<<endl;
 
   cout<<"Done reading the  module coordinates."<<endl;
+  return 1;
 }
 
 

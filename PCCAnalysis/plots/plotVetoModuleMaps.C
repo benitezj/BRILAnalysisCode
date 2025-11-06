@@ -4,7 +4,7 @@
 #include "globals.h"
 
 
-void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
+void plotVetoModuleMaps(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix.txt"){
 
   gROOT->ProcessLine(".x BRILAnalysisCode/PCCAnalysis/plots/rootlogon.C");
 
@@ -116,18 +116,26 @@ void plotBPixVetoModules(string VetoList="veto_master_VdM_ABCD_2018_newcuts_BPix
 
   //distribution of negative and positive side
   cout<<"Distibution of bad modules:"<<endl;
-  cout<<"BPIX 0 : "<<BCountN[0]<<"N + "<<BCountP[0]<<"P  / "<<NBPIX[0]<<endl;
-  cout<<"BPIX 1 : "<<BCountN[1]<<"N + "<<BCountP[1]<<"P  / "<<NBPIX[1]<<endl;
-  cout<<"BPIX 2 : "<<BCountN[2]<<"N + "<<BCountP[2]<<"P  / "<<NBPIX[2]<<endl;
-  cout<<"BPIX 3 : "<<BCountN[3]<<"N + "<<BCountP[3]<<"P  / "<<NBPIX[3]<<endl;
+  cout<<"BPIX 0 : "<<BCountN[0]+BCountP[0]<<"  / "<<NBPIX[0]<<endl;
+  cout<<"BPIX 1 : "<<BCountN[1]+BCountP[1]<<"  / "<<NBPIX[1]<<endl;
+  cout<<"BPIX 2 : "<<BCountN[2]+BCountP[2]<<"  / "<<NBPIX[2]<<endl;
+  cout<<"BPIX 3 : "<<BCountN[3]+BCountP[3]<<"  / "<<NBPIX[3]<<endl;
   cout<<"# BPIX total= "<<BPIXNBAD<<" / "<<NBPIX[0]+NBPIX[1]+NBPIX[2]+NBPIX[3]<<endl;  
   
   //cout<<"FPIX 0 : "<<FCountN[0]<<"N + "<<FCountP[0]<<"P "<<endl;
   //cout<<"FPIX 1 : "<<FCountN[1]<<"N + "<<FCountP[1]<<"P "<<endl;
 
-  cout<<"FPIX Disk 1 : "<<FCountDiskN[0]<<"N + "<<FCountDiskP[0]<<"P "<<endl;
-  cout<<"FPIX Disk 2 : "<<FCountDiskN[1]<<"N + "<<FCountDiskP[1]<<"P "<<endl;
-  cout<<"FPIX Disk 3 : "<<FCountDiskN[2]<<"N + "<<FCountDiskP[2]<<"P "<<endl;
+  //cout<<"FPIX Disk 1 : "<<FCountDiskN[0]<<"N + "<<FCountDiskP[0]<<"P "<<endl;
+  //cout<<"FPIX Disk 2 : "<<FCountDiskN[1]<<"N + "<<FCountDiskP[1]<<"P "<<endl;
+  //cout<<"FPIX Disk 3 : "<<FCountDiskN[2]<<"N + "<<FCountDiskP[2]<<"P "<<endl;
   
+  //LAYERDISK FPIX (2,1,0,3,4,5) order of z position (?)
+  cout<<"FPIX Disk 0 : "<<FCountDiskN[2]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 1 : "<<FCountDiskN[1]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 2 : "<<FCountDiskN[0]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 3 : "<<FCountDiskP[0]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 4 : "<<FCountDiskP[1]<<" / 112 "<<endl;
+  cout<<"FPIX Disk 5 : "<<FCountDiskP[2]<<" / 112 "<<endl;
+
   cout<<"# FPIX total= "<<FPIXNBAD<<" / "<<NFPIX[0]+NFPIX[1]+NFPIX[2]+NFPIX[3]+NFPIX[4]+NFPIX[5]<<endl;  
 }

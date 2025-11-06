@@ -27,12 +27,19 @@ site=T2_CH_CERN
 #dataset=/AlCaLumiPixels/Run2017E-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
 #dataset=/AlCaLumiPixels/Run2017F-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
 
+<<<<<<< HEAD
 ###For emmittance 2025 scans
+=======
+#dataset=/AlCaLumiPixels/Run2017H-AlCaPCCRandom-28Aug24_UL2017_PCCRandom-v1/ALCARECO
+dataset=/AlCaLumiPixels/Run2017H-AlCaPCCZeroBias-28Aug24_UL2017_PCCZeroBias-v1/ALCARECO
+
+>>>>>>> 2d9d8c082c9dc0e3dcf3b199d81d73108abeb005
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025B-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025D-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025E-v1/RAW
 
+<<<<<<< HEAD
 ### 2025 vdM
 #dataset=/AlCaLumiPixelsCountsGated/Run2025D-v1/RAW
 
@@ -46,6 +53,10 @@ site=T2_CH_CERN
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025E-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025F-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
 dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-AlCaPCCZeroBias-PromptReco-v1/ALCARECO 
+=======
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-AlCaPCCRandom-PromptReco-v1/ALCARECO
+
+>>>>>>> 2d9d8c082c9dc0e3dcf3b199d81d73108abeb005
 
 
 ## 2025 vdM
