@@ -9,7 +9,8 @@
 #example: /eos/cms/tier0/store/data/Run2025C/AlCaLumiPixelsCountsPrompt/RAW/v1/000/392/538/00000/
 
 period=$1 # Run2025C
-eospath=/eos/cms/tier0/store/data
+#eospath=/eos/cms/tier0/store/data
+eospath=/eos/cms/store/data
 echo $period
 
 #################

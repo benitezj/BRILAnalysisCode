@@ -42,6 +42,8 @@ site=T2_CH_CERN
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025D-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025E-v1/RAW
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025F-v1/RAW
+dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-v1/RAW
 
 ## 2025 vdM
 #dataset=/AlCaLumiPixelsCountsGated/Run2025D-v1/RAW
@@ -55,7 +57,7 @@ site=T2_CH_CERN
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025D-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025E-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025F-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
-dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-AlCaPCCZeroBias-PromptReco-v1/ALCARECO 
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-AlCaPCCZeroBias-PromptReco-v1/ALCARECO 
 
 
 

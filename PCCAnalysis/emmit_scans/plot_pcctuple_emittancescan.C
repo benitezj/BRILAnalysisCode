@@ -1,8 +1,9 @@
 #define NBCID 3564 
 
-void plot_pcctuple_emittancescan(){
+void plot_pcctuple_emittancescan(TString path){
 
-  TFile F("pcctuple_392538.root");
+  //TFile F("pcctuple_392538.root");
+  TFile F(path.Data());
 
   TH1F HBCID("HBCID","",NBCID+1,-0.5,NBCID+0.5);
  
