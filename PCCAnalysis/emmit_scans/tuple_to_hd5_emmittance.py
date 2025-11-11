@@ -16,6 +16,7 @@ bcidselection=[57,67,92,919,951,961,986,1998,2727,3272]
 parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')             
 parser.add_argument('--inputfile', type=str, default="", help='The pccfile to input (pixel clusters and vertices)')
 parser.add_argument('--moduleveto', type=str, default="", help='Module veto file')
+parser.add_argument('--timestamps', type=str, default="", help='File with the scan time windows')
 args = parser.parse_args()
 
 output_path = '.' 
@@ -33,6 +34,23 @@ if os.path.isfile(args.moduleveto):
   if line != "":
    vetoModules.append(int(line))
 print("Module veto size: ",len(vetoModules))
+
+
+## Read the timestamps
+scanstart=[]
+scanend=[]
+if os.path.isfile(args.timestamps):
+ print("Time stamps:",args.timestamps)
+ timestampFile=open(args.timestamps)
+ for line in timestampFile.readlines():
+  if line != "":
+   tokens = line.split()
+   if int(tokens[1])>int(tokens[2]):
+    print("bad timestamps ",tokens[1],tokens[2])
+    continue
+   scanstart.append(int(tokens[1]))
+   scanend.append(int(tokens[2]))
+print("Time stamps size: ",len(scanstart))
 
 
 ## open the input file
@@ -82,17 +100,29 @@ rownew = outtable.row
 fill = 1  #2018->6868 #2017->6016                                                                                                        
 ################## Loop over events ###########################                                                                            
 nentries = tree.GetEntries()
+goodcounter=0
 for iev in range(nentries):
     tree.GetEntry(iev)                                                                                                        
     if iev%100==0:
         print(tree.run,tree.LS,iev,"/",nentries)                                                                                            
+        
+    ## here filter the timestamps
+    timepass=False
+    for ti in range(len(scanstart)):
+     if tree.timeStamp_begin > scanstart[ti] and tree.timeStamp_begin < scanend[ti]:
+      timepass=True
+    if not timepass:
+     continue 
 
+    
+    ## read basic info
     rownew['fillnum'] = fill
     rownew['runnum'] = tree.run                                                                                                     
     rownew['lsnum'] = tree.LS
     rownew['nbnum'] = tree.LN
     rownew['timestampsec'] = tree.timeStamp_begin
 
+      
     ## here sum the modules
     PCC_NB4 = [0]*NBX
     if tree.pcc_bx_mod.size()!=0:
@@ -131,72 +161,10 @@ for iev in range(nentries):
 
     rownew.append()
     outtable.flush() 
-
-
-
-    
-#    ### NOTE: bcid convention CMS HLT Datasets goes from 0 - 3563 !
-#    ## See: https://cmsoms.cern.ch/cms/fills/bunch_info
-#    ## but I think I may have found an event with value 3564, so need to protect
-#    if BXid<0 or BXid>=NBX:
-#     continue
-#    if bcidselection.count(BXid+1) == 0:
-#     continue
-
-#    PCC_NB4[int(LN/4)][BXid] += tree.pcc
-#    ev_countNB4[int(LN/4)][BXid] += 1
-#    time_countNB4[int(LN/4)][BXid] += tree.timeStamp_begin    
-    
-
-#    ##this code assumes input data is organized by LS
-#    if LS_prev!=LS or iev>=nentries-1: 
-#        for l in range(NBX):
-#            for k in range(NNB4):
-#                if ev_countNB4[k][l]!=0:
-#                    time_countNB4[k][l]/=ev_countNB4[k][l]
-#                    PCC_NB4[k][l]/=ev_countNB4[k][l]
-#
-#        ## calculate avg time per NB4             
-#        for r in range(NNB4):  
-#            count_nonzero=0
-#            for q in range(NBX): 
-#                if ev_countNB4[r][q]!=0:
-#                    count_nonzero += 1 
-#                    time_count_NB4avg[r] += time_countNB4[r][q]
-#            if count_nonzero!=0:
-#                time_count_NB4avg[r]=time_count_NB4avg[r]/count_nonzero
-#   
-#        # fill the table for each NB4
-#        for m in range(NNB4):   
-#            rownew['fillnum'] = fill
-#            rownew['runnum'] = run
-#            rownew['lsnum'] = LS_prev
-#            rownew['nbnum'] = m
-#            rownew['timestampsec'] = time_count_NB4avg[m]  
-#            rownew['bxraw'] = PCC_NB4[m]
-#            rownew['bx'] = PCC_NB4[m]
-#            bxsum=0
-#            for b in range(NBX): 
-#                bxsum += PCC_NB4[m][b]
-#            rownew['avgraw'] = bxsum
-#            rownew['avg'] = bxsum
-#            rownew.append()
-#            outtable.flush() 
-#    
-#
-#        #reset for next LS 
-#        for j in range(NBX):
-#            for i in range(NNB4):
-#                PCC_NB4[i][j]=0
-#                time_countNB4[i][j]=0
-#                ev_countNB4[i][j] =0
-#
-#        for p in range(NNB4):  
-#            time_count_NB4avg[p]=0     
-#   
-#      
-#    LS_prev=LS
+    goodcounter = goodcounter+1
 
     
 h5out.close()
-print("Done")
+
+print("Closed inputfile")
+print("Number of good NB4 entries: "+str(goodcounter))
