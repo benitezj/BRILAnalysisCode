@@ -4,12 +4,12 @@
 #include <TString.h>
 #include "rootlogon.C"
 
-bool recorded = 1;
+bool recorded = 0;
 
-void getlumi(TString path, std::map<int,float> &lummap, int position=6, float scale=1., TString filter=""){
+void getlumi(TString path, std::map<int,float> &lummap, int position=6, float scale=1., TString filter="", std::map<int,int> * nlsmap=0){
   cout<<"Reading:"<<path<<endl;
   
-  //OMS format
+  //OMS data format
   //run_number,fill_number,duration,start_time,end_time,components_out,delivered_lumi,recorded_lumi,l1_triggers_counter,l1_hlt_mode_stripped,hlt_key,era,initial_prescale_index
   //390950,10489,345,2025-04-22 06:58:49,2025-04-22 07:04:34,"[]",1.4655901E-4,8.6430933E-5,22882060,collisions2025/v6,/cdaq/special/2025/FirstCollisions/v0.3.0/HLT/V1,Run2025A,0
 
@@ -29,6 +29,7 @@ void getlumi(TString path, std::map<int,float> &lummap, int position=6, float sc
   float lumi=0.;
   float totallum=0.;
   int counter=0;
+  int nls=0;
   std::string line;
   while (std::getline(myfile, line)){
     std::stringstream ss(line);
@@ -56,6 +57,12 @@ void getlumi(TString path, std::map<int,float> &lummap, int position=6, float sc
     
     lumi = atof(parsed_elements[position+recorded].c_str()) * scale;
     lummap[run] = lumi;
+
+    if(nlsmap){//read the number lumi sections
+      nls = atoi(parsed_elements[position+recorded-2].c_str());
+      (*nlsmap)[run] = nls;
+    }
+    
     totallum += lumi;
     counter++;
   }
@@ -71,19 +78,28 @@ void compare_OMS_brilcalc(){
   rootlogon();
   
   std::map<int,float> omslumi;  
-  getlumi("./2025_lumi_publicplot/2025_oms.csv", omslumi, 6, 1,"collisions2025"); // 1/pb
+  getlumi("./2025_lumi_publicplot/2025_oms.csv", omslumi, 6, 1,"collisions2025"); // 1/pb units in OMS,  select the runs with "collisions2025" trigger menu
 
   std::map<int,float> onlinelumi;
-  getlumi("./2025_lumi_publicplot/2025_online.txt", onlinelumi, 7, 1E-6); //convert 1/ub -> 1/pb
+  std::map<int,int> onlinenls;
+  getlumi("./2025_lumi_publicplot/2025_online.txt", onlinelumi, 7, 1E-6,"",&onlinenls);  //convert 1/ub -> 1/pb
 
   std::map<int,float> normtaglumi;
-  getlumi("./2025_lumi_publicplot/2025_normtag.txt", normtaglumi, 7, 1E-6); //convert 1/ub -> 1/pb
+  std::map<int,int> normtagnls;
+  getlumi("./2025_lumi_publicplot/2025_normtag.txt", normtaglumi, 7, 1E-6,"",&normtagnls); //convert 1/ub -> 1/pb
 
   //return;
   
   //for loop to match the lumi per run
   for (const auto& pair : omslumi) {
-    std::cout << pair.first << "," << pair.second <<","<< onlinelumi[pair.first]  <<","<< normtaglumi[pair.first] << std::endl;
+    //std::cout << pair.first << "," << pair.second <<","<< onlinelumi[pair.first]  <<","<< normtaglumi[pair.first] << std::endl;
+    std::cout << pair.first << "," << pair.second
+	      <<","<< onlinenls[pair.first]  <<","<< onlinelumi[pair.first]
+	      <<","<< normtagnls[pair.first]  <<","<< normtaglumi[pair.first]
+	      <<","<< onlinelumi[pair.first] - pair.second  // brilcalc online - OMS
+	      <<","<< normtagnls[pair.first] - onlinenls[pair.first]  // brilcalc normtag - brilcalc online  NLS 
+	      <<","<< normtaglumi[pair.first] - onlinelumi[pair.first]  // brilcalc normtag - brilcalc online  Lumi
+	      << std::endl;
   }  
 
   
