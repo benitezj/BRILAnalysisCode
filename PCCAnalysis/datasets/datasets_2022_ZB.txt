@@ -1,0 +1,5 @@
+/AlCaLumiPixelsCountsPrompt/Run2022C-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2022D-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2022D-AlCaPCCZeroBias-PromptReco-v2/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2022E-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2022F-AlCaPCCZeroBias-PromptReco-v1/ALCARECO

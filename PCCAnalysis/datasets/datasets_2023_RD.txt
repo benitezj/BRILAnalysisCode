@@ -1,0 +1,7 @@
+/AlCaLumiPixelsCountsPrompt/Run2023B-AlCaPCCRandom-PromptReco-v1/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2023C-AlCaPCCRandom-PromptReco-v1/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2023C-AlCaPCCRandom-PromptReco-v2/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2023C-AlCaPCCRandom-PromptReco-v3/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2023C-AlCaPCCRandom-PromptReco-v4/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2023D-AlCaPCCRandom-PromptReco-v1/ALCARECO
+/AlCaLumiPixelsCountsPrompt/Run2023D-AlCaPCCRandom-PromptReco-v2/ALCARECO

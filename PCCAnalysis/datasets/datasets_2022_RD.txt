@@ -1,0 +1,4 @@
+/StreamALCALumiPixelsCountsExpress/Run2022D-AlCaPCCRandom-Express-v2/ALCARECO
+/StreamALCALumiPixelsCountsExpress/Run2022D-AlCaPCCRandom-Express-v3/ALCARECO
+/StreamALCALumiPixelsCountsExpress/Run2022E-AlCaPCCRandom-Express-v1/ALCARECO
+/StreamALCALumiPixelsCountsExpress/Run2022F-AlCaPCCRandom-Express-v1/ALCARECO
