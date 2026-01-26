@@ -1,0 +1,12 @@
+
+##process the root files with pcc per event, integrate events per NB4
+##output is a TTree with one entry per NB4. contains pcc per bx per module
+## apply bcid selection to keep file small
+cmsRun ${CMSSW_BASE}/src/BRILAnalysisCode/PCCAnalysis/vdMRAW/PCCEventToTuple_cfg_RAW.py
+#cmsRun PCCEventToTuple_cfg.py
+
+## process the Tuple and output HD5 table with pcc per NB4
+## apply module veto and afterglow correction
+python3 ${CMSSW_BASE}/src/BRILAnalysisCode/PCCAnalysis/vdMRAW/tuple_to_hd5_RAW.py --inputfile=./pcctuple.root --moduleveto=/afs/cern.ch/user/l/lcuevasp/public/veto_2025/veto_B0+wights0+Block1_Sty1_Sty2+Block2_Sty1_Sty2+Block3_Sty1+Block4_Sty1+vdM_SS1cut_SS4cut+Lty_11229+Lty_10857.txt
+
+

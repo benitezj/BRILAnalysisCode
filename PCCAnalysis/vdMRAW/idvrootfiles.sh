@@ -1,0 +1,51 @@
+#!/bin/bash
+
+########################################################
+# This script was made to search for root files in eos #
+# and output individual text files for each one.       #
+# Set options below as needed.                         # 
+########################################################
+
+##################################################### Quick path example/guide ####################################################
+# path = eos/cms/store/data/Run2025D/AlCaLumiPixelsCountsGated/RAW/v1/000/394/468/00000/169890ac-3ae1-4cd0-a9d4-64eb1c34191c.root #
+#        {     eospath    }{ period }{This part is defined in path1 and} {r1}{r2}      { example root file, value f in last for } # 
+#                                    {    dependes on your dataset     }                                                          #
+###################################################################################################################################          
+
+
+i=0 ##counter for root files
+p_idx=-1
+#runs=("468" "469")
+
+period=Run2025D
+eospath=/eos/cms/store/data
+echo "Looking into" $eospath/$period
+
+rm -rf ./$period ##Delete old folder
+mkdir ./$period ##Create folder for txt files
+
+path1=${eospath}/${period}/AlCaLumiPixelsCountsGated/RAW/v1/000 ##look for path in DAS / EOS
+
+for r1 in `/bin/ls ${path1}`; do ##search for all folders in path 1
+    path2=$path1/$r1
+    # echo $path2
+    for r2 in `/bin/ls ${path2}`; do ##search for all folder in path 2
+	path3=$path2/$r2/00000
+	# echo $r2
+	# echo $path3
+	if [ "$r2" = "469" ]; then ##condition to only make txt files for the desired runs
+	  for f in "$path3"/*.root; do ##grep command searches for root file in path 3                                                                                                  
+              ((i++))
+              idx=$(( (i-1) / 3 ))
+              if (( idx != p_idx)); then  ## condition to check repeated files
+                  filename="${r1}${r2}_root${idx}.txt"
+                  : > "./$period/$filename"
+                  p_idx=$idx
+              fi
+              echo "file:$path3/$f" >> "./$period/$filename" ##create text file with content in echo                                                                                
+          done
+	fi
+    done
+done
+
+/bin/ls ./$period/
