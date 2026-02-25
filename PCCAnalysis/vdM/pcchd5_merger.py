@@ -1,4 +1,5 @@
-#! /usr/bin/env python3
+## Script to merge PCC HD5 files
+## authors: Jose Benitez (jose.benitez@cern.ch) , Luis Cuevas Picos (luis.enrique.cuevas.picos@cern.ch)
 
 import tables as t
 import glob
@@ -7,7 +8,7 @@ from pcchd5_lib import Lumitable
 import argparse
 
 
-parser = argparse.ArgumentParser(description='Process entries in event-based trees to produce pixel cluster counts')
+parser = argparse.ArgumentParser(description='Merges multiple HD5 files into one')
 parser.add_argument('--inputdir', type=str, default="", help='The input directory')
 args = parser.parse_args()
 

@@ -1,3 +1,6 @@
+## Script to convert PCC vdM tuples into HD5 format with NB4 granularity
+## authors: Jose Benitez (jose.benitez@cern.ch) , Luis Cuevas Picos (luis.enrique.cuevas.picos@cern.ch)
+
 import  ROOT
 from ROOT import TFile, TTree, TChain
 import tables as t, pandas as pd, pylab as py, sys, numpy, math, os, csv
@@ -94,10 +97,10 @@ ev_countNB4= [numpy.zeros(3564) for i in range(16)]
 time_count_NB4avg= numpy.zeros(16)
 event_count = numpy.zeros(16)
 
-numBunchesLHC = 3564                                                                                                                            
-k = 11246.                                                                                                                                       
-fill = 6016  #2018->6868 #2017->6016                                                                                                        
-                                                                                                        
+numBunchesLHC = 3564
+k = 11246.
+fill = 6016  #2018->6868 #2017->6016, ... this value should not matter in the vdMFW (I think)
+
 ################## Loop over events ###########################                                                                            
 
 tree.GetEntry(0)                                                                    
