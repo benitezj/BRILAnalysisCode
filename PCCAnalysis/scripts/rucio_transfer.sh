@@ -59,24 +59,28 @@ dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-v1/RAW
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025F-AlCaPCCZeroBias-PromptReco-v1/ALCARECO
 #dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-AlCaPCCZeroBias-PromptReco-v1/ALCARECO 
 
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025B-AlCaPCCRandom-PromptReco-v1/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-AlCaPCCRandom-PromptReco-v1/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025C-AlCaPCCRandom-PromptReco-v2/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025D-AlCaPCCRandom-PromptReco-v1/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025E-AlCaPCCRandom-PromptReco-v1/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025F-AlCaPCCRandom-PromptReco-v1/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025F-AlCaPCCRandom-PromptReco-v2/ALCARECO
+#dataset=/AlCaLumiPixelsCountsPrompt/Run2025G-AlCaPCCRandom-PromptReco-v1/ALCARECO
 
 
 
- rucio add-rule \
-       cms:${dataset} \
-       1 \
-       $site \
-       --lifetime $time \
-       --activity "User AutoApprove" \
-       --ask-approval \
-       --comment "Data needed for Run lumi paper"
+# rucio add-rule \
+#       cms:${dataset} \
+#       1 \
+#       $site \
+#       --lifetime $time \
+#       --activity "User AutoApprove" \
+#       --ask-approval \
+#       --comment "Data needed for Run lumi paper"
 
-#command="rucio rule add"
-#command=$command" -d cms:"$dataset
-#command=$command" --rses "$site
-#command=$command" --copies 1 --lifetime 7776000 --ask-approval"
-#command=$command" --comment \"Data needed for lumi measurement\""
-#echo $command
+echo "rucio rule add --ask-approval cms:$dataset --copies 1 --rses $site --lifetime $time  --activity \"User AutoApprove\" --comment \"Data needed lumi measurement\" "
+rucio rule add --ask-approval cms:$dataset --copies 1 --rses $site --lifetime $time --activity "User AutoApprove" --comment "Data needed lumi measurement"
 
 
 #step 4: Update existing rule
